@@ -17,3 +17,8 @@ model User {
   username        String    @db.VarChar(255)
   email           String    @db.VarChar(255)
 }
+
+model Course {
+  id              Int       @default(autoincrement()) @id
+  name            String    @db.VarChar(255)
+}
