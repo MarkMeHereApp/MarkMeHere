@@ -2,7 +2,6 @@ import { Card, Title, Text } from '@tremor/react';
 import { PrismaClient } from '@prisma/client'
 import Search from './search';
 import UsersTable from './table';
-import CsvUploader from './csvuploader';
 
 export const dynamic = 'force-dynamic';
 const prisma = new PrismaClient()
@@ -29,7 +28,6 @@ export default async function IndexPage({
         A list of users retrieved from a MySQL database (PlanetScale).
       </Text>
       <Search />
-      <CsvUploader />
       <Card className="mt-6">
         {/* @ts-expect-error Server Component */}
         <UsersTable users={users} />
