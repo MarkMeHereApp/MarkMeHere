@@ -29,3 +29,8 @@ model Students {
   name     String @db.VarChar(255)
   grade    Float  @db.Float
 }
+
+model Course {
+  id              Int       @default(autoincrement()) @id
+  name            String    @db.VarChar(255)
+}
