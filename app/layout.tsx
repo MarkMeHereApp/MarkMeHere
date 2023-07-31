@@ -23,9 +23,11 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <Nav />
         </Suspense>
+        <main>
         {children}
+        </main>
         <AnalyticsWrapper />
-        <Toast />
+        {/* <Toast /> We may not want to always include the footer. If we even want one at all*/}
       </body>
     </html>
   );
