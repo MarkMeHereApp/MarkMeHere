@@ -1,4 +1,5 @@
 import './globals.css';
+import '@/styles/styles.scss';
 
 import Nav from './nav';
 import AnalyticsWrapper from './analytics';

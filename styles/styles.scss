@@ -1,0 +1,19 @@
+.bars::before,
+.bars::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 30%; /* Adjust the width as needed */
+  height: 1px; /* Adjust the thickness of the border */
+  background-color: white; /* Adjust the border color */
+}
+
+.bars::before {
+  left: 0;
+  top: 50%;
+}
+
+.bars::after {
+  right: 0;
+  top: 50%;
+}
