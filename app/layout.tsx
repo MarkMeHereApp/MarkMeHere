@@ -5,6 +5,9 @@ import Nav from './nav';
 import AnalyticsWrapper from './analytics';
 import Toast from './toast';
 import { Suspense } from 'react';
+import { Open_Sans } from 'next/font/google';
+
+const OpenSans = Open_Sans({ subsets: ['latin'],});
 
 export const metadata = {
   title: 'Next.js 13 + PlanetScale + NextAuth + Tailwind CSS',
@@ -18,7 +21,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full bg-gray-50">
+    <html lang="en" className={OpenSans.className}>
       <body className="h-full">
         <Suspense fallback="...">
           {/* @ts-expect-error Server Component */}
