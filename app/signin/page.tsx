@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
-import { LoginForm } from '@/components/forms/loginForm';
+import { LoginForm } from '@/components/forms/signInForm';
 import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function LoginPage() {
           <Stars />
         </div>
         <div className="flex items-center justify-center h-screen relative z-10">
-          <div className="lg:p-8 bg-black p-4 border login-border rounded-xl">
+          <div className="lg:p-8 bg-black p-4 border rounded-xl">
             <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
               <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-semibold tracking-tight text-white">
@@ -34,10 +34,10 @@ export default function LoginPage() {
               <p className="px-8 text-center text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <Link
-                  href="/register"
+                  href="/signup"
                   className="underline underline-offset-4 hover:text-white"
                 >
-                  Register
+                  Sign up
                 </Link>{' '}
                 today!
               </p>

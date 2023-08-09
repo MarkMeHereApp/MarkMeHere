@@ -7,7 +7,7 @@ import Toast from './toast';
 import { Suspense } from 'react';
 import { Open_Sans } from 'next/font/google';
 
-const OpenSans = Open_Sans({ subsets: ['latin'],});
+const OpenSans = Open_Sans({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Next.js 13 + PlanetScale + NextAuth + Tailwind CSS',
@@ -27,9 +27,7 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <Nav />
         </Suspense>
-        <main>
-        {children}
-        </main>
+        <main>{children}</main>
         <AnalyticsWrapper />
         {/* <Toast /> We may not want to always include the footer. If we even want one at all*/}
       </body>

@@ -39,10 +39,11 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              className="bg-black border text-white"
             />
           </div>
           <div className="grid gap-1">
-            <div className="text-white text-sm font-bold">Password</div>
+            <div className="text-white text-sm font-bold mb-0">Password</div>
             <Label className="sr-only" htmlFor="password">
               Password
             </Label>
@@ -54,6 +55,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              className="bg-black border text-white"
             />
           </div>
           <Button disabled={isLoading}>

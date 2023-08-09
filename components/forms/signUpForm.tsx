@@ -27,31 +27,84 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
       <form onSubmit={onSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
+          <div className="text-white text-sm mb-0">First Name</div>
+            <Label className="sr-only" htmlFor="firstname">
+              First Name
+            </Label>
+            <Input
+              id="firstname"
+              placeholder="Rick"
+              type="name"
+              autoCapitalize="true"
+              autoComplete="name"
+              autoCorrect="off"
+              disabled={isLoading}
+              className="bg-black border text-white"
+            />
+          </div>
+          <div className="grid gap-1">
+          <div className="text-white text-sm mb-0">Last Name</div>
+            <Label className="sr-only" htmlFor="lastname">
+              Last Name
+            </Label>
+            <Input
+              id="lastname"
+              placeholder="Leinecker"
+              type="name"
+              autoCapitalize="true"
+              autoComplete="name"
+              autoCorrect="off"
+              disabled={isLoading}
+              className="bg-black border text-white"
+            />
+          </div>
+          <div className="grid gap-1">
+            <div className="text-white text-sm mb-0">Email</div>
             <Label className="sr-only" htmlFor="email">
               Email
             </Label>
             <Input
               id="email"
-              placeholder="name@example.com"
+              placeholder="rick@leinecker.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              className="bg-black border text-white"
             />
           </div>
           <div className="grid gap-1">
+            <div className="text-white text-sm mb-0">Password</div>
             <Label className="sr-only" htmlFor="password">
               Password
             </Label>
             <Input
               id="password"
-              placeholder="*********"
+              placeholder="********"
               type="password"
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              className="bg-black border text-white"
+            />
+          </div>
+
+          <div className="grid gap-1">
+            <div className="text-white text-sm mb-0">Repeat your password</div>
+            <Label className="sr-only" htmlFor="passwordrepeat">
+              PasswordRepeat
+            </Label>
+            <Input
+              id="passwordrepeat"
+              placeholder="********"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect="off"
+              disabled={isLoading}
+              className="bg-black border text-white"
             />
           </div>
           <Button disabled={isLoading}>

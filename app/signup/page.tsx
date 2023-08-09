@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
-import { RegisterForm } from '@/components/forms/registerForm';
+import { RegisterForm } from '@/components/forms/signUpForm';
 import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
@@ -20,24 +20,24 @@ export default function RegisterPage() {
           <Stars />
         </div>
         <div className="flex items-center justify-center h-screen relative z-10">
-          <div className="lg:p-8 bg-black p-4 border login-border rounded-xl">
+          <div className="lg:p-8 bg-black p-4 border rounded-xl">
             <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
               <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-semibold tracking-tight text-white">
-                  Register for Attendify
+                  Sign up for Attendify
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Enter your email & password below to login
+                  Enter your credentials to get started
                 </p>
               </div>
               <RegisterForm />
               <p className="px-8 text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link
-                  href="/login"
+                  href="/signin"
                   className="underline underline-offset-4 hover:text-white"
                 >
-                  Log in
+                  Sign in
                 </Link>{' '}
               </p>
               {/* <p className="px-8 text-center text-sm text-muted-foreground">
