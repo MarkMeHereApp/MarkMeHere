@@ -32,12 +32,10 @@ function StarGenerator() {
   );
 }
 
-function Stars() {
+export default function Stars() {
   return (
     <Canvas camera={{ position: [0, 0, 1] }}>
       <StarGenerator />
     </Canvas>
   );
 }
-
-export default Stars;

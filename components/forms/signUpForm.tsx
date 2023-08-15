@@ -1,60 +1,88 @@
-"use client"
+'use client';
 
-import * as React from "react"
+import * as React from 'react';
 
-import { cn } from "@/lib/utils"
-import { Icons } from "@/components/ui/icons"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { cn } from '@/lib/utils';
+import { Icons } from '@/components/ui/Icons';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function RegisterForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
+
+    // Get form data
+    const formData = new FormData(event.currentTarget as HTMLFormElement);
+
+    console.log('client form data:', formData);
+
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        // Handle success response
+        console.log('Registration successful');
+      } else {
+        // Handle error response
+        console.error('Registration failed');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    } finally {
+      setIsLoading(false);
+    }
 
     setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+      setIsLoading(false);
+    }, 3000);
   }
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={onSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
-          <div className="text-white text-sm mb-0">First Name</div>
+            <div className="text-white text-sm mb-0">First Name</div>
             <Label className="sr-only" htmlFor="firstname">
               First Name
             </Label>
             <Input
               id="firstname"
+              name="firstname"
               placeholder="Rick"
               type="name"
               autoCapitalize="true"
               autoComplete="name"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
           <div className="grid gap-1">
-          <div className="text-white text-sm mb-0">Last Name</div>
+            <div className="text-white text-sm mb-0">Last Name</div>
             <Label className="sr-only" htmlFor="lastname">
               Last Name
             </Label>
             <Input
               id="lastname"
+              name="lastname"
               placeholder="Leinecker"
               type="name"
               autoCapitalize="true"
               autoComplete="name"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
@@ -65,12 +93,14 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
             </Label>
             <Input
               id="email"
+              name="email"
               placeholder="rick@leinecker.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
@@ -81,12 +111,14 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
             </Label>
             <Input
               id="password"
+              name="password"
               placeholder="********"
               type="password"
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
@@ -104,6 +136,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
@@ -111,23 +144,23 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Sign In
+            Sign Up
           </Button>
         </div>
       </form>
       <div className="relative flex justify-center text-xs uppercase">
-  <span className="bg-transparent bars px-2 text-white text-muted-foreground">
-    Or continue with
-  </span>
-</div>
+        <span className="bg-transparent bars px-2 text-white text-muted-foreground">
+          Or continue with
+        </span>
+      </div>
       <Button variant="outline" type="button" disabled={isLoading}>
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.google className="mr-2 h-4 w-4" />
-        )}{" "}
+        )}{' '}
         Google
       </Button>
     </div>
-  )
+  );
 }

@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
-import { RegisterForm } from '@/components/forms/signUpForm';
-import Stars from '@/components/background/stars';
+import { buttonVariants } from '@/components/ui/Button';
+import SignUpForm from '@/components/forms/SignUpForm';
+import Stars from '@/components/background/Stars';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -30,7 +30,7 @@ export default function RegisterPage() {
                   Enter your credentials to get started
                 </p>
               </div>
-              <RegisterForm />
+              <SignUpForm />
               <p className="px-8 text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link

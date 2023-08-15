@@ -1,4 +1,4 @@
-import './globals.css';
+import '@/styles/globals.css';
 import '@/styles/styles.scss';
 
 import Nav from './nav';
@@ -22,7 +22,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" className={OpenSans.className}>
-      <body className="h-full">
+      <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">
           {/* @ts-expect-error Server Component */}
           <Nav />

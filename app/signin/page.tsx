@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
-import { LoginForm } from '@/components/forms/signInForm';
-import Stars from '@/components/background/stars';
+import { buttonVariants } from '@/components/ui/Button';
+import SignInForm from '@/components/forms/SignInForm';
+import Stars from '@/components/background/Stars';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -30,7 +30,7 @@ export default function LoginPage() {
                   Enter your email & password below to login
                 </p>
               </div>
-              <LoginForm />
+              <SignInForm />
               <p className="px-8 text-center text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <Link

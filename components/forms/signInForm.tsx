@@ -2,20 +2,44 @@
 
 import * as React from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { cn } from '@/lib/utils';
-import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Icons } from '@/components/ui/Icons';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function LoginForm({ className, ...props }: UserAuthFormProps) {
+export default function SignInForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
+
+    // Get form data
+    const formData = new FormData(event.currentTarget as HTMLFormElement);
+
+    console.log('client form data:', formData);
+
+    try {
+      const response = await fetch('/api/signin', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Handle success response
+      console.log('Sign in successful');
+
+      router.push('/');
+    } catch (error) {
+      console.error('error signing in:', error);
+    } finally {
+      setIsLoading(false);
+    }
 
     setTimeout(() => {
       setIsLoading(false);
@@ -33,12 +57,14 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
             </Label>
             <Input
               id="email"
+              name="email"
               placeholder="name@example.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
@@ -49,12 +75,14 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
             </Label>
             <Input
               id="password"
+              name="password"
               placeholder="*********"
               type="password"
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              required
               className="bg-black border text-white"
             />
           </div>
