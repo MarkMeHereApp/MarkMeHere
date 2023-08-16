@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/Button';
-import SignUpForm from '@/components/forms/SignUpForm';
-import Stars from '@/components/background/Stars';
+import { buttonVariants } from '@/components/ui/nutton';
+import SignUpForm from '@/components/forms/signUpForm';
+import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
   title: 'Authentication',
