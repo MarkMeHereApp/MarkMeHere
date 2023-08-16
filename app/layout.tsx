@@ -22,7 +22,7 @@ export default async function RootLayout({
     <html lang="en" className={OpenSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">
-          {/* @ts-expect-error Server Component */}
+          {}
           
         </Suspense>
         <main>{children}</main>
