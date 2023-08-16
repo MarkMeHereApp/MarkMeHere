@@ -311,6 +311,15 @@
     "@react-spring/shared" "~9.7.3"
     "@react-spring/types" "~9.7.3"
 
+"@react-spring/core@^9.7.3", "@react-spring/core@~9.7.3":
+  "integrity" "sha512-IqFdPVf3ZOC1Cx7+M0cXf4odNLxDC+n7IN3MDcVCTIOSBfqEcBebSv+vlY5AhM0zw05PDbjKrNmBpzv/AqpjnQ=="
+  "resolved" "https://registry.npmjs.org/@react-spring/core/-/core-9.7.3.tgz"
+  "version" "9.7.3"
+  dependencies:
+    "@react-spring/animated" "~9.7.3"
+    "@react-spring/shared" "~9.7.3"
+    "@react-spring/types" "~9.7.3"
+
 "@react-spring/core@~9.6.1":
   "integrity" "sha512-3HAAinAyCPessyQNNXe5W0OHzRfa8Yo5P748paPcmMowZ/4sMfaZ2ZB6e5x5khQI8NusOHj8nquoutd6FRY5WQ=="
   "resolved" "https://registry.npmjs.org/@react-spring/core/-/core-9.6.1.tgz"
@@ -320,15 +329,6 @@
     "@react-spring/rafz" "~9.6.1"
     "@react-spring/shared" "~9.6.1"
     "@react-spring/types" "~9.6.1"
-
-"@react-spring/core@~9.7.3":
-  "integrity" "sha512-IqFdPVf3ZOC1Cx7+M0cXf4odNLxDC+n7IN3MDcVCTIOSBfqEcBebSv+vlY5AhM0zw05PDbjKrNmBpzv/AqpjnQ=="
-  "resolved" "https://registry.npmjs.org/@react-spring/core/-/core-9.7.3.tgz"
-  "version" "9.7.3"
-  dependencies:
-    "@react-spring/animated" "~9.7.3"
-    "@react-spring/shared" "~9.7.3"
-    "@react-spring/types" "~9.7.3"
 
 "@react-spring/rafz@~9.6.1":
   "integrity" "sha512-v6qbgNRpztJFFfSE3e2W1Uz+g8KnIBs6SmzCzcVVF61GdGfGOuBrbjIcp+nUz301awVmREKi4eMQb2Ab2gGgyQ=="
@@ -370,15 +370,15 @@
     "@react-spring/shared" "~9.6.1"
     "@react-spring/types" "~9.6.1"
 
+"@react-spring/types@^9.7.3", "@react-spring/types@~9.7.3":
+  "integrity" "sha512-Kpx/fQ/ZFX31OtlqVEFfgaD1ACzul4NksrvIgYfIFq9JpDHFwQkMVZ10tbo0FU/grje4rcL4EIrjekl3kYwgWw=="
+  "resolved" "https://registry.npmjs.org/@react-spring/types/-/types-9.7.3.tgz"
+  "version" "9.7.3"
+
 "@react-spring/types@~9.6.1":
   "integrity" "sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q=="
   "resolved" "https://registry.npmjs.org/@react-spring/types/-/types-9.6.1.tgz"
   "version" "9.6.1"
-
-"@react-spring/types@~9.7.3":
-  "integrity" "sha512-Kpx/fQ/ZFX31OtlqVEFfgaD1ACzul4NksrvIgYfIFq9JpDHFwQkMVZ10tbo0FU/grje4rcL4EIrjekl3kYwgWw=="
-  "resolved" "https://registry.npmjs.org/@react-spring/types/-/types-9.7.3.tgz"
-  "version" "9.7.3"
 
 "@react-three/drei@^9.80.1":
   "integrity" "sha512-BlntSFEQb+Zhtj1zVfVv4ts/Co6GUBeZLPgG4SYhecKdGy1ctFaH2Tb8Z8HIl8PToUeWEDfKO4g4+/pE89YrEw=="
