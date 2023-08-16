@@ -1,9 +1,7 @@
 import '@/styles/globals.css';
 import '@/styles/styles.scss';
 
-import Nav from './nav';
 import AnalyticsWrapper from './analytics';
-import Toast from './toast';
 import { Suspense } from 'react';
 import { Open_Sans } from 'next/font/google';
 
@@ -25,7 +23,7 @@ export default async function RootLayout({
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">
           {/* @ts-expect-error Server Component */}
-          <Nav />
+          
         </Suspense>
         <main>{children}</main>
         <AnalyticsWrapper />
