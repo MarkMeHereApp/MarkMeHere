@@ -18,7 +18,7 @@
     "@react-spring/core": "^9.7.3",
     "@react-spring/three": "^9.7.3",
     "@react-spring/types": "^9.7.3",
-    "@react-three/drei": "^9.80.1",
+    "@react-three/drei": "^9.80.3",
     "@react-three/fiber": "^8.13.6",
     "@tremor/react": "^2.0.1",
     "@types/js-cookie": "^3.0.3",
