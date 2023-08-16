@@ -46,27 +46,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { Separator } from "@/components/ui/separator"
+//import { ProfileForm } from "@/app/class-settings/profile-form"
+import { ProfileForm } from "@/app/class-settings/class-creation-form"
 const groups = [
   {
-    label: "Personal Account",
+    label: "Admin",
     teams: [
       {
-        label: "Alicia Koch",
-        value: "personal",
+        label: "Biology 1",
+        value: "BIO 2132-0005",
       },
     ],
   },
   {
-    label: "Teams",
+    label: "Instructor",
     teams: [
       {
-        label: "Acme Inc.",
-        value: "acme-inc",
+        label: "Senior Design 2",
+        value: "COP 4935-0002",
       },
       {
-        label: "Monsters Inc.",
-        value: "monsters",
+        label: "Programming Languages",
+        value: "COP 4935-0001",
       },
     ],
   },
@@ -171,35 +173,18 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             Add a new team to manage products and customers.
           </DialogDescription>
         </DialogHeader>
-        <div>
-          <div className="space-y-4 py-2 pb-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Team name</Label>
-              <Input id="name" placeholder="Acme Inc." />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="plan">Subscription plan</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a plan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="free">
-                    <span className="font-medium">Free</span> -{" "}
-                    <span className="text-muted-foreground">
-                      Trial for two weeks
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="pro">
-                    <span className="font-medium">Pro</span> -{" "}
-                    <span className="text-muted-foreground">
-                      $9/month per user
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        <Separator />
+        <div 
+            className="scrollable-content" 
+            style={{
+                maxHeight: window.innerWidth <= 768 ? 'calc(100vh - 10rem)' : 'calc(80vh - 10rem)', 
+                overflowY: 'auto',
+                paddingRight: '15px', 
+                boxSizing: 'content-box', 
+                width: 'calc(100% - 15px)'
+            }}
+        > 
+        <ProfileForm />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>

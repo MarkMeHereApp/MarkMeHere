@@ -24,7 +24,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
         href="/class-settings"
         className={isActive("/class-settings") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
-        Settings
+        Class Settings
       </Link>
       <Link
         href="/signin"
