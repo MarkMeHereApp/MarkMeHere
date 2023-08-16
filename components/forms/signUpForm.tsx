@@ -5,10 +5,10 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
-import { Icons } from '@/components/ui/Icons';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+import { Icons } from '@/components/ui/icons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
