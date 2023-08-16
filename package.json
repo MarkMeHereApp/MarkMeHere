@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "primsa generate && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "primsa generate"
