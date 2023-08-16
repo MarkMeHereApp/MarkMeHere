@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Authentication forms built using the components.'
 };
 
-export default function RegisterPage() {
+export default function SignUpPage() {
   return (
     <>
       <div className="relative h-screen bg-black">

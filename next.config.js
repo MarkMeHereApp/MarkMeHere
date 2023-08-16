@@ -7,15 +7,6 @@ const nextConfig = {
     appDir: true,
     serverComponentsExternalPackages: ['@tremor/react']
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/signin',
-        permanent: false,
-      },
-    ]
-  }
 };
 
 module.exports = nextConfig;

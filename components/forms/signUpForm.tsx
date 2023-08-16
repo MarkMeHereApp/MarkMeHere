@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +14,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -28,15 +31,12 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
         body: formData
       });
 
-      if (response.ok) {
-        // Handle success response
-        console.log('Registration successful');
-      } else {
-        // Handle error response
-        console.error('Registration failed');
-      }
+      // Handle success response
+      console.log('Sign up successful');
+
+      router.push('/');
     } catch (error) {
-      console.error('An error occurred:', error);
+      console.error('error signing up:', error);
     } finally {
       setIsLoading(false);
     }
