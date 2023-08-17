@@ -86,6 +86,15 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const [selectedTeam, setSelectedTeam] = React.useState<Team>(
     groups[0].teams[0]
   )
+  const [maxHeight, setMaxHeight] = React.useState('calc(80vh - 10rem)'); 
+
+  React.useEffect(() => {
+    if (window.innerWidth <= 768) {
+      setMaxHeight('calc(100vh - 10rem)');
+    } else {
+      setMaxHeight('calc(80vh - 10rem)');
+    }
+  }, []);
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -175,16 +184,16 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
         </DialogHeader>
         <Separator />
         <div 
-            className="scrollable-content" 
-            style={{
-                maxHeight: window.innerWidth <= 768 ? 'calc(100vh - 10rem)' : 'calc(80vh - 10rem)', 
-                overflowY: 'auto',
-                paddingRight: '15px', 
-                boxSizing: 'content-box', 
-                width: 'calc(100% - 15px)'
-            }}
+          className="scrollable-content" 
+          style={{
+              maxHeight: maxHeight,
+              overflowY: 'auto',
+              paddingRight: '15px', 
+              boxSizing: 'content-box', 
+              width: 'calc(100% - 15px)'
+          }}
         > 
-        <ProfileForm />
+          <ProfileForm />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>
