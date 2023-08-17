@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import Image from "next/image"
+import { ModeToggle } from "@/components/dashboard/theme-toggle"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,9 +20,6 @@ import { CalendarDateRangePicker } from "@/components/dashboard/date-range-picke
 import { MainNav } from "@/components/dashboard/main-nav"
 import { Overview } from "@/components/dashboard/overview"
 import { RecentSales } from "@/components/dashboard/recent-sales"
-import { Search } from "@/components/dashboard/search"
-import TeamSwitcher from "@/components/dashboard/team-switcher"
-import { UserNav } from "@/components/dashboard/user-nav"
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -48,20 +46,11 @@ export default function DashboardPage() {
         />
       </div>
       <div className="hidden flex-col md:flex">
-        <div className="border-b">
-          <div className="flex h-16 items-center px-4">
-            <TeamSwitcher />
-            <MainNav className="mx-6" />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search />
-              <UserNav />
-            </div>
-          </div>
-        </div>
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
+              <ModeToggle />
               <CalendarDateRangePicker />
               <Button>Download</Button>
             </div>
