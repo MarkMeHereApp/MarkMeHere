@@ -1,8 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
+import { useSession, signIn, signOut } from "next-auth/react"
 
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/ui/icons';
@@ -15,6 +17,13 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 export default function SignInForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const {data: session} = useSession()
+
+  useEffect(() => {
+    if (session && router) {
+      router.push('/');
+    }
+  }, [session, router]);
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -99,13 +108,15 @@ export default function SignInForm({ className, ...props }: UserAuthFormProps) {
           Or continue with
         </span>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.google className="mr-2 h-4 w-4" />
-        )}{' '}
-        Google
+      {
+        /*
+        In the future we should definitely add a ton of providers, Google, GitHub, Apple, etc... then let users implement the ones they one through env variables.
+        Then we can also have Custom slots for custom login providers... just a thought
+        */
+      }
+      <Button variant="outline" type="button" onClick={() => signIn("github")}>
+        <Icons.gitHub className="mr-2 h-4 w-4" />  
+        GitHub
       </Button>
     </div>
   );
