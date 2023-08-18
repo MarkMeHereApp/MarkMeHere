@@ -28,13 +28,13 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
         Class Settings
       </Link>
       <Link
-        href="/signin"
+        href="/api/auth/signin"
         className={isActive("/signin") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         temp sign in
       </Link>
       <Link
-        href="/signup"
+        href="/api/auth/signup"
         className={isActive("/signup") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         temp sign up
