@@ -41,7 +41,9 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
       </Link>
 
       <button
-        onClick={() => signOut()}
+        onClick={() => {
+          signOut({ callbackUrl: '/api/auth/signin' });
+        }}
         className={isActive("/signup") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         temp sign out
