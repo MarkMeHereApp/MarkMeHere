@@ -1,20 +1,10 @@
-import { GetServerSideProps } from 'next';
 import { Metadata } from 'next';
-import Image from 'next/image';
-import { Icons } from '@/components/ui/icons';
-import Link from 'next/link';
 
-import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 import SignInForm from '@/components/forms/signInForm';
 import Stars from '@/components/background/stars';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { getProviders } from 'next-auth/react';
 
@@ -24,9 +14,25 @@ export const metadata: Metadata = {
   description: 'Authentication forms built using the components.'
 };
 
+
+// For some reason  when building the Next.Js app this page is being statically generated
+// which spits out a fetch error, maybe because that endpoint is not available at build time?
+// So we set the cache: "no-store" for the endpoint to be called everytime the page is loaded.
+async function fetchProviders() {
+  try {
+    const providers = await fetch(process.env.NEXTAUTH_URL + '/api/auth/providers', {
+      cache: "no-store",
+    });
+    return providers.json();
+  } catch (error) {
+    console.error('Failed to fetch providers:', error);
+    // Handle or throw the error as appropriate for your application
+  }
+}
+
 export default async function SigninPage() {
 
-  const providers = await getProviders();
+  const providers = await fetchProviders();
 
   return (
     <>

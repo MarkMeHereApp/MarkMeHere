@@ -38,7 +38,11 @@ export default function SignInForm({ className, providers, ...props }: UserAuthF
       case 'CredentialsSignin':
         error = 'Invalid credentials';
         break;
-      // Add more cases as needed
+
+      case 'Callback':
+        error = 'OAuth Redirect Error Mismatch.'
+        break;
+        
       default:
         error = 'Unknown Error';
     }

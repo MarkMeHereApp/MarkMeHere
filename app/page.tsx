@@ -1,5 +1,4 @@
 import { Metadata } from "next"
-import Image from "next/image"
 import { ModeToggle } from "@/components/dashboard/theme-toggle"
 
 import { Button } from "@/components/ui/button"
