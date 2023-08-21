@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
+import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils";
 
 export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
@@ -27,17 +28,27 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
         Class Settings
       </Link>
       <Link
-        href="/signin"
+        href="/api/auth/signin"
         className={isActive("/signin") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         temp sign in
       </Link>
       <Link
-        href="/signup"
+        href="/api/auth/signup"
         className={isActive("/signup") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         temp sign up
       </Link>
+
+      <button
+        onClick={() => {
+          signOut({ callbackUrl: '/api/auth/signin' });
+        }}
+        className={isActive("/signup") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
+        >
+        temp sign out
+      </button>
+
 
       <a
       href="https://cdn.discordapp.com/attachments/1078896207486787584/1078896797512122452/boom.gif"

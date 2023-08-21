@@ -22,7 +22,7 @@ function StarGenerator() {
       <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#FFFF00"
+          color='--primary'
           size={0.005}
           sizeAttenuation={true}
           depthWrite={false}
