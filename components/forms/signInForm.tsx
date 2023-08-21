@@ -3,8 +3,8 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSession, signIn} from "next-auth/react"
 
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/ui/icons';
@@ -13,14 +13,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
+// These are weird imports but it's how we can pass the getProviders type to the SignInForm component
+import { BuiltInProviderType } from 'next-auth/providers'
+import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
+import Github from 'next-auth/providers/github';
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
+}
 
-export default function SignInForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<{[key: string]: boolean}>({});
+export default function SignInForm({ className, providers, ...props }: UserAuthFormProps) {
   const router = useRouter();
-  const {data: session} = useSession()
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = React.useState<{[key: string]: boolean}>({});
+  const {data: session} = useSession()
   const callbackUrl = searchParams ? searchParams.get('callbackUrl') || '/' : '/';
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
@@ -43,6 +49,7 @@ export default function SignInForm({ className, ...props }: UserAuthFormProps) {
       router.push('/');
     }
   }, [session, router]);
+  
 
 const onSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -61,89 +68,118 @@ const onSubmit = async (e: React.FormEvent) => {
 };
 
   return (
-    <div className={cn('grid gap-6', className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          {error && (
-            <Alert className="text-center text-red-500">
-              <AlertDescription>
-              Log In Error: {error}
-              </AlertDescription>
-            </Alert>
-          )}
-          <div className="grid gap-1">
-            <div className="text-white text-sm font-bold mb-0">Email</div>
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="test@test is a valid email"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading.credentials}
-              required
-              className="bg-black border text-white"
-            />
-          </div>
-          <div className="grid gap-1">
-            <div className="text-white text-sm font-bold mb-0">Password</div>
-            <Label className="sr-only" htmlFor="password">
-              Password
-            </Label>
-            <Input
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="test is a valid password"
-              type="password"
-              autoCapitalize="none"
-              autoComplete="password"
-              autoCorrect="off"
-              disabled={isLoading.credentials}
-              required
-              className="bg-black border text-white"
-            />
-          </div>
-          <Button disabled={isLoading.credentials}>
-            {isLoading.credentials && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Sign In
-          </Button>
-        </div>
-      </form>
-      <div className="relative flex justify-center text-xs uppercase">
-        <span className="bg-transparent bars px-2 text-white text-muted-foreground">
-          Or continue with
-        </span>
-      </div>
-      {
-        /*
-        In the future we should definitely add a ton of providers, Google, GitHub, Apple, etc... then let users implement the ones they one through env variables.
-        Then we can also have Custom slots for custom login providers... just a thought
-        */
+    <div className={cn('grid gap-4', className)} {...props}>
+      { providers && Object.values(providers).some(provider => provider.type === 'credentials') && (
+          <form onSubmit={onSubmit}>
+            <div className="grid gap-2">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Enter your email & password below to login
+                </p>
+              </div>
+              {error && (
+                <Alert className="text-center text-red-500">
+                  <AlertDescription>
+                  Log In Error: {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+              <div className="grid gap-1">
+                <div className="text-sm font-bold mb-0">Email</div>
+                <Label className="sr-only" htmlFor="email">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="test@test is a valid email"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  disabled={isLoading.credentials}
+                  required
+                  className="border"
+                />
+              </div>
+              <div className="grid gap-1">
+                <div className="text-sm font-bold mb-0">Password</div>
+                <Label className="sr-only" htmlFor="password">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="test is a valid password"
+                  type="password"
+                  autoCapitalize="none"
+                  autoComplete="password"
+                  autoCorrect="off"
+                  disabled={isLoading.credentials}
+                  required
+                  className="border"
+                />
+              </div>
+              <div className="grid gap-1 mt-1"> {/* Added a margin-top class to create a bigger gap */}
+                <Button 
+                  disabled={isLoading.credentials} 
+                  variant="outline" 
+                  >
+                  {isLoading.credentials && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Sign In
+                </Button>
+              </div>
+            </div>
+          </form>
+        )
       }
-      <Button variant="outline" type="button" onClick={() => {setIsLoading(prevState => ({...prevState, github: true})); signIn("github")}} disabled={isLoading.github}>
-        {isLoading.github ? (
-          <>
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            Loading...
-          </>
-        ) : (
-          <>
-            <Icons.gitHub className="mr-2 h-4 w-4" />  
-            GitHub
-          </>
-        )}
-      </Button>
+      
+      { providers && Object.values(providers).length > 1  && Object.values(providers).some(provider => provider.type === 'credentials') && (
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-transparent bars px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+      )}
+
+      
+      { providers && Object.values(providers).map((provider, index) => (
+          provider.type !== 'credentials' && (
+            <Button 
+              key={index}
+              type="button" 
+              onClick={async () => {
+                setIsLoading(prevState => ({...prevState, [provider.id]: true}));
+                try {
+                  await signIn(provider.id);
+                } catch (error) {
+                  console.error('Sign In Error: ', error);
+                } finally {
+                  setIsLoading(prevState => ({...prevState, [provider.id]: false}));
+                }
+              }} 
+              disabled={isLoading[provider.id]}
+            >
+              {isLoading[provider.id] ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  {provider.name}
+                </>
+
+              )}
+            </Button>
+          )
+      ))}
     </div>
   );
 }
-

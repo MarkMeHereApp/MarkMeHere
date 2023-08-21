@@ -1,66 +1,63 @@
+import { GetServerSideProps } from 'next';
 import { Metadata } from 'next';
 import Image from 'next/image';
+import { Icons } from '@/components/ui/icons';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import SignInForm from '@/components/forms/signInForm';
 import Stars from '@/components/background/stars';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { getProviders } from 'next-auth/react';
+
 
 export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Authentication forms built using the components.'
 };
 
-export default function SigninPage() {
+export default async function SigninPage() {
+
+  const providers = await getProviders();
+
   return (
     <>
-      <div className="relative h-screen bg-black">
+      <div className="relative h-screen">
         <div className="absolute top-0 right-0 h-full w-full">
           <Stars />
         </div>
-        <div className="flex items-center justify-center h-screen relative z-10">
-          <div className="lg:p-8 bg-black p-4 border rounded-xl">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-              <div className="flex flex-col space-y-2 text-center">
-                <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
+            <CardContent>
+              <div className="flex flex-col space-y-2 text-center p-3">
+                <h1 className="text-2xl font-semibold tracking-tight">
                   Sign into Attendify
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                  Enter your email & password below to login
-                </p>
               </div>
-              <SignInForm />
-              <p className="px-8 text-center text-sm text-muted-foreground">
+              <SignInForm providers={providers} />
+
+              {/* This is currently disabled because we don't want users to register (yet)
+              <p className="px-8 text-center text-sm">
                 Don&apos;t have an account?{' '}
                 <Link
                   href="/signup"
-                  className="underline underline-offset-4 hover:text-white"
+                  className="underline underline-offset-4"
                 >
                   Sign up
                 </Link>{' '}
                 today!
               </p>
-              {/* <p className="px-8 text-center text-sm text-muted-foreground">
-                By clicking continue, you agree to our{' '}
-                <Link
-                  href="/terms"
-                  className="underline underline-offset-4 hover:text-white"
-                >
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link
-                  href="/privacy"
-                  className="underline underline-offset-4 hover:text-white"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </p> */}
-            </div>
-          </div>
-        </div>
+              */}
+            </CardContent>
+            </Card>
+
       </div>
     </>
   );
