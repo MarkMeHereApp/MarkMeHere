@@ -44,7 +44,7 @@ export function MainNav({
       <Link
         href="/api/auth/signin"
         className={
-          isActive('/signin')
+          isActive('/api/auth/signin')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -54,12 +54,23 @@ export function MainNav({
       <Link
         href="/api/auth/signup"
         className={
-          isActive('/signup')
+          isActive('/api/auth/signup')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
         temp sign up
+      </Link>
+
+      <Link
+        href="/gather-attendance/qr"
+        className={
+          isActive('/gather-attendance/qr')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        QR Attendance
       </Link>
 
       <button
