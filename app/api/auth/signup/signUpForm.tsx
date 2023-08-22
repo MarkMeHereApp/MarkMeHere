@@ -34,7 +34,7 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
       // Handle success response
       console.log('Sign up successful');
 
-      router.push('/dashboard');
+      router.push('/dashboard/overview');
     } catch (error) {
       console.error('error signing up:', error);
     } finally {

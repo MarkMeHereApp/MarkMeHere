@@ -22,9 +22,9 @@ export function MainNav({
       {...props}
     >
       <Link
-        href="/"
+        href="/dashboard/overview"
         className={
-          isActive('/dashboard')
+          isActive('/dashboard/overview')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -32,9 +32,19 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
-        href="/class-settings"
+        href="/dashboard/take-attendance"
         className={
-          isActive('/class-settings')
+          isActive('/dashboard/take-attendance')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        Take Attendance
+      </Link>
+      <Link
+        href="/dashboard/class-settings"
+        className={
+          isActive('/dashboard/class-settings')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -44,7 +54,7 @@ export function MainNav({
       <Link
         href="/api/auth/signin"
         className={
-          isActive('/signin')
+          isActive('/api/auth/signin')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -54,12 +64,23 @@ export function MainNav({
       <Link
         href="/api/auth/signup"
         className={
-          isActive('/signup')
+          isActive('/api/auth/signup')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
         temp sign up
+      </Link>
+
+      <Link
+        href="/scan/qr"
+        className={
+          isActive('/gather-attendance/qr')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        QR Attendance
       </Link>
 
       <button
