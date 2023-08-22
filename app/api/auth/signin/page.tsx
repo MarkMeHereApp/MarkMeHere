@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import SignInForm from '@/components/forms/signInForm';
+import SignInForm from '@/app/api/auth/signin/signInForm';
 import Stars from '@/components/background/stars';
 import {
   Card,

@@ -17,7 +17,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
     <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)} {...props}>
       <Link 
           href="/"
-          className={isActive("/") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
+          className={isActive("/dashboard") ? "text-sm font-medium text-primary" : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"}
         >
         Dashboard
       </Link>

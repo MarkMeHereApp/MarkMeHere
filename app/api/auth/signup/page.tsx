@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
-import SignUpForm from '@/components/forms/signUpForm';
+import SignUpForm from '@/app/api/auth/signup/signUpForm';
 import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
