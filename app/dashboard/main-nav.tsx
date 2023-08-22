@@ -73,7 +73,7 @@ export function MainNav({
       </Link>
 
       <Link
-        href="/gather-attendance/qr"
+        href="/scan/qr"
         className={
           isActive('/gather-attendance/qr')
             ? 'text-sm font-medium text-primary'
