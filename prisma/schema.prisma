@@ -19,8 +19,8 @@ model User {
   userType           UserType
   email              String
   name               String
-  firstname          String    @db.VarChar(255)
-  lastname           String    @db.VarChar(255)
+  firstName          String    @db.VarChar(255)
+  lastName           String    @db.VarChar(255)
   password           String    @db.VarChar(255)
   GPA                Float
   age                Int

@@ -8,12 +8,15 @@ export interface User {
   userID: string;
   userType: UserType;
   email: string;
+  firstName: string;
+  lastName: string;
   name: string;
   GPA: number;
   age: number;
   gender: string;
   lecturesAttended: number;
   totalLectures: number;
+  password: string;
 }
 
 export interface Lecture {
