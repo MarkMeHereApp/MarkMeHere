@@ -1,15 +1,10 @@
 'use client';
 
 import { DonutChart, Legend } from '@tremor/react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
 import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 import sampleStudentData from '../../data/sample-student-data';
 
 const AttendanceDonutChart = () => {
@@ -42,27 +37,29 @@ const AttendanceDonutChart = () => {
 
   return (
     <div className="flex gap-8">
-      <div className="w-1/2">
-        <label>Select a student: </label>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="outline">
-              {selectedStudent || 'Select a student'}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            style={{ maxHeight: '215px', overflowY: 'auto' }}
-          >
-            {students.map((student) => (
-              <DropdownMenuItem
-                key={student.name}
-                onClick={() => handleStudentChange(student.name)}
-              >
-                {student.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex flex-col w-1/2">
+        <label className="block mb-2">
+          {selectedStudent || 'Select a student'}
+        </label>
+        <div className="flex-grow">
+          <ScrollArea className="max-h-215 overflow-y-auto">
+            <div className="space-y-1">
+              {students.map((student) => (
+                <Button
+                  key={student.name}
+                  onClick={() => handleStudentChange(student.name)}
+                  className={`block w-full p-2 text-center cursor-pointer ${
+                    selectedStudent === student.name
+                      ? 'bg-yellow-500 text-white'
+                      : 'bg-white'
+                  }`}
+                >
+                  {student.name}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
       <div>
         <DonutChart
