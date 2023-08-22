@@ -53,7 +53,7 @@ export default function QR() {
             <CardTitle className="text-lg font-bold pr-8">
               Scan the QR code with your phone to sign in
             </CardTitle>
-            <Button onClick={() => router.push('/dashboard/overview')}>
+            <Button onClick={() => router.push('/dashboard/take-attendance')}>
               <div className="text-lg ">
                 Finish
               </div>

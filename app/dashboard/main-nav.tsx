@@ -32,6 +32,16 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
+        href="/dashboard/take-attendance"
+        className={
+          isActive('/dashboard/take-attendance')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        Take Attendance
+      </Link>
+      <Link
         href="/dashboard/class-settings"
         className={
           isActive('/dashboard/class-settings')
