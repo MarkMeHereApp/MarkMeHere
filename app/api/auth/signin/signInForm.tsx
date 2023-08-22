@@ -50,7 +50,7 @@ export default function SignInForm({ className, providers, ...props }: UserAuthF
 
   useEffect(() => {
     if (session && router) {
-      router.push('/dashboard');
+      router.push('/dashboard/overview');
     }
   }, [session, router]);
   
@@ -62,7 +62,7 @@ const onSubmit = async (e: React.FormEvent) => {
     await signIn('credentials', {
       email,
       password,
-      callbackUrl: '/dashboard',
+      callbackUrl: '/dashboard/overview',
 
     });
   } catch (error) {
@@ -162,7 +162,7 @@ const onSubmit = async (e: React.FormEvent) => {
               onClick={async () => {
                 setIsLoading(prevState => ({...prevState, [provider.id]: true}));
                 try {
-                  await signIn(provider.id, { callbackUrl: '/dashboard' });
+                  await signIn(provider.id, { callbackUrl: '/dashboard/overview' });
                 } catch (error) {
                   console.error('Sign In Error: ', error);
                 } finally {

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { useRouter } from 'next/navigation'; // Import useRouter from next/router
 
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -23,6 +24,7 @@ export default function qr() {
   const [code, setCode] = React.useState(generateCode()); // Initialize code
   const timerUpdateRate = 100;  // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const progressbarLength = 50;       // The length of the progress bar in ms
+  const router = useRouter(); // Initialize useRouter
  
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -51,7 +53,7 @@ export default function qr() {
             <CardTitle className="text-lg font-bold pr-8">
               Scan the QR code with your phone to sign in
             </CardTitle>
-            <Button>
+            <Button onClick={() => router.push('/dashboard/overview')}>
               <div className="text-lg ">
                 Finish
               </div>

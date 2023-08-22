@@ -22,9 +22,9 @@ export function MainNav({
       {...props}
     >
       <Link
-        href="/"
+        href="/dashboard/overview"
         className={
-          isActive('/dashboard')
+          isActive('/dashboard/overview')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -32,9 +32,9 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
-        href="/class-settings"
+        href="/dashboard/class-settings"
         className={
-          isActive('/class-settings')
+          isActive('/dashboard/class-settings')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }

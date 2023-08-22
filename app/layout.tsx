@@ -1,16 +1,10 @@
 import '@/styles/globals.css';
 import '@/styles/styles.scss';
 
-import AnalyticsWrapper from './analytics';
 import { Suspense } from 'react';
 import { Open_Sans } from 'next/font/google';
 
-import { Separator } from "@/components/ui/separator"
-import { SidebarNav } from "@/components/general/sidebar-nav"
-import { Search } from "@/components/main-nav-components/search"
-import TeamSwitcher from "@/components/main-nav-components/team-switcher"
-import { UserNav } from "@/components/main-nav-components/user-nav"
-import { MainNav } from "@/components/main-nav-components/main-nav"
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
 
@@ -37,18 +31,7 @@ export default async function RootLayout({
         <Suspense fallback="...">
           {}
           
-        </Suspense>
-        <div className="border-b">
-            <div className="flex h-16 items-center px-4">
-                <TeamSwitcher />
-                <MainNav className="mx-6" />
-                <div className="ml-auto flex items-center space-x-4">
-                  <Search />
-                  <UserNav />
-                </div>
-            </div>
-        </div>
-            
+        </Suspense> 
         <div>          
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <Providers>

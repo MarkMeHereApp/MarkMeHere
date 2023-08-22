@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ReloadIcon } from "@radix-ui/react-icons"
 
 
-export default function HomePage() {
+export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {

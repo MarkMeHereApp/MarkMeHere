@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator"
-import { DisplayForm } from "@/app/class-settings/display/display-form"
+import { DisplayForm } from "@/app/dashboard/class-settings/display/display-form"
 
 export default function SettingsDisplayPage() {
   return (
