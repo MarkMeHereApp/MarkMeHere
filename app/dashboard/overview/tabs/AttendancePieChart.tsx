@@ -10,7 +10,7 @@ import {
 import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import sampleStudentData from '../data/sample-student-data';
+import sampleStudentData from '../../data/sample-student-data';
 
 const AttendanceDonutChart = () => {
   const students = sampleStudentData; // Move this line inside the component
@@ -24,17 +24,18 @@ const AttendanceDonutChart = () => {
     (student) => student.name === selectedStudent
   );
 
+  const totalLectures = selectedStudentData?.totalLectures || 0;
+  const lecturesAttended = selectedStudentData?.lecturesAttended || 0;
+
   const data = [
     {
       name: 'Attended',
-      value: selectedStudentData?.attended || 0, // Safely access properties
+      value: (lecturesAttended / totalLectures) * 100,
       fill: '#0088FE'
     },
     {
       name: 'Not Attended',
-      value:
-        (selectedStudentData?.totalLectures || 0) -
-        (selectedStudentData?.attended || 0),
+      value: 100 - (lecturesAttended / totalLectures) * 100,
       fill: '#FF8042'
     }
   ];
@@ -49,7 +50,9 @@ const AttendanceDonutChart = () => {
               {selectedStudent || 'Select a student'}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent
+            style={{ maxHeight: '215px', overflowY: 'auto' }}
+          >
             {students.map((student) => (
               <DropdownMenuItem
                 key={student.name}
@@ -67,6 +70,10 @@ const AttendanceDonutChart = () => {
           data={data}
           animationDuration={450}
           colors={['emerald', 'red']}
+          valueFormatter={(number: number) => {
+            const roundedNumber = Number(number.toFixed(2));
+            return `${roundedNumber}%`;
+          }}
         />
         <Legend
           className="mt-3"

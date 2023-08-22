@@ -9,7 +9,6 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.0.2",
     "@headlessui/react": "^1.7.16",
     "@headlessui/tailwindcss": "^0.2.0",
     "@heroicons/react": "^2.0.16",
@@ -87,6 +86,7 @@
     "trailingComma": "none"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/papaparse": "^5.3.7",
     "papaparse": "^5.4.1",
