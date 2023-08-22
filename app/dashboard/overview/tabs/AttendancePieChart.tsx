@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import sampleStudentData from '../../data/sample-student-data';
 
+const students = sampleStudentData;
+
 const AttendanceDonutChart = () => {
-  const students = sampleStudentData; // Move this line inside the component
   const [selectedStudent, setSelectedStudent] = useState(students[0].name);
 
   const handleStudentChange = (studentName: string) => {
@@ -22,16 +23,14 @@ const AttendanceDonutChart = () => {
   const totalLectures = selectedStudentData?.totalLectures || 0;
   const lecturesAttended = selectedStudentData?.lecturesAttended || 0;
 
-  const data = [
+  const attendanceData = [
     {
       name: 'Attended',
-      value: (lecturesAttended / totalLectures) * 100,
-      fill: '#0088FE'
+      value: (lecturesAttended / totalLectures) * 100
     },
     {
       name: 'Not Attended',
-      value: 100 - (lecturesAttended / totalLectures) * 100,
-      fill: '#FF8042'
+      value: 100 - (lecturesAttended / totalLectures) * 100
     }
   ];
 
@@ -41,30 +40,28 @@ const AttendanceDonutChart = () => {
         <label className="block mb-2">
           {selectedStudent || 'Select a student'}
         </label>
-        <div className="flex-grow">
-          <ScrollArea className="max-h-215 overflow-y-auto">
-            <div className="space-y-1">
-              {students.map((student) => (
-                <Button
-                  key={student.name}
-                  onClick={() => handleStudentChange(student.name)}
-                  className={`block w-full p-2 text-center cursor-pointer ${
-                    selectedStudent === student.name
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-white'
-                  }`}
-                >
-                  {student.name}
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
+        <ScrollArea className="overflow-y-auto">
+          <div className="space-y-1 max-h-96">
+            {students.map((student) => (
+              <Button
+                key={student.name}
+                onClick={() => handleStudentChange(student.name)}
+                className={`block w-full p-2 text-center cursor-pointer ${
+                  selectedStudent === student.name
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-white'
+                }`}
+              >
+                {student.name}
+              </Button>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
-      <div>
+      <div className="grow">
         <DonutChart
           variant="pie"
-          data={data}
+          data={attendanceData}
           animationDuration={450}
           colors={['emerald', 'red']}
           valueFormatter={(number: number) => {
@@ -74,7 +71,7 @@ const AttendanceDonutChart = () => {
         />
         <Legend
           className="mt-3"
-          categories={[data[0].name, data[1].name]}
+          categories={[attendanceData[0].name, attendanceData[1].name]}
           colors={['emerald', 'red']}
         />
       </div>
