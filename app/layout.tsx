@@ -6,11 +6,11 @@ import { Suspense } from 'react';
 import { Open_Sans } from 'next/font/google';
 
 import { Separator } from "@/components/ui/separator"
-import { SidebarNav } from "@/app/class-settings/components/sidebar-nav"
-import { Search } from "@/components/dashboard/search"
-import TeamSwitcher from "@/components/dashboard/team-switcher"
-import { UserNav } from "@/components/dashboard/user-nav"
-import { MainNav } from "@/components/dashboard/main-nav"
+import { SidebarNav } from "@/components/general/sidebar-nav"
+import { Search } from "@/components/main-nav-components/search"
+import TeamSwitcher from "@/components/main-nav-components/team-switcher"
+import { UserNav } from "@/components/main-nav-components/user-nav"
+import { MainNav } from "@/components/main-nav-components/main-nav"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
 

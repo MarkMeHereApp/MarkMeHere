@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 //import { ProfileForm } from "@/app/class-settings/profile-form"
-import { ProfileForm } from "@/app/class-settings/class-creation-form"
+import { ProfileForm } from "@/components/main-nav-components/class-creation-form"
 const groups = [
   {
     label: "Admin",
