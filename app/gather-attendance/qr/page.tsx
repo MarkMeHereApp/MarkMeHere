@@ -18,7 +18,7 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-export default function qr() {
+export default function QR() {
 
   const [progress, setProgress] = React.useState(0);
   const [code, setCode] = React.useState(generateCode()); // Initialize code
