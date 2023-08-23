@@ -3,6 +3,7 @@
 import Stars from '@/components/background/stars';
 import React from "react";
 import QRCode from "react-qr-code";
+import dynamic from 'next/dynamic';
 import {
   Card,
   CardContent,
@@ -17,6 +18,9 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'; // Im
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
+
+//Because the minimal QR code changes sizes depending on the view port we can't have it render on the server
+const QRCodeComponent = dynamic(() => import('./DynamicQRCodeComponent'), { ssr: false });
 
 export default function QR() {
 
@@ -51,13 +55,7 @@ export default function QR() {
         <>
     
           <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <QRCode
-            size={typeof window !== 'undefined' ? Math.min(window.innerWidth, window.innerHeight) : 256}
-            style={{ maxWidth: "100%", width: "100%" }}
-            value={process.env.NEXTAUTH_URL + '/submit/' + code}
-            viewBox={typeof window !== 'undefined' ? `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${window.innerHeight}` : '0 0 256 256'}
-            className="flex flex-col items-center justify-center text-2xl mb-4"
-          />
+            <QRCodeComponent url={process.env.NEXTAUTH_URL + '/submit/' + code} />
           </div>
       
           <Progress value={progress} className="w-[100%]" style={{ visibility: "hidden" }} />

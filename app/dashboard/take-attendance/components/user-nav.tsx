@@ -132,7 +132,7 @@ export function StartScanningButton() {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>This option displays only the QR code in a simplified format. It's best suited for presentations footers where distractions need to be minimized.</p>
+                    <p>This option displays only the QR code in a simplified format. It&apos;s best suited for presentations footers where distractions need to be minimized.</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
