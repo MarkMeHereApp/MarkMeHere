@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { useRouter } from 'next/navigation'; // Import useRouter from next/router
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -25,6 +25,8 @@ export default function QR() {
   const timerUpdateRate = 100;  // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const progressbarLength = 50;       // The length of the progress bar in ms
   const router = useRouter(); // Initialize useRouter
+  const searchParams = useSearchParams(); // Initialize useSearchParams
+  const mode = searchParams && searchParams.get('mode') ? searchParams.get('mode') : 'default';
  
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -42,6 +44,28 @@ export default function QR() {
   }, []);
 
   
+
+  if (mode === 'minimal') {
+    
+      return (
+        <>
+    
+          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <QRCode
+            size={Math.min(window.innerWidth, window.innerHeight)}
+            style={{ maxWidth: "100%", width: "100%" }}
+            value={process.env.NEXTAUTH_URL + '/submit/' + code}
+            viewBox={`0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${window.innerHeight}`}
+            className="flex flex-col items-center justify-center text-2xl mb-4"
+            />
+          </div>
+      
+          <Progress value={progress} className="w-[100%]" style={{ visibility: "hidden" }} />
+
+        </>
+      );
+  }
+
   return (
     <>
       <div className="relative h-screen">
@@ -71,22 +95,26 @@ export default function QR() {
               className="flex flex-col items-center justify-center text-2xl mb-4"
               />
               
-              <div className="flex flex-col items-center justify-center text-2xl mb-4">
-                <span>Or go to the website and enter the code</span>
-              </div>
-              <div className="flex flex-col items-center justify-center text-2xl mb-8" style={{ wordBreak: 'break-all' }}>
-                attendify.rickleincker.com/submit
-              </div>
+              {mode !== 'hide-code' && (
+                <>
+                  <div className="flex flex-col items-center justify-center text-2xl mb-4">
+                    <span>Or go to the website and enter the code</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center text-2xl mb-8" style={{ wordBreak: 'break-all' }}>
+                    attendify.rickleincker.com/submit
+                  </div>
 
-              <CardFooter className="flex justify-between">
-                <Card className="w-[600px] mx-auto  h-full">
-                  <CardHeader>
-                    <CardTitle className="text-6xl font-bold">
-                      {code}
-                    </CardTitle>
-                  </CardHeader>
-                </Card>
-              </CardFooter>
+                  <CardFooter className="flex justify-between">
+                    <Card className="w-[600px] mx-auto  h-full">
+                      <CardHeader>
+                        <CardTitle className="text-6xl font-bold">
+                          {code}
+                        </CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </CardFooter>
+                </>
+              )}
 
             </CardContent>
 
