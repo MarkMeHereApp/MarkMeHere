@@ -8,25 +8,44 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum UserType {
+  Admin
+  Student
+  Professor
+}
+
 model User {
-  id        Int    @id @default(autoincrement())
-  firstname String @db.VarChar(255)
-  lastname  String @db.VarChar(255)
-  email     String @db.VarChar(255) @unique
-  password  String @db.VarChar(255)
+  userID             String    @id @map("userID")
+  userType           UserType
+  email              String
+  name               String
+  firstName          String    @db.VarChar(255)
+  lastName           String    @db.VarChar(255)
+  password           String    @db.VarChar(255)
+  GPA                Float
+  age                Int
+  gender             String
+  lecturesAttended   Int
+  totalLectures      Int
+  coursesAsStudent   Course[]  @relation("Course_Students")
+  coursesAsAdmin     Course[]  @relation("Course_Admins")
+  lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
+}
+
+model Lecture {
+  lectureID        String   @id @map("lectureID")
+  lectureStartDate DateTime
+  lectureEndDate   DateTime
+  attendance       User[]   @relation("User_LecturesAttendance")
+  courses          Course[] @relation("Course_Lectures")
 }
 
 model Course {
-  id          Int    @id @default(autoincrement())
-  userID      Int
-  numStudents Int
-  Description String @db.VarChar(1000)
-}
-
-model Students {
-  id       Int    @id @default(autoincrement())
-  courseID String @db.VarChar(255)
-  NID      String @db.VarChar(255)
-  name     String @db.VarChar(255)
-  grade    Float  @db.Float
+  courseID        String    @id @map("courseID")
+  students        User[]    @relation("Course_Students")
+  admins          User[]    @relation("Course_Admins")
+  dateCreated     DateTime
+  courseStartDate DateTime
+  courseEndDate   DateTime?
+  lectures        Lecture[] @relation("Course_Lectures")
 }
