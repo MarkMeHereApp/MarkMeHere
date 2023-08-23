@@ -1,12 +1,11 @@
 "use client"
 
+import Cookies from 'js-cookie';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ReloadIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -34,10 +33,12 @@ import { Icons } from "@/components/ui/icons"
 
 
 export function StartScanningButton() {
+ 
+  const router = useRouter();
+ 
   const address = "localhost:3000"
   const navigation = '/scan/qr'
 
-  const router = useRouter();
 
 
   const [isCopied, setCopied] = useState(false);
@@ -64,6 +65,7 @@ export function StartScanningButton() {
 
   const onNewQRSettings = (newSetting: string) => {
     setParameters(newSetting);
+    Cookies.set('qrSettings', newSetting)
   }
 
   return (
@@ -80,7 +82,7 @@ export function StartScanningButton() {
             <AlertDialogDescription>
 
             <RadioGroup 
-              defaultValue="default"
+              defaultValue={Cookies.get('qrSettings') ? Cookies.get('qrSettings') : "?mode=default"}
               className='p-4'
 
              >
@@ -90,7 +92,7 @@ export function StartScanningButton() {
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem 
                       onClick={() => onNewQRSettings("?mode=default")}
-                      value="default" 
+                      value="?mode=default" 
                       id="r1" />
                       <Label htmlFor="r1">Default</Label>
                     </div>
@@ -107,7 +109,7 @@ export function StartScanningButton() {
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem 
                         onClick={() => onNewQRSettings("?mode=hide-code")}
-                        value="hide-code" 
+                        value="?mode=hide-code" 
                         id="r2" />
                       <Label htmlFor="r2">Hide Code</Label>
                     </div>
@@ -124,7 +126,7 @@ export function StartScanningButton() {
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem 
                       onClick={() => onNewQRSettings("?mode=minimal")}
-                      value="minimal" 
+                      value="?mode=minimal" 
                       id="r3" />
                       <Label htmlFor="r3">Minimal</Label>
                     </div>

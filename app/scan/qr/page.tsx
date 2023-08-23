@@ -51,13 +51,13 @@ export default function QR() {
         <>
     
           <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <QRCode
-            size={Math.min(window.innerWidth, window.innerHeight)}
+          <QRCode
+            size={typeof window !== 'undefined' ? Math.min(window.innerWidth, window.innerHeight) : 256}
             style={{ maxWidth: "100%", width: "100%" }}
             value={process.env.NEXTAUTH_URL + '/submit/' + code}
-            viewBox={`0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${window.innerHeight}`}
+            viewBox={typeof window !== 'undefined' ? `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${window.innerHeight}` : '0 0 256 256'}
             className="flex flex-col items-center justify-center text-2xl mb-4"
-            />
+          />
           </div>
       
           <Progress value={progress} className="w-[100%]" style={{ visibility: "hidden" }} />
