@@ -8,6 +8,7 @@ interface PieChartCardProps {
   selectedStudent: string;
   attendanceData: AttendanceData[];
   roundValueToTwoDecimalsPercent: (number: number) => string;
+  className?: React.ComponentProps<'div'>['className'];
 }
 
 interface AttendanceData {
@@ -18,32 +19,35 @@ interface AttendanceData {
 const PieChartCardComponent: React.FC<PieChartCardProps> = ({
   selectedStudent,
   attendanceData,
-  roundValueToTwoDecimalsPercent
+  roundValueToTwoDecimalsPercent,
+  className
 }) => {
   return (
-    <Card>
-      <Title>{selectedStudent || 'Select a student'}</Title>
-      <>
+    <div className={className}>
+      <Card>
+        <Title>{selectedStudent || 'Select a student'}</Title>
         <>
-          <DonutChart
-            variant="pie"
-            data={attendanceData}
-            animationDuration={450}
-            colors={['emerald', 'red']}
-            valueFormatter={roundValueToTwoDecimalsPercent}
-          />
+          <>
+            <DonutChart
+              variant="pie"
+              data={attendanceData}
+              animationDuration={450}
+              colors={['emerald', 'red']}
+              valueFormatter={roundValueToTwoDecimalsPercent}
+            />
+          </>
+          <>
+            <Legend
+              categories={attendanceData.map(
+                (data) =>
+                  `${data.name}: ${roundValueToTwoDecimalsPercent(data.value)}`
+              )}
+              colors={['emerald', 'red']}
+            />
+          </>
         </>
-        <>
-          <Legend
-            categories={attendanceData.map(
-              (data) =>
-                `${data.name}: ${roundValueToTwoDecimalsPercent(data.value)}`
-            )}
-            colors={['emerald', 'red']}
-          />
-        </>
-      </>
-    </Card>
+      </Card>
+    </div>
   );
 };
 

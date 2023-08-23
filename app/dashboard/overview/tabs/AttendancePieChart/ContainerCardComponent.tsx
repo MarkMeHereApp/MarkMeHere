@@ -48,18 +48,20 @@ const AttendanceContainer: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-row max-h-96 gap-x-8">
       <ScrollableAreaComponent
         students={processedStudents}
         selectedStudent={selectedStudent}
         handleStudentChange={handleStudentChange}
+        className="basis-1/4 h-1/2"
       />
       <PieChartCardComponent
         selectedStudent={selectedStudent}
         attendanceData={attendanceData}
         roundValueToTwoDecimalsPercent={roundValueToTwoDecimalsPercent}
+        className="basis-3/4 h-1/2"
       />
-    </>
+    </div>
   );
 };
 

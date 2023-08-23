@@ -8,6 +8,7 @@ interface ScrollableAreaProps {
   students: Student[];
   selectedStudent: string;
   handleStudentChange: (studentName: string) => void;
+  className?: React.ComponentProps<'div'>['className'];
 }
 
 interface Student {
@@ -17,24 +18,27 @@ interface Student {
 const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
   students,
   selectedStudent,
-  handleStudentChange
+  handleStudentChange,
+  className
 }) => {
   return (
-    <ScrollArea className="space-y-1">
-      {students.map((student) => (
-        <Button
-          key={student.fullName}
-          onClick={() => handleStudentChange(student.fullName)}
-          className={`w-full p-2 text-center cursor-pointer border-2 border-slate-300 ${
-            selectedStudent === student.fullName
-              ? 'bg-yellow-500 text-white'
-              : 'bg-white'
-          }`}
-        >
-          {student.fullName}
-        </Button>
-      ))}
-    </ScrollArea>
+    <div className={className}>
+      <ScrollArea className="space-y-1 max-h-96 overflow-y-auto">
+        {students.map((student) => (
+          <Button
+            key={student.fullName}
+            onClick={() => handleStudentChange(student.fullName)}
+            className={`w-full p-2 text-center cursor-pointer border-2 border-slate-300 ${
+              selectedStudent === student.fullName
+                ? 'bg-yellow-500 text-white'
+                : 'bg-white'
+            }`}
+          >
+            {student.fullName}
+          </Button>
+        ))}
+      </ScrollArea>
+    </div>
   );
 };
 
