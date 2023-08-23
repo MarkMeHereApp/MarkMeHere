@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     // Insert the data into the Prisma database
     const user = await prisma.user.create({
       data: {
-        userID: uniqueID,
+        id: uniqueID,
         firstName,
         lastName,
         email,

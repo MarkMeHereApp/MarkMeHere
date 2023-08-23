@@ -5,7 +5,7 @@ export enum UserType {
 }
 
 export interface User {
-  userID: string;
+  id: string;
   userType: UserType;
   email: string;
   firstName: string;
@@ -19,19 +19,19 @@ export interface User {
 }
 
 export interface Lecture {
-  lectureID: string;
+  id: string;
   attendance: User[];
-  lectureStartDate: Date;
-  lectureEndDate: Date;
+  StartDate: Date;
+  EndDate: Date;
 }
 
 export interface Course {
-  courseID: string;
+  id: string;
   admins: User[];
   professors: User[];
   students: User[];
   dateCreated: Date;
-  courseStartDate: Date;
-  courseEndDate?: Date;
+  StartDate: Date;
+  EndDate?: Date;
   lectures: Lecture[];
 }

@@ -12,7 +12,7 @@ function createRandomUser(): User {
   const totalLectures = faker.number.int({ max: 100_000 });
 
   return {
-    userID: faker.string.uuid(),
+    id: faker.string.uuid(),
     userType: faker.helpers.enumValue(UserType),
     email: faker.internet.email(),
     firstName: firstName,

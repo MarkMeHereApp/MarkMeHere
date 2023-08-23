@@ -27,13 +27,14 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials, req) {
-        const email: string = credentials.email;
-        const password: string = credentials.password;
+        const email: string = credentials?.email ?? '';
+        const password: string = credentials?.password ?? '';
 
         // Find the user with the provided email
         const user = await prisma.user.findUnique({
           where: { email }
         });
+        console.log(user);
         //Throw email not found if user uis not found here
 
         //const user = { id: "1", name: "J Smith", email: "test@test" }
@@ -44,8 +45,8 @@ export const authOptions: NextAuthOptions = {
         // }
 
         //If email is found check if password is correct
-        //Check if entered password is the same as stored encrypted password
-        if (bcrypt.compare(password, user.password)) {
+        //If user exists and entered password matches hashed password
+        if (user && await bcrypt.compare(password, user.password)) {
           // Any object returned will be saved in `user` property of the JWT
           return user;
         } else {

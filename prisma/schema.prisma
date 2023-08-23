@@ -15,9 +15,9 @@ enum UserType {
 }
 
 model User {
-  userID             String    @default("None")
+  id                 String    @id @unique
   userType           UserType?
-  email              String    @id @unique
+  email              String    @unique
   firstName          String    @default("null") @db.VarChar(255)
   lastName           String    @default("null") @db.VarChar(255)
   password           String    @db.VarChar(255)
@@ -32,19 +32,19 @@ model User {
 }
 
 model Lecture {
-  lectureID        String   @id @map("lectureID")
-  lectureStartDate DateTime
-  lectureEndDate   DateTime
-  attendance       User[]   @relation("User_LecturesAttendance")
-  courses          Course[] @relation("Course_Lectures")
+  id         String   @id @unique
+  StartDate  DateTime
+  EndDate    DateTime
+  attendance User[]   @relation("User_LecturesAttendance")
+  courses    Course[] @relation("Course_Lectures")
 }
 
 model Course {
-  courseID        String    @id @map("courseID")
-  students        User[]    @relation("Course_Students")
-  admins          User[]    @relation("Course_Admins")
-  dateCreated     DateTime
-  courseStartDate DateTime
-  courseEndDate   DateTime?
-  lectures        Lecture[] @relation("Course_Lectures")
+  id          String    @id @unique
+  students    User[]    @relation("Course_Students")
+  admins      User[]    @relation("Course_Admins")
+  dateCreated DateTime
+  StartDate   DateTime
+  EndDate     DateTime?
+  lectures    Lecture[] @relation("Course_Lectures")
 }
