@@ -11,13 +11,13 @@ import {
 import { Button } from '@/components/ui/button';
 import ContainerCardComponent from './AttendancePieChart/ContainerCardComponent';
 
-const handleClick = async () => {
+const handleAddRandomPersonClick = async () => {
   const response = await fetch('/api/prisma', {
     method: 'POST'
   });
 };
 
-const Overview = () => {
+const StudentsView = () => {
   return (
     <div className="w-full">
       {/* Adjust the width of the card using Flexbox */}
@@ -26,7 +26,7 @@ const Overview = () => {
           <CardTitle>Class Attendance</CardTitle>
           <CardDescription>Nice!</CardDescription>
           <Button
-            onClick={() => handleClick()}
+            onClick={() => handleAddRandomPersonClick()}
             className={
               'text-sm font-medium text-muted-foreground transition-colors hover:text-primary w-full'
             }
@@ -42,4 +42,4 @@ const Overview = () => {
   );
 };
 
-export default Overview;
+export default StudentsView;

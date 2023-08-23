@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 import { Metadata } from 'next';
 import { ModeToggle } from './theme-toggle';
-import Overview from './tabs/Overview';
+import StudentsView from './tabs/StudentsView';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
 
@@ -50,7 +50,7 @@ export default async function DashboardPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="students">
-            <Overview />
+            <StudentsView />
           </TabsContent>
         </Tabs>
       </div>
