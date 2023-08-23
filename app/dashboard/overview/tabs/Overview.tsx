@@ -8,8 +8,8 @@ import {
   CardTitle
 } from '@/components/ui/card';
 
-import AttendancePieChart from './AttendancePieChart';
 import { Button } from '@/components/ui/button';
+import ContainerCardComponent from './AttendancePieChart/ContainerCardComponent';
 import { usePathname } from 'next/navigation';
 
 const handleClick = async () => {
@@ -46,7 +46,7 @@ const Overview = () => {
             </Button>
           </CardHeader>
           <CardContent>
-            <AttendancePieChart />
+            <ContainerCardComponent />
           </CardContent>
         </Card>
       </div>
