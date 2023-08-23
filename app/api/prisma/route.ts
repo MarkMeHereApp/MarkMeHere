@@ -1,4 +1,4 @@
-import { User, UserType } from '../../../sharedTypes';
+import { User, UserType } from '../../../utils/sharedTypes';
 
 import { NextResponse } from 'next/server';
 import { faker } from '@faker-js/faker';

@@ -1,29 +1,20 @@
-import { faker } from '@faker-js/faker';
+import { User, UserType } from '@/utils/sharedTypes';
 
-interface User {
-  _id: string;
-  isStudent: boolean;
-  email: string;
-  name: string;
-  GPA: number;
-  age: number;
-  gender: string;
-  lecturesAttended: number;
-  totalLectures: number;
-}
+import { faker } from '@faker-js/faker';
 
 function createRandomUser(): User {
   const sex = faker.person.sexType();
   const firstName = faker.person.firstName(sex);
   const lastName = faker.person.lastName(sex);
-  const fullName = `${firstName} ${lastName}`;
   const totalLectures = faker.number.int();
 
   return {
-    _id: faker.string.uuid(),
-    isStudent: true,
+    userID: faker.string.uuid(),
     email: faker.internet.email(),
-    name: fullName,
+    password: faker.string.symbol({ min: 10, max: 100 }),
+    userType: faker.helpers.enumValue(UserType),
+    firstName,
+    lastName,
     GPA: faker.number.float({ max: 5.0 }),
     age: faker.number.int({ max: 80 }),
     gender: faker.person.gender(),

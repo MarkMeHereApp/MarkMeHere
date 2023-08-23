@@ -27,29 +27,30 @@ const Overview = () => {
   }
 
   return (
-    <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-3">
+    <div className="flex flex-col md:flex-row gap-4">
+      <div className="w-full md:w-1/2">
+        {/* Adjust the width of the card using Flexbox */}
+        <Card className="flex-grow">
           <CardHeader>
             <CardTitle>Class Attendance</CardTitle>
             <CardDescription>Nice!</CardDescription>
+            <Button
+              onClick={() => handleClick()}
+              className={
+                isActive('/dashboard/take-attendance')
+                  ? 'text-sm font-medium text-primary w-full'
+                  : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary w-full'
+              }
+            >
+              Add Random User to DB
+            </Button>
           </CardHeader>
           <CardContent>
             <AttendancePieChart />
           </CardContent>
         </Card>
-        <Button
-          onClick={() => handleClick()}
-          className={
-            isActive('/dashboard/take-attendance')
-              ? 'text-sm font-medium text-primary'
-              : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-          }
-        >
-          Add Random User to DB
-        </Button>
       </div>
-    </>
+    </div>
   );
 };
 
