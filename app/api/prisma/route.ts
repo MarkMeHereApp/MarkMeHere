@@ -17,7 +17,6 @@ function createRandomUser(): User {
     email: faker.internet.email(),
     firstName: firstName,
     lastName: lastName,
-    name: fullName,
     GPA: faker.number.float({ max: 5.0 }),
     age: faker.number.int({ max: 80 }),
     gender: faker.person.gender(),

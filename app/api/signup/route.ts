@@ -5,8 +5,8 @@ import prisma from '@/prisma';
 export async function POST(request: Request) {
   const formData = await request.formData();
 
-  const firstname = formData.get('firstname') as string;
-  const lastname = formData.get('lastname') as string;
+  const firstName = formData.get('firstname') as string;
+  const lastName = formData.get('lastname') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -17,8 +17,8 @@ export async function POST(request: Request) {
     // Insert the data into the Prisma database
     const user = await prisma.user.create({
       data: {
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         email,
         password: hashedPassword
       }

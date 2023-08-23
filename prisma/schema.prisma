@@ -15,18 +15,17 @@ enum UserType {
 }
 
 model User {
-  userID             String    @id @map("userID")
-  userType           UserType
-  email              String
-  name               String
+  // userID             String    
+  userType           UserType?
+  email              String    @id @unique
   firstName          String    @db.VarChar(255)
   lastName           String    @db.VarChar(255)
   password           String    @db.VarChar(255)
-  GPA                Float
-  age                Int
-  gender             String
-  lecturesAttended   Int
-  totalLectures      Int
+  GPA                Float?
+  age                Int?
+  gender             String?
+  lecturesAttended   Int?
+  totalLectures      Int?
   coursesAsStudent   Course[]  @relation("Course_Students")
   coursesAsAdmin     Course[]  @relation("Course_Admins")
   lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
