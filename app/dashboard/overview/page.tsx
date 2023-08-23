@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 import { Metadata } from 'next';
 import { ModeToggle } from './theme-toggle';
-import Overview from '../tabs/Overview';
-import Reference from '../tabs/Reference';
+import Overview from './tabs/Overview';
+import Reference from './tabs/Reference';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
 
