@@ -1,6 +1,7 @@
-import { User, UserType } from '../../../sharedTypes';
+import { User, UserType } from '../../../utils/sharedTypes';
 
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../prisma/index';
 
@@ -39,5 +40,17 @@ export async function POST(request: Request) {
     console.error('Error inserting user:', error);
 
     return NextResponse.json({ success: false, error: 'Error inserting user' });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const users = await prisma.user.findMany();
+    console.log('Users Received', users);
+
+    return NextResponse.json({ success: true, users });
+  } catch (error) {
+    console.error('Error getting users:', error);
+    return NextResponse.json({ success: false, error: 'Error getting users' });
   }
 }
