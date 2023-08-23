@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 import SignInForm from '@/app/api/auth/signin/signInForm';
 import Stars from '@/components/background/stars';
@@ -49,18 +50,18 @@ export default async function SigninPage() {
               </div>
               <SignInForm providers={providers} />
 
-              {/* This is currently disabled because we don't want users to register (yet)
+              {/* This is currently disabled because we don't want users to register (yet) */}
               <p className="px-8 text-center text-sm">
                 Don&apos;t have an account?{' '}
                 <Link
-                  href="/signup"
+                  href="/api/auth/signup"
                   className="underline underline-offset-4"
                 >
                   Sign up
                 </Link>{' '}
                 today!
               </p>
-              */}
+             
             </CardContent>
             </Card>
 
