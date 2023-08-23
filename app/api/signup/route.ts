@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import prisma from '@/prisma';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -13,10 +14,12 @@ export async function POST(request: Request) {
   try {
     // Hash the password before inserting it into the database
     const hashedPassword = await bcrypt.hash(password, 10);
+    const uniqueID = uuidv4();
 
     // Insert the data into the Prisma database
     const user = await prisma.user.create({
       data: {
+        userID: uniqueID,
         firstName,
         lastName,
         email,
