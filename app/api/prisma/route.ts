@@ -13,7 +13,7 @@ function createRandomUser(): User {
   const totalLectures = faker.number.int({ max: 100_000 });
 
   return {
-    userID: faker.string.uuid(),
+    id: faker.string.uuid(),
     userType: faker.helpers.enumValue(UserType),
     email: faker.internet.email(),
     firstName: firstName,
@@ -34,8 +34,6 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: randomUser
     });
-
-    console.log('User inserted:', randomUser);
 
     return NextResponse.json({ success: true, randomUser });
   } catch (error) {

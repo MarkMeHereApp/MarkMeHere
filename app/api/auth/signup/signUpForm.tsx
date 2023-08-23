@@ -23,8 +23,6 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
     // Get form data
     const formData = new FormData(event.currentTarget as HTMLFormElement);
 
-    console.log('client form data:', formData);
-
     try {
       const response = await fetch('/api/signup', {
         method: 'POST',
@@ -32,7 +30,6 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
       });
 
       // Handle success response
-      console.log('Sign up successful');
 
       router.push('/dashboard/overview');
     } catch (error) {

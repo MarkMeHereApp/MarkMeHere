@@ -1,12 +1,14 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
+import { Metadata } from 'next';
+import Link from 'next/link';
 
 import SignInForm from '@/app/api/auth/signin/signInForm';
 import Stars from '@/components/background/stars';
+import { Card, CardContent } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
 
-export default async function SigninPage() {
+export default function SigninPage() {
   const [providers, setProviders] = useState(null);
 
   useEffect(() => {
@@ -41,18 +43,18 @@ export default async function SigninPage() {
             </div>
             <SignInForm providers={providers} />
 
-            {/* This is currently disabled because we don't want users to register (yet)
-              <p className="px-8 text-center text-sm">
-                Don&apos;t have an account?{' '}
-                <Link
-                  href="/signup"
-                  className="underline underline-offset-4"
-                >
-                  Sign up
-                </Link>{' '}
-                today!
-              </p>
-              */}
+            {/* Enabled again for now so a single professsor IE Leinecker
+            can sign up (mostly for testing) */}
+            <p className="px-8 text-center text-sm">
+              Don&apos;t have an account?{' '}
+              <Link
+                href="/api/auth/signup"
+                className="underline underline-offset-4"
+              >
+                Sign up
+              </Link>{' '}
+              today!
+            </p>
           </CardContent>
         </Card>
       </div>

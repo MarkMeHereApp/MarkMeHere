@@ -12,22 +12,20 @@ export async function POST(request: Request) {
   const password = formData.get('password') as string;
 
   try {
-    // Hash the password before inserting it into the database
+    // Hash and salt the password before inserting it into the database
     const hashedPassword = await bcrypt.hash(password, 10);
     const uniqueID = uuidv4();
 
     // Insert the data into the Prisma database
     const user = await prisma.user.create({
       data: {
-        userID: uniqueID,
+        id: uniqueID,
         firstName,
         lastName,
         email,
         password: hashedPassword
       }
     });
-
-    console.log('User inserted:', user);
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
