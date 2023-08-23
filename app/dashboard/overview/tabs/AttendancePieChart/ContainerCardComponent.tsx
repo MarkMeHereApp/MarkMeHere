@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 
 import PieChartCardComponent from './PieChartCardComponent';
@@ -46,7 +48,7 @@ const AttendanceContainer: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-8">
+    <>
       <ScrollableAreaComponent
         students={processedStudents}
         selectedStudent={selectedStudent}
@@ -57,7 +59,7 @@ const AttendanceContainer: React.FC = () => {
         attendanceData={attendanceData}
         roundValueToTwoDecimalsPercent={roundValueToTwoDecimalsPercent}
       />
-    </div>
+    </>
   );
 };
 

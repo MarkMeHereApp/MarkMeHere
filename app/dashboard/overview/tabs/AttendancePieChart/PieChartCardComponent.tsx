@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, DonutChart, Legend, Title } from '@tremor/react';
 
 import React from 'react';
@@ -19,12 +21,10 @@ const PieChartCardComponent: React.FC<PieChartCardProps> = ({
   roundValueToTwoDecimalsPercent
 }) => {
   return (
-    <Card className="p-8 flex flex-col items-center">
-      <div className="mb-2">
-        <Title>{selectedStudent || 'Select a student'}</Title>
-      </div>
-      <div className="flex-grow flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-3/5 text-center">
+    <Card>
+      <Title>{selectedStudent || 'Select a student'}</Title>
+      <>
+        <>
           <DonutChart
             variant="pie"
             data={attendanceData}
@@ -32,8 +32,8 @@ const PieChartCardComponent: React.FC<PieChartCardProps> = ({
             colors={['emerald', 'red']}
             valueFormatter={roundValueToTwoDecimalsPercent}
           />
-        </div>
-        <div className="w-full md:w-2/5 mt-4 md:mt-0 md:ml-8">
+        </>
+        <>
           <Legend
             categories={attendanceData.map(
               (data) =>
@@ -41,8 +41,8 @@ const PieChartCardComponent: React.FC<PieChartCardProps> = ({
             )}
             colors={['emerald', 'red']}
           />
-        </div>
-      </div>
+        </>
+      </>
     </Card>
   );
 };

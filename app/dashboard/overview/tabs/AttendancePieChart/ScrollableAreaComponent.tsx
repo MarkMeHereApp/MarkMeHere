@@ -1,7 +1,8 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import React from 'react';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { getFullName } from '@/utils/getFullName';
 
 interface ScrollableAreaProps {
   students: Student[];
@@ -19,22 +20,20 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
   handleStudentChange
 }) => {
   return (
-    <ScrollArea className="overflow-y-auto">
-      <div className="space-y-1 max-h-96">
-        {students.map((student) => (
-          <Button
-            key={student.fullName}
-            onClick={() => handleStudentChange(student.fullName)}
-            className={`block w-full p-2 text-center cursor-pointer ${
-              selectedStudent === student.fullName
-                ? 'bg-yellow-500 text-white'
-                : 'bg-white'
-            }`}
-          >
-            {student.fullName}
-          </Button>
-        ))}
-      </div>
+    <ScrollArea className="space-y-1">
+      {students.map((student) => (
+        <Button
+          key={student.fullName}
+          onClick={() => handleStudentChange(student.fullName)}
+          className={`w-full p-2 text-center cursor-pointer border-2 border-slate-300 ${
+            selectedStudent === student.fullName
+              ? 'bg-yellow-500 text-white'
+              : 'bg-white'
+          }`}
+        >
+          {student.fullName}
+        </Button>
+      ))}
     </ScrollArea>
   );
 };
