@@ -10,7 +10,6 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  name: string;
   GPA: number;
   age: number;
   gender: string;

@@ -15,7 +15,7 @@ enum UserType {
 }
 
 model User {
-  // userID             String    
+  userID             String
   userType           UserType?
   email              String    @id @unique
   firstName          String    @db.VarChar(255)
