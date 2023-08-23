@@ -34,8 +34,6 @@ export async function POST(request: Request) {
       data: randomUser
     });
 
-    console.log('User inserted:', randomUser);
-
     return NextResponse.json({ success: true, randomUser });
   } catch (error) {
     console.error('Error inserting user:', error);

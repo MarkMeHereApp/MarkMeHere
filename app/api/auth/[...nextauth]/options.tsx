@@ -4,13 +4,9 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import prisma from '@/prisma';
 import bcrypt from 'bcrypt';
 
-
 /*
 Today we need to Throw the custom error
 */
-
-
-
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -49,10 +45,7 @@ export const authOptions: NextAuthOptions = {
 
         //If email is found check if password is correct
         //Check if entered password is the same as stored encrypted password
-        console.log(user)
-        if (
-          bcrypt.compare(password, user.password)
-        ) {
+        if (bcrypt.compare(password, user.password)) {
           // Any object returned will be saved in `user` property of the JWT
           return user;
         } else {
@@ -68,6 +61,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
     newUser: '/auth/signup',
-    error: "/auth/error",
+    error: '/auth/error'
   }
 };

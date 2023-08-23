@@ -1,13 +1,14 @@
 'use client';
 
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 import SignInForm from '@/app/api/auth/signin/signInForm';
 import Stars from '@/components/background/stars';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 
-export default async function SigninPage() {
+export default function SigninPage() {
   const [providers, setProviders] = useState(null);
 
   useEffect(() => {
