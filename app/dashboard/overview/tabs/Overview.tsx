@@ -16,12 +16,6 @@ const handleClick = async () => {
   const response = await fetch('/api/prisma', {
     method: 'POST'
   });
-
-  if (response.ok) {
-    console.log('add random user successful');
-  } else {
-    console.error('error adding random user:', response.statusText);
-  }
 };
 
 const Overview = () => {
