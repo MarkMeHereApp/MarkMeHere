@@ -12,6 +12,7 @@ export interface User {
   lastName: string;
   fullName: string;
   password: string;
+  dateCreated: Date;
 }
 
 export interface Student extends User {

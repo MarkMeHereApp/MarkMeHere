@@ -22,7 +22,7 @@ function createRandomUser(): User {
     gender: faker.person.gender(),
     lecturesAttended: faker.number.int({ max: totalLectures }),
     totalLectures: totalLectures,
-    password: faker.string.sample({ min: 10, max: 20 })
+    password: faker.string.sample({ min: 10, max: 20 }),
     dateCreated: new Date(),
   } as User;
 }
