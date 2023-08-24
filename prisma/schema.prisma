@@ -8,26 +8,18 @@ datasource db {
   relationMode = "prisma"
 }
 
-enum UserType {
-  Admin
-  Student
-  Professor
-}
-
 model User {
-  id                 String    @id @unique
-  userType           UserType?
   email              String    @unique
-  firstName          String    @default("null") @db.VarChar(255)
-  lastName           String    @default("null") @db.VarChar(255)
-  fullName           String    @default("null") @db.VarChar(255)
-  dateCreated        DateTime  
   password           String    @db.VarChar(255)
   GPA                Float?
   age                Int?
+  firstName          String    @default("null") @db.VarChar(255)
   gender             String?
+  lastName           String    @default("null") @db.VarChar(255)
   lecturesAttended   Int?
   totalLectures      Int?
+  userType           UserType?
+  id                 String    @id @unique
   coursesAsStudent   Course[]  @relation("Course_Students")
   coursesAsAdmin     Course[]  @relation("Course_Admins")
   lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
@@ -35,18 +27,60 @@ model User {
 
 model Lecture {
   id         String   @id @unique
-  StartDate  DateTime
   EndDate    DateTime
+  StartDate  DateTime
   attendance User[]   @relation("User_LecturesAttendance")
   courses    Course[] @relation("Course_Lectures")
 }
 
 model Course {
+  dateCreated DateTime
   id          String    @id @unique
+  EndDate     DateTime?
+  StartDate   DateTime
   students    User[]    @relation("Course_Students")
   admins      User[]    @relation("Course_Admins")
-  dateCreated DateTime
-  StartDate   DateTime
-  EndDate     DateTime?
   lectures    Lecture[] @relation("Course_Lectures")
+}
+
+model Course_Admins {
+  A String
+  B String
+
+  @@unique([A, B], map: "_Course_Admins_AB_unique")
+  @@index([B], map: "_Course_Admins_B_index")
+  @@map("_Course_Admins")
+}
+
+model Course_Lectures {
+  A String
+  B String
+
+  @@unique([A, B], map: "_Course_Lectures_AB_unique")
+  @@index([B], map: "_Course_Lectures_B_index")
+  @@map("_Course_Lectures")
+}
+
+model Course_Students {
+  A String
+  B String
+
+  @@unique([A, B], map: "_Course_Students_AB_unique")
+  @@index([B], map: "_Course_Students_B_index")
+  @@map("_Course_Students")
+}
+
+model User_LecturesAttendance {
+  A String
+  B String
+
+  @@unique([A, B], map: "_User_LecturesAttendance_AB_unique")
+  @@index([B], map: "_User_LecturesAttendance_B_index")
+  @@map("_User_LecturesAttendance")
+}
+
+enum UserType {
+  Admin
+  Student
+  Professor
 }
