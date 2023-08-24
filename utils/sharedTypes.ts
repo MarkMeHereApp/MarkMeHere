@@ -10,12 +10,24 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  GPA: number;
-  age: number;
-  gender: string;
-  lecturesAttended: number;
-  totalLectures: number;
+  fullName: string;
   password: string;
+}
+
+export interface Student extends User {
+  GPA?: number;
+  age?: number;
+  gender?: string;
+  lecturesAttended?: number;
+  totalLectures?: number;
+}
+
+export interface Admin extends User {
+  courses: Course[];
+}
+
+export interface Professor extends User {
+  courses: Course[];
 }
 
 export interface Lecture {
@@ -27,9 +39,9 @@ export interface Lecture {
 
 export interface Course {
   id: string;
-  admins: User[];
-  professors: User[];
-  students: User[];
+  admins: Admin[];
+  professors: Professor[];
+  students: Student[];
   dateCreated: Date;
   StartDate: Date;
   EndDate?: Date;
