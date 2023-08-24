@@ -3,23 +3,20 @@
 import { Button } from '@/components/ui/button';
 import React from 'react';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { Student } from '@/utils/sharedTypes';
 
 interface ScrollableAreaProps {
   students: Student[];
-  selectedStudent: string;
-  handleStudentChange: (studentName: string) => void;
+  selectedStudent: Student;
   className?: React.ComponentProps<'div'>['className'];
-}
-
-interface Student {
-  fullName: string;
+  handleStudentChange: (student: Student) => void;
 }
 
 const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
   students,
   selectedStudent,
-  handleStudentChange,
-  className
+  className,
+  handleStudentChange
 }) => {
   return (
     <div className={className}>
@@ -27,10 +24,10 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
         {students.map((student) => (
           <Button
             variant={`${
-              selectedStudent === student.fullName ? 'default' : 'ghost'
+              selectedStudent.id === student.id ? 'default' : 'ghost'
             }`}
-            key={student.fullName}
-            onClick={() => handleStudentChange(student.fullName)}
+            key={student.id}
+            onClick={() => handleStudentChange(student)}
             className={`w-full h-fit p-2 text-center cursor-pointer border-2 border-border`}
           >
             {student.fullName}

@@ -10,12 +10,16 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  GPA: number;
-  age: number;
-  gender: string;
-  lecturesAttended: number;
-  totalLectures: number;
   password: string;
+  GPA?: number;
+  age?: number;
+  gender?: string;
+  lecturesAttended?: number;
+  totalLectures?: number;
+}
+
+export interface Student extends User {
+  fullName: string;
 }
 
 export interface Lecture {
