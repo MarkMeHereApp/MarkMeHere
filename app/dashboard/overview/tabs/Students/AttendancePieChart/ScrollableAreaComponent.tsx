@@ -20,7 +20,7 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
 }) => {
   return (
     <div className={className}>
-      <ScrollArea className="space-y-1 h-full overflow-y-auto">
+      <ScrollArea className="space-y-1 h-[17rem] overflow-y-auto border-1">
         {students.map((student) => (
           <Button
             variant={`${

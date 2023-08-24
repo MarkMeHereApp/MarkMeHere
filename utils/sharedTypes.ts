@@ -7,10 +7,15 @@ export enum UserType {
 export interface User {
   id: string;
   userType: UserType;
+  dateCreated: Date;
   email: string;
   firstName: string;
   lastName: string;
+  fullName: string;
   password: string;
+}
+
+export interface Student extends User {
   GPA?: number;
   age?: number;
   gender?: string;
@@ -18,8 +23,12 @@ export interface User {
   totalLectures?: number;
 }
 
-export interface Student extends User {
-  fullName: string;
+export interface Admin extends User {
+  courses: Course[];
+}
+
+export interface Professor extends User {
+  courses: Course[];
 }
 
 export interface Lecture {
@@ -31,9 +40,9 @@ export interface Lecture {
 
 export interface Course {
   id: string;
-  admins: User[];
-  professors: User[];
-  students: User[];
+  admins: Admin[];
+  professors: Professor[];
+  students: Student[];
   dateCreated: Date;
   StartDate: Date;
   EndDate?: Date;
