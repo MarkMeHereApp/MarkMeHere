@@ -6,7 +6,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 
-import { RecentSales } from '../../data/recent-sales';
+import RecentSales from '@/app/dashboard/data/recent-sales';
 
 const Reference = () => {
   return (

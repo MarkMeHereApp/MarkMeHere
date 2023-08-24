@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import sampleStudentData from '../../data/sample-student-data';
+import sampleStudentData from '@/app/dashboard/data/sample-student-data';
 
 const students = sampleStudentData;
 
