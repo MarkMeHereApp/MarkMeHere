@@ -26,7 +26,6 @@ const getUsers = async () => {
     return [];
   }
 };
-
 const DashboardView = () => {
   const [users, setUsers] = useState<User[]>([]);
 
