@@ -14,6 +14,7 @@ function createRandomUser(): User {
     id: faker.string.uuid(),
     userType: faker.helpers.enumValue(UserType),
     email: faker.internet.email(),
+    dateCreated: new Date(Date.now()),
     firstName: firstName,
     lastName: lastName,
     fullName: `${firstName} ${lastName}`,
