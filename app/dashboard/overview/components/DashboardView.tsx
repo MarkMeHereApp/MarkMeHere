@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import StudentStatistics from './tabs/Students';
-import { User } from '../../../utils/sharedTypes';
+import { User } from '@/utils/sharedTypes';
 
 const getUsers = async () => {
   try {
@@ -26,6 +26,7 @@ const getUsers = async () => {
     return [];
   }
 };
+
 const DashboardView = () => {
   const [users, setUsers] = useState<User[]>([]);
 

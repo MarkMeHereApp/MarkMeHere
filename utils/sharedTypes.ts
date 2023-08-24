@@ -7,12 +7,12 @@ export enum UserType {
 export interface User {
   id: string;
   userType: UserType;
-  dateCreated: Date;
   email: string;
   firstName: string;
   lastName: string;
   fullName: string;
   password: string;
+  dateCreated: Date;
 }
 
 export interface Student extends User {

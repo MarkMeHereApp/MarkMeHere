@@ -1,8 +1,8 @@
 import { Metadata } from "next"
-import { Search } from "@/app/dashboard/search"
-import TeamSwitcher from "@/app/dashboard/team-switcher"
-import { UserNav } from "@/app/dashboard/user-nav"
-import { MainNav } from "@/app/dashboard/main-nav"
+import Search from "@/app/dashboard/components/search"
+import TeamSwitcher from "@/app/dashboard/components/team-switcher"
+import UserNav from "@/app/dashboard/components/user-nav"
+import MainNav from "@/app/dashboard/components/main-nav"
 
 export const metadata: Metadata = {
   title: "Dashboard",
