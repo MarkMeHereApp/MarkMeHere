@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 import { Metadata } from 'next';
-import { ModeToggle } from './theme-toggle';
+import { ModeToggle } from './components/theme-toggle';
 import Overview from './tabs/Overview';
 import Reference from './tabs/Reference';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
