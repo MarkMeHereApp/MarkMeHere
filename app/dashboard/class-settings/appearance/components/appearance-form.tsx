@@ -36,7 +36,7 @@ const defaultValues: Partial<AppearanceFormValues> = {
   theme: "light",
 }
 
-export default function AppearanceForm() {
+export function AppearanceForm() {
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues,
