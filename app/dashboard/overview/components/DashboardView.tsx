@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import StudentStatistics from './tabs/Students';
+import StudentAnalytics from './tabs/StudentAnalytics';
 import { User } from '@/utils/sharedTypes';
 
 const getUsers = async () => {
@@ -71,24 +71,19 @@ const DashboardView = () => {
   };
 
   return (
-    <Tabs defaultValue="students">
+    <Tabs defaultValue="student-analytics">
       <TabsList>
         <TabsTrigger value="overview" disabled>
           Overview
         </TabsTrigger>
-        <TabsTrigger value="students">Students</TabsTrigger>
-        <TabsTrigger value="analytics" disabled>
-          Analytics
-        </TabsTrigger>
-        <TabsTrigger value="reports" disabled>
-          Reports
-        </TabsTrigger>
-        <TabsTrigger value="notifications" disabled>
-          Notifications
-        </TabsTrigger>
+        <TabsTrigger value="manage-students">Manage Students</TabsTrigger>
+        <TabsTrigger value="student-analytics">Student Analytics</TabsTrigger>
       </TabsList>
-      <TabsContent value="students">
-        <StudentStatistics users={users} />
+      <TabsContent value="manage-students">
+        <h2>hi</h2>
+      </TabsContent>
+      <TabsContent value="student-analytics">
+        <StudentAnalytics users={users} />
         <Button
           variant={'ghost'}
           onClick={() => handleAddRandomPersonClick()}

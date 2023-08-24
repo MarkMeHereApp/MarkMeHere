@@ -1,13 +1,13 @@
 import { Student, User, UserType } from '@/utils/sharedTypes';
 
-import StudentsView from './StudentsView';
+import AttendanceView from './AttendanceView';
 import { getFullName } from '@/utils/getFullName';
 
 interface StudentStatisticsProps {
   users: User[];
 }
 
-const StudentStatistics: React.FC<StudentStatisticsProps> = ({ users }) => {
+const StudentAnalytics: React.FC<StudentStatisticsProps> = ({ users }) => {
   const students = users?.filter((element) => {
     return element.userType === UserType.Student;
   });
@@ -23,10 +23,10 @@ const StudentStatistics: React.FC<StudentStatisticsProps> = ({ users }) => {
   return (
     <>
       {processedStudents?.length > 0 && (
-        <StudentsView students={processedStudents} />
+        <AttendanceView students={processedStudents} />
       )}
     </>
   );
 };
 
-export default StudentStatistics;
+export default StudentAnalytics;

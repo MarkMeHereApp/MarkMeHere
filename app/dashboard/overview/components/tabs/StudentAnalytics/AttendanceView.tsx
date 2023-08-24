@@ -15,7 +15,7 @@ interface StudentsViewProps {
   students: Student[];
 }
 
-const StudentsView: React.FC<StudentsViewProps> = ({ students }) => {
+const AttendanceView: React.FC<StudentsViewProps> = ({ students }) => {
   return (
     <div className="w-full">
       {/* Adjust the width of the card using Flexbox */}
@@ -38,4 +38,4 @@ const StudentsView: React.FC<StudentsViewProps> = ({ students }) => {
   );
 };
 
-export default StudentsView;
+export default AttendanceView;
