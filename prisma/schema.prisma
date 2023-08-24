@@ -20,6 +20,8 @@ model User {
   email              String    @unique
   firstName          String    @default("null") @db.VarChar(255)
   lastName           String    @default("null") @db.VarChar(255)
+  fullName           String    @default("null") @db.VarChar(255)
+  dateCreated        DateTime  
   password           String    @db.VarChar(255)
   GPA                Float?
   age                Int?

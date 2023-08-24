@@ -1,7 +1,6 @@
 import { User, UserType } from '../../../utils/sharedTypes';
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../prisma/index';
 
@@ -30,6 +29,8 @@ function createRandomUser(): User {
 
 export async function POST(request: Request) {
   const randomUser = createRandomUser();
+  console.log('Random User:', randomUser); // Add this line
+
   try {
     // Insert the data into the Prisma database
     const user = await prisma.user.create({

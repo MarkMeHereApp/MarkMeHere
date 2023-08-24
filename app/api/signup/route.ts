@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const lastName = formData.get('lastname') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-
+  const dateCreated = new Date(Date.now());
   try {
     // Hash and salt the password before inserting it into the database
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,7 +23,8 @@ export async function POST(request: Request) {
         firstName,
         lastName,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        dateCreated
       }
     });
 
