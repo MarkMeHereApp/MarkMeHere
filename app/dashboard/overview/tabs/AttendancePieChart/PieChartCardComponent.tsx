@@ -1,7 +1,12 @@
 'use client';
 
-import { Card, DonutChart, Legend, Title } from '@tremor/react';
+// PieChartCardComponent.styles.ts
+import '../../../../../styles/globals.css'; // Import the globals.css file
 
+import { DonutChart, Legend } from '@tremor/react';
+
+import { Card } from '@/components/ui/card';
+import { CardTitle } from '@/components/ui/card';
 import React from 'react';
 
 interface PieChartCardProps {
@@ -25,7 +30,7 @@ const PieChartCardComponent: React.FC<PieChartCardProps> = ({
   return (
     <div className={className}>
       <Card>
-        <Title>{selectedStudent || 'Select a student'}</Title>
+        <CardTitle>{selectedStudent || 'Select a student'}</CardTitle>
         <>
           <>
             <DonutChart
