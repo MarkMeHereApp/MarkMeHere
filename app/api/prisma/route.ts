@@ -34,8 +34,9 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: randomUser
     });
-
-    return NextResponse.json({ success: true, randomUser });
+    const users = await prisma.user.findMany();
+    console.log(users);
+    return NextResponse.json({ success: true, users });
   } catch (error) {
     console.error('Error inserting user:', error);
 
