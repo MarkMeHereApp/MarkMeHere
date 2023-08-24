@@ -38,7 +38,7 @@ const DashboardView = () => {
     try {
       const users = await getUsers();
 
-      if (users.length > 0) {
+      if (users?.length > 0) {
         setUsers(users);
       } else {
         console.error('No user data received.');

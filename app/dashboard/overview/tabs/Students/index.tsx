@@ -8,11 +8,11 @@ interface StudentStatisticsProps {
 }
 
 const StudentStatistics: React.FC<StudentStatisticsProps> = ({ users }) => {
-  const students = users.filter((element) => {
+  const students = users?.filter((element) => {
     return element.userType === UserType.Student;
   });
 
-  const processedStudents = students.map(
+  const processedStudents = students?.map(
     (student) =>
       ({
         ...student,
@@ -22,7 +22,7 @@ const StudentStatistics: React.FC<StudentStatisticsProps> = ({ users }) => {
 
   return (
     <>
-      {processedStudents.length > 0 && (
+      {processedStudents?.length > 0 && (
         <StudentsView students={processedStudents} />
       )}
     </>
