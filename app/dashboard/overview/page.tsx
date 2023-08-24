@@ -2,11 +2,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 import DashboardView from './components/DashboardView';
 import { Metadata } from 'next';
-<<<<<<< HEAD
-import { ModeToggle } from './components/mode-toggle';
-=======
 import { ModeToggle } from './components/theme-toggle';
->>>>>>> ee74688c2e804b3852e26adfa4913b415d7a31f4
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
 
