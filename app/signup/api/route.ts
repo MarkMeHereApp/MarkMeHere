@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         lastName,
         email,
         password: hashedPassword,
-        dateCreated: Date.now()
+        dateCreated: dateCreated
       }
     });
 
