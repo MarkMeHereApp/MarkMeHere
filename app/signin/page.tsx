@@ -3,7 +3,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
-import SignInForm from '@/app/api/auth/signin/signInForm';
+import SignInForm from '@/app/signin/components/signInForm';
 import Stars from '@/components/background/stars';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
@@ -48,7 +48,7 @@ export default function SigninPage() {
             <p className="px-8 text-center text-sm">
               Don&apos;t have an account?{' '}
               <Link
-                href="/api/auth/signup"
+                href="/signup"
                 className="underline underline-offset-4"
               >
                 Sign up

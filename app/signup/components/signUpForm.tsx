@@ -24,7 +24,7 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
     const formData = new FormData(event.currentTarget as HTMLFormElement);
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/signup/api', {
         method: 'POST',
         body: formData
       });

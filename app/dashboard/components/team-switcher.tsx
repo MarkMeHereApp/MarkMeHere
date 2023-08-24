@@ -47,7 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { ProfileForm } from "@/app/dashboard/class-creation-form"
+import ProfileForm from "@/app/dashboard/components/class-creation-form"
 const groups = [
   {
     label: "Admin",

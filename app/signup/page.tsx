@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
-import SignUpForm from '@/app/api/auth/signup/signUpForm';
+import SignUpForm from '@/app/signup/components/signUpForm';
 import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ export default function SignUpPage() {
               <p className="px-8 text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link
-                  href="/api/auth/signin"
+                  href="/signin"
                   className="underline underline-offset-4 hover:text-white"
                 >
                   Sign in
