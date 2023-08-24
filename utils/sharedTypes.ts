@@ -7,7 +7,6 @@ export enum UserType {
 export interface User {
   id: string;
   userType: UserType;
-  dateCreated: Date;
   email: string;
   firstName: string;
   lastName: string;
