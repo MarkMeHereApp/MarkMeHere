@@ -84,11 +84,6 @@ const AttendanceContainer: React.FC = () => {
     }
   ];
 
-  const roundValueToTwoDecimalsPercent = (number: number) => {
-    const roundedNumber = Number(number.toFixed(2));
-    return `${roundedNumber}%`;
-  };
-
   return (
     <div className="flex flex-row max-h-96 gap-x-8">
       {students.length > 0 && (
@@ -97,13 +92,12 @@ const AttendanceContainer: React.FC = () => {
             students={students}
             selectedStudent={selectedStudent}
             handleStudentChange={handleStudentChange}
-            className="basis-1/4 h-1/2"
+            className="basis-1/3 h-auto"
           />
           <PieChartCardComponent
             selectedStudent={selectedStudent}
             attendanceData={attendanceData}
-            roundValueToTwoDecimalsPercent={roundValueToTwoDecimalsPercent}
-            className="basis-3/4 h-1/2"
+            className="basis-2/3 h-auto"
           />
         </>
       )}

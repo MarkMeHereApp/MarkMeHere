@@ -21,22 +21,25 @@ const StudentsView = () => {
   return (
     <div className="w-full">
       {/* Adjust the width of the card using Flexbox */}
-      <Card className="flex-grow">
+      <Card className="flex-grow w-1/2">
         <CardHeader>
-          <CardTitle>Class Attendance</CardTitle>
-          <CardDescription>Nice!</CardDescription>
-          <Button
-            onClick={() => handleAddRandomPersonClick()}
-            className={
-              'text-sm font-medium text-muted-foreground transition-colors hover:text-primary w-full'
-            }
-          >
-            Add Random User to DB
-          </Button>
+          <CardTitle>Student Attendance Statistics</CardTitle>
+          <CardDescription>
+            Click a student to view their attendance percentage.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ContainerCardComponent />
         </CardContent>
+        <Button
+          variant={'ghost'}
+          onClick={() => handleAddRandomPersonClick()}
+          className={
+            'text-sm font-medium text-foreground transition-colors hover:text-background w-1/2 border-2'
+          }
+        >
+          + Add Random User to DB +
+        </Button>
       </Card>
     </div>
   );

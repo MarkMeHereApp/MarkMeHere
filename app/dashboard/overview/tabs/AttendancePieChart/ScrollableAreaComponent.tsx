@@ -23,7 +23,7 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
 }) => {
   return (
     <div className={className}>
-      <ScrollArea className="space-y-1 max-h-96 overflow-y-auto">
+      <ScrollArea className="space-y-1 h-full overflow-y-auto">
         {students.map((student) => (
           <Button
             variant={`${
@@ -31,7 +31,7 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
             }`}
             key={student.fullName}
             onClick={() => handleStudentChange(student.fullName)}
-            className={`w-full p-2 text-center cursor-pointer border-2`}
+            className={`w-full h-fit p-2 text-center cursor-pointer border-2 border-border`}
           >
             {student.fullName}
           </Button>

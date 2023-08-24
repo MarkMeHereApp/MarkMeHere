@@ -1,21 +1,20 @@
 'use client';
-import React from 'react';
-import { tremorTwMerge } from '../lib';
+
+import { Color, ValueFormatter } from '../lib/inputTypes';
 import {
   Pie,
   PieChart as ReChartsDonutChart,
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
-
-import NoData from '../common/NoData';
-import { Color, ValueFormatter } from '../lib/inputTypes';
 import { defaultValueFormatter, themeColorRange } from '../lib';
-
 import { parseData, parseLabelInput } from './inputParser';
-import { DonutChartTooltip } from './DonutChartTooltip';
 
 import type BaseAnimationTimingProps from '../common/BaseAnimationTimingProps';
+import { DonutChartTooltip } from './DonutChartTooltip';
+import NoData from '../common/NoData';
+import React from 'react';
+import { tremorTwMerge } from '../lib';
 
 type DonutChartVariant = 'donut' | 'pie';
 
@@ -73,12 +72,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
             <ReChartsDonutChart>
               {showLabel && isDonut ? (
                 <text
-                  className={tremorTwMerge(
-                    // light
-                    'fill-tremor-content-emphasis',
-                    // dark
-                    'dark:fill-dark-tremor-content-emphasis'
-                  )}
+                  className={'--primary'}
                   x="50%"
                   y="50%"
                   textAnchor="middle"
@@ -88,7 +82,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
                 </text>
               ) : null}
               <Pie
-                className="stroke-tremor-background dark:stroke-dark-tremor-background"
+                className="--background"
                 data={parseData(data, colors)}
                 cx="50%"
                 cy="50%"

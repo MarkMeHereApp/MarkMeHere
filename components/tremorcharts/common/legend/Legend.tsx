@@ -43,18 +43,7 @@ const LegendItem = ({ name, color }: LegendItemProps) => (
     >
       <circle cx={4} cy={4} r={4} />
     </svg>
-    <p
-      className={tremorTwMerge(
-        // common
-        'whitespace-nowrap truncate text-tremor-default',
-        // light
-        'text-tremor-content',
-        // dark
-        'dark:text-dark-tremor-content'
-      )}
-    >
-      {name}
-    </p>
+    <p className={'whitespace-nowrap text-muted-foreground'}>{name}</p>
   </li>
 );
 
@@ -68,11 +57,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
   return (
     <ol
       ref={ref}
-      className={tremorTwMerge(
-        makeLegendClassName('root'),
-        'flex flex-wrap overflow-hidden truncate',
-        className
-      )}
+      className={'flex flex-col overflow-hidden truncate'}
       {...other}
     >
       {categories.map((category, idx) => (
