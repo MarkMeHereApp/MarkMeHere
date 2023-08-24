@@ -5,16 +5,11 @@ import { CardTitle } from '@/components/ui/card';
 import { DonutChart } from '@/components/tremorcharts/';
 import { Legend } from '@/components/tremorcharts/common/legend';
 import React from 'react';
+import { Student } from '@/utils/sharedTypes';
 
 interface PieChartCardProps {
-  selectedStudent: string;
-  attendanceData: AttendanceData[];
+  selectedStudent: Student;
   className?: React.ComponentProps<'div'>['className'];
-}
-
-interface AttendanceData {
-  name: string;
-  value: number;
 }
 
 const roundValueToTwoDecimalsPercent = (number: number) => {
@@ -24,14 +19,28 @@ const roundValueToTwoDecimalsPercent = (number: number) => {
 
 const PieChartCardComponent: React.FC<PieChartCardProps> = ({
   selectedStudent,
-  attendanceData,
   className
 }) => {
+  const totalLectures = selectedStudent?.totalLectures || 0;
+  const lecturesAttended = selectedStudent?.lecturesAttended || 0;
+
+  const attendanceData = [
+    {
+      name: 'Attended',
+      value: (lecturesAttended / totalLectures) * 100
+    },
+    {
+      name: 'Not Attended',
+      value: 100 - (lecturesAttended / totalLectures) * 100
+    }
+  ];
+
   return (
     <div className={className}>
       <Card className="flex flex-col items-center justify-center p-2 space-y-2">
         <CardTitle className={'text-foreground'}>
-          {selectedStudent || 'Select a student'}
+          {`${selectedStudent.firstName} ${selectedStudent.lastName}` ||
+            'Select a student'}
         </CardTitle>
         <DonutChart
           variant="pie"

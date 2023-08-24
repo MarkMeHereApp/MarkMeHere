@@ -9,7 +9,6 @@ function createRandomUser(): User {
   const sex = faker.person.sexType();
   const firstName = faker.person.firstName(sex);
   const lastName = faker.person.lastName(sex);
-  const fullName = `${firstName} ${lastName}`;
   const totalLectures = faker.number.int({ max: 100_000 });
 
   return {
@@ -34,8 +33,9 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: randomUser
     });
-    const users = await prisma.user.findMany();
-    console.log(users);
+    const users = await prisma.user.findMany({
+      orderBy: [{ lastName: 'asc' }]
+    });
     return NextResponse.json({ success: true, users });
   } catch (error) {
     console.error('Error inserting user:', error);
@@ -46,9 +46,9 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const users = await prisma.user.findMany();
-    console.log('Users Received', users);
-
+    const users = await prisma.user.findMany({
+      orderBy: [{ lastName: 'asc' }]
+    });
     return NextResponse.json({ success: true, users });
   } catch (error) {
     console.error('Error getting users:', error);
