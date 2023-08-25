@@ -28,8 +28,8 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="hidden flex-col md:flex">
-      <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex flex-col md:flex-row">
+      <div className="flex-1 md:w-1/2 p-8 md:p-12">
         <HeaderView />
         <DashboardView />
       </div>
