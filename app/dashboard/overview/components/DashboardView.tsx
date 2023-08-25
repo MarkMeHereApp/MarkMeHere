@@ -50,7 +50,7 @@ const DashboardView = () => {
     }
   };
 
-  const handleAddRandomPersonClick = async () => {
+  const handleAddRandomStudentClick = async () => {
     try {
       const response = await fetch('/api/prisma', {
         method: 'POST'
@@ -86,12 +86,12 @@ const DashboardView = () => {
         <StudentAnalytics users={users} />
         <Button
           variant={'ghost'}
-          onClick={() => handleAddRandomPersonClick()}
+          onClick={() => handleAddRandomStudentClick()}
           className={
             'text-sm font-medium text-foreground transition-colors hover:text-background w-1/2 border-2'
           }
         >
-          + Add Random User to DB +
+          + Add Random Student to DB +
         </Button>
       </TabsContent>
     </Tabs>

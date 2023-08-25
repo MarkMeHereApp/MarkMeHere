@@ -6,7 +6,7 @@ import { DonutChart } from '@/components/tremorcharts/';
 import { Legend } from '@/components/tremorcharts/common/legend';
 import React from 'react';
 import { Student } from '@/utils/sharedTypes';
-
+import { faker } from '@faker-js/faker';
 interface PieChartCardProps {
   selectedStudent: Student;
   className?: React.ComponentProps<'div'>['className'];
@@ -21,8 +21,8 @@ const PieChartCardComponent: React.FC<PieChartCardProps> = ({
   selectedStudent,
   className
 }) => {
-  const totalLectures = selectedStudent?.totalLectures || 0;
-  const lecturesAttended = selectedStudent?.lecturesAttended || 0;
+  const totalLectures = faker.number.int({ max: 100 });
+  const lecturesAttended = faker.number.int({ min: 0, max: totalLectures });
 
   const attendanceData = [
     {

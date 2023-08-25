@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
+
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
@@ -9,9 +13,9 @@ datasource db {
 }
 
 enum UserType {
-  Admin
-  Student
-  Professor
+  ADMIN
+  STUDENT
+  PROFESSOR
 }
 
 model User {
@@ -21,16 +25,12 @@ model User {
   firstName          String    @default("null") @db.VarChar(255)
   lastName           String    @default("null") @db.VarChar(255)
   fullName           String    @default("null") @db.VarChar(255)
-  dateCreated        DateTime  
+  dateCreated        DateTime
   password           String    @db.VarChar(255)
-  GPA                Float?
-  age                Int?
-  gender             String?
-  lecturesAttended   Int?
-  totalLectures      Int?
   coursesAsStudent   Course[]  @relation("Course_Students")
-  coursesAsAdmin     Course[]  @relation("Course_Admins")
   lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
+  // coursesAsProfessor Course[]  @relation("Course_Professors")
+  // coursesAsAdmin     Course[]  @relation("Course_Admins")
 }
 
 model Lecture {
@@ -44,9 +44,10 @@ model Lecture {
 model Course {
   id          String    @id @unique
   students    User[]    @relation("Course_Students")
-  admins      User[]    @relation("Course_Admins")
   dateCreated DateTime
   StartDate   DateTime
   EndDate     DateTime?
   lectures    Lecture[] @relation("Course_Lectures")
+  // professors User[] @relation("Course_Professors")
+  // admins      User[]    @relation("Course_Admins")
 }

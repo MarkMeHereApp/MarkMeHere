@@ -1,41 +1,50 @@
 export enum UserType {
-  Admin = 'Admin',
-  Student = 'Student',
-  Professor = 'Professor'
+  ADMIN = 'ADMIN',
+  STUDENT = 'STUDENT',
+  PROFESSOR = 'PROFESSOR'
 }
 
 export interface User {
   id: string;
-  userType: UserType;
+  userType?: UserType;
   email: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
   password: string;
   dateCreated: Date;
+  coursesAsStudent?: Course[];
+  lecturesAttendance?: LectureAttendance[];
 }
 
 export interface Student extends User {
-  GPA?: number;
-  age?: number;
-  gender?: string;
-  lecturesAttended?: number;
-  totalLectures?: number;
-}
-
-export interface Admin extends User {
-  courses: Course[];
+  userType: UserType.STUDENT;
 }
 
 export interface Professor extends User {
-  courses: Course[];
+  userType: UserType.PROFESSOR;
+}
+
+export interface Admin extends User {
+  userType: UserType.ADMIN;
 }
 
 export interface Lecture {
   id: string;
-  attendance: User[];
-  StartDate: Date;
-  EndDate: Date;
+  startDate: Date;
+  endDate: Date;
+  attendanceDate: Date;
+  attendance: LectureAttendance[];
+  courses: Course[];
+}
+
+export interface LectureAttendance {
+  id: number;
+  lecture: Lecture;
+  lectureId: string;
+  student: User;
+  studentId: string;
+  attendedAt: Date;
 }
 
 export interface Course {
@@ -44,7 +53,7 @@ export interface Course {
   professors: Professor[];
   students: Student[];
   dateCreated: Date;
-  StartDate: Date;
-  EndDate?: Date;
+  startDate: Date;
+  endDate?: Date;
   lectures: Lecture[];
 }
