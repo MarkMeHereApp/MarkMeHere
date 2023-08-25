@@ -1,14 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {
-  handleAddRandomStudentClick,
-  handleDeleteAllStudentsClick,
-  handleGetStudentsClick
-} from '@/app/api/students/reactClickHelpers';
 
-import { Button } from '@/components/ui/button';
-import CRUDButtons from '@/app/api/students/crudButtons';
+import CRUDButtons from '@/app/api/students/CRUDButtons';
 import { DataTable } from './data-table';
 import { Student } from '@/utils/sharedTypes';
 import { columns } from './columns';

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react'; // Import React
-import {
-  handleAddRandomStudentClick,
-  handleDeleteAllStudentsClick,
-  handleGetStudentsClick
-} from '@/app/api/students/reactClickHelpers';
 
 import AttendanceView from './AttendanceView';
-import { Button } from '@/components/ui/button';
-import CRUDButtons from '@/app/api/students/crudButtons';
+import CRUDButtons from '@/app/api/students/CRUDButtons';
 import { Student } from '@/utils/sharedTypes';
 import { getStudents } from '@/app/api/students/clientRequests';
 
