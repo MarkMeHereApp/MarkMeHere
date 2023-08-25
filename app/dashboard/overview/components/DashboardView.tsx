@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import ManageStudents from './tabs/ManageStudents/page';
 import StudentAnalytics from './tabs/StudentAnalytics';
 import { User } from '@/utils/sharedTypes';
 
@@ -50,28 +51,8 @@ const DashboardView = () => {
     }
   };
 
-  const handleAddRandomStudentClick = async () => {
-    try {
-      const response = await fetch('/api/prisma', {
-        method: 'POST'
-      });
-
-      if (response.ok) {
-        const responseData: { users: User[] } = await response.json(); // Use the correct type here
-        const users = responseData.users;
-        setUsers(users);
-      } else {
-        console.error('Failed to fetch data:', response.status);
-        setUsers([]);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setUsers([]);
-    }
-  };
-
   return (
-    <Tabs defaultValue="student-analytics">
+    <Tabs defaultValue="manage-students">
       <TabsList>
         <TabsTrigger value="overview" disabled>
           Overview
@@ -80,19 +61,10 @@ const DashboardView = () => {
         <TabsTrigger value="student-analytics">Student Analytics</TabsTrigger>
       </TabsList>
       <TabsContent value="manage-students">
-        <h2>hi</h2>
+        <ManageStudents />
       </TabsContent>
       <TabsContent value="student-analytics">
-        <StudentAnalytics users={users} />
-        <Button
-          variant={'ghost'}
-          onClick={() => handleAddRandomStudentClick()}
-          className={
-            'text-sm font-medium text-foreground transition-colors hover:text-background w-1/2 border-2'
-          }
-        >
-          + Add Random Student to DB +
-        </Button>
+        <StudentAnalytics />
       </TabsContent>
     </Tabs>
   );
