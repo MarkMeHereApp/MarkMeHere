@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import ManageStudents from './tabs/ManageStudents/page';
 import StudentAnalytics from './tabs/StudentAnalytics';
 import { User } from '@/utils/sharedTypes';
 
@@ -51,7 +52,7 @@ const DashboardView = () => {
   };
 
   return (
-    <Tabs defaultValue="student-analytics">
+    <Tabs defaultValue="manage-students">
       <TabsList>
         <TabsTrigger value="overview" disabled>
           Overview
@@ -60,7 +61,7 @@ const DashboardView = () => {
         <TabsTrigger value="student-analytics">Student Analytics</TabsTrigger>
       </TabsList>
       <TabsContent value="manage-students">
-        <h2>hi</h2>
+        <ManageStudents />
       </TabsContent>
       <TabsContent value="student-analytics">
         <StudentAnalytics />

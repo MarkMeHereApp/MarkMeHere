@@ -32,6 +32,11 @@ const StudentAnalytics = () => {
     }
   };
 
+  const handleGetStudentsClick = async () => {
+    const studentsData = await getStudents();
+    setStudents(studentsData);
+  };
+
   const handleAddRandomStudentClick = async () => {
     const studentsData = await addRandomStudent();
     setStudents(studentsData);
@@ -43,17 +48,27 @@ const StudentAnalytics = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 w-1/2">
-        <Button onClick={() => fetchData()}>Get Students</Button>
+    <div className="container mx-auto py-10">
+      <div className="flex flex-row gap-2">
         <Button
           variant="ghost"
-          onClick={() => handleAddRandomStudentClick()}
           className="text-sm font-medium text-foreground transition-colors hover:text-background border-2"
+          onClick={() => handleGetStudentsClick()}
+        >
+          Get Students
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-sm font-medium text-foreground transition-colors hover:text-background border-2"
+          onClick={() => handleAddRandomStudentClick()}
         >
           + Add Random Student to DB +
         </Button>
-        <Button onClick={handleDeleteAllStudentsClick}>
+        <Button
+          variant="destructive"
+          className="text-sm font-medium text-foreground transition-colors hover:text-background border-2"
+          onClick={handleDeleteAllStudentsClick}
+        >
           Delete All Students
         </Button>
       </div>
