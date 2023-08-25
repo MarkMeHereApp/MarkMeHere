@@ -51,12 +51,12 @@ enum AttendanceStatus {
 }
 
 model AttendanceEntry {
-  id          String   @id @unique
-  lecture     Lecture  @relation(fields: [lectureId], references: [id])
-  lectureId   String   @unique
-  student     User     @relation(fields: [studentId], references: [id])
-  studentId   String   @unique
-  checkInDate DateTime @default(now())
+  id          String           @id @unique
+  lecture     Lecture          @relation(fields: [lectureId], references: [id])
+  lectureId   String           @unique
+  student     User             @relation(fields: [studentId], references: [id])
+  studentId   String           @unique
+  checkInDate DateTime         @default(now())
   status      AttendanceStatus
 }
 
