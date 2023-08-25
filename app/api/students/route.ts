@@ -31,6 +31,11 @@ export async function POST(request: Request) {
       data: randomStudent
     });
     const students = await prisma.user.findMany({
+      where: {
+        userType: {
+          equals: UserType.STUDENT
+        }
+      },
       orderBy: [{ lastName: 'asc' }]
     });
     return NextResponse.json({ success: true, students });
