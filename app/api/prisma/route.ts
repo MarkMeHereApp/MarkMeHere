@@ -16,7 +16,7 @@ function createRandomStudent(): Prisma.UserCreateInput {
     firstName: firstName,
     lastName: lastName,
     fullName: `${firstName} ${lastName}`,
-    password: faker.string.sample({ min: 10, max: 20 }),
+    password: faker.string.sample({ min: 8, max: 20 }),
     dateCreated: new Date(),
     coursesAsStudent: undefined,
     lecturesAttendance: undefined
