@@ -1,8 +1,6 @@
-import { AttendanceEntry, Lecture, UserType } from '../../../utils/sharedTypes';
-
-import { Course } from './../../../utils/sharedTypes';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
+import { UserType } from '../../../utils/sharedTypes';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../prisma/index';
 
