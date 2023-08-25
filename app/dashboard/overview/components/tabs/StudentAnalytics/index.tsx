@@ -9,7 +9,7 @@ interface StudentStatisticsProps {
 
 const StudentAnalytics: React.FC<StudentStatisticsProps> = ({ users }) => {
   const students = users?.filter((element) => {
-    return element.userType === UserType.Student;
+    return element.userType === UserType.STUDENT;
   });
 
   const processedStudents = students?.map(

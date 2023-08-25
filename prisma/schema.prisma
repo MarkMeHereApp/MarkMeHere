@@ -2,9 +2,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
+
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum UserType {
@@ -14,47 +19,35 @@ enum UserType {
 }
 
 model User {
-  id                          String              @id @unique @map("user_id")
-  userType                    UserType?
-  email                       String              @unique
-  firstName                   String?             @default("null") @db.VarChar(255)
-  lastName                    String?             @default("null") @db.VarChar(255)
-  fullName                    String?             @default("null") @db.VarChar(255)
-  dateCreated                 DateTime            @default(now()) @map("created_at")
-  password                    String              @db.VarChar(255)
-  coursesAsStudent            Course[]           
-  coursesAsProfessor          Course[]            
-  coursesAsAdmin              Course[]        
-  lecturesAttendanceAsStudent LectureAttendance[] @relation("StudentAttendance")
+  id                 String    @id @unique
+  userType           UserType?
+  email              String    @unique
+  firstName          String    @default("null") @db.VarChar(255)
+  lastName           String    @default("null") @db.VarChar(255)
+  fullName           String    @default("null") @db.VarChar(255)
+  dateCreated        DateTime
+  password           String    @db.VarChar(255)
+  coursesAsStudent   Course[]  @relation("Course_Students")
+  lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
+  // coursesAsProfessor Course[]  @relation("Course_Professors")
+  // coursesAsAdmin     Course[]  @relation("Course_Admins")
 }
 
 model Lecture {
-  id             String              @id @map("lecture_id")
-  startDate      DateTime            @map("start_date")
-  endDate        DateTime            @map("end_date")
-  attendanceDate DateTime            @map("attendance_date")
-  attendance     LectureAttendance[] @relation("LectureAttendance")
-  courses        Course[]            @relation("Lectures")
-}
-
-model LectureAttendance {
-  id         Int      @id @default(autoincrement())
-  lecture    Lecture  @relation("LectureAttendance", fields: [lectureId], references: [id])
-  lectureId  String
-  student    User     @relation("StudentAttendance", fields: [studentId], references: [id])
-  studentId  String
-  attendedAt DateTime @default(now())
-
-  @@unique([lectureId, studentId])
+  id         String   @id @unique
+  StartDate  DateTime
+  EndDate    DateTime
+  attendance User[]   @relation("User_LecturesAttendance")
+  courses    Course[] @relation("Course_Lectures")
 }
 
 model Course {
-  id          String    @id @map("course_id")
-  students    User[]    @relation("StudentEnrollments")
-  admins      User[]    @relation("Admins")
-  professors  User[]    @relation("Professors")
-  dateCreated DateTime  @default(now()) @map("created_at")
-  startDate   DateTime  @map("start_date")
-  endDate     DateTime? @map("end_date")
-  lectures    Lecture[] @relation("Lectures")
+  id          String    @id @unique
+  students    User[]    @relation("Course_Students")
+  dateCreated DateTime
+  StartDate   DateTime
+  EndDate     DateTime?
+  lectures    Lecture[] @relation("Course_Lectures")
+  // professors User[] @relation("Course_Professors")
+  // admins      User[]    @relation("Course_Admins")
 }

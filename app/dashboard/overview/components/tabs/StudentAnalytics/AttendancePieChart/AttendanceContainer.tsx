@@ -4,11 +4,8 @@ import React, { useState } from 'react';
 
 import PieChartCardComponent from './PieChartCardComponent';
 import ScrollableAreaComponent from './ScrollableAreaComponent';
-import { User } from '@/utils/sharedTypes';
+import { Student } from '@/utils/sharedTypes';
 
-interface Student extends User {
-  fullName: string;
-}
 interface AttendanceContainerProps {
   students: Student[];
 }

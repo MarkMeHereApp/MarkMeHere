@@ -1,37 +1,30 @@
-import {
-  Course,
-  LectureAttendance,
-  User,
-  UserType
-} from '../../../utils/sharedTypes';
-
 import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
+import { UserType } from '../../../utils/sharedTypes';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../prisma/index';
 
-function createRandomUser(): User {
+function createRandomStudent(): Prisma.UserCreateInput {
   const sex = faker.person.sexType();
   const firstName = faker.person.firstName(sex);
   const lastName = faker.person.lastName(sex);
 
   return {
     id: faker.string.uuid(),
-    userType: faker.helpers.enumValue(UserType),
+    userType: UserType.STUDENT,
     email: faker.internet.email(),
     firstName: firstName,
     lastName: lastName,
     fullName: `${firstName} ${lastName}`,
     password: faker.string.sample({ min: 10, max: 20 }),
     dateCreated: new Date(),
-    coursesAsStudent: {},
-    coursesAsProfessor: {},
-    coursesAsAdmin: {},
-    lecturesAttendanceAsStudent: [] as LectureAttendance[]
-  } as User;
+    coursesAsStudent: undefined,
+    lecturesAttendance: undefined
+  };
 }
 
 export async function POST(request: Request) {
-  const randomUser = createRandomUser();
+  const randomUser = createRandomStudent();
   console.log('Random User:', randomUser); // Add this line
 
   try {

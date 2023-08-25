@@ -13,10 +13,8 @@ export interface User {
   fullName?: string;
   password: string;
   dateCreated: Date;
-  coursesAsStudent: Course[];
-  coursesAsProfessor: Course[];
-  coursesAsAdmin: Course[];
-  lecturesAttendanceAsStudent: LectureAttendance[];
+  coursesAsStudent?: Course[];
+  lecturesAttendance?: LectureAttendance[];
 }
 
 export interface Student extends User {
