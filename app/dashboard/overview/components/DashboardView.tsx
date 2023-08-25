@@ -50,26 +50,6 @@ const DashboardView = () => {
     }
   };
 
-  const handleAddRandomStudentClick = async () => {
-    try {
-      const response = await fetch('/api/prisma', {
-        method: 'POST'
-      });
-
-      if (response.ok) {
-        const responseData: { users: User[] } = await response.json(); // Use the correct type here
-        const users = responseData.users;
-        setUsers(users);
-      } else {
-        console.error('Failed to fetch data:', response.status);
-        setUsers([]);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setUsers([]);
-    }
-  };
-
   return (
     <Tabs defaultValue="student-analytics">
       <TabsList>
@@ -83,16 +63,7 @@ const DashboardView = () => {
         <h2>hi</h2>
       </TabsContent>
       <TabsContent value="student-analytics">
-        <StudentAnalytics users={users} />
-        <Button
-          variant={'ghost'}
-          onClick={() => handleAddRandomStudentClick()}
-          className={
-            'text-sm font-medium text-foreground transition-colors hover:text-background w-1/2 border-2'
-          }
-        >
-          + Add Random Student to DB +
-        </Button>
+        <StudentAnalytics />
       </TabsContent>
     </Tabs>
   );
