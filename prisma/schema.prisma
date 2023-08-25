@@ -19,26 +19,38 @@ enum UserType {
 }
 
 model User {
-  id                 String    @id @unique
-  userType           UserType?
-  email              String    @unique
-  firstName          String    @default("null") @db.VarChar(255)
-  lastName           String    @default("null") @db.VarChar(255)
-  fullName           String    @default("null") @db.VarChar(255)
-  dateCreated        DateTime
-  password           String    @db.VarChar(255)
-  coursesAsStudent   Course[]  @relation("Course_Students")
-  lecturesAttendance Lecture[] @relation("User_LecturesAttendance")
+  id                String            @id @unique
+  userType          UserType?
+  email             String            @unique
+  firstName         String            @default("null") @db.VarChar(255)
+  lastName          String            @default("null") @db.VarChar(255)
+  fullName          String            @default("null") @db.VarChar(255)
+  dateCreated       DateTime
+  password          String            @db.VarChar(255)
+  coursesAsStudent  Course[]          @relation("Course_Students")
+  lecturesAttended  Lecture[]         @relation("Student_LecturesAttended")
+  attendanceEntries AttendanceEntry[]
   // coursesAsProfessor Course[]  @relation("Course_Professors")
   // coursesAsAdmin     Course[]  @relation("Course_Admins")
 }
 
 model Lecture {
-  id         String   @id @unique
-  StartDate  DateTime
-  EndDate    DateTime
-  attendance User[]   @relation("User_LecturesAttendance")
-  courses    Course[] @relation("Course_Lectures")
+  id                String            @id @unique
+  course            Course            @relation(fields: [courseId], references: [id])
+  courseId          String            @unique
+  StartDate         DateTime
+  EndDate           DateTime?
+  studentAttendance User[]            @relation("Student_LecturesAttended")
+  attendanceEntries AttendanceEntry[]
+}
+
+model AttendanceEntry {
+  id          String   @id @unique
+  lecture     Lecture  @relation(fields: [lectureId], references: [id])
+  lectureId   String   @unique
+  student     User     @relation(fields: [studentId], references: [id])
+  studentId   String   @unique
+  checkInDate DateTime @default(now())
 }
 
 model Course {
@@ -47,7 +59,7 @@ model Course {
   dateCreated DateTime
   StartDate   DateTime
   EndDate     DateTime?
-  lectures    Lecture[] @relation("Course_Lectures")
+  lectures    Lecture[]
   // professors User[] @relation("Course_Professors")
   // admins      User[]    @relation("Course_Admins")
 }

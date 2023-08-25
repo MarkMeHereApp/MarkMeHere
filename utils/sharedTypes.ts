@@ -13,8 +13,9 @@ export interface User {
   fullName?: string;
   password: string;
   dateCreated: Date;
-  coursesAsStudent?: Course[];
-  lecturesAttendance?: LectureAttendance[];
+  coursesAsStudent: Course[];
+  lecturesAttended?: Lecture[];
+  attendanceEntries?: AttendanceEntry[];
 }
 
 export interface Student extends User {
@@ -29,31 +30,8 @@ export interface Admin extends User {
   userType: UserType.ADMIN;
 }
 
-export interface Lecture {
-  id: string;
-  startDate: Date;
-  endDate: Date;
-  attendanceDate: Date;
-  attendance: LectureAttendance[];
-  courses: Course[];
-}
+export interface Lecture {}
 
-export interface LectureAttendance {
-  id: number;
-  lecture: Lecture;
-  lectureId: string;
-  student: User;
-  studentId: string;
-  attendedAt: Date;
-}
+export interface AttendanceEntry {}
 
-export interface Course {
-  id: string;
-  admins: Admin[];
-  professors: Professor[];
-  students: Student[];
-  dateCreated: Date;
-  startDate: Date;
-  endDate?: Date;
-  lectures: Lecture[];
-}
+export interface Course {}

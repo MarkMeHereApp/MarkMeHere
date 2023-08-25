@@ -1,6 +1,8 @@
+import { AttendanceEntry, Lecture, UserType } from '../../../utils/sharedTypes';
+
+import { Course } from './../../../utils/sharedTypes';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
-import { UserType } from '../../../utils/sharedTypes';
 import { faker } from '@faker-js/faker';
 import prisma from '../../../prisma/index';
 
@@ -17,9 +19,7 @@ function createRandomStudent(): Prisma.UserCreateInput {
     lastName: lastName,
     fullName: `${firstName} ${lastName}`,
     password: faker.string.sample({ min: 10, max: 20 }),
-    dateCreated: new Date(),
-    coursesAsStudent: undefined,
-    lecturesAttendance: undefined
+    dateCreated: new Date()
   };
 }
 
