@@ -1,4 +1,9 @@
-import { User, UserType } from '../../../utils/sharedTypes';
+import {
+  Course,
+  LectureAttendance,
+  User,
+  UserType
+} from '../../../utils/sharedTypes';
 
 import { NextResponse } from 'next/server';
 import { faker } from '@faker-js/faker';
@@ -8,7 +13,6 @@ function createRandomUser(): User {
   const sex = faker.person.sexType();
   const firstName = faker.person.firstName(sex);
   const lastName = faker.person.lastName(sex);
-  const totalLectures = faker.number.int({ max: 100_000 });
 
   return {
     id: faker.string.uuid(),
@@ -17,13 +21,12 @@ function createRandomUser(): User {
     firstName: firstName,
     lastName: lastName,
     fullName: `${firstName} ${lastName}`,
-    GPA: faker.number.float({ max: 5.0 }),
-    age: faker.number.int({ max: 80 }),
-    gender: faker.person.gender(),
-    lecturesAttended: faker.number.int({ max: totalLectures }),
-    totalLectures: totalLectures,
     password: faker.string.sample({ min: 10, max: 20 }),
     dateCreated: new Date(),
+    coursesAsStudent: {},
+    coursesAsProfessor: {},
+    coursesAsAdmin: {},
+    lecturesAttendanceAsStudent: [] as LectureAttendance[]
   } as User;
 }
 
