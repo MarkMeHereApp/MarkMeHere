@@ -3,9 +3,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import ManageStudents from './tabs/ManageStudents/page';
-import StudentAnalytics from './tabs/StudentAnalytics';
+import StudentAnalytics from './tabs/StudentAnalytics/page';
 import { User } from '@/utils/sharedTypes';
 
 const getUsers = async () => {
