@@ -21,12 +21,12 @@ export const getStudents = async () => {
   }
 };
 
-export const addRandomStudent = async () => {
+export const addStudent = async (student: Student) => {
   try {
     const response = await fetch('/api/students', {
-      method: 'POST'
+      method: 'POST',
+      body: JSON.stringify(student)
     });
-
     if (response.ok) {
       const responseData: { students: Student[] } = await response.json(); // Use the correct type here
       const students = responseData.students;

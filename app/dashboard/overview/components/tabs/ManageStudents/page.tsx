@@ -32,10 +32,10 @@ const ManageStudents = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
+        <div className="flex flex-col gap-y-4">
           <StudentCRUDButtons setStudents={setData} />
           <DataTable columns={columns} data={data} />
-        </>
+        </div>
       )}
     </div>
   );

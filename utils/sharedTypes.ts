@@ -8,12 +8,13 @@ export interface User {
   id: string;
   userType?: UserType;
   email: string;
-  firstName?: string;
-  lastName?: string;
-  fullName?: string;
-  password: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
   dateCreated: Date;
-  coursesAsStudent: Course[];
+
+  password?: string;
+  coursesAsStudent?: Course[];
   lecturesAttended?: Lecture[];
   attendanceEntries?: AttendanceEntry[];
 }

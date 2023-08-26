@@ -21,7 +21,7 @@ model User {
   firstName         String            @default("null") @db.VarChar(255)
   lastName          String            @default("null") @db.VarChar(255)
   fullName          String            @default("null") @db.VarChar(255)
-  dateCreated       DateTime
+  dateCreated       DateTime?         @default(now())
   password          String            @db.VarChar(255)
   coursesAsStudent  Course[]          @relation("Course_Students")
   lecturesAttended  Lecture[]         @relation("Student_LecturesAttended")

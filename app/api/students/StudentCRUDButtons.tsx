@@ -10,19 +10,21 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import React, { useState } from 'react';
+import { Student, UserType } from '@/utils/sharedTypes';
 import {
-  handleAddRandomStudentClick,
+  handleAddStudentClick,
   handleDeleteAllStudentsClick,
   handleGetStudentsClick
 } from './reactClickHelpers';
-import { toast, useToast } from '@/components/ui/use-toast';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Student } from '@/utils/sharedTypes';
+import createRandomStudent from '@/utils/createRandomStudent';
 import { faker } from '@faker-js/faker';
+import { toast } from '@/components/ui/use-toast';
 import { useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CRUDButtonsProps {
@@ -31,10 +33,14 @@ interface CRUDButtonsProps {
 const AddRandomStudentButton: React.FC<CRUDButtonsProps> = ({
   setStudents
 }) => {
+  const randomStudent = createRandomStudent();
+
   return (
     <Button
       variant="default"
-      onClick={() => handleAddRandomStudentClick(setStudents)}
+      onClick={() => {
+        handleAddStudentClick(setStudents, randomStudent);
+      }}
     >
       + Add Random Student to DB +
     </Button>
@@ -109,15 +115,14 @@ const GetStudentsButton: React.FC<CRUDButtonsProps> = ({ setStudents }) => (
   </Button>
 );
 
-interface StudentEnrollmentFormProps {
+interface StudentEnrollmentFormProps extends CRUDButtonsProps {
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
-  setIsDialogOpen
+  setIsDialogOpen,
+  setStudents
 }) => {
-  const { toast } = useToast();
-
   const handleDialogClose = () => {
     setIsDialogOpen(false);
   };
@@ -133,6 +138,15 @@ const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    const studentData: Student = {
+      ...data,
+      fullName: `${data.firstName} ${data.lastName}`,
+      id: uuidv4(),
+      userType: UserType.STUDENT,
+      dateCreated: new Date(Date.now())
+    };
+
+    handleAddStudentClick(setStudents, studentData);
     toast({
       title: 'You enrolled the following student:',
       description: Object.entries(data)
@@ -153,8 +167,8 @@ const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
       <DialogHeader onClick={handleDialogClose}>
         <DialogTitle>Enroll Student</DialogTitle>
         <DialogDescription>
-          Fill in the student's information below and click enroll when you're
-          done.
+          Fill in the student&apos;s information below and click enroll when
+          you&apos;re done.
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
@@ -218,7 +232,10 @@ const EnrollNewStudentButton: React.FC<CRUDButtonsProps> = ({
           className="sm:max-w-[425px]"
           onClose={() => setIsDialogOpen(false)}
         >
-          <StudentEnrollmentForm setIsDialogOpen={setIsDialogOpen} />
+          <StudentEnrollmentForm
+            setStudents={setStudents}
+            setIsDialogOpen={setIsDialogOpen}
+          />
         </DialogContent>
       </Dialog>
     </>

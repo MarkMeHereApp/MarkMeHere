@@ -13,14 +13,16 @@ interface AttendanceContainerProps {
 const AttendanceContainer: React.FC<AttendanceContainerProps> = ({
   students
 }) => {
-  const [selectedStudent, setSelectedStudent] = useState<Student>();
+  const [selectedStudent, setSelectedStudent] = useState<Student>(
+    {} as Student
+  );
 
   // Update the selected student when students change
   useEffect(() => {
     if (students.length > 0) {
       setSelectedStudent(students[0]);
     } else {
-      setSelectedStudent();
+      setSelectedStudent({} as Student);
     }
   }, [students]); // This dependency array ensures the effect runs when students change
 
