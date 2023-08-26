@@ -1,42 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { DataTable } from './data-table';
-import { Student } from '@/utils/sharedTypes';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
+import { StudentDataContext } from '@/app/providers';
 import { columns } from './columns';
-import { getStudents } from '@/app/api/students/clientRequests';
 
 const ManageStudents = () => {
-  const [data, setData] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const studentsData = await getStudents();
-        setData(studentsData);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching students:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { students, setStudents } = useContext(StudentDataContext);
 
   return (
-    <div className="container mx-auto py-10">
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
-          <StudentCRUDButtons setStudents={setData} />
-          <DataTable columns={columns} data={data} />
-        </div>
-      )}
+    <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
+      <StudentCRUDButtons />
+      <DataTable columns={columns} data={students} />
     </div>
   );
 };
