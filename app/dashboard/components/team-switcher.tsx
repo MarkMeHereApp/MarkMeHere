@@ -1,19 +1,15 @@
-"use client"
+'use client';
 
-import * as React from "react"
+import * as React from 'react';
 import {
   CaretSortIcon,
   CheckIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons"
+  PlusCircledIcon
+} from '@radix-ui/react-icons';
 
-import { cn } from "@/lib/utils"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -21,8 +17,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-} from "@/components/ui/command"
+  CommandSeparator
+} from '@/components/ui/command';
 import {
   Dialog,
   DialogContent,
@@ -30,62 +26,57 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+  DialogTrigger
+} from '@/components/ui/dialog';
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import ProfileForm from "@/app/dashboard/components/class-creation-form"
+  PopoverTrigger
+} from '@/components/ui/popover';
+
+
+import { Separator } from '@/components/ui/separator';
+import ProfileForm from '@/app/dashboard/components/class-creation-form';
 const groups = [
   {
-    label: "Admin",
+    label: 'Admin',
     teams: [
       {
-        label: "Biology 1",
-        value: "BIO 2132-0005",
-      },
-    ],
+        label: 'Biology 1',
+        value: 'BIO 2132-0005'
+      }
+    ]
   },
   {
-    label: "Instructor",
+    label: 'Instructor',
     teams: [
       {
-        label: "Senior Design 2",
-        value: "COP 4935-0002",
+        label: 'Senior Design 2',
+        value: 'COP 4935-0002'
       },
       {
-        label: "Programming Languages",
-        value: "COP 4935-0001",
-      },
-    ],
-  },
-]
+        label: 'Programming Languages',
+        value: 'COP 4935-0001'
+      }
+    ]
+  }
+];
 
-type Team = (typeof groups)[number]["teams"][number]
+type Team = (typeof groups)[number]['teams'][number];
 
-type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
+type PopoverTriggerProps = React.ComponentPropsWithoutRef<
+  typeof PopoverTrigger
+>;
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
-  const [open, setOpen] = React.useState(false)
-  const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
   const [selectedTeam, setSelectedTeam] = React.useState<Team>(
     groups[0].teams[0]
-  )
-  const [maxHeight, setMaxHeight] = React.useState('calc(80vh - 10rem)'); 
+  );
+  const [maxHeight, setMaxHeight] = React.useState('calc(80vh - 10rem)');
 
   React.useEffect(() => {
     if (window.innerWidth <= 768) {
@@ -104,7 +95,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             role="combobox"
             aria-expanded={open}
             aria-label="Select a team"
-            className={cn("w-[200px] justify-between", className)}
+            className={cn('w-[200px] justify-between', className)}
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
@@ -128,8 +119,8 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
-                        setSelectedTeam(team)
-                        setOpen(false)
+                        setSelectedTeam(team);
+                        setOpen(false);
                       }}
                       className="text-sm"
                     >
@@ -144,10 +135,10 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                       {team.label}
                       <CheckIcon
                         className={cn(
-                          "ml-auto h-4 w-4",
+                          'ml-auto h-4 w-4',
                           selectedTeam.value === team.value
-                            ? "opacity-100"
-                            : "opacity-0"
+                            ? 'opacity-100'
+                            : 'opacity-0'
                         )}
                       />
                     </CommandItem>
@@ -161,8 +152,8 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
-                      setOpen(false)
-                      setShowNewTeamDialog(true)
+                      setOpen(false);
+                      setShowNewTeamDialog(true);
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -182,16 +173,16 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
           </DialogDescription>
         </DialogHeader>
         <Separator />
-        <div 
-          className="scrollable-content" 
+        <div
+          className="scrollable-content"
           style={{
-              maxHeight: maxHeight,
-              overflowY: 'auto',
-              paddingRight: '15px', 
-              boxSizing: 'content-box', 
-              width: 'calc(100% - 15px)'
+            maxHeight: maxHeight,
+            overflowY: 'auto',
+            paddingRight: '15px',
+            boxSizing: 'content-box',
+            width: 'calc(100% - 15px)'
           }}
-        > 
+        >
           <ProfileForm />
         </div>
         <DialogFooter>
@@ -202,5 +193,5 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

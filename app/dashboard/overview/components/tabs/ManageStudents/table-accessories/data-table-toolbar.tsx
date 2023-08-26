@@ -22,7 +22,7 @@ export function DataTableToolbar<TData>({
         <Input
           placeholder="Search for a student..."
           value={'globalFilter' in table.getState() ? globalFilter : ''}
-          onChange={(event: { target: { value: any } }) => {
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const searchString = event.target.value;
             table.setGlobalFilter(searchString);
           }}

@@ -1,6 +1,6 @@
 import { Student } from '@/utils/sharedTypes';
 
-export const useStudentDataAPI = (
+export const studentDataAPI = (
   students: Student[],
   setStudents: (students: Student[]) => void
 ) => {
@@ -13,7 +13,6 @@ export const useStudentDataAPI = (
       if (response.ok) {
         const responseData: { students: Student[] } = await response.json();
         const students = responseData.students;
-        console.log(students);
         return students;
       } else {
         console.error('Failed to fetch data:', response.status);

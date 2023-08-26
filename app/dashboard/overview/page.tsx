@@ -25,7 +25,7 @@ const HeaderView = () => {
 };
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+  const _session = await getServerSession(authOptions);
 
   return (
     <div className="flex flex-col md:flex-row">

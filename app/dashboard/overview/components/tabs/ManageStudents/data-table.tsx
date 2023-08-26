@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
 
   useEffect(() => {
     table.getColumn('fullName')?.toggleVisibility(false);
-  }, []);
+  });
 
   return (
     <div className="space-y-4">

@@ -1,8 +1,8 @@
-import type { NextAuthOptions } from 'next-auth';
-import GithubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GithubProvider from 'next-auth/providers/github';
+import type { NextAuthOptions } from 'next-auth';
+import bcrypt from "bcryptjs-react";
 import prisma from '@/prisma';
-import bcrypt from 'bcrypt';
 
 /*
 Today we need to Throw the custom error
@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const email: string = credentials?.email ?? '';
         const password: string = credentials?.password ?? '';
 

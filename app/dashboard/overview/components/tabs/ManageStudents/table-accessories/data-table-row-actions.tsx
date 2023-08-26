@@ -13,6 +13,7 @@ export function DataTableRowActions<TData>({
   return (
     <Dialog>
       <Pencil1Icon className="h-4 w-4" />
+      <h2>{row.id}</h2>
       <TrashIcon className="h-4 w-4"></TrashIcon>
     </Dialog>
   );

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
-import { faker } from '@faker-js/faker';
+import bcrypt from "bcryptjs-react";
 import prisma from '@/prisma';
 
 export async function POST(request: Request) {

@@ -1,22 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect } from 'react';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useSession, signIn } from 'next-auth/react';
-
-import { cn } from '@/lib/utils';
-import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // These are weird imports but it's how we can pass the getProviders type to the SignInForm component
 import { BuiltInProviderType } from 'next-auth/providers';
-import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
-import Github from 'next-auth/providers/github';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/ui/icons';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { useEffect } from 'react';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   providers: Record<
@@ -36,7 +34,7 @@ export default function SignInForm({
     {}
   );
   const { data: session } = useSession();
-  const callbackUrl = searchParams
+  const _callbackUrl = searchParams
     ? searchParams.get('callbackUrl') || '/'
     : '/';
   const [email, setEmail] = React.useState<string>('');

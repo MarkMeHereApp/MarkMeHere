@@ -1,11 +1,11 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 import { SessionProvider } from 'next-auth/react';
 import { Student } from '@/utils/sharedTypes';
 import { Toaster } from '@/components/ui/toaster';
-import { useStudentDataAPI } from './api/students/useStudentDataAPI';
+import { studentDataAPI } from './api/students/studentDataAPI';
 
 type Props = {
   children?: React.ReactNode;
@@ -24,13 +24,9 @@ export const StudentDataContext = createContext<StudentDataContextType>({
 export const Providers = ({ children }: Props) => {
   const [students, setStudents] = useState<Student[]>([]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
-      const studentsData = await useStudentDataAPI(
+      const studentsData = await studentDataAPI(
         students,
         setStudents
       ).getStudents();
@@ -46,6 +42,10 @@ export const Providers = ({ children }: Props) => {
     }
   };
 
+  useEffect(() => {
+    fetchData();
+  });
+
   return (
     <>
       <StudentDataContext.Provider value={{ students, setStudents }}>
@@ -55,3 +55,5 @@ export const Providers = ({ children }: Props) => {
     </>
   );
 };
+
+export default Providers;
