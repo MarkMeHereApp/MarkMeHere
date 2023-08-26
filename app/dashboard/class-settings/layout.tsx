@@ -1,39 +1,39 @@
-import { Metadata } from "next"
-import Image from "next/image"
+import { Metadata } from 'next';
+import Image from 'next/image';
 
-import { Separator } from "@/components/ui/separator"
-import { SidebarNav } from "@/components/general/sidebar-nav"
+import { Separator } from '@/components/ui/separator';
+import { SidebarNav } from '@/components/general/sidebar-nav';
 
 export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
-}
+  title: 'Forms',
+  description: 'Advanced form example using react-hook-form and Zod.'
+};
 
 const sidebarNavItems = [
   {
-    title: "Profile",
-    href: "/class-settings",
+    title: 'Profile',
+    href: '/class-settings'
   },
   {
-    title: "Account",
-    href: "/class-settings/account",
+    title: 'Account',
+    href: '/class-settings/account'
   },
   {
-    title: "Appearance",
-    href: "/class-settings/appearance",
+    title: 'Appearance',
+    href: '/class-settings/appearance'
   },
   {
-    title: "Notifications",
-    href: "/class-settings/notifications",
+    title: 'Notifications',
+    href: '/class-settings/notifications'
   },
   {
-    title: "Display",
-    href: "/class-settings/display",
-  },
-]
+    title: 'Display',
+    href: '/class-settings/display'
+  }
+];
 
 interface SettingsLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
@@ -71,5 +71,5 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         </div>
       </div>
     </>
-  )
+  );
 }

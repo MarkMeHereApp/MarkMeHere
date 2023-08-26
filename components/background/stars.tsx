@@ -22,7 +22,7 @@ function StarGenerator() {
       <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color='#fff000'
+          color="#fff000"
           size={0.005}
           sizeAttenuation={true}
           depthWrite={false}
@@ -39,4 +39,3 @@ export default function Stars() {
     </Canvas>
   );
 }
-

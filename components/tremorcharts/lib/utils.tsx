@@ -1,7 +1,10 @@
-import { DeltaTypes } from "./constants";
-import { Color, ValueFormatter } from "./inputTypes";
+import { DeltaTypes } from './constants';
+import { Color, ValueFormatter } from './inputTypes';
 
-export const mapInputsToDeltaType = (deltaType: string, isIncreasePositive: boolean): string => {
+export const mapInputsToDeltaType = (
+  deltaType: string,
+  isIncreasePositive: boolean
+): string => {
   if (isIncreasePositive || deltaType === DeltaTypes.Unchanged) {
     return deltaType;
   }
@@ -15,10 +18,11 @@ export const mapInputsToDeltaType = (deltaType: string, isIncreasePositive: bool
     case DeltaTypes.ModerateDecrease:
       return DeltaTypes.ModerateIncrease;
   }
-  return "";
+  return '';
 };
 
-export const defaultValueFormatter: ValueFormatter = (value: number) => value.toString();
+export const defaultValueFormatter: ValueFormatter = (value: number) =>
+  value.toString();
 
 export const sumNumericArray = (arr: number[]) =>
   arr.reduce((prefixSum, num) => prefixSum + num, 0);
@@ -33,11 +37,11 @@ export const isValueInArray = (value: any, array: any[]): boolean => {
 };
 
 export function mergeRefs<T = any>(
-  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
+  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>
 ): React.RefCallback<T> {
   return (value) => {
     refs.forEach((ref) => {
-      if (typeof ref === "function") {
+      if (typeof ref === 'function') {
         ref(value);
       } else if (ref != null) {
         (ref as React.MutableRefObject<T | null>).current = value;
@@ -68,10 +72,15 @@ interface ColorClassNames {
 }
 
 export function getColorClassNames(
-  color: Color | "white" | "black" | "transparent",
-  shade?: number,
+  color: Color | 'white' | 'black' | 'transparent',
+  shade?: number
 ): ColorClassNames {
-  if (color === "white" || color === "black" || color === "transparent" || !shade) {
+  if (
+    color === 'white' ||
+    color === 'black' ||
+    color === 'transparent' ||
+    !shade
+  ) {
     return {
       bgColor: `bg-${color}`,
       hoverBgColor: `hover:bg-${color}`,
@@ -84,7 +93,7 @@ export function getColorClassNames(
       hoverBorderColor: `hover:border-${color}`,
       ringColor: `ring-${color}`,
       strokeColor: `stroke-${color}`,
-      fillColor: `fill-${color}`,
+      fillColor: `fill-${color}`
     };
   }
   return {
@@ -99,6 +108,6 @@ export function getColorClassNames(
     hoverBorderColor: `hover:border-${color}-${shade}`,
     ringColor: `ring-${color}-${shade}`,
     strokeColor: `stroke-${color}-${shade}`,
-    fillColor: `fill-${color}-${shade}`,
+    fillColor: `fill-${color}-${shade}`
   };
 }

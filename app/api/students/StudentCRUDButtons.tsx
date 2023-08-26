@@ -17,9 +17,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StudentDataContext } from '@/app/providers';
 import createRandomStudent from '@/utils/createRandomStudent';
+import { studentDataAPI } from './studentDataAPI';
 import { toast } from '@/components/ui/use-toast';
 import { useForm } from 'react-hook-form';
-import { useStudentDataAPI } from './useStudentDataAPI';
 import { v4 as uuidv4 } from 'uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -31,7 +31,7 @@ const AddRandomStudentButton = () => {
     <Button
       variant="default"
       onClick={() => {
-        useStudentDataAPI(students, setStudents).addStudent(randomStudent);
+        studentDataAPI(students, setStudents).addStudent(randomStudent);
       }}
     >
       + Add Random Student to DB +
@@ -53,7 +53,7 @@ const DeleteAllStudentsButton = () => {
   };
 
   function handleConfirmDelete() {
-    useStudentDataAPI(students, setStudents).deleteAllStudents();
+    studentDataAPI(students, setStudents).deleteAllStudents();
     handleDialogClose();
     toast({
       title: 'Successfully deleted all students'
@@ -107,7 +107,7 @@ const GetStudentsButton = () => {
   return (
     <Button
       variant="outline"
-      onClick={() => useStudentDataAPI(students, setStudents).getStudents()}
+      onClick={() => studentDataAPI(students, setStudents).getStudents()}
     >
       Get Students (shows in inspect element)
     </Button>
@@ -155,7 +155,7 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
       dateCreated: new Date(Date.now())
     };
 
-    useStudentDataAPI(students, setStudents).addStudent(studentData);
+    studentDataAPI(students, setStudents).addStudent(studentData);
     toast({
       title: 'You enrolled the following student:',
       description: Object.entries(data)

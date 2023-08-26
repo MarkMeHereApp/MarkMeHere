@@ -1,9 +1,9 @@
-import { BaseColors } from "./constants";
-import { Color } from "./inputTypes";
+import { BaseColors } from './constants';
+import { Color } from './inputTypes';
 
-export const DEFAULT_COLOR: Color = "gray";
-export const WHITE = "white";
-export const TRANSPARENT = "transparent";
+export const DEFAULT_COLOR: Color = 'gray';
+export const WHITE = 'white';
+export const TRANSPARENT = 'transparent';
 
 export const colorPalette = {
   canvasBackground: 50,
@@ -20,7 +20,7 @@ export const colorPalette = {
   text: 500,
   darkText: 700,
   darkestText: 900,
-  icon: 500,
+  icon: 500
 };
 
 export const themeColorRange: Color[] = [
@@ -45,5 +45,5 @@ export const themeColorRange: Color[] = [
   BaseColors.Emerald,
   BaseColors.Teal,
   BaseColors.Pink,
-  BaseColors.Rose,
+  BaseColors.Rose
 ];

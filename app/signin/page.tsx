@@ -47,10 +47,7 @@ export default function SigninPage() {
             can sign up (mostly for testing) */}
             <p className="px-8 text-center text-sm">
               Don&apos;t have an account?{' '}
-              <Link
-                href="/signup"
-                className="underline underline-offset-4"
-              >
+              <Link href="/signup" className="underline underline-offset-4">
                 Sign up
               </Link>{' '}
               today!

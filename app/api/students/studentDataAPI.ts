@@ -1,6 +1,6 @@
 import { Student } from '@/utils/sharedTypes';
 
-export const useStudentDataAPI = (
+export const studentDataAPI = (
   students: Student[],
   setStudents: (students: Student[]) => void
 ) => {

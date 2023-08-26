@@ -1,17 +1,17 @@
-"use client"
+'use client';
 
 import Stars from '@/components/background/stars';
-import React from "react";
-import QRCode from "react-qr-code";
+import React from 'react';
+import QRCode from 'react-qr-code';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation'; // Import useRouter from next/router
 
 function generateCode() {
@@ -19,13 +19,12 @@ function generateCode() {
 }
 
 export default function QR() {
-
   const [progress, setProgress] = React.useState(0);
   const [code, setCode] = React.useState(generateCode()); // Initialize code
-  const timerUpdateRate = 100;  // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
-  const progressbarLength = 50;       // The length of the progress bar in ms
+  const timerUpdateRate = 100; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
+  const progressbarLength = 50; // The length of the progress bar in ms
   const router = useRouter(); // Initialize useRouter
- 
+
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
@@ -34,14 +33,13 @@ export default function QR() {
           setCode(generateCode()); // Generate a new code when progress reaches 100
           return 0;
         }
-        const newProgress = oldProgress  + (timerUpdateRate / progressbarLength); // Increase progress by timerLength / timerUpdateRate each step
+        const newProgress = oldProgress + timerUpdateRate / progressbarLength; // Increase progress by timerLength / timerUpdateRate each step
         return newProgress;
       });
     }, timerUpdateRate); // 100ms * 50 steps = 5 seconds
     return () => clearInterval(timer);
   }, []);
 
-  
   return (
     <>
       <div className="relative h-screen">
@@ -54,45 +52,40 @@ export default function QR() {
               Scan the QR code with your phone to sign in
             </CardTitle>
             <Button onClick={() => router.push('/dashboard/take-attendance')}>
-              <div className="text-lg ">
-                Finish
-              </div>
+              <div className="text-lg ">Finish</div>
             </Button>
           </CardHeader>
-            
-            <CardContent>
 
-
-              <QRCode
+          <CardContent>
+            <QRCode
               size={256}
-              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
               value={process.env.NEXTAUTH_URL + '/submit/' + code}
               viewBox={`0 0 256 256`}
               className="flex flex-col items-center justify-center text-2xl mb-4"
-              />
-              
-              <div className="flex flex-col items-center justify-center text-2xl mb-4">
-                <span>Or go to the website and enter the code</span>
-              </div>
-              <div className="flex flex-col items-center justify-center text-2xl mb-8" style={{ wordBreak: 'break-all' }}>
-                attendify.rickleincker.com/submit
-              </div>
+            />
 
-              <CardFooter className="flex justify-between">
-                <Card className="w-[600px] mx-auto  h-full">
-                  <CardHeader>
-                    <CardTitle className="text-6xl font-bold">
-                      {code}
-                    </CardTitle>
-                  </CardHeader>
-                </Card>
-              </CardFooter>
+            <div className="flex flex-col items-center justify-center text-2xl mb-4">
+              <span>Or go to the website and enter the code</span>
+            </div>
+            <div
+              className="flex flex-col items-center justify-center text-2xl mb-8"
+              style={{ wordBreak: 'break-all' }}
+            >
+              attendify.rickleincker.com/submit
+            </div>
 
-            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Card className="w-[600px] mx-auto  h-full">
+                <CardHeader>
+                  <CardTitle className="text-6xl font-bold">{code}</CardTitle>
+                </CardHeader>
+              </Card>
+            </CardFooter>
+          </CardContent>
 
-            <Progress value={progress} className="w-[100%]" />
+          <Progress value={progress} className="w-[100%]" />
         </Card>
-
       </div>
     </>
   );

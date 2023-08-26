@@ -1,13 +1,13 @@
-import { Metadata } from "next"
-import Search from "@/app/dashboard/components/search"
-import TeamSwitcher from "@/app/dashboard/components/team-switcher"
-import UserNav from "@/app/dashboard/components/user-nav"
-import MainNav from "@/app/dashboard/components/main-nav"
+import { Metadata } from 'next';
+import Search from '@/app/dashboard/components/search';
+import TeamSwitcher from '@/app/dashboard/components/team-switcher';
+import UserNav from '@/app/dashboard/components/user-nav';
+import MainNav from '@/app/dashboard/components/main-nav';
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Dashboard to manage your classes",
-}
+  title: 'Dashboard',
+  description: 'Dashboard to manage your classes'
+};
 
 export default async function DashboardLayout({
   children
@@ -28,6 +28,5 @@ export default async function DashboardLayout({
       </div>
       <div>{children}</div>
     </>
-  )
+  );
 }
-
