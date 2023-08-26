@@ -168,7 +168,7 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
   return (
     <>
       <Dialog open={isDialogOpen}>
-        <DialogTrigger asChild>
+                   <DialogTrigger asChild>
           <TriggerComponent onClick={() => handleDialogOpen()} />
         </DialogTrigger>
         <DialogContent

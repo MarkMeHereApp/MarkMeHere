@@ -1,8 +1,8 @@
 'use client';
 
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ReloadIcon } from '@radix-ui/react-icons';
 
 export default function HomePage() {
   const router = useRouter();
