@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 
-import CRUDButtons from '@/app/api/students/CRUDButtons';
 import { DataTable } from './data-table';
 import { Student } from '@/utils/sharedTypes';
+import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
 import { columns } from './columns';
 import { getStudents } from '@/app/api/students/clientRequests';
 
@@ -32,10 +32,10 @@ const ManageStudents = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
-          <CRUDButtons setStateAction={setData} />
+        <div className="flex flex-col gap-y-4">
+          <StudentCRUDButtons setStudents={setData} />
           <DataTable columns={columns} data={data} />
-        </>
+        </div>
       )}
     </div>
   );

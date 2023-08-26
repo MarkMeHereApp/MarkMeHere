@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useEffect, useState } from 'react'; // Import React
 
 import AttendanceView from './AttendanceView';
-import CRUDButtons from '@/app/api/students/CRUDButtons';
 import { Student } from '@/utils/sharedTypes';
+import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
 import { getStudents } from '@/app/api/students/clientRequests';
 
 const StudentAnalytics = () => {
@@ -30,7 +32,7 @@ const StudentAnalytics = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <CRUDButtons setStateAction={setStudents} />
+      <StudentCRUDButtons setStudents={setStudents} />
       <AttendanceView students={students} />
     </div>
   );

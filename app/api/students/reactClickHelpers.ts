@@ -1,5 +1,5 @@
 import {
-  addRandomStudent,
+  addStudent,
   deleteAllStudents,
   getStudents
 } from '@/app/api/students/clientRequests';
@@ -13,10 +13,14 @@ export const handleGetStudentsClick = async (
   const studentsData = await getStudents(); // You need to define or import the getStudents function
   setStudents(studentsData);
 };
-export const handleAddRandomStudentClick = async (
-  setStudents: React.Dispatch<SetStateAction<Student[]>>
+
+export const handleAddStudentClick = async (
+  setStudents: React.Dispatch<SetStateAction<Student[]>>,
+  newStudent: Student
 ) => {
-  const studentsData = await addRandomStudent();
+  const studentsData = await addStudent(newStudent);
+  console.log('test');
+  console.log(studentsData);
   setStudents(studentsData);
 };
 
