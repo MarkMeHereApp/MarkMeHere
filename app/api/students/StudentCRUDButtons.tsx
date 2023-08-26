@@ -9,37 +9,29 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Student, UserType } from '@/utils/sharedTypes';
-import {
-  handleAddStudentClick,
-  handleDeleteAllStudentsClick,
-  handleGetStudentsClick
-} from './reactClickHelpers';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { StudentDataContext } from '@/app/providers';
 import createRandomStudent from '@/utils/createRandomStudent';
-import { faker } from '@faker-js/faker';
 import { toast } from '@/components/ui/use-toast';
 import { useForm } from 'react-hook-form';
+import { useStudentDataAPI } from './useStudentDataAPI';
 import { v4 as uuidv4 } from 'uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-interface CRUDButtonsProps {
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
-}
-const AddRandomStudentButton: React.FC<CRUDButtonsProps> = ({
-  setStudents
-}) => {
-  const randomStudent = createRandomStudent();
+const AddRandomStudentButton = () => {
+  const { students, setStudents } = useContext(StudentDataContext);
 
+  const randomStudent = createRandomStudent();
   return (
     <Button
       variant="default"
       onClick={() => {
-        handleAddStudentClick(setStudents, randomStudent);
+        useStudentDataAPI(students, setStudents).addStudent(randomStudent);
       }}
     >
       + Add Random Student to DB +
@@ -47,9 +39,9 @@ const AddRandomStudentButton: React.FC<CRUDButtonsProps> = ({
   );
 };
 
-const DeleteAllStudentsButton: React.FC<CRUDButtonsProps> = ({
-  setStudents
-}) => {
+const DeleteAllStudentsButton = () => {
+  const { students, setStudents } = useContext(StudentDataContext);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDialogOpen = () => {
@@ -61,7 +53,7 @@ const DeleteAllStudentsButton: React.FC<CRUDButtonsProps> = ({
   };
 
   function handleConfirmDelete() {
-    handleDeleteAllStudentsClick(setStudents);
+    useStudentDataAPI(students, setStudents).deleteAllStudents();
     handleDialogClose();
     toast({
       title: 'Successfully deleted all students'
@@ -109,20 +101,37 @@ const DeleteAllStudentsButton: React.FC<CRUDButtonsProps> = ({
   );
 };
 
-const GetStudentsButton: React.FC<CRUDButtonsProps> = ({ setStudents }) => (
-  <Button variant="outline" onClick={() => handleGetStudentsClick(setStudents)}>
-    Get Students (shows in inspect element)
-  </Button>
-);
+const GetStudentsButton = () => {
+  const { students, setStudents } = useContext(StudentDataContext);
 
-interface StudentEnrollmentFormProps extends CRUDButtonsProps {
-  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  return (
+    <Button
+      variant="outline"
+      onClick={() => useStudentDataAPI(students, setStudents).getStudents()}
+    >
+      Get Students (shows in inspect element)
+    </Button>
+  );
+};
+
+type ComponentWithOnClick<P = {}> = React.FC<P & { onClick: () => void }>;
+interface StudentEnrollmentFormProps {
+  TriggerComponent: ComponentWithOnClick;
+  existingStudentData?: Student;
 }
 
-const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
-  setIsDialogOpen,
-  setStudents
+export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
+  existingStudentData,
+  TriggerComponent
 }) => {
+  const { students, setStudents } = useContext(StudentDataContext);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleDialogOpen = () => {
+    form.reset();
+    setIsDialogOpen(true);
+  };
+
   const handleDialogClose = () => {
     setIsDialogOpen(false);
   };
@@ -146,7 +155,7 @@ const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
       dateCreated: new Date(Date.now())
     };
 
-    handleAddStudentClick(setStudents, studentData);
+    useStudentDataAPI(students, setStudents).addStudent(studentData);
     toast({
       title: 'You enrolled the following student:',
       description: Object.entries(data)
@@ -156,99 +165,90 @@ const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
     handleDialogClose();
   }
 
-  const fakeData = {
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email()
-  };
-
-  return (
-    <>
-      <DialogHeader onClick={handleDialogClose}>
-        <DialogTitle>Enroll Student</DialogTitle>
-        <DialogDescription>
-          Fill in the student&apos;s information below and click enroll when
-          you&apos;re done.
-        </DialogDescription>
-      </DialogHeader>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="firstName" className="text-right">
-            First Name
-          </Label>
-          <Input
-            id="firstName"
-            {...form.register('firstName')}
-            defaultValue={fakeData.firstName}
-            className="col-span-3"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="lastName" className="text-right">
-            Last Name
-          </Label>
-          <Input
-            id="lastName"
-            {...form.register('lastName')}
-            defaultValue={fakeData.lastName}
-            className="col-span-3"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="email" className="text-right">
-            Email
-          </Label>
-          <Input
-            id="email"
-            {...form.register('email')}
-            defaultValue={fakeData.email}
-            className="col-span-3"
-          />
-        </div>
-        <DialogFooter>
-          <Button type="submit">Enroll Student</Button>
-        </DialogFooter>
-      </form>
-    </>
-  );
-};
-
-const EnrollNewStudentButton: React.FC<CRUDButtonsProps> = ({
-  setStudents
-}) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
   return (
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" onClick={() => handleDialogOpen()}>
-            Enroll a New Student
-          </Button>
+          <TriggerComponent onClick={() => handleDialogOpen()} />
         </DialogTrigger>
         <DialogContent
           className="sm:max-w-[425px]"
           onClose={() => setIsDialogOpen(false)}
         >
-          <StudentEnrollmentForm
-            setStudents={setStudents}
-            setIsDialogOpen={setIsDialogOpen}
-          />
+          <DialogHeader onClick={handleDialogClose}>
+            <DialogTitle>Enroll Student</DialogTitle>
+            <DialogDescription>
+              Fill in the student&apos;s information below and click enroll when
+              you&apos;re done.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4 py-4"
+          >
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="firstName" className="text-right">
+                First Name
+              </Label>
+              <Input
+                id="firstName"
+                {...form.register('firstName')}
+                defaultValue={existingStudentData?.firstName || ''}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lastName" className="text-right">
+                Last Name
+              </Label>
+              <Input
+                id="lastName"
+                {...form.register('lastName')}
+                defaultValue={existingStudentData?.lastName || ''}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input
+                id="email"
+                {...form.register('email')}
+                defaultValue={existingStudentData?.email || ''}
+                className="col-span-3"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit">Enroll Student</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </>
   );
 };
 
-const StudentCRUDButtons: React.FC<CRUDButtonsProps> = ({ setStudents }) => {
+const EnrollNewStudentButton = () => {
+  return <StudentEnrollmentForm TriggerComponent={ButtonWithOnClick} />;
+};
+
+const ButtonWithOnClick: ComponentWithOnClick = ({
+  onClick,
+  ...otherProps
+}) => (
+  <Button variant="default" onClick={onClick} {...otherProps}>
+    Enroll a New Student
+  </Button>
+);
+
+const StudentCRUDButtons = () => {
   return (
     <div className="flex flex-row gap-2">
-      <AddRandomStudentButton setStudents={setStudents} />
-      <DeleteAllStudentsButton setStudents={setStudents} />
-      <GetStudentsButton setStudents={setStudents} />
-      <EnrollNewStudentButton setStudents={setStudents} />
+      <AddRandomStudentButton />
+      <DeleteAllStudentsButton />
+      <GetStudentsButton />
+      <EnrollNewStudentButton />
     </div>
   );
 };

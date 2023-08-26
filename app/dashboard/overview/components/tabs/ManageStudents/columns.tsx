@@ -2,7 +2,8 @@
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableColumnHeader } from './table-accessories/data-table-column-header';
+import { DataTableRowActions } from './table-accessories/data-table-row-actions';
 import { Student } from '@/utils/sharedTypes';
 
 export const columns: ColumnDef<Student>[] = [
@@ -28,22 +29,12 @@ export const columns: ColumnDef<Student>[] = [
     enableHiding: true
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
-    ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('email')}</div>,
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
-  },
-  {
     accessorKey: 'firstName',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="First Name" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue('firstName')}</div>
+      <div className="w-full">{row.getValue('firstName')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
@@ -54,12 +45,24 @@ export const columns: ColumnDef<Student>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
     ),
-    cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue('lastName')}</div>
-    ),
+    cell: ({ row }) => <div className="w-full">{row.getValue('lastName')}</div>,
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
   },
-  { accessorKey: 'fullName' }
+  { accessorKey: 'fullName' }, // This is needed for flexibility when seraching for the full name of a student.
+  {
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+    cell: ({ row }) => <div className="w-full">{row.getValue('email')}</div>,
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <DataTableRowActions row={row} />
+  }
 ];
