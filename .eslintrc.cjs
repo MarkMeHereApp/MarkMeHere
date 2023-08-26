@@ -6,7 +6,7 @@ module.exports = {
   root: true,
   ignorePatterns: ['node_modules/*', '.next/*', 'prisma/*', 'components/*', 'lib/*', 'styles/*'],
       rules: {
-        "indent": ["error", 2],
+        "indent": 'off',
         "@typescript-eslint/explicit-member-accessibility": "error",
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-non-null-assertion": "error",

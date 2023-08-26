@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { UserType } from '@/utils/sharedTypes';
-import bcrypt from 'bcryptjs-react';
 import { faker } from '@faker-js/faker';
 import prisma from '@/prisma';
 
@@ -8,7 +7,7 @@ import prisma from '@/prisma';
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
-    const fakePassword:string = faker.string.sample()
+    const fakePassword: string = faker.string.sample();
     const student = await prisma.user.create({
       data: {
         ...requestData,
