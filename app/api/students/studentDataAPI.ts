@@ -13,7 +13,6 @@ export const studentDataAPI = (
       if (response.ok) {
         const responseData: { students: Student[] } = await response.json();
         const students = responseData.students;
-        console.log(students);
         return students;
       } else {
         console.error('Failed to fetch data:', response.status);

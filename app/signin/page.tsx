@@ -1,6 +1,5 @@
 'use client';
 
-import { Metadata } from 'next';
 import Link from 'next/link';
 
 import SignInForm from '@/app/signin/components/signInForm';

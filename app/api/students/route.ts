@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { UserType } from '@/utils/sharedTypes';
-import bcrypt from 'bcrypt';
+import bcrypt from "bcryptjs-react";
 import { faker } from '@faker-js/faker';
 import prisma from '@/prisma';
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 }
 
 // Returns all students
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const students = await prisma.user.findMany({
       where: {
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
 
 // Deletes all students and returns an empty array.
 // Need to add further functionality so that we can either delete a single student or all students.
-export async function DELETE(request: Request) {
+export async function DELETE() {
   try {
     // Delete all students
     await prisma.user.deleteMany({

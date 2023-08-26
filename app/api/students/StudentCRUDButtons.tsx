@@ -114,7 +114,7 @@ const GetStudentsButton = () => {
   );
 };
 
-type ComponentWithOnClick<P = {}> = React.FC<P & { onClick: () => void }>;
+type ComponentWithOnClick<P = object> = React.FC<P & { onClick: () => void }>;
 interface StudentEnrollmentFormProps {
   TriggerComponent: ComponentWithOnClick;
   existingStudentData?: Student;
@@ -168,7 +168,7 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
   return (
     <>
       <Dialog open={isDialogOpen}>
-                   <DialogTrigger asChild>
+        <DialogTrigger asChild>
           <TriggerComponent onClick={() => handleDialogOpen()} />
         </DialogTrigger>
         <DialogContent
@@ -178,7 +178,8 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Enroll Student</DialogTitle>
             <DialogDescription>
-              Fill in the student&apos;s information below and click enroll when
+              Fill in the student&apos;s information below and click enroll when               Fill in the student&apos;s information below and click enroll when              Fill in the student&apos;s information below and click enroll when
+
               you&apos;re done.
             </DialogDescription>
           </DialogHeader>
