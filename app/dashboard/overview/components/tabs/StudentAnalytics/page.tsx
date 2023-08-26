@@ -31,7 +31,7 @@ const StudentAnalytics = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
       <StudentCRUDButtons setStudents={setStudents} />
       <AttendanceView students={students} />
     </div>
