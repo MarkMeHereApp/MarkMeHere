@@ -44,7 +44,7 @@ export const Providers = ({ children }: Props) => {
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   return (
     <>

@@ -8,11 +8,11 @@ import prisma from '@/prisma';
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
-    const hashedPassword = await bcrypt.hash(faker.string.sample(), 10);
+    const fakePassword:string = faker.string.sample()
     const student = await prisma.user.create({
       data: {
         ...requestData,
-        password: hashedPassword,
+        password: fakePassword,
         dateCreated: new Date(Date.now())
       }
     });
