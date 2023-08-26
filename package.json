@@ -107,7 +107,8 @@
   },
   "lint-staged": {
     "*.ts?(x)": [
-      "eslint app"
+      "eslint app --fix",
+      "prettier app --write"
     ]
   }
 }

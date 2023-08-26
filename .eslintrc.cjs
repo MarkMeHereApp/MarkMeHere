@@ -5,12 +5,8 @@ module.exports = {
   plugins: ['@typescript-eslint', 'unused-imports'],
   root: true,
   ignorePatterns: ['node_modules/*', '.next/*', 'prisma/*', 'components/*', 'lib/*', 'styles/*'],
-  overrides: [
-    {
-      files: ['app/**/*.js', 'app/**/*.jsx', 'app/**/*.ts', 'app/**/*.tsx'],
-      extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
-      parser: '@typescript-eslint/parser',
       rules: {
+        "indent": ["error", 2],
         "@typescript-eslint/explicit-member-accessibility": "error",
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-non-null-assertion": "error",
@@ -24,8 +20,5 @@ module.exports = {
             "warn",
             { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
         ]
-      },
-      plugins: ['@typescript-eslint', 'unused-imports'],
-    }
-  ]
+  }
 };

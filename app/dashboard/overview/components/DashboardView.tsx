@@ -6,7 +6,6 @@ import ManageStudents from './tabs/ManageStudents/page';
 import StudentAnalytics from './tabs/StudentAnalytics/page';
 
 const DashboardView = () => {
-
   return (
     <Tabs defaultValue="manage-students">
       <TabsList>

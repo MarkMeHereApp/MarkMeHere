@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { UserType } from '@/utils/sharedTypes';
-import bcrypt from "bcryptjs-react";
+import bcrypt from 'bcryptjs-react';
 import { faker } from '@faker-js/faker';
 import prisma from '@/prisma';
 

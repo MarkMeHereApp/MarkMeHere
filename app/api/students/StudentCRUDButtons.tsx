@@ -178,8 +178,7 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Enroll Student</DialogTitle>
             <DialogDescription>
-              Fill in the student&apos;s information below and click enroll when               Fill in the student&apos;s information below and click enroll when              Fill in the student&apos;s information below and click enroll when
-
+              Fill in the student&apos;s information below and click enroll when
               you&apos;re done.
             </DialogDescription>
           </DialogHeader>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import bcrypt from "bcryptjs-react";
+import bcrypt from 'bcryptjs-react';
 import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
 
