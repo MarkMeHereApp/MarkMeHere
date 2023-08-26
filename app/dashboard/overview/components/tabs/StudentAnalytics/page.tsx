@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext } from 'react'; // Import React
+import { useContext } from 'react'; // Import React
 
 import AttendanceView from './AttendanceView';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';

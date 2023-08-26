@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { DataTable } from './data-table';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
