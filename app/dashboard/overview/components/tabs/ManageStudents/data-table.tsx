@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export default function DataTable<TData, TValue>({
   columns,
   data
 }: DataTableProps<TData, TValue>) {
@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
 
   useEffect(() => {
     table.getColumn('fullName')?.toggleVisibility(false);
-  });
+  }, []);
 
   return (
     <div className="space-y-4">

@@ -233,13 +233,16 @@ const EnrollNewStudentButton = () => {
   return <StudentEnrollmentForm TriggerComponent={ButtonWithOnClick} />;
 };
 
-const ButtonWithOnClick: ComponentWithOnClick = ({
-  onClick,
-  ...otherProps
-}) => (
-  <Button variant="default" onClick={onClick} {...otherProps}>
-    Enroll a New Student
-  </Button>
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  onClick: () => void;
+}
+
+const ButtonWithOnClick = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ onClick, ...otherProps }, ref) => (
+    <button ref={ref} onClick={onClick} {...otherProps}>
+      Enroll a New Student
+    </button>
+  )
 );
 
 const StudentCRUDButtons = () => {
