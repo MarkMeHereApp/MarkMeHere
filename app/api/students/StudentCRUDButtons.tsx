@@ -53,7 +53,7 @@ const DeleteAllStudentsButton = () => {
   };
 
   function handleConfirmDelete() {
-    studentDataAPI(students, setStudents).deleteAllStudents();
+    studentDataAPI(students, setStudents).deleteAllStudents(students);
     handleDialogClose();
     toast({
       title: 'Successfully deleted all students'
@@ -115,16 +115,24 @@ const GetStudentsButton = () => {
 };
 
 type ComponentWithOnClick<P = object> = React.FC<P & { onClick: () => void }>;
-interface StudentEnrollmentFormProps {
+const StudentFormSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email()
+});
+type StudentFormData = z.infer<typeof StudentFormSchema>;
+
+interface StudentFormProps {
   TriggerComponent: ComponentWithOnClick;
+  onFormSubmit: (data: StudentFormData) => void;
   existingStudentData?: Student;
 }
 
-export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
+export const StudentForm: React.FC<StudentFormProps> = ({
   existingStudentData,
+  onFormSubmit,
   TriggerComponent
 }) => {
-  const { students, setStudents } = useContext(StudentDataContext);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDialogOpen = () => {
@@ -136,32 +144,12 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
     setIsDialogOpen(false);
   };
 
-  const FormSchema = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email()
+  const form = useForm<StudentFormData>({
+    resolver: zodResolver(StudentFormSchema)
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema)
-  });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const studentData: Student = {
-      ...data,
-      fullName: `${data.firstName} ${data.lastName}`,
-      id: uuidv4(),
-      userType: UserType.STUDENT,
-      dateCreated: new Date(Date.now())
-    };
-
-    studentDataAPI(students, setStudents).addStudent(studentData);
-    toast({
-      title: 'You enrolled the following student:',
-      description: Object.entries(data)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n')
-    });
+  function onSubmit(data: StudentFormData) {
+    onFormSubmit(data);
     handleDialogClose();
   }
 
@@ -230,7 +218,31 @@ export const StudentEnrollmentForm: React.FC<StudentEnrollmentFormProps> = ({
 };
 
 const EnrollNewStudentButton = () => {
-  return <StudentEnrollmentForm TriggerComponent={ButtonWithOnClick} />;
+  const { students, setStudents } = useContext(StudentDataContext);
+
+  const onFormSubmit = (data: StudentFormData) => {
+    const studentData: Student = {
+      ...data,
+      fullName: `${data.firstName} ${data.lastName}`,
+      id: uuidv4(),
+      userType: UserType.STUDENT,
+      dateCreated: new Date(Date.now())
+    };
+
+    studentDataAPI(students, setStudents).addStudent(studentData);
+    toast({
+      title: 'You enrolled the following student:',
+      description: Object.entries(data)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n')
+    });
+  };
+  return (
+    <StudentForm
+      TriggerComponent={ButtonWithOnClick}
+      onFormSubmit={onFormSubmit}
+    />
+  );
 };
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -239,15 +251,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const ButtonWithOnClick = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ onClick, ...otherProps }, ref) => (
-    <button ref={ref} onClick={onClick} {...otherProps}>
+    <Button ref={ref} onClick={onClick} {...otherProps}>
       Enroll a New Student
-    </button>
+    </Button>
   )
 );
 
 const StudentCRUDButtons = () => {
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row flex-wrap gap-2">
       <AddRandomStudentButton />
       <DeleteAllStudentsButton />
       <GetStudentsButton />

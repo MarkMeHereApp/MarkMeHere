@@ -2,7 +2,7 @@
 
 import { useContext } from 'react';
 
-import DataTable from './data-table';
+import DataTable from './DataTable';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
 import { StudentDataContext } from '@/app/providers';
 import { columns } from './columns';

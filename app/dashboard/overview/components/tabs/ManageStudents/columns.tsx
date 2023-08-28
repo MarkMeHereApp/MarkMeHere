@@ -2,8 +2,8 @@
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from './table-accessories/data-table-column-header';
-import { DataTableRowActions } from './table-accessories/data-table-row-actions';
+import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
+import { DataTableRowActions } from './table-accessories/DataTableRowActions';
 import { Student } from '@/utils/sharedTypes';
 
 export const columns: ColumnDef<Student>[] = [
@@ -34,7 +34,7 @@ export const columns: ColumnDef<Student>[] = [
       <DataTableColumnHeader column={column} title="First Name" />
     ),
     cell: ({ row }) => (
-      <div className="w-full">{row.getValue('firstName')}</div>
+      <div className="flex w-full">{row.getValue('firstName')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
@@ -45,7 +45,9 @@ export const columns: ColumnDef<Student>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
     ),
-    cell: ({ row }) => <div className="w-full">{row.getValue('lastName')}</div>,
+    cell: ({ row }) => (
+      <div className="flex w-full">{row.getValue('lastName')}</div>
+    ),
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
@@ -56,7 +58,9 @@ export const columns: ColumnDef<Student>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
-    cell: ({ row }) => <div className="w-full">{row.getValue('email')}</div>,
+    cell: ({ row }) => (
+      <div className="flex w-full">{row.getValue('email')}</div>
+    ),
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
