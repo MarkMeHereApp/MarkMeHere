@@ -2,7 +2,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "prisma generate && prisma db push && next dev",
+    "dev": "prisma generate &&  next dev",
     "build": "prisma generate && prisma db push && eslint app --fix && prettier app -w && next build ",
     "start": "next start",
     "lint": "next lint && eslint app --fix && prettier app --write",
@@ -10,9 +10,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.16",
-    "@headlessui/tailwindcss": "^0.2.0",
-    "@heroicons/react": "^2.0.16",
     "@hookform/resolvers": "^3.2.0",
     "@planetscale/database": "^1.5.0",
     "@prisma/client": "^5.2.0",
