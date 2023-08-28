@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { UserType } from '@/utils/sharedTypes';
+import { Student, UserType } from '@/utils/sharedTypes';
 import { faker } from '@faker-js/faker';
 import prisma from '@/prisma';
 
@@ -53,16 +53,19 @@ export async function GET() {
 
 // Deletes all students and returns an empty array.
 // Need to add further functionality so that we can either delete a single student or all students.
-export async function DELETE() {
+export async function DELETE(request: Request) {
   try {
-    // Delete all students
-    await prisma.user.deleteMany({
-      where: {
-        userType: {
-          equals: UserType.STUDENT
+    const requestData = await request.json();
+    const requestStudents = requestData as Student[];
+
+    for (const student of requestStudents) {
+      await prisma.user.delete({
+        where: {
+          id: student.id
         }
-      }
-    });
+      });
+    }
+
     const students = await prisma.user.findMany({
       where: {
         userType: {
@@ -73,10 +76,10 @@ export async function DELETE() {
     });
     return NextResponse.json({ success: true, students });
   } catch (error) {
-    console.error('Error deleting students:', error);
+    console.error('Error deleting student(s):', error);
     return NextResponse.json({
       success: false,
-      error: 'Error deleting students'
+      error: 'Error deleting student(s)'
     });
   }
 }

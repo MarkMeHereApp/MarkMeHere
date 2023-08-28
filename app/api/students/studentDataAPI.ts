@@ -42,10 +42,11 @@ export const studentDataAPI = (
     }
   };
 
-  const deleteAllStudents = async () => {
+  const deleteAllStudents = async (students: Student[]) => {
     try {
       const response = await fetch('/api/students', {
-        method: 'DELETE'
+        method: 'DELETE',
+        body: JSON.stringify(students)
       });
 
       if (response.ok) {
@@ -60,9 +61,30 @@ export const studentDataAPI = (
     }
   };
 
+  const deleteStudent = async (student: Student) => {
+    try {
+      const studentArray = [student];
+      const response = await fetch('/api/students', {
+        method: 'DELETE',
+        body: JSON.stringify(studentArray)
+      });
+
+      if (response.ok) {
+        const responseData: { students: Student[] } = await response.json();
+        const students = responseData.students;
+        setStudents(students);
+      } else {
+        console.error('Error deleting student:', response.status);
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
+  };
+
   return {
     getStudents,
     addStudent,
-    deleteAllStudents
+    deleteAllStudents,
+    deleteStudent
   };
 };

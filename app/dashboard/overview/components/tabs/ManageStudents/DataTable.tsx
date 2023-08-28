@@ -25,19 +25,19 @@ import {
   TableRow
 } from '@/components/ui/table';
 
-import { DataTablePagination } from './table-accessories/data-table-pagination';
-import { DataTableToolbar } from './table-accessories/data-table-toolbar';
+import { DataTablePagination } from './table-accessories/DataTablePagination';
+import { DataTableToolbar } from './table-accessories/DataTableToolbar';
 import { useEffect } from 'react';
+import { StudentDataContext } from '@/app/providers';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
 }
 
 export default function DataTable<TData, TValue>({
-  columns,
-  data
+  columns
 }: DataTableProps<TData, TValue>) {
+  const { students } = React.useContext(StudentDataContext);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -46,6 +46,7 @@ export default function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  const data = students as TData[];
   const table = useReactTable({
     data,
     columns,
