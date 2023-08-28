@@ -15,7 +15,7 @@ import { Student } from '@/utils/sharedTypes';
 import { TrashIcon } from '@radix-ui/react-icons';
 
 import { Row } from '@tanstack/react-table';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -24,11 +24,10 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row
 }: DataTableRowActionsProps<TData>) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { students, setStudents } = useContext(StudentDataContext);
 
   const studentRowData = row.original as Student;
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDialogOpen = () => {
     setIsDialogOpen(true);

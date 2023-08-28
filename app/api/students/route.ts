@@ -58,15 +58,15 @@ export async function DELETE(request: Request) {
     const requestData = await request.json();
     const requestStudents = requestData as Student[];
 
-    requestStudents.forEach(async (student: Student) => {
+    for (const student of requestStudents) {
       await prisma.user.delete({
         where: {
           id: student.id
         }
       });
-    });
+    }
 
-    const responseStudents = await prisma.user.findMany({
+    const students = await prisma.user.findMany({
       where: {
         userType: {
           equals: UserType.STUDENT
@@ -74,7 +74,7 @@ export async function DELETE(request: Request) {
       },
       orderBy: [{ lastName: 'asc' }]
     });
-    return NextResponse.json({ success: true, responseStudents });
+    return NextResponse.json({ success: true, students });
   } catch (error) {
     console.error('Error deleting student(s):', error);
     return NextResponse.json({
