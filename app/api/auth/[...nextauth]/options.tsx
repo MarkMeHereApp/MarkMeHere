@@ -1,5 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
+import ZoomProvider from 'next-auth/providers/zoom';
 import type { NextAuthOptions } from 'next-auth';
 import bcrypt from 'bcryptjs-react';
 import prisma from '@/prisma';
@@ -13,6 +14,11 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string
+    }),
+
+    ZoomProvider({
+      clientId: process.env.ZOOM_CLIENT_ID as string,
+      clientSecret: process.env.ZOOM_CLIENT_SECRET as string
     }),
 
     CredentialsProvider({
@@ -60,7 +66,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: '/signin',
-    newUser: '/auth/signup',
-    error: '/auth/error'
+    newUser: '/signup',
+    error: '/error'
   }
 };
