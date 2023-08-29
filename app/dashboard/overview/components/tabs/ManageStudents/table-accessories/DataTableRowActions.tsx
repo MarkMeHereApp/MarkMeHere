@@ -15,7 +15,7 @@ import { Student } from '@/utils/sharedTypes';
 import { TrashIcon } from '@radix-ui/react-icons';
 
 import { Row } from '@tanstack/react-table';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;

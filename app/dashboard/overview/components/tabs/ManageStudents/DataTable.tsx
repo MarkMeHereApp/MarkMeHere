@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -27,7 +25,7 @@ import {
 
 import { DataTablePagination } from './table-accessories/DataTablePagination';
 import { DataTableToolbar } from './table-accessories/DataTableToolbar';
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StudentDataContext } from '@/app/providers';
 
 interface DataTableProps<TData, TValue> {
@@ -37,14 +35,11 @@ interface DataTableProps<TData, TValue> {
 export default function DataTable<TData, TValue>({
   columns
 }: DataTableProps<TData, TValue>) {
-  const { students } = React.useContext(StudentDataContext);
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const { students } = useContext(StudentDataContext);
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const data = students as TData[];
   const table = useReactTable({

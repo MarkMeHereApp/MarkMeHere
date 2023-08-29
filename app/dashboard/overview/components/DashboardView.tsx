@@ -1,9 +1,10 @@
 'use client';
 
+import { lazy } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import ManageStudents from './tabs/ManageStudents/page';
-import StudentAnalytics from './tabs/StudentAnalytics/page';
+const ManageStudents = lazy(() => import('./tabs/ManageStudents/page'));
+const StudentAnalytics = lazy(() => import('./tabs/StudentAnalytics/page'));
 
 const DashboardView = () => {
   return (

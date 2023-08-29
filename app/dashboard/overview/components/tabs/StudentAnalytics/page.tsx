@@ -1,10 +1,11 @@
 'use client';
 
-import { useContext } from 'react'; // Import React
+import { useContext, lazy } from 'react'; // Import React
 
-import AttendanceView from './AttendanceView';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
 import { StudentDataContext } from '@/app/providers';
+
+const AttendanceView = lazy(() => import('./AttendanceView'));
 
 const StudentAnalytics = () => {
   const { students } = useContext(StudentDataContext);

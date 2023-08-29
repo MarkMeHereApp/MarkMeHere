@@ -1,8 +1,8 @@
 'use client';
 
-import DataTable from './DataTable';
 import StudentCRUDButtons from '@/app/api/students/StudentCRUDButtons';
 import { columns } from './columns';
+import DataTable from './DataTable';
 
 const ManageStudents = () => {
   return (
