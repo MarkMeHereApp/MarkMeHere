@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const AddRandomStudentButton = () => {
+export const AddRandomStudentButton = () => {
   const { students, setStudents } = useContext(StudentDataContext);
 
   const randomStudent = createRandomStudent();
@@ -39,7 +39,7 @@ const AddRandomStudentButton = () => {
   );
 };
 
-const DeleteAllStudentsButton = () => {
+export const DeleteAllStudentsButton = () => {
   const { students, setStudents } = useContext(StudentDataContext);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -101,7 +101,7 @@ const DeleteAllStudentsButton = () => {
   );
 };
 
-const GetStudentsButton = () => {
+export const GetStudentsButton = () => {
   const { students, setStudents } = useContext(StudentDataContext);
 
   return (
@@ -217,7 +217,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
   );
 };
 
-const EnrollNewStudentButton = () => {
+export const EnrollNewStudentButton = () => {
   const { students, setStudents } = useContext(StudentDataContext);
 
   const onFormSubmit = (data: StudentFormData) => {
