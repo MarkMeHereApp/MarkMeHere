@@ -1,22 +1,28 @@
 import { Student, UserType } from '@/utils/sharedTypes';
 
+interface PersonModule {
+  sexType: () => string;
+  firstName: (sex: string) => string;
+  lastName: (sex: string) => string;
+}
+
+interface StringModule {
+  uuid: () => string;
+}
+
+interface InternetModule {
+  email: () => string;
+}
+
 interface FakerModule {
-  person: {
-    sexType: () => string;
-    firstName: (sex: string) => string;
-    lastName: (sex: string) => string;
-  };
-  string: {
-    uuid: () => string;
-  };
-  internet: {
-    email: () => string;
-  };
+  person: PersonModule;
+  string: StringModule;
+  internet: InternetModule;
 }
 
 let faker: FakerModule | undefined;
 if (process.env.NODE_ENV === 'development') {
-  faker = require('@faker-js/faker');
+  ({ faker } = require('@faker-js/faker'));
 }
 
 export default function createRandomStudent(): Student {
