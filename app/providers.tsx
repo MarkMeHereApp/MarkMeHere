@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 
 import { SessionProvider } from 'next-auth/react';
 import { Student } from '@/utils/sharedTypes';
@@ -45,10 +45,14 @@ export const Providers = ({ children }: Props) => {
   useEffect(() => {
     fetchData();
   }, []);
+  const memoizedValue = useMemo(
+    () => ({ students, setStudents }),
+    [students, setStudents]
+  );
 
   return (
     <>
-      <StudentDataContext.Provider value={{ students, setStudents }}>
+      <StudentDataContext.Provider value={memoizedValue}>
         <Toaster />
         <SessionProvider>{children}</SessionProvider>
       </StudentDataContext.Provider>

@@ -258,14 +258,18 @@ const ButtonWithOnClick = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 const StudentCRUDButtons = () => {
-  return (
-    <div className="flex flex-row flex-wrap gap-2">
-      <AddRandomStudentButton />
-      <DeleteAllStudentsButton />
-      <GetStudentsButton />
-      <EnrollNewStudentButton />
-    </div>
-  );
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <div className="flex flex-row flex-wrap gap-2">
+        <AddRandomStudentButton />
+        <DeleteAllStudentsButton />
+        <GetStudentsButton />
+        <EnrollNewStudentButton />
+      </div>
+    );
+  } else {
+    return null;
+  }
 };
 
 export default StudentCRUDButtons;
