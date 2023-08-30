@@ -10,7 +10,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import React, { useContext, useState } from 'react';
-import { Student, UserType } from '@/utils/sharedTypes';
+import { Student, Role } from '@/utils/sharedTypes';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,7 +118,8 @@ type ComponentWithOnClick<P = object> = React.FC<P & { onClick: () => void }>;
 const StudentFormSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string().email()
+  email: z.string().email(),
+  courseId: z.string()
 });
 type StudentFormData = z.infer<typeof StudentFormSchema>;
 
@@ -223,9 +224,8 @@ export const EnrollNewStudentButton = () => {
   const onFormSubmit = (data: StudentFormData) => {
     const studentData: Student = {
       ...data,
-      fullName: `${data.firstName} ${data.lastName}`,
       id: uuidv4(),
-      userType: UserType.STUDENT,
+      role: Role.STUDENT,
       dateCreated: new Date(Date.now())
     };
 

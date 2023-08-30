@@ -1,34 +1,43 @@
+import { StudentResponse } from './route';
+import { GlobalDevCourseId } from './../../../utils/sharedTypes';
 import { Student } from '@/utils/sharedTypes';
 
 export const studentDataAPI = (
-  students: Student[],
+  // pass in the StudentDataContext and CourseContext
+  currentStudents: Student[],
   setStudents: (students: Student[]) => void
 ) => {
+  const courseId = GlobalDevCourseId;
   const getStudents = async () => {
     try {
-      const response = await fetch('/api/students', {
+      const url = `/api/students?courseId=${courseId}`;
+      const response = await fetch(url, {
         method: 'GET'
       });
 
       if (response.ok) {
-        const responseData: { students: Student[] } = await response.json();
+        const responseData: StudentResponse = await response.json();
         const students = responseData.students;
-        return students;
+        setStudents(students);
       } else {
         console.error('Failed to fetch data:', response.status);
-        return [];
+        setStudents([]);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      return [];
+      setStudents([]);
     }
   };
 
   const addStudent = async (student: Student) => {
     try {
+      const requestData = {
+        student,
+        courseId
+      };
       const response = await fetch('/api/students', {
         method: 'POST',
-        body: JSON.stringify(student)
+        body: JSON.stringify(requestData)
       });
       if (response.ok) {
         const responseData: { students: Student[] } = await response.json();
@@ -44,9 +53,13 @@ export const studentDataAPI = (
 
   const deleteAllStudents = async (students: Student[]) => {
     try {
+      const requestData = {
+        students,
+        courseId
+      };
       const response = await fetch('/api/students', {
         method: 'DELETE',
-        body: JSON.stringify(students)
+        body: JSON.stringify(requestData)
       });
 
       if (response.ok) {
@@ -64,9 +77,13 @@ export const studentDataAPI = (
   const deleteStudent = async (student: Student) => {
     try {
       const studentArray = [student];
+      const requestData = {
+        students: studentArray,
+        courseId
+      };
       const response = await fetch('/api/students', {
         method: 'DELETE',
-        body: JSON.stringify(studentArray)
+        body: JSON.stringify(requestData)
       });
 
       if (response.ok) {

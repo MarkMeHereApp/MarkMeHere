@@ -52,7 +52,6 @@ export const columns: ColumnDef<Student>[] = [
     enableHiding: true,
     enableGlobalFilter: true
   },
-  { accessorKey: 'fullName' }, // This is needed for flexibility when seraching for the full name of a student.
   {
     accessorKey: 'email',
     header: ({ column }) => (

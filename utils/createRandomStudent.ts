@@ -1,4 +1,4 @@
-import { Student, UserType } from '@/utils/sharedTypes';
+import { Student, Role, GlobalDevCourseId } from '@/utils/sharedTypes';
 
 interface PersonModule {
   sexType: () => string;
@@ -29,15 +29,14 @@ export default function createRandomStudent(): Student {
   const sex = faker ? faker.person.sexType() : 'Female';
   const firstName = faker ? faker.person.firstName(sex) : 'John';
   const lastName = faker ? faker.person.lastName(sex) : 'Doe';
-
   return {
     id: faker ? faker.string.uuid() : 'your-uuid-here',
-    userType: UserType.STUDENT,
     email: faker ? faker.internet.email() : 'test@example.com',
     firstName: firstName,
     lastName: lastName,
-    fullName: `${firstName} ${lastName}`,
     dateCreated: new Date(),
-    password: ''
+    role: Role.STUDENT,
+    courseId: GlobalDevCourseId
+    // attendanceEntries: []
   };
 }

@@ -1,38 +1,44 @@
-export enum UserType {
-  ADMIN = 'ADMIN',
+export enum Role {
   STUDENT = 'STUDENT',
-  PROFESSOR = 'PROFESSOR'
+  PROFESSOR = 'PROFESSOR',
+  ADMIN = 'ADMIN'
 }
 
 export interface User {
   id: string;
-  userType?: UserType;
   email: string;
   firstName: string;
   lastName: string;
-  fullName: string;
   dateCreated: Date;
-
   password?: string;
-  coursesAsStudent?: Course[];
-  lecturesAttended?: Lecture[];
-  attendanceEntries?: AttendanceEntry[];
-}
-
-export interface Student extends User {
-  userType: UserType.STUDENT;
-}
-
-export interface Professor extends User {
-  userType: UserType.PROFESSOR;
-}
-
-export interface Admin extends User {
-  userType: UserType.ADMIN;
 }
 
 export interface Lecture {}
 
 export interface AttendanceEntry {}
 
-export interface Course {}
+export interface Course {
+  courseId: string;
+}
+
+export interface CourseMember {
+  id: string;
+  lmsId?: string | null;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  course?: Course;
+  role: Role | string;
+  dateCreated: Date | null;
+  courseId: string;
+  // attendanceEntries: AttendanceEntry[];
+}
+
+export interface Student extends CourseMember {
+  role: 'STUDENT' | string;
+}
+export interface Professor extends CourseMember {
+  role: 'PROFESSOR' | string;
+}
+
+export const GlobalDevCourseId = 'Bruh-Aldrich-2023';
