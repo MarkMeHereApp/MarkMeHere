@@ -35,4 +35,8 @@ export interface Lecture {}
 
 export interface AttendanceEntry {}
 
-export interface Course {}
+export interface Course {
+  id: string;
+  name: string;
+  role: string;
+}

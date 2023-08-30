@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
-import Search from '@/app/dashboard/components/search';
-import TeamSwitcher from '@/app/dashboard/components/team-switcher';
-import UserNav from '@/app/dashboard/components/user-nav';
-import MainNav from '@/app/dashboard/components/main-nav';
+import TeamSwitcher from '@/app/dashboard/components/main-bar';
+import { getServerSession } from 'next-auth/next';
+import { Course } from '@/utils/sharedTypes';
+import { PrismaClient } from '@prisma/client';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -14,19 +14,39 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const serverSession = await getServerSession();
+  const prisma = new PrismaClient();
+  const email = serverSession?.user?.email || '';
+
+  const courses: Course[] = (
+    await prisma.courseMember.findMany({
+      where: {
+        email: email,
+        role: {
+          in: ['professor', 'assistant']
+        }
+      },
+      include: {
+        course: true
+      }
+    })
+  )
+    .map((courseMember) => {
+      if (courseMember.course) {
+        return {
+          id: courseMember.course.id,
+          name: courseMember.course.name,
+          role: courseMember.role
+        };
+      }
+    })
+    .filter(Boolean) as Course[];
+
+  console.log(courses);
+
   return (
     <>
-      <div className="border-b">
-        <div className="flex h-16 items-center px-4">
-          <TeamSwitcher />
-          <MainNav className="mx-6" />
-          <div className="ml-auto flex items-center space-x-4">
-            <Search />
-            <UserNav />
-          </div>
-        </div>
-      </div>
-      <div>{children}</div>
+      <TeamSwitcher groups={courses}>{children}</TeamSwitcher>
     </>
   );
 }

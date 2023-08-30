@@ -54,7 +54,7 @@ model CourseMember {
   firstName         String?             @db.VarChar(255)   // Right now optional
   lastName          String?             @db.VarChar(255)   // Right now optional
   courseId          String
-  course            Course?             @relation(fields: [courseId], references: [id])
+  course            Course             @relation(fields: [courseId], references: [id])
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
   role              String              @default("student") 
   attendanceEntries AttendanceEntry[] 
