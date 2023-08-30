@@ -10,7 +10,7 @@ datasource db {
 
 
 model User {
-  id                String            @id @unique
+  id                String            @id @default(cuid())
   email             String            @unique
   firstName         String            @db.VarChar(255)
   lastName          String            @db.VarChar(255)
@@ -20,7 +20,7 @@ model User {
 }
 
 model Lecture {
-  id                String            @id @unique
+  id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
   courseId          String            @unique
   lectureDate       DateTime          
@@ -28,7 +28,7 @@ model Lecture {
 }
 
 model AttendanceEntry {
-  id          String           @id @unique
+  id          String           @id @default(cuid())
   lecture     Lecture          @relation(fields: [lectureId], references: [id])
   lectureId   String           
   studentId   String
@@ -38,7 +38,8 @@ model AttendanceEntry {
 }
 
 model Course {
-  id          String    @id @unique
+  id          String                    @id @default(cuid())
+  name        String                    @db.VarChar(255)
   dateCreated DateTime
   StartDate   DateTime
   EndDate     DateTime?
@@ -47,7 +48,7 @@ model Course {
 }
 
 model CourseMember {
-  id                String              @id @unique
+  id                String              @id @default(cuid())
   lmsId             String                                // We need this when registering a student     
   email             String
   firstName         String?             @db.VarChar(255)   // Right now optional
