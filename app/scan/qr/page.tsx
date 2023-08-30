@@ -1,8 +1,8 @@
 'use client';
 
 import Stars from '@/components/background/stars';
-import React from "react";
-import QRCode from "react-qr-code";
+import React from 'react';
+import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
 import {
   Card,
@@ -10,17 +10,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 //Because the minimal QR code changes sizes depending on the view port we can't have it render on the server
-const QRCodeComponent = dynamic(() => import('./DynamicQRCodeComponent'), { ssr: false });
+const QRCodeComponent = dynamic(() => import('./DynamicQRCodeComponent'), {
+  ssr: false
+});
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -29,8 +31,11 @@ export default function QR() {
   const progressbarLength = 50; // The length of the progress bar in ms
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const mode = searchParams && searchParams.get('mode') ? searchParams.get('mode') : 'default';
- 
+  const mode =
+    searchParams && searchParams.get('mode')
+      ? searchParams.get('mode')
+      : 'default';
+
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
@@ -46,21 +51,31 @@ export default function QR() {
     return () => clearInterval(timer);
   }, []);
 
-  
-
   if (mode === 'minimal') {
-    
-      return (
-        <>
-    
-          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <QRCodeComponent url={process.env.NEXTAUTH_URL + '/submit/' + code} />
-          </div>
-      
-          <Progress value={progress} className="w-[100%]" style={{ visibility: "hidden" }} />
+    return (
+      <>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <QRCodeComponent url={process.env.NEXTAUTH_URL + '/submit/' + code} />
+        </div>
 
-        </>
-      );
+        <Progress
+          value={progress}
+          className="w-[100%]"
+          style={{ visibility: 'hidden' }}
+        />
+      </>
+    );
   }
 
   return (
@@ -86,28 +101,31 @@ export default function QR() {
               value={process.env.NEXTAUTH_URL + '/submit/' + code}
               viewBox={`0 0 256 256`}
               className="flex flex-col items-center justify-center text-2xl mb-4"
-              />
-              
-              {mode !== 'hide-code' && (
-                <>
-                  <div className="flex flex-col items-center justify-center text-2xl mb-4">
-                    <span>Or go to the website and enter the code</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center text-2xl mb-8" style={{ wordBreak: 'break-all' }}>
-                    attendify.rickleincker.com/submit
-                  </div>
+            />
 
-                  <CardFooter className="flex justify-between">
-                    <Card className="w-[600px] mx-auto  h-full">
-                      <CardHeader>
-                        <CardTitle className="text-6xl font-bold">
-                          {code}
-                        </CardTitle>
-                      </CardHeader>
-                    </Card>
-                  </CardFooter>
-                </>
-              )}
+            {mode !== 'hide-code' && (
+              <>
+                <div className="flex flex-col items-center justify-center text-2xl mb-4">
+                  <span>Or go to the website and enter the code</span>
+                </div>
+                <div
+                  className="flex flex-col items-center justify-center text-2xl mb-8"
+                  style={{ wordBreak: 'break-all' }}
+                >
+                  attendify.rickleincker.com/submit
+                </div>
+
+                <CardFooter className="flex justify-between">
+                  <Card className="w-[600px] mx-auto  h-full">
+                    <CardHeader>
+                      <CardTitle className="text-6xl font-bold">
+                        {code}
+                      </CardTitle>
+                    </CardHeader>
+                  </Card>
+                </CardFooter>
+              </>
+            )}
 
             <CardFooter className="flex justify-between">
               <Card className="w-[600px] mx-auto  h-full">

@@ -2,13 +2,13 @@
   {
     "id": "6437289",
     "status": "present",
-    "firstName" : "Jadyn", 
-    "lastName" : "LaPace"
+    "firstName": "Jadyn",
+    "lastName": "LaPace"
   },
   {
     "id": "4932478",
     "status": "absent",
-    "firstName" : "Taylor",
-    "lastName" : "Swift"
+    "firstName": "Taylor",
+    "lastName": "Swift"
   }
 ]
