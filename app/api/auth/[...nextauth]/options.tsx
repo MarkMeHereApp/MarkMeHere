@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
 
         //If email is found check if password is correct
         //If user exists and entered password matches hashed password
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (user && user.password && (await bcrypt.compare(password, user.password))) {
           // Any object returned will be saved in `user` property of the JWT
           return user;
         } else {
