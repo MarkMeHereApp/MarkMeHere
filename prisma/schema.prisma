@@ -8,61 +8,53 @@ datasource db {
   directUrl = env("NON_POOLING_DATABASE_URL") // uses a direct connection
 }
 
-enum UserType {
-  ADMIN
-  STUDENT
-  PROFESSOR
-}
 
 model User {
   id                String            @id @unique
-  userType          UserType?
   email             String            @unique
-  firstName         String            @default("null") @db.VarChar(255)
-  lastName          String            @default("null") @db.VarChar(255)
-  fullName          String            @default("null") @db.VarChar(255)
+  firstName         String            @db.VarChar(255)
+  lastName          String            @db.VarChar(255)
   dateCreated       DateTime?         @default(now())
-  password          String            @db.VarChar(255)
-  coursesAsStudent  Course[]          @relation("Course_Students")
-  lecturesAttended  Lecture[]         @relation("Student_LecturesAttended")
-  attendanceEntries AttendanceEntry[]
-  // coursesAsProfessor Course[]  @relation("Course_Professors")
-  // coursesAsAdmin     Course[]  @relation("Course_Admins")
+  password          String?           @db.VarChar(255)
+  //courseMembers     CourseMember[]  
 }
 
 model Lecture {
   id                String            @id @unique
   course            Course            @relation(fields: [courseId], references: [id])
   courseId          String            @unique
-  StartDate         DateTime
-  EndDate           DateTime?
-  studentAttendance User[]            @relation("Student_LecturesAttended")
+  lectureDate       DateTime          
   attendanceEntries AttendanceEntry[]
-}
-
-enum AttendanceStatus {
-  PRESENT
-  LATE
-  EXCUSED
 }
 
 model AttendanceEntry {
   id          String           @id @unique
   lecture     Lecture          @relation(fields: [lectureId], references: [id])
-  lectureId   String           @unique
-  student     User             @relation(fields: [studentId], references: [id])
-  studentId   String           @unique
+  lectureId   String           
+  studentId   String
+  student     CourseMember     @relation(fields: [studentId], references: [id])
   checkInDate DateTime         @default(now())
-  status      AttendanceStatus
+  status      String           @default("present") 
 }
 
 model Course {
   id          String    @id @unique
-  students    User[]    @relation("Course_Students")
   dateCreated DateTime
   StartDate   DateTime
   EndDate     DateTime?
   lectures    Lecture[]
-  // professors User[] @relation("Course_Professors")
-  // admins      User[]    @relation("Course_Admins")
+  enrollments CourseMember[]
+}
+
+model CourseMember {
+  id                String              @id @unique
+  lmsId             String                                // We need this when registering a student     
+  email             String
+  firstName         String?             @db.VarChar(255)   // Right now optional
+  lastName          String?             @db.VarChar(255)   // Right now optional
+  courseId          String
+  course            Course?             @relation(fields: [courseId], references: [id])
+  //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
+  role              String              @default("student") 
+  attendanceEntries AttendanceEntry[] 
 }
