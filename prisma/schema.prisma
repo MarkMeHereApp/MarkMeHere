@@ -39,9 +39,10 @@ model AttendanceEntry {
 
 model Course {
   id          String                    @id @default(cuid())
-  name        String                    @db.VarChar(255)
-  dateCreated DateTime
-  StartDate   DateTime
+  name        String                    @unique @db.VarChar(255)
+  lmsId       String?                   @unique
+  dateCreated DateTime                  @default(now())
+  StartDate   DateTime?
   EndDate     DateTime?
   lectures    Lecture[]
   enrollments CourseMember[]
@@ -49,7 +50,7 @@ model Course {
 
 model CourseMember {
   id                String              @id @default(cuid())
-  lmsId             String                                // We need this when registering a student     
+  lmsId             String?                                // We need this when registering a student     
   email             String
   firstName         String?             @db.VarChar(255)   // Right now optional
   lastName          String?             @db.VarChar(255)   // Right now optional

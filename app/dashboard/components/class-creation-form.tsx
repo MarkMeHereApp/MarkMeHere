@@ -1,11 +1,8 @@
-'use client';
-
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 import * as z from 'zod';
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,72 +14,122 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { Course } from '@/utils/sharedTypes';
 import { toast } from '@/components/ui/use-toast';
+import { string } from 'prop-types';
 
-const profileFormSchema = z.object({
-  username: z
+const CreateCourseFormSchema = z.object({
+  name: z
     .string()
-    .min(2, {
-      message: 'Username must be at least 2 characters.'
+    .min(4, {
+      message: 'Course Name must be at least 4 characters.'
     })
     .max(30, {
-      message: 'Username must not be longer than 30 characters.'
-    }),
-  email: z
-    .string({
-      required_error: 'Please select an email to display.'
+      message: 'Course Name must not be longer than 30 characters.'
     })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: 'Please enter a valid URL.' })
-      })
-    )
+    .refine((value) => !/[!@#\$%\^&\*]/.test(value), {
+      message: 'Course Name cannot contain special characters (!@#$%^&*)'
+    })
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Course Name cannot contain double spaces'
+    }),
+  lmsId: z
+    .string()
+    .max(255, {
+      message:
+        'Learning Management System ID must not be longer than 255 characters.'
+    })
     .optional()
 });
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+export default function CreateCourseForm() {
+  const session = useSession();
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
-  urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' }
-  ]
-};
-
-export default function ProfileForm() {
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues,
+  const form = useForm<Course>({
+    resolver: zodResolver(CreateCourseFormSchema),
     mode: 'onChange'
   });
 
-  const { fields, append } = useFieldArray({
-    name: 'urls',
-    control: form.control
-  });
+  async function createCourse(data: Course): Promise<string> {
+    try {
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
-    });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const course = await response.json();
+
+      toast({
+        title: 'Course Added Successfully',
+        description: `Welcome to ${course.course.name}!`
+      });
+
+      // Assuming the course object has an id property
+      return course.course.id;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({
+        title: 'Error creating course',
+        description: message
+      });
+
+      // Return an empty string or any other default value in case of an error
+      return '';
+    }
+  }
+
+  async function enrollProfessor(courseId: string, email: string) {
+    const enrollmentData = {
+      courseId: courseId,
+      email: email,
+      role: 'professor'
+    };
+
+    try {
+      const response = await fetch('/api/enroll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(enrollmentData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const enrollment = await response.json();
+
+      toast({
+        title: 'Professor Enrolled Successfully',
+        description: `Professor with email ${email} has been enrolled to the course with ID ${courseId}!`
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({
+        title: 'Error enrolling professor',
+        description: message
+      });
+    }
+  }
+
+  async function onSubmit(data: Course) {
+    const sessionData = session.data;
+    if (sessionData && sessionData.user?.email) {
+      const courseId = await createCourse(data);
+      if (courseId != '') {
+        enrollProfessor(courseId, sessionData.user?.email);
+      }
+    }
   }
 
   return (
@@ -90,16 +137,15 @@ export default function ProfileForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Course Name</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="COP 4256" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                This is your course name. It must be unique.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -107,84 +153,23 @@ export default function ProfileForm() {
         />
         <FormField
           control={form.control}
-          name="email"
+          name="lmsId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>Learning Management System ID</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Tell us a little bit about yourself"
-                  className="resize-none"
-                  {...field}
-                />
+                <Input className="resize-none" {...field} />
               </FormControl>
               <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
+                This is your course's Learning Management System ID (like Canvas
+                or Moodle). This can help organize your courses. It is optional,
+                but must be unique.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => append({ value: '' })}
-          >
-            Add URL
-          </Button>
-        </div>
-        <Button type="submit">Update profile</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

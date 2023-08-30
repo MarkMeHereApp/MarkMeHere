@@ -20,14 +20,14 @@ import {
   CommandSeparator
 } from '@/components/ui/command';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from '@/components/ui/sheet';
 import {
   Popover,
   PopoverContent,
@@ -53,7 +53,8 @@ interface CourseSwitcherProps extends PopoverTriggerProps {
 const GlobalContext = createContext<Course>({
   id: '',
   name: '',
-  role: ''
+  loggedInUserRole: '',
+  lmsId: ''
 });
 
 export default function CourseSwitcher({
@@ -62,8 +63,13 @@ export default function CourseSwitcher({
   children
 }: CourseSwitcherProps) {
   const [open, setOpen] = React.useState(false);
-  const [showNewCourseDialog, setShowNewCourseDialog] = React.useState(false);
-  const defaultCourse: Course = { id: 'temp', name: 'temp', role: 'temp' };
+  const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
+  const defaultCourse: Course = {
+    id: 'temp',
+    name: 'temp',
+    loggedInUserRole: 'temp',
+    lmsId: 'temp'
+  };
   const [selectedCourse, setSelectedCourse] = React.useState<Course>(
     groups && groups.length > 0 ? groups[0] : defaultCourse
   );
@@ -81,10 +87,7 @@ export default function CourseSwitcher({
     <GlobalContext.Provider value={selectedCourse}>
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
-          <Dialog
-            open={showNewCourseDialog}
-            onOpenChange={setShowNewCourseDialog}
-          >
+          <Sheet open={showNewCourseSheet} onOpenChange={setShowNewCourseSheet}>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -112,10 +115,10 @@ export default function CourseSwitcher({
                     <CommandEmpty>No Course found.</CommandEmpty>
                     {(groups || []).map((group) => (
                       <CommandGroup
-                        key={group.role}
+                        key={group.loggedInUserRole}
                         heading={
-                          group.role.charAt(0).toUpperCase() +
-                          group.role.slice(1)
+                          group.loggedInUserRole.charAt(0).toUpperCase() +
+                          group.loggedInUserRole.slice(1)
                         }
                       >
                         {groups.map((course) => (
@@ -152,32 +155,29 @@ export default function CourseSwitcher({
                   <CommandSeparator />
                   <CommandList>
                     <CommandGroup>
-                      <DialogTrigger asChild>
+                      <SheetTrigger asChild>
                         <CommandItem
                           onSelect={() => {
                             setOpen(false);
-                            setShowNewCourseDialog(true);
+                            setShowNewCourseSheet(true);
                           }}
                         >
                           <PlusCircledIcon className="mr-2 h-5 w-5" />
                           Create Course
                         </CommandItem>
-                      </DialogTrigger>
+                      </SheetTrigger>
                     </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Course</DialogTitle>
-                <DialogDescription>
-                  Add a new Course to manage products and customers.
-                </DialogDescription>
-              </DialogHeader>
+            <SheetContent side="left">
+              <SheetHeader className="pb-2">
+                <SheetTitle>Create Course</SheetTitle>
+              </SheetHeader>
               <Separator />
               <div
-                className="scrollable-content"
+                className="pt-4 scrollable-content"
                 style={{
                   maxHeight: maxHeight,
                   overflowY: 'auto',
@@ -188,17 +188,8 @@ export default function CourseSwitcher({
               >
                 <ProfileForm />
               </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowNewCourseDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Continue</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            </SheetContent>
+          </Sheet>
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
             <Search />

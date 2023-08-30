@@ -36,13 +36,11 @@ export default async function DashboardLayout({
         return {
           id: courseMember.course.id,
           name: courseMember.course.name,
-          role: courseMember.role
+          loggedInUserRole: courseMember.role
         };
       }
     })
     .filter(Boolean) as Course[];
-
-  console.log(courses);
 
   return (
     <>

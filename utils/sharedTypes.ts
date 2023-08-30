@@ -38,5 +38,6 @@ export interface AttendanceEntry {}
 export interface Course {
   id: string;
   name: string;
-  role: string;
+  loggedInUserRole: string;
+  lmsId: string;
 }
