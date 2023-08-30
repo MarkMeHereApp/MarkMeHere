@@ -26,19 +26,10 @@ export const Providers = ({ children }: Props) => {
 
   const fetchData = async () => {
     try {
-      const studentsData = await studentDataAPI(
-        students,
-        setStudents
-      ).getStudents();
-      if (studentsData.length > 0) {
-        setStudents(studentsData);
-      } else {
-        console.error('No user data received.');
-        setStudents([]);
-      }
+      await studentDataAPI(students, setStudents).getStudents();
+      console.log(students);
     } catch (error) {
       console.error('Error:', error);
-      setStudents([]);
     }
   };
 

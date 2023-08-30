@@ -30,7 +30,7 @@ const ScrollableAreaComponent: React.FC<ScrollableAreaProps> = ({
             onClick={() => handleStudentChange(student)}
             className={`w-full h-fit p-2 text-center cursor-pointer border-2 border-border`}
           >
-            {student.fullName}
+            {`${student.firstName} ${student.lastName}`}
           </Button>
         ))}
       </ScrollArea>
