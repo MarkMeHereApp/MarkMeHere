@@ -79,22 +79,25 @@ export async function DELETE(request: Request) {
   try {
     const requestData = await request.json();
     const courseId = requestData.courseId;
-    const requestStudents = requestData as Student[];
+    const requestStudents = requestData.students as Student[];
 
-    for (const student of requestStudents) {
-      await prisma.courseMember.delete({
+    const deletePromises = requestStudents.map((student) =>
+      prisma.courseMember.delete({
         where: {
           id: student.id,
           courseId
         }
-      });
-    }
+      })
+    );
+
+    await Promise.all(deletePromises);
 
     const students = await getAllStudentsFromCourse(courseId);
-    const response: StudentResponse = {
+    const response = {
       students: students,
       courseId
     };
+
     return NextResponse.json({ success: true, ...response });
   } catch (error) {
     console.error('Error deleting student(s):', error);
