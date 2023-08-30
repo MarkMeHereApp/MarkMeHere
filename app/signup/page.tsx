@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 import SignUpForm from '@/app/signup/components/signUpForm';
-import Stars from '@/components/background/stars';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function SignUpPage() {
+  const Stars = dynamic(() => import('@/components/background/stars'), {
+    ssr: false
+  });
+
   return (
     <>
       <div className="relative h-screen bg-black">

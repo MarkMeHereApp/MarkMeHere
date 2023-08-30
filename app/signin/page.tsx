@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 import SignInForm from '@/app/signin/components/signInForm';
-import Stars from '@/components/background/stars';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 
 export default function SigninPage() {
   const [providers, setProviders] = useState(null);
+  const Stars = dynamic(() => import('@/components/background/stars'), {
+    ssr: false
+  });
 
   useEffect(() => {
     async function fetchProviders() {
