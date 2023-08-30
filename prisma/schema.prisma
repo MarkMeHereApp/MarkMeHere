@@ -40,12 +40,6 @@ model Lecture {
   attendanceEntries AttendanceEntry[]
 }
 
-enum AttendanceStatus {
-  PRESENT
-  LATE
-  EXCUSED
-}
-
 model AttendanceEntry {
   id          String           @id @unique
   lecture     Lecture          @relation(fields: [lectureId], references: [id])
@@ -53,7 +47,7 @@ model AttendanceEntry {
   student     User             @relation(fields: [studentId], references: [id])
   studentId   String           @unique
   checkInDate DateTime         @default(now())
-  status      AttendanceStatus
+  status      String           
 }
 
 model Course {

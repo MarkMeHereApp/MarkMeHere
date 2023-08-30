@@ -39,7 +39,7 @@ export default function MainNav({
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
-        Take Attendance
+        Attendance Management
       </Link>
       <Link
         href="/dashboard/class-settings"

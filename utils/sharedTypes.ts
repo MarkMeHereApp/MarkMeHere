@@ -31,8 +31,36 @@ export interface Admin extends User {
   userType: UserType.ADMIN;
 }
 
-export interface Lecture {}
+export interface Course {
+    id: string;
+    students: User[];
+    dateCreated: Date;
+    startDate: Date;
+    endDate?: Date;
+    lectures: Lecture[];
+}
 
-export interface AttendanceEntry {}
+export interface Lecture {
+    id: string;     
+    course: Course;
+    courseId: string;
+    startDate: Date;
+    endDate?: Date;
+    studentAttendance: User[]; 
+    attendanceEntries: AttendanceEntry[];
+}
 
-export interface Course {}
+export enum AttendanceStatus {
+    PRESENT = 'PRESENT',
+    LATE = 'LATE',
+    EXCUSED = 'EXCUSED'
+}
+export interface AttendanceEntry {
+    id: string; 
+    lecture: Lecture;      
+    lectureId: string;
+    student: User;        
+    studentId: String;
+    checkInDate: Date; 
+    status: AttendanceStatus;
+}
