@@ -1,34 +1,19 @@
-'use client';
-
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
 import SignInForm from '@/app/signin/components/signInForm';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
 
-export default function SigninPage() {
-  const [providers, setProviders] = useState(null);
+export default async function SigninPage() {
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
   });
 
-  useEffect(() => {
-    async function fetchProviders() {
-      try {
-        const response = await fetch('/api/auth/providers', {
-          cache: 'no-store'
-        });
-        const providersData = await response.json();
-        setProviders(providersData);
-      } catch (error) {
-        console.error('Failed to fetch providers:', error);
-        // Handle or throw the error as appropriate for your application
-      }
-    }
+  const response = await fetch(
+    process.env.NEXTAUTH_URL + '/api/auth/providers'
+  );
 
-    fetchProviders();
-  }, []);
+  const providersData = await response.json();
 
   return (
     <>
@@ -43,7 +28,7 @@ export default function SigninPage() {
                 Sign into Attendify
               </h1>
             </div>
-            <SignInForm providers={providers} />
+            <SignInForm providers={providersData} />
 
             {/* Enabled again for now so a single professsor IE Leinecker
             can sign up (mostly for testing) */}
