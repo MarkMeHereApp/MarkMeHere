@@ -50,7 +50,7 @@ export default function CreateCourseForm() {
     mode: 'onChange'
   });
 
-  async function createCourse(data: Course): Promise<string> {
+  async function createCourse(data: Course): Promise<Course | null> {
     try {
       const response = await fetch('/api/courses', {
         method: 'POST',
@@ -67,30 +67,37 @@ export default function CreateCourseForm() {
       const course = await response.json();
 
       toast({
-        title: 'Course Added Successfully',
-        description: `Welcome to ${course.course.name}!`
+        title: `${course.course.name} Added Successfully!`,
+        icon: 'success'
       });
 
-      // Assuming the course object has an id property
-      return course.course.id;
+      // Return the course object instead of just the id
+      return course.course;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'An unexpected error occurred';
       toast({
         title: 'Error creating course',
+        icon: 'error',
         description: message
       });
 
-      // Return an empty string or any other default value in case of an error
-      return '';
+      // Return null in case of an error
+      return null;
     }
   }
 
-  async function enrollProfessor(courseId: string, email: string) {
+  async function enrollCourseMember(
+    courseId: string,
+    courseName: string,
+    email: string,
+    userFullName: string | null | undefined,
+    role: string
+  ) {
     const enrollmentData = {
       courseId: courseId,
       email: email,
-      role: 'professor'
+      role: role
     };
 
     try {
@@ -109,14 +116,20 @@ export default function CreateCourseForm() {
       const enrollment = await response.json();
 
       toast({
-        title: 'Professor Enrolled Successfully',
-        description: `Professor with email ${email} has been enrolled to the course with ID ${courseId}!`
+        title: 'Enrolled Successfully',
+        icon: 'success',
+        description: `${
+          userFullName ? userFullName : email
+        } Has been enrolled to the course ${courseName} as a ${
+          role.charAt(0).toUpperCase() + role.slice(1)
+        }!`
       });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'An unexpected error occurred';
       toast({
         title: 'Error enrolling professor',
+        icon: 'error',
         description: message
       });
     }
@@ -125,9 +138,15 @@ export default function CreateCourseForm() {
   async function onSubmit(data: Course) {
     const sessionData = session.data;
     if (sessionData && sessionData.user?.email) {
-      const courseId = await createCourse(data);
-      if (courseId != '') {
-        enrollProfessor(courseId, sessionData.user?.email);
+      const course = await createCourse(data);
+      if (course !== null) {
+        enrollCourseMember(
+          course.id,
+          course.name,
+          sessionData.user?.email,
+          sessionData.user?.name,
+          'professor'
+        );
       }
     }
   }
