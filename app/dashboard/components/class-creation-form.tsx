@@ -1,8 +1,11 @@
+import Link from 'next/link';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 import * as z from 'zod';
 import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -58,7 +61,8 @@ const CreateCourseFormSchema = z.object({
       message: 'Learning Management System ID contain double spaces'
     })
     .transform((val) => val.trim())
-    .optional()
+    .optional(),
+  autoEnroll: z.boolean().default(true).optional()
 });
 
 export default function CreateCourseForm({
@@ -73,9 +77,16 @@ export default function CreateCourseForm({
 
   const session = useSession();
 
-  const form = useForm<Course>({
+  type CourseFormInput = Course & {
+    autoEnroll: boolean;
+  };
+
+  const form = useForm<CourseFormInput>({
     resolver: zodResolver(CreateCourseFormSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      autoEnroll: true
+    }
   });
 
   async function createCourse(
@@ -124,13 +135,14 @@ export default function CreateCourseForm({
     }
   }
 
-  async function onSubmit(course: Course) {
+  async function onSubmit(courseform: CourseFormInput) {
     setLoading(true);
     const sessionData = session.data;
     if (sessionData && sessionData.user?.email) {
+      const { autoEnroll, ...course } = courseform;
       const { newCourse, newEnrollment } = await createCourse(
         course,
-        true,
+        autoEnroll,
         sessionData.user?.name,
         sessionData.user?.email,
         'professor'
@@ -141,7 +153,7 @@ export default function CreateCourseForm({
           console.log(newCourse);
           toast({
             title: `${newCourse.name} Added Successfully!`,
-            description: `${newEnrollment.name} have been enrolled to the course ${course.name} as a ${newEnrollment.role}!`,
+            description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
             icon: 'success'
           });
 
@@ -150,7 +162,7 @@ export default function CreateCourseForm({
         } else {
           toast({
             title: `${newCourse.name} Added Successfully!`,
-            description: `${course.name} has been created but you have not been enrolled to the course.`,
+            description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
             icon: 'success'
           });
 
@@ -226,6 +238,26 @@ export default function CreateCourseForm({
                 but it must be unique.
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="autoEnroll"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Checkbox
+                  checked={Boolean(field.value)}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Auto Enroll into class as Professor.</FormLabel>
+                <FormDescription>
+                  @TODO This option should only be visible for admins
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
