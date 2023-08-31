@@ -39,7 +39,8 @@ model AttendanceEntry {
 
 model Course {
   id          String                    @id @default(cuid())
-  name        String                    @unique @db.VarChar(255)
+  courseLabel String                    @unique @db.VarChar(255)
+  name        String                    @db.VarChar(255)
   lmsId       String?                   @unique
   dateCreated DateTime                  @default(now())
   StartDate   DateTime?

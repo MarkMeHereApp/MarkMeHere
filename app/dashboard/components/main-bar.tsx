@@ -57,6 +57,7 @@ interface GlobalContextType {
 const GlobalContext = createContext<GlobalContextType>({
   course: {
     id: '',
+    courseLabel: '',
     name: '',
     lmsId: ''
   },
@@ -71,14 +72,20 @@ const GlobalContext = createContext<GlobalContextType>({
 
 export default function CourseSwitcher({
   className,
-  userCourses,
-  userCourseMemberships,
+  userCourses: initialUserCourses,
+  userCourseMemberships: initialUserCourseMemberships,
   children
 }: CourseSwitcherProps) {
+  const [userCourses, setUserCourses] =
+    React.useState<Course[]>(initialUserCourses);
+  const [userCourseMemberships, setUserCourseMemberships] = React.useState<
+    CourseMember[]
+  >(initialUserCourseMemberships);
   const [open, setOpen] = React.useState(false);
   const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
   const defaultCourse: Course = {
     id: 'temp',
+    courseLabel: 'temp',
     name: 'temp',
     lmsId: 'temp'
   };
@@ -89,6 +96,10 @@ export default function CourseSwitcher({
     email: 'temp',
     role: 'temp'
   };
+
+  const uniqueRoles = [
+    ...new Set(userCourseMemberships.map((item) => item.role))
+  ].sort();
 
   const [selectedCourse, setSelectedCourse] = React.useState<Course>(
     userCourses && userCourses.length > 0 ? userCourses[0] : defaultCourse
@@ -139,46 +150,48 @@ export default function CourseSwitcher({
                   <CommandList>
                     <CommandInput placeholder="Search Course..." />
                     <CommandEmpty>No Course found.</CommandEmpty>
-                    {(userCourseMemberships || []).map(
-                      (userCourseMembership) => (
-                        <CommandGroup
-                          key={userCourseMembership.role}
-                          heading={
-                            userCourseMembership.role.charAt(0).toUpperCase() +
-                            userCourseMembership.role.slice(1)
-                          }
-                        >
-                          {userCourses.map((course) => (
-                            <CommandItem
-                              key={course.id}
-                              onSelect={() => {
-                                setSelectedCourse(course);
-                                setOpen(false);
-                              }}
-                              className="text-sm"
-                            >
-                              <Avatar className="mr-2 h-5 w-5">
-                                <AvatarImage
-                                  src={`https://avatar.vercel.sh/${course.id}.png`}
-                                  alt={course.name}
-                                  className="grayscale"
-                                />
-                                <AvatarFallback>SC</AvatarFallback>
-                              </Avatar>
-                              {course.name}
-                              <CheckIcon
-                                className={cn(
-                                  'ml-auto h-4 w-4',
-                                  selectedCourse.id === course.id
-                                    ? 'opacity-100'
-                                    : 'opacity-0'
-                                )}
+                    {uniqueRoles.map((role) => (
+                      <CommandGroup
+                        key={role}
+                        heading={role.charAt(0).toUpperCase() + role.slice(1)}
+                      >
+                        {userCourses.map((course) => (
+                          <CommandItem
+                            key={course.id}
+                            onSelect={() => {
+                              setSelectedCourse(course);
+                              const courseMember = userCourseMemberships.find(
+                                (member) => member.courseId === course.id
+                              );
+                              setSelectedCourseMember(
+                                courseMember || defaultCourseMember
+                              );
+
+                              setOpen(false);
+                            }}
+                            className="text-sm"
+                          >
+                            <Avatar className="mr-2 h-5 w-5">
+                              <AvatarImage
+                                src={`https://avatar.vercel.sh/${course.id}.png`}
+                                alt={course.name}
+                                className="grayscale"
                               />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      )
-                    )}
+                              <AvatarFallback>SC</AvatarFallback>
+                            </Avatar>
+                            {course.name}
+                            <CheckIcon
+                              className={cn(
+                                'ml-auto h-4 w-4',
+                                selectedCourse.id === course.id
+                                  ? 'opacity-100'
+                                  : 'opacity-0'
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    ))}
                   </CommandList>
                   <CommandSeparator />
                   <CommandList>
@@ -214,7 +227,31 @@ export default function CourseSwitcher({
                   width: 'calc(100% - 15px)'
                 }}
               >
-                <ProfileForm onSuccess={() => setShowNewCourseSheet(false)} />
+                <ProfileForm
+                  onSuccess={(newCourse, newCourseMembership) => {
+                    if (newCourseMembership !== null) {
+                      setUserCourses((prevCourses) => [
+                        ...prevCourses,
+                        newCourse
+                      ]);
+
+                      // Add the new course member to userCourseMemberships
+
+                      setUserCourseMemberships((prevMemberships) => [
+                        ...prevMemberships,
+                        newCourseMembership
+                      ]);
+
+                      // Set the selected course to the new course
+                      setSelectedCourse(newCourse);
+
+                      // Set the selected course member to the new course member
+                      setSelectedCourseMember(newCourseMembership);
+                    }
+                    // Close the sheet
+                    setShowNewCourseSheet(false);
+                  }}
+                />
               </div>
             </SheetContent>
           </Sheet>

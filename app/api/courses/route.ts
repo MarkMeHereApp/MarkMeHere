@@ -33,6 +33,7 @@ export async function POST(request: Request) {
 
     resCourse = {
       id: course.id,
+      courseLabel: course.courseLabel,
       name: course.name,
       lmsId: course.lmsId
     };

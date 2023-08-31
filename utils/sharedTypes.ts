@@ -38,6 +38,7 @@ export interface AttendanceEntry {}
 export interface Course {
   id: string;
   name: string;
+  courseLabel: string;
   lmsId?: string | null | undefined;
 }
 

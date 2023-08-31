@@ -20,33 +20,54 @@ import { toast } from '@/components/ui/use-toast';
 import { string } from 'prop-types';
 
 const CreateCourseFormSchema = z.object({
+  courseLabel: z
+    .string()
+    .min(2, {
+      message: 'Course Label must be at least 2 characters.'
+    })
+    .max(30, {
+      message: 'Course Label must not be longer than 30 characters.'
+    })
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Course Label cannot contain double spaces'
+    })
+    .transform((val) => val.trim())
+    .transform((val) => val.toUpperCase()),
   name: z
     .string()
-    .min(4, {
-      message: 'Course Name must be at least 4 characters.'
+    .min(2, {
+      message: 'Course Name must be at least 2 characters.'
     })
     .max(30, {
       message: 'Course Name must not be longer than 30 characters.'
     })
-    .refine((value) => !/[!@#\$%\^&\*]/.test(value), {
-      message: 'Course Name cannot contain special characters (!@#$%^&*)'
-    })
     .refine((value) => !/\s\s/.test(value), {
       message: 'Course Name cannot contain double spaces'
-    }),
+    })
+    .transform((val) => val.trim()),
   lmsId: z
     .string()
+    .min(2, {
+      message: 'Learning Management System ID must be at least 2 characters.'
+    })
     .max(255, {
       message:
         'Learning Management System ID must not be longer than 255 characters.'
     })
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Learning Management System ID contain double spaces'
+    })
+    .transform((val) => val.trim())
     .optional()
 });
 
 export default function CreateCourseForm({
   onSuccess
 }: {
-  onSuccess: () => void;
+  onSuccess: (
+    newCourse: Course,
+    newCourseMembership: CourseMember | null
+  ) => void;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -123,15 +144,20 @@ export default function CreateCourseForm({
             description: `${newEnrollment.name} have been enrolled to the course ${course.name} as a ${newEnrollment.role}!`,
             icon: 'success'
           });
+
+          // Call the onSuccess prop with the new course and new enrollment
+          onSuccess(newCourse, newEnrollment);
         } else {
           toast({
             title: `${newCourse.name} Added Successfully!`,
             description: `${course.name} has been created but you have not been enrolled to the course.`,
             icon: 'success'
           });
+
+          // Call the onSuccess prop with the new course
+          onSuccess(newCourse, null);
         }
         setLoading(false);
-        onSuccess();
         return;
       }
 
@@ -148,15 +174,34 @@ export default function CreateCourseForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
+          name="courseLabel"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Unique Course Label</FormLabel>
+              <FormControl>
+                <Input placeholder="COP4935-23FALL 0002" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your course label, it must be <b>unique</b>. We
+                recommend referencing the term, year, and section.
+                <i> Note, the label will be converted to all uppercase.</i>
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Course Name</FormLabel>
               <FormControl>
-                <Input placeholder="COP 4256" {...field} />
+                <Input placeholder="Senior Design 2 Mo/We" {...field} />
               </FormControl>
               <FormDescription>
-                This is your course name. It must be unique.
+                This is your course's user-friendly display name.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -167,9 +212,7 @@ export default function CreateCourseForm({
           name="lmsId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Course Learning Management System ID (optional)
-              </FormLabel>
+              <FormLabel>Learning Management System ID (optional)</FormLabel>
               <FormControl>
                 <Input
                   className="resize-none"
@@ -180,7 +223,7 @@ export default function CreateCourseForm({
               <FormDescription>
                 This is your course's Learning Management System ID (like Canvas
                 or Moodle). This can help organize your courses. It is optional,
-                but must be unique.
+                but it must be unique.
               </FormDescription>
               <FormMessage />
             </FormItem>
