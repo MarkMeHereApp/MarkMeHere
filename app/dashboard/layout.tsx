@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import TeamSwitcher from '@/app/dashboard/components/main-bar';
 import { getServerSession } from 'next-auth/next';
-import { Course } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@/utils/sharedTypes';
 import { PrismaClient } from '@prisma/client';
 
 export const metadata: Metadata = {
@@ -18,33 +18,38 @@ export default async function DashboardLayout({
   const prisma = new PrismaClient();
   const email = serverSession?.user?.email || '';
 
-  const courses: Course[] = (
-    await prisma.courseMember.findMany({
-      where: {
-        email: email,
-        role: {
-          in: ['professor', 'assistant']
-        }
-      },
-      include: {
-        course: true
+  // Fetch the CourseMember records
+  const courseMemberships = await prisma.courseMember.findMany({
+    where: {
+      email: email,
+      role: {
+        in: ['professor', 'assistant']
       }
-    })
-  )
-    .map((courseMember) => {
-      if (courseMember.course) {
-        return {
-          id: courseMember.course.id,
-          name: courseMember.course.name,
-          loggedInUserRole: courseMember.role
-        };
+    }
+  });
+
+  // Extract the course IDs from the CourseMember records
+  const courseIds = courseMemberships.map(
+    (courseMember) => courseMember.courseId
+  );
+
+  // Fetch the courses using the extracted IDs
+  const courses = await prisma.course.findMany({
+    where: {
+      id: {
+        in: courseIds
       }
-    })
-    .filter(Boolean) as Course[];
+    }
+  });
 
   return (
     <>
-      <TeamSwitcher groups={courses}>{children}</TeamSwitcher>
+      <TeamSwitcher
+        userCourses={courses}
+        userCourseMemberships={courseMemberships}
+      >
+        {children}
+      </TeamSwitcher>
     </>
   );
 }

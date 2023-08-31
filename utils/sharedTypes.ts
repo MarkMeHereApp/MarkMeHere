@@ -38,6 +38,19 @@ export interface AttendanceEntry {}
 export interface Course {
   id: string;
   name: string;
-  loggedInUserRole: string;
-  lmsId: string;
+  lmsId?: string | null | undefined;
+}
+
+export interface CourseMember {
+  id: string;
+  courseId: string;
+  email: string;
+  name: string; // non-nullable
+  role: string;
+  lmsId?: string | null | undefined;
+}
+
+export interface QRCode {
+  id: string;
+  code: string;
 }

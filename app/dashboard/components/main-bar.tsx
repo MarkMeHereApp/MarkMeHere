@@ -22,8 +22,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger
@@ -34,7 +32,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 
-import { Course } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@/utils/sharedTypes';
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '@/app/dashboard/components/class-creation-form';
 import { createContext } from 'react';
@@ -47,19 +45,34 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 >;
 
 interface CourseSwitcherProps extends PopoverTriggerProps {
-  groups: Course[];
+  userCourses: Course[];
+  userCourseMemberships: CourseMember[];
 }
 
-const GlobalContext = createContext<Course>({
-  id: '',
-  name: '',
-  loggedInUserRole: '',
-  lmsId: ''
+interface GlobalContextType {
+  course: Course;
+  courseMember: CourseMember;
+}
+
+const GlobalContext = createContext<GlobalContextType>({
+  course: {
+    id: '',
+    name: '',
+    lmsId: ''
+  },
+  courseMember: {
+    id: '',
+    name: '',
+    courseId: '',
+    email: '',
+    role: ''
+  }
 });
 
 export default function CourseSwitcher({
   className,
-  groups,
+  userCourses,
+  userCourseMemberships,
   children
 }: CourseSwitcherProps) {
   const [open, setOpen] = React.useState(false);
@@ -67,12 +80,23 @@ export default function CourseSwitcher({
   const defaultCourse: Course = {
     id: 'temp',
     name: 'temp',
-    loggedInUserRole: 'temp',
     lmsId: 'temp'
   };
+  const defaultCourseMember: CourseMember = {
+    id: 'temp',
+    name: 'temp',
+    courseId: 'temp',
+    email: 'temp',
+    role: 'temp'
+  };
+
   const [selectedCourse, setSelectedCourse] = React.useState<Course>(
-    groups && groups.length > 0 ? groups[0] : defaultCourse
+    userCourses && userCourses.length > 0 ? userCourses[0] : defaultCourse
   );
+
+  const [selectedCourseMember, setSelectedCourseMember] =
+    React.useState<CourseMember>(defaultCourseMember);
+
   const [maxHeight, setMaxHeight] = React.useState('calc(80vh - 10rem)');
 
   React.useEffect(() => {
@@ -84,7 +108,9 @@ export default function CourseSwitcher({
   }, []);
 
   return (
-    <GlobalContext.Provider value={selectedCourse}>
+    <GlobalContext.Provider
+      value={{ course: selectedCourse, courseMember: selectedCourseMember }}
+    >
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <Sheet open={showNewCourseSheet} onOpenChange={setShowNewCourseSheet}>
@@ -99,7 +125,7 @@ export default function CourseSwitcher({
                 >
                   <Avatar className="mr-2 h-5 w-5">
                     <AvatarImage
-                      src={`https://avatar.vercel.sh/${selectedCourse.value}.png`}
+                      src={`https://avatar.vercel.sh/${selectedCourse.id}.png`}
                       alt={selectedCourse.name}
                     />
                     <AvatarFallback>SC</AvatarFallback>
@@ -113,44 +139,46 @@ export default function CourseSwitcher({
                   <CommandList>
                     <CommandInput placeholder="Search Course..." />
                     <CommandEmpty>No Course found.</CommandEmpty>
-                    {(groups || []).map((group) => (
-                      <CommandGroup
-                        key={group.loggedInUserRole}
-                        heading={
-                          group.loggedInUserRole.charAt(0).toUpperCase() +
-                          group.loggedInUserRole.slice(1)
-                        }
-                      >
-                        {groups.map((course) => (
-                          <CommandItem
-                            key={course.id}
-                            onSelect={() => {
-                              setSelectedCourse(course);
-                              setOpen(false);
-                            }}
-                            className="text-sm"
-                          >
-                            <Avatar className="mr-2 h-5 w-5">
-                              <AvatarImage
-                                src={`https://avatar.vercel.sh/${course.id}.png`}
-                                alt={course.name}
-                                className="grayscale"
+                    {(userCourseMemberships || []).map(
+                      (userCourseMembership) => (
+                        <CommandGroup
+                          key={userCourseMembership.role}
+                          heading={
+                            userCourseMembership.role.charAt(0).toUpperCase() +
+                            userCourseMembership.role.slice(1)
+                          }
+                        >
+                          {userCourses.map((course) => (
+                            <CommandItem
+                              key={course.id}
+                              onSelect={() => {
+                                setSelectedCourse(course);
+                                setOpen(false);
+                              }}
+                              className="text-sm"
+                            >
+                              <Avatar className="mr-2 h-5 w-5">
+                                <AvatarImage
+                                  src={`https://avatar.vercel.sh/${course.id}.png`}
+                                  alt={course.name}
+                                  className="grayscale"
+                                />
+                                <AvatarFallback>SC</AvatarFallback>
+                              </Avatar>
+                              {course.name}
+                              <CheckIcon
+                                className={cn(
+                                  'ml-auto h-4 w-4',
+                                  selectedCourse.id === course.id
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                                )}
                               />
-                              <AvatarFallback>SC</AvatarFallback>
-                            </Avatar>
-                            {course.name}
-                            <CheckIcon
-                              className={cn(
-                                'ml-auto h-4 w-4',
-                                selectedCourse.id === course.id
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    ))}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )
+                    )}
                   </CommandList>
                   <CommandSeparator />
                   <CommandList>
@@ -186,7 +214,7 @@ export default function CourseSwitcher({
                   width: 'calc(100% - 15px)'
                 }}
               >
-                <ProfileForm />
+                <ProfileForm onSuccess={() => setShowNewCourseSheet(false)} />
               </div>
             </SheetContent>
           </Sheet>
