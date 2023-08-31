@@ -114,7 +114,7 @@ export default function CourseSwitcher({
     if (window.innerWidth <= 768) {
       setMaxHeight('calc(100vh - 10rem)');
     } else {
-      setMaxHeight('calc(80vh - 10rem)');
+      setMaxHeight('calc(100vh - 10rem)');
     }
   }, []);
 
@@ -220,7 +220,7 @@ export default function CourseSwitcher({
               <div
                 className="pt-4 scrollable-content"
                 style={{
-                  maxHeight: maxHeight,
+                  maxHeight: 'calc(100vh - 6rem)',
                   overflowY: 'auto',
                   paddingRight: '15px',
                   boxSizing: 'content-box',
