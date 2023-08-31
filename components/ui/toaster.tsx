@@ -8,18 +8,55 @@ import {
   ToastTitle,
   ToastViewport
 } from '@/components/ui/toast';
+import {
+  CheckCircledIcon,
+  ExclamationTriangleIcon,
+  CrossCircledIcon,
+  BookmarkFilledIcon
+} from '@radix-ui/react-icons';
 import { useToast } from '@/components/ui/use-toast';
 
 export function Toaster() {
   const { toasts } = useToast();
 
+  type IconPresetsType = {
+    [key: string]: JSX.Element | undefined;
+  };
+
+  const iconPresets: IconPresetsType = {
+    success: <CheckCircledIcon className="mr-2 text-primary" />,
+    warning: <ExclamationTriangleIcon className="mr-2 text-primary" />,
+    error: <CrossCircledIcon className="mr-2  text-destructive" />,
+    error_foreground: (
+      <CrossCircledIcon className="mr-2  text-destructive-foreground" />
+    ),
+    bookmark: <BookmarkFilledIcon className="mr-2 text-primary" />
+  };
+
   return (
     <ToastProvider>
-      {toasts.map(({ id, title, description, action, ...props }) => {
+      {toasts.map(({ id, title, icon, description, action, ...props }) => {
+        let IconComponent = null;
+        if (icon) {
+          if (iconPresets[icon]) {
+            IconComponent = iconPresets[icon];
+          } else {
+            IconComponent = (
+              <span className="text-destructive"> INVALID ICON PROP </span>
+            );
+          }
+        }
         return (
           <Toast key={id} {...props}>
             <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
+              {title && (
+                <ToastTitle>
+                  <span className="flex items-center">
+                    {IconComponent}
+                    {title}
+                  </span>
+                </ToastTitle>
+              )}
               {description && (
                 <ToastDescription>{description}</ToastDescription>
               )}
