@@ -27,7 +27,6 @@ export const Providers = ({ children }: Props) => {
   const fetchData = async () => {
     try {
       await studentDataAPI(students, setStudents).getStudents();
-      console.log(students);
     } catch (error) {
       console.error('Error:', error);
     }

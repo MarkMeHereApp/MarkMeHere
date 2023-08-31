@@ -3,13 +3,7 @@
 import React from 'react';
 import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router

@@ -42,6 +42,26 @@ export default function MainNav({
         Take Attendance
       </Link>
       <Link
+        href="/dashboard/manage-students"
+        className={
+          isActive('/dashboard/manage-students')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        Manage Students
+      </Link>
+      <Link
+        href="/dashboard/student-statistics"
+        className={
+          isActive('/dashboard/student-statistics')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        Student Statistics
+      </Link>
+      <Link
         href="/dashboard/class-settings"
         className={
           isActive('/dashboard/class-settings')
