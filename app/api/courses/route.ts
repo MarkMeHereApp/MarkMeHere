@@ -41,8 +41,6 @@ export async function POST(request: Request) {
       EndDate: course.EndDate ?? null
     };
   } catch (error) {
-    console.log(error);
-    console.error('Error creating course:', error);
     return NextResponse.json({
       success: false,
       error: 'Error creating course'
@@ -71,7 +69,6 @@ export async function POST(request: Request) {
         lmsId: enrollment.lmsId ?? ''
       };
     } catch (error) {
-      console.error('Error creating enrollment:', error);
       return NextResponse.json({
         success: false,
         error: 'Error: Created course but failed to enroll user'
@@ -89,7 +86,6 @@ export async function GET() {
     });
     return NextResponse.json({ success: true, courses });
   } catch (error) {
-    console.error('Error getting courses:', error);
     return NextResponse.json({
       success: false,
       error: 'Error getting courses'
@@ -111,7 +107,6 @@ export async function DELETE(request: Request) {
     });
     return NextResponse.json({ success: true, courses });
   } catch (error) {
-    console.error('Error deleting course:', error);
     return NextResponse.json({
       success: false,
       error: 'Error deleting course'

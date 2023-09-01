@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
@@ -20,7 +18,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Course, CourseMember } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { string } from 'prop-types';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -150,7 +147,6 @@ export default function CreateCourseForm({
 
       if (newCourse !== null && newCourse !== undefined) {
         if (newEnrollment !== null && newEnrollment !== undefined) {
-          console.log(newCourse);
           toast({
             title: `${newCourse.name} Added Successfully!`,
             description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
