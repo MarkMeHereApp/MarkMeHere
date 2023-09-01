@@ -7,6 +7,7 @@ import {
   PlusCircledIcon
 } from '@radix-ui/react-icons';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -111,7 +112,7 @@ export default function CourseSwitcher({
                         src={`https://avatar.vercel.sh/${selectedCourse?.id}.png`}
                         alt={selectedCourse?.name}
                       />
-                      <AvatarFallback>SC</AvatarFallback>
+                      <Skeleton className="h-5 w-5 rounded-full" />
                     </Avatar>
                     {selectedCourse?.name}
                     <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -157,7 +158,7 @@ export default function CourseSwitcher({
                                 alt={course.name}
                                 className="grayscale"
                               />
-                              <AvatarFallback>SC</AvatarFallback>
+                              <Skeleton className="h-5 w-5 rounded-full" />
                             </Avatar>
                             {course.name}
                             <CheckIcon
