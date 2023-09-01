@@ -41,4 +41,5 @@ export interface Professor extends CourseMember {
   role: 'PROFESSOR' | string;
 }
 
+
 export const GlobalDevCourseId = 'Bruh-Aldrich-2023';

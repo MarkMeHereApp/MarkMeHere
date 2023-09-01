@@ -1,11 +1,10 @@
-'use client';
-
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 import * as z from 'zod';
+import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,72 +16,165 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { Course, CourseMember } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 
-const profileFormSchema = z.object({
-  username: z
+const CreateCourseFormSchema = z.object({
+  courseLabel: z
     .string()
     .min(2, {
-      message: 'Username must be at least 2 characters.'
+      message: 'Course Label must be at least 2 characters.'
     })
     .max(30, {
-      message: 'Username must not be longer than 30 characters.'
-    }),
-  email: z
-    .string({
-      required_error: 'Please select an email to display.'
+      message: 'Course Label must not be longer than 30 characters.'
     })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: 'Please enter a valid URL.' })
-      })
-    )
-    .optional()
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Course Label cannot contain double spaces'
+    })
+    .transform((val) => val.trim())
+    .transform((val) => val.toUpperCase()),
+  name: z
+    .string()
+    .min(2, {
+      message: 'Course Name must be at least 2 characters.'
+    })
+    .max(30, {
+      message: 'Course Name must not be longer than 30 characters.'
+    })
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Course Name cannot contain double spaces'
+    })
+    .transform((val) => val.trim()),
+  lmsId: z
+    .string()
+    .min(2, {
+      message: 'Learning Management System ID must be at least 2 characters.'
+    })
+    .max(255, {
+      message:
+        'Learning Management System ID must not be longer than 255 characters.'
+    })
+    .refine((value) => !/\s\s/.test(value), {
+      message: 'Learning Management System ID contain double spaces'
+    })
+    .transform((val) => val.trim())
+    .optional(),
+  autoEnroll: z.boolean().default(true).optional()
 });
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+export default function CreateCourseForm({
+  onSuccess
+}: {
+  onSuccess: (
+    newCourse: Course,
+    newCourseMembership: CourseMember | null
+  ) => void;
+}) {
+  const [loading, setLoading] = useState(false);
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
-  urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' }
-  ]
-};
+  const session = useSession();
 
-export default function ProfileForm() {
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues,
-    mode: 'onChange'
+  type CourseFormInput = Course & {
+    autoEnroll: boolean;
+  };
+
+  const form = useForm<CourseFormInput>({
+    resolver: zodResolver(CreateCourseFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      autoEnroll: true
+    }
   });
 
-  const { fields, append } = useFieldArray({
-    name: 'urls',
-    control: form.control
-  });
+  async function createCourse(
+    data: Course,
+    bShouldEnroll: boolean,
+    userFullName: string | null | undefined,
+    email: string,
+    role: string
+  ): Promise<{ newCourse: Course | null; newEnrollment: CourseMember | null }> {
+    try {
+      const response: Response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          courseData: data,
+          enroll: bShouldEnroll,
+          email: email,
+          name: userFullName,
+          role: role
+        })
+      });
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
-    });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const res = await response.json();
+      const resCourse = res.resCourse;
+      const resEnrollment = res.resEnrollment;
+
+      // Return the course object instead of just the id
+      return { newCourse: resCourse, newEnrollment: resEnrollment };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({
+        title: 'Error creating course',
+        icon: 'error',
+        description: message
+      });
+
+      // Return null in case of an error
+      return { newCourse: null, newEnrollment: null }; // or replace null with a default CourseMember object
+    }
+  }
+
+  async function onSubmit(courseform: CourseFormInput) {
+    setLoading(true);
+    const sessionData = session.data;
+    if (sessionData && sessionData.user?.email) {
+      const { autoEnroll, ...course } = courseform;
+      const { newCourse, newEnrollment } = await createCourse(
+        course,
+        autoEnroll,
+        sessionData.user?.name,
+        sessionData.user?.email,
+        'professor'
+      );
+
+      if (newCourse !== null && newCourse !== undefined) {
+        if (newEnrollment !== null && newEnrollment !== undefined) {
+          toast({
+            title: `${newCourse.name} Added Successfully!`,
+            description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
+            icon: 'success'
+          });
+
+          // Call the onSuccess prop with the new course and new enrollment
+          onSuccess(newCourse, newEnrollment);
+        } else {
+          toast({
+            title: `${newCourse.name} Added Successfully!`,
+            description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
+            icon: 'success'
+          });
+
+          // Call the onSuccess prop with the new course
+          onSuccess(newCourse, null);
+        }
+        setLoading(false);
+        return;
+      }
+
+      toast({
+        title: `ERROR: Course and CourseMember Undefined/Null!`
+      });
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -90,101 +182,84 @@ export default function ProfileForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="courseLabel"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Unique Course Label</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="COP4935-23FALL 0002" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                This is your course label, it must be <b>unique</b>. We
+                recommend referencing the term, year, and section.
+                <i> Note, the label will be converted to all uppercase.</i>
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
-          name="email"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>Course Name</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Tell us a little bit about yourself"
+                <Input placeholder="Senior Design 2 Mo/We" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your course's user-friendly display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="lmsId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Learning Management System ID (optional)</FormLabel>
+              <FormControl>
+                <Input
                   className="resize-none"
                   {...field}
+                  value={field.value || ''}
                 />
               </FormControl>
               <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
+                This is your course's Learning Management System ID (like Canvas
+                or Moodle). This can help organize your courses. It is optional,
+                but it must be unique.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => append({ value: '' })}
-          >
-            Add URL
-          </Button>
-        </div>
-        <Button type="submit">Update profile</Button>
+        <FormField
+          control={form.control}
+          name="autoEnroll"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Checkbox
+                  checked={Boolean(field.value)}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Auto Enroll into class as Professor.</FormLabel>
+                <FormDescription>
+                  @TODO This option should only be visible for admins
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={loading}>
+          {loading ? 'Loading...' : 'Submit'}
+        </Button>
       </form>
     </Form>
   );
