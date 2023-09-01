@@ -10,7 +10,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import React, { useContext, useState } from 'react';
-import { Student, UserType } from '@/utils/sharedTypes';
+import { Student, Role, GlobalDevCourseId } from '@/utils/sharedTypes';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -223,10 +223,10 @@ export const EnrollNewStudentButton = () => {
   const onFormSubmit = (data: StudentFormData) => {
     const studentData: Student = {
       ...data,
-      fullName: `${data.firstName} ${data.lastName}`,
       id: uuidv4(),
-      userType: UserType.STUDENT,
-      dateCreated: new Date(Date.now())
+      role: Role.STUDENT,
+      dateCreated: new Date(Date.now()),
+      courseId: GlobalDevCourseId
     };
 
     studentDataAPI(students, setStudents).addStudent(studentData);

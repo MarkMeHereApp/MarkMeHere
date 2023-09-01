@@ -1,30 +1,44 @@
 import { NextResponse } from 'next/server';
-import { Student, UserType } from '@/utils/sharedTypes';
-import { faker } from '@faker-js/faker';
+import { Student } from '@/utils/sharedTypes';
 import prisma from '@/prisma';
+
+const getAllStudentsFromCourse = async (
+  courseId: string
+): Promise<Student[]> => {
+  const students = await prisma.courseMember.findMany({
+    where: {
+      courseId: {
+        equals: courseId
+      }
+    },
+    orderBy: [{ lastName: 'asc' }]
+  });
+  return students;
+};
+
+export interface StudentResponse {
+  students: Student[];
+  courseId: string;
+}
 
 // Returns an array of the students with the new student added
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
-    const fakePassword: string = faker.string.sample();
-    const student = await prisma.user.create({
+    const courseId = requestData.courseId;
+    const student = await prisma.courseMember.create({
       data: {
-        ...requestData,
-        password: fakePassword,
+        ...requestData.student,
         dateCreated: new Date(Date.now())
       }
     });
     if (student) {
-      const students = await prisma.user.findMany({
-        where: {
-          userType: {
-            equals: UserType.STUDENT
-          }
-        },
-        orderBy: [{ lastName: 'asc' }]
-      });
-      return NextResponse.json({ success: true, students });
+      const students = await getAllStudentsFromCourse(courseId);
+      const response: StudentResponse = {
+        students: students,
+        courseId
+      };
+      return NextResponse.json({ success: true, ...response });
     }
   } catch (error) {
     console.error('Error inserting user:', error);
@@ -34,20 +48,28 @@ export async function POST(request: Request) {
 }
 
 // Returns all students
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const students = await prisma.user.findMany({
-      where: {
-        userType: {
-          equals: UserType.STUDENT
-        }
-      },
-      orderBy: [{ lastName: 'asc' }]
-    });
-    return NextResponse.json({ success: true, students });
+    const queryParams = new URLSearchParams(request.url.split('?')[1]);
+    const courseId = queryParams.get('courseId');
+
+    if (!courseId) {
+      return NextResponse.json({ success: false, error: 'Missing courseId' });
+    }
+
+    const students = await getAllStudentsFromCourse(courseId);
+    const response = {
+      students: students,
+      courseId: courseId
+    };
+
+    return NextResponse.json({ success: true, ...response });
   } catch (error) {
-    console.error('Error getting users:', error);
-    return NextResponse.json({ success: false, error: 'Error getting users' });
+    console.error('Error getting students:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Error getting students'
+    });
   }
 }
 
@@ -56,25 +78,27 @@ export async function GET() {
 export async function DELETE(request: Request) {
   try {
     const requestData = await request.json();
-    const requestStudents = requestData as Student[];
+    const courseId = requestData.courseId;
+    const requestStudents = requestData.students as Student[];
 
-    for (const student of requestStudents) {
-      await prisma.user.delete({
+    const deletePromises = requestStudents.map((student) =>
+      prisma.courseMember.delete({
         where: {
-          id: student.id
+          id: student.id,
+          courseId
         }
-      });
-    }
+      })
+    );
 
-    const students = await prisma.user.findMany({
-      where: {
-        userType: {
-          equals: UserType.STUDENT
-        }
-      },
-      orderBy: [{ lastName: 'asc' }]
-    });
-    return NextResponse.json({ success: true, students });
+    await Promise.all(deletePromises);
+
+    const students = await getAllStudentsFromCourse(courseId);
+    const response = {
+      students: students,
+      courseId
+    };
+
+    return NextResponse.json({ success: true, ...response });
   } catch (error) {
     console.error('Error deleting student(s):', error);
     return NextResponse.json({

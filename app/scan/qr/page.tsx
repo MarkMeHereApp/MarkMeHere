@@ -101,58 +101,47 @@ export default function QR() {
   }
 
   return (
-    <>
-      <div className="relative min-h-screen">
-        <div className="absolute top-0 right-0 h-full w-full">
-          {Stars && <Stars />}
-        </div>
-
-        <Card className="h-full w-full sm:w-[640px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 mb-2 pb-2">
-            <CardTitle className="text-sm md:text-lg font-bold pr-8">
-              Scan the QR code with your phone to sign in
-            </CardTitle>
-            <Button onClick={() => router.push('/dashboard/take-attendance')}>
-              <div className="text-sm md:text-lg">Finish</div>
-            </Button>
-          </CardHeader>
-
-          <CardContent className="h-full w-full flex-grow flex-shrink flex flex-col items-center justify-between space-y-2">
-            <div className="h-full w-full">
-              <QRCode
-                style={{
-                  height: '50%',
-                  width: '100%'
-                }}
-                value={process.env.NEXTAUTH_URL + '/submit/' + code}
-                className="h-full w-full"
-              />
-
-              {mode !== 'hide-code' && (
-                <div className="flex flex-wrap flex-col items-center justify-center text-xl space-y-2">
-                  <span>Or go to the website and enter the code</span>
-                  <div
-                    className="flex flex-wrap flex-col items-center justify-center text-xl "
-                    style={{ wordBreak: 'break-all' }}
-                  >
-                    attendify.rickleincker.com/submit
-                  </div>
-
-                  <Card className="flex justify-center items-center p">
-                    <CardHeader>
-                      <CardTitle className="text-5xl font-bold font-mono tracking-widest ">
-                        <div className="text-center">{code}</div>
-                      </CardTitle>
-                    </CardHeader>
-                  </Card>
-                </div>
-              )}
-              <div className="pt-5"></div>
-              <Progress value={progress} className="w-[100%]" />
-            </div>
-          </CardContent>
-        </Card>
+    <div className="relative min-h-screen">
+      <div className="absolute top-0 right-0 h-full w-full">
+        {Stars && <Stars />}
       </div>
-    </>
+
+      <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
+        <CardHeader className="flex items-center justify-between hidden lg:block">
+          <CardTitle className="font-bold pr-8">
+            Scan the QR code with your phone to sign in
+          </CardTitle>
+          <Button onClick={() => router.push('/dashboard/take-attendance')}>
+            <div>Finish</div>
+          </Button>
+        </CardHeader>
+
+        <CardContent className="h-full w-full flex-grow flex-shrink flex flex-col items-center justify-between space-y-2">
+          <QRCode
+            value={process.env.NEXTAUTH_URL + '/submit/' + code}
+            className="h-full w-full"
+          />
+
+          <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
+            <span>Or go to the website and enter the code</span>
+            <div className="flex flex-col items-center justify-center text-xl break-all">
+              attendify.rickleincker.com/submit
+            </div>
+
+            <Card className="flex justify-center items-center p">
+              <CardHeader>
+                <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
+                  {code}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </div>
+
+          <div className="pt-5 hidden lg:block">
+            <Progress value={progress} className="w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

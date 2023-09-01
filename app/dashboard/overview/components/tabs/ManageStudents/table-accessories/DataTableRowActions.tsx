@@ -41,7 +41,7 @@ export function DataTableRowActions<TData>({
     await studentDataAPI(students, setStudents).deleteStudent(selectedStudent);
     handleDialogClose();
     toast({
-      title: `Successfully deleted ${selectedStudent.fullName}`
+      title: `Successfully deleted ${studentRowData.firstName} ${studentRowData.lastName}`
     });
   }
   return (
@@ -58,7 +58,7 @@ export function DataTableRowActions<TData>({
                 This action is irreversible. Are you certain you wish to
                 permanently delete all data related to{' '}
                 <span className="underline text-red-500">
-                  {studentRowData.fullName}
+                  {`${studentRowData.firstName} ${studentRowData.lastName}`}
                 </span>
                 ?
               </DialogDescription>
