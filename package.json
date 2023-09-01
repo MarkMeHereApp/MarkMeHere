@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "prisma generate &&  next dev",
-    "build": "prisma generate && prisma db push && eslint app --fix && prettier app -w && next build ",
+    "build": "prisma generate && prisma db push --force-reset && eslint app --fix && prettier app -w && next build ",
     "start": "next start",
     "lint": "next lint && eslint app --fix && prettier app --write",
     "postinstall": "prisma generate",
