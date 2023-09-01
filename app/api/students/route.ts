@@ -11,9 +11,22 @@ const getAllStudentsFromCourse = async (
         equals: courseId
       }
     },
-    orderBy: [{ lastName: 'asc' }]
+    orderBy: [{ name: 'asc' }]
   });
-  return students;
+
+  const convertedStudents = students.map((courseMember) => {
+    return {
+      id: courseMember.id,
+      lmsId: courseMember.lmsId,
+      email: courseMember.email,
+      firstName: courseMember.name.split(' ')[0],
+      lastName: courseMember.name.split(' ')[1],
+      role: courseMember.role,
+      dateCreated: new Date(),
+      courseId: courseMember.courseId
+    };
+  });
+  return convertedStudents;
 };
 
 export interface StudentResponse {
