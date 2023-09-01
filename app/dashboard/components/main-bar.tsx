@@ -45,33 +45,18 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 >;
 
 interface CourseSwitcherProps extends PopoverTriggerProps {
-  userCourses: Course[];
-  userCourseMemberships: CourseMember[];
+  userCourses: Course[] | null;
+  userCourseMemberships: CourseMember[] | null;
 }
 
 interface GlobalContextType {
-  course: Course;
-  courseMember: CourseMember;
+  course: Course | null;
+  courseMember: CourseMember | null;
 }
 
 const GlobalContext = createContext<GlobalContextType>({
-  course: {
-    id: '',
-    courseLabel: '',
-    name: '',
-    lmsId: '',
-    dateCreated: new Date(), // add this line
-    StartDate: null, // add this line
-    EndDate: null // add this line
-  },
-  courseMember: {
-    id: '',
-    name: '',
-    courseId: '',
-    email: '',
-    role: '',
-    lmsId: ''
-  }
+  course: null,
+  courseMember: null
 });
 
 export default function CourseSwitcher({
@@ -80,41 +65,29 @@ export default function CourseSwitcher({
   userCourseMemberships: initialUserCourseMemberships,
   children
 }: CourseSwitcherProps) {
-  const [userCourses, setUserCourses] =
-    React.useState<Course[]>(initialUserCourses);
+  const [userCourses, setUserCourses] = React.useState<Course[]>(
+    initialUserCourses || []
+  );
   const [userCourseMemberships, setUserCourseMemberships] = React.useState<
     CourseMember[]
-  >(initialUserCourseMemberships);
+  >(initialUserCourseMemberships || []);
   const [open, setOpen] = React.useState(false);
   const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
-  const defaultCourse: Course = {
-    id: 'temp',
-    courseLabel: 'temp',
-    name: 'temp',
-    lmsId: 'temp',
-    dateCreated: new Date(), // add this line
-    StartDate: null, // add this line
-    EndDate: null // add this line
-  };
-  const defaultCourseMember: CourseMember = {
-    id: 'temp',
-    name: 'temp',
-    courseId: 'temp',
-    email: 'temp',
-    role: 'temp',
-    lmsId: 'temp'
-  };
 
   const uniqueRoles = [
     ...new Set(userCourseMemberships.map((item) => item.role))
   ].sort();
 
-  const [selectedCourse, setSelectedCourse] = React.useState<Course>(
-    userCourses && userCourses.length > 0 ? userCourses[0] : defaultCourse
+  const [selectedCourse, setSelectedCourse] = React.useState<Course | null>(
+    userCourses && userCourses.length > 0 ? userCourses[0] : null
   );
 
   const [selectedCourseMember, setSelectedCourseMember] =
-    React.useState<CourseMember>(defaultCourseMember);
+    React.useState<CourseMember | null>(
+      userCourseMemberships && userCourseMemberships.length > 0
+        ? userCourseMemberships[0]
+        : null
+    );
 
   return (
     <GlobalContext.Provider
@@ -124,25 +97,35 @@ export default function CourseSwitcher({
         <div className="flex h-16 items-center px-4">
           <Sheet open={showNewCourseSheet} onOpenChange={setShowNewCourseSheet}>
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
+              {selectedCourse ? (
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    aria-label="Select a Course"
+                    className={cn('w-[200px] justify-between', className)}
+                  >
+                    <Avatar className="mr-2 h-5 w-5">
+                      <AvatarImage
+                        src={`https://avatar.vercel.sh/${selectedCourse?.id}.png`}
+                        alt={selectedCourse?.name}
+                      />
+                      <AvatarFallback>SC</AvatarFallback>
+                    </Avatar>
+                    {selectedCourse?.name}
+                    <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+              ) : (
                 <Button
                   variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  aria-label="Select a Course"
-                  className={cn('w-[200px] justify-between', className)}
+                  onClick={() => setShowNewCourseSheet(true)}
                 >
-                  <Avatar className="mr-2 h-5 w-5">
-                    <AvatarImage
-                      src={`https://avatar.vercel.sh/${selectedCourse.id}.png`}
-                      alt={selectedCourse.name}
-                    />
-                    <AvatarFallback>SC</AvatarFallback>
-                  </Avatar>
-                  {selectedCourse.name}
-                  <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                  <PlusCircledIcon className="mr-2 h-5 w-5" />
+                  Create Course
                 </Button>
-              </PopoverTrigger>
+              )}
               <PopoverContent className="w-[200px] p-0">
                 <Command>
                   <CommandList>
@@ -158,12 +141,11 @@ export default function CourseSwitcher({
                             key={course.id}
                             onSelect={() => {
                               setSelectedCourse(course);
-                              const courseMember = userCourseMemberships.find(
-                                (member) => member.courseId === course.id
-                              );
-                              setSelectedCourseMember(
-                                courseMember || defaultCourseMember
-                              );
+                              const courseMember =
+                                userCourseMemberships.find(
+                                  (member) => member.courseId === course.id
+                                ) || null;
+                              setSelectedCourseMember(courseMember);
 
                               setOpen(false);
                             }}
@@ -181,7 +163,7 @@ export default function CourseSwitcher({
                             <CheckIcon
                               className={cn(
                                 'ml-auto h-4 w-4',
-                                selectedCourse.id === course.id
+                                selectedCourse?.id === course.id
                                   ? 'opacity-100'
                                   : 'opacity-0'
                               )}
