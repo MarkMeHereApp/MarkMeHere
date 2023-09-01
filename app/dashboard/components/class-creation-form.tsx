@@ -18,7 +18,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Course, CourseMember } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { string } from 'prop-types';
 

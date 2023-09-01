@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Course, CourseMember } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 
 // Creates a new course and optionally enrolls the user making the request
@@ -35,9 +35,13 @@ export async function POST(request: Request) {
       id: course.id,
       courseLabel: course.courseLabel,
       name: course.name,
-      lmsId: course.lmsId
+      lmsId: course.lmsId ?? null,
+      dateCreated: new Date(),
+      StartDate: course.StartDate ?? null,
+      EndDate: course.EndDate ?? null
     };
   } catch (error) {
+    console.log(error);
     console.error('Error creating course:', error);
     return NextResponse.json({
       success: false,

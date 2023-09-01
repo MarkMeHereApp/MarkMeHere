@@ -35,22 +35,7 @@ export interface Lecture {}
 
 export interface AttendanceEntry {}
 
-export interface Course {
-  id: string;
-  name: string;
-  courseLabel: string;
-  lmsId?: string | null | undefined;
-}
-
-export interface CourseMember {
-  id: string;
-  courseId: string;
-  email: string;
-  name: string; // non-nullable
-  role: string;
-  lmsId?: string | null | undefined;
-}
-
+export interface Course {}
 export interface QRCode {
   id: string;
   code: string;

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import TeamSwitcher from '@/app/dashboard/components/main-bar';
 import { getServerSession } from 'next-auth/next';
-import { Course, CourseMember } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 export const metadata: Metadata = {

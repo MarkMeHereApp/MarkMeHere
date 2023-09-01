@@ -32,7 +32,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 
-import { Course, CourseMember } from '@/utils/sharedTypes';
+import { Course, CourseMember } from '@prisma/client';
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '@/app/dashboard/components/class-creation-form';
 import { createContext } from 'react';
@@ -59,14 +59,18 @@ const GlobalContext = createContext<GlobalContextType>({
     id: '',
     courseLabel: '',
     name: '',
-    lmsId: ''
+    lmsId: '',
+    dateCreated: new Date(), // add this line
+    StartDate: null, // add this line
+    EndDate: null // add this line
   },
   courseMember: {
     id: '',
     name: '',
     courseId: '',
     email: '',
-    role: ''
+    role: '',
+    lmsId: ''
   }
 });
 
@@ -87,14 +91,18 @@ export default function CourseSwitcher({
     id: 'temp',
     courseLabel: 'temp',
     name: 'temp',
-    lmsId: 'temp'
+    lmsId: 'temp',
+    dateCreated: new Date(), // add this line
+    StartDate: null, // add this line
+    EndDate: null // add this line
   };
   const defaultCourseMember: CourseMember = {
     id: 'temp',
     name: 'temp',
     courseId: 'temp',
     email: 'temp',
-    role: 'temp'
+    role: 'temp',
+    lmsId: 'temp'
   };
 
   const uniqueRoles = [
@@ -107,16 +115,6 @@ export default function CourseSwitcher({
 
   const [selectedCourseMember, setSelectedCourseMember] =
     React.useState<CourseMember>(defaultCourseMember);
-
-  const [maxHeight, setMaxHeight] = React.useState('calc(80vh - 10rem)');
-
-  React.useEffect(() => {
-    if (window.innerWidth <= 768) {
-      setMaxHeight('calc(100vh - 10rem)');
-    } else {
-      setMaxHeight('calc(100vh - 10rem)');
-    }
-  }, []);
 
   return (
     <GlobalContext.Provider
