@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { DataTableRowActions } from './table-accessories/DataTableRowActions';
-import { Student } from '@/utils/sharedTypes';
+import { Student } from '@/utils/globalVariables';
 
 export const columns: ColumnDef<Student>[] = [
   {

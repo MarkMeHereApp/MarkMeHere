@@ -35,7 +35,6 @@ import {
 
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '@/app/dashboard/components/class-creation-form';
-import Search from '@/app/dashboard/components/search';
 import UserNav from '@/app/dashboard/components/user-nav';
 import MainNav from '@/app/dashboard/components/main-nav';
 
@@ -199,7 +198,6 @@ export default function CourseSwitcher({ className }: { className?: string }) {
         </Sheet>
         <MainNav className="mx-6" />
         <div className="ml-auto flex items-center space-x-4">
-          <Search />
           <UserNav />
         </div>
       </div>

@@ -11,7 +11,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { Student } from '@/utils/sharedTypes';
+import { Student } from '@/utils/globalVariables';
 import { TrashIcon } from '@radix-ui/react-icons';
 
 import { Row } from '@tanstack/react-table';

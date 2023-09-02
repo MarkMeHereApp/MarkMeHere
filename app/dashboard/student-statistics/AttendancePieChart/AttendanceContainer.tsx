@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import PieChartCardComponent from './PieChartCardComponent';
 import ScrollableAreaComponent from './ScrollableAreaComponent';
-import { Student } from '@/utils/sharedTypes';
+import { Student } from '@/utils/globalVariables';
 
 interface AttendanceContainerProps {
   students: Student[];
