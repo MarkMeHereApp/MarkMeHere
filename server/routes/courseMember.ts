@@ -21,12 +21,16 @@ export const courseMemberRouter = router({
   getCourseMembersOfCourse: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
-      const courseMembers = await prisma.courseMember.findMany({
-        where: {
-          courseId: requestData.input.courseId
-        }
-      });
-      return courseMembers;
+      try {
+        const courseMembers = await prisma.courseMember.findMany({
+          where: {
+            courseId: requestData.input.courseId
+          }
+        });
+        return courseMembers;
+      } catch (error) {
+        throw new Error('Error getting course members');
+      }
     })
 });
 

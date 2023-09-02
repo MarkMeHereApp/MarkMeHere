@@ -29,13 +29,13 @@ model Lecture {
 }
 
 model AttendanceEntry {
-  id          String           @id @default(cuid())
-  lecture     Lecture          @relation(fields: [lectureId], references: [id])
-  lectureId   String           
-  studentId   String
-  student     CourseMember     @relation(fields: [studentId], references: [id])
-  checkInDate DateTime         @default(now())
-  status      String           @default("present") 
+  id                String           @id @default(cuid())
+  lecture           Lecture          @relation(fields: [lectureId], references: [id])
+  lectureId         String           
+  courseMemberId    String
+  courseMember      CourseMember     @relation(fields: [courseMemberId], references: [id])
+  checkInDate       DateTime         @default(now())
+  status            String           @default("present") 
 }
 
 model Course {
