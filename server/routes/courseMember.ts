@@ -1,21 +1,39 @@
 import { publicProcedure, router } from '../trpc';
-import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 
-export const zRequestExample = z.object({
+export const zNewCourseMember = z.object({
   // The input schema goes here
+  newMemberData: z.object({
+    id: z.string(),
+    lmsId: z.string().nullable(),
+    email: z.string(),
+    name: z.string(),
+    courseId: z.string(),
+    dateEnrolled: z.date(),
+    role: z.string()
+  })
 });
+
 export const zGetCourseMembersOfCourse = z.object({
   courseId: z.string()
 });
 
 export const courseMemberRouter = router({
   createCourseMember: publicProcedure
-    .input(zRequestExample)
+    .input(zNewCourseMember)
     .mutation(async (requestData) => {
-      // The logic for this procedure goes here
-      return { success: true };
+      try {
+        const resEnrollment = await prisma.courseMember.create({
+          data: {
+            ...requestData.input.newMemberData
+          }
+        });
+        return { success: true, resEnrollment };
+      } catch (error) {
+        console.error(error);
+        return { success: false };
+      }
     }),
 
   getCourseMembersOfCourse: publicProcedure

@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/card';
 
 import AttendanceContainer from './AttendancePieChart/AttendanceContainer';
-import { Student } from '@/utils/sharedTypes';
 
 interface StudentsViewProps {
   students: Student[];

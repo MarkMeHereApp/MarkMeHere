@@ -42,16 +42,16 @@ export default function MainNav({
         Attendance Management
       </Link>
       <Link
-        href="/dashboard/manage-students"
+        href="/dashboard/manage-course-members"
         className={
-          isActive('/dashboard/manage-students')
+          isActive('/dashboard/manage-course-members')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
-        Manage Students
+        Manage Course Members
       </Link>
-      <Link
+      {/* <Link
         href="/dashboard/student-statistics"
         className={
           isActive('/dashboard/student-statistics')
@@ -60,7 +60,7 @@ export default function MainNav({
         }
       >
         Student Statistics
-      </Link>
+      </Link> */}
       <Link
         href="/dashboard/class-settings"
         className={
@@ -115,7 +115,16 @@ export default function MainNav({
       >
         temp sign out
       </button>
-
+      <Link
+        href="/dashboard/test"
+        className={
+          isActive('/dashboard/test')
+            ? 'text-sm font-medium text-primary'
+            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
+        }
+      >
+        Test
+      </Link>
       <a
         href="https://cdn.discordapp.com/attachments/1078896207486787584/1078896797512122452/boom.gif"
         className={

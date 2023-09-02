@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import React from 'react';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { Student } from '@/utils/sharedTypes';
+import { Student } from '@/utils/globalVariables';
 
 interface ScrollableAreaProps {
   students: Student[];

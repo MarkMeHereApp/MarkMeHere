@@ -4,6 +4,7 @@ import DashboardView from './components/DashboardView';
 import { ModeToggle } from './components/theme-toggle';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
+import TestPage from '../test/page';
 
 const HeaderView = () => {
   return (
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
       <div className="flex-1 md:w-1/2 p-8 md:p-12">
         <HeaderView />
         <DashboardView />
+        <TestPage />
       </div>
     </div>
   );
