@@ -41,17 +41,17 @@ export default function MainNav({
       >
         Attendance Management
       </Link>
-      {/* <Link
-        href="/dashboard/manage-students"
+      <Link
+        href="/dashboard/manage-course-members"
         className={
-          isActive('/dashboard/manage-students')
+          isActive('/dashboard/manage-course-members')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
-        Manage Students
+        Manage Course Members
       </Link>
-      <Link
+      {/* <Link
         href="/dashboard/student-statistics"
         className={
           isActive('/dashboard/student-statistics')

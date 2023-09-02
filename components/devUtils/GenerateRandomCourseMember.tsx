@@ -5,6 +5,7 @@ import { Button } from 'components/ui/button';
 import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { trpc } from '@/app/_trpc/client';
+import Loading from '../general/loading';
 
 const createRandomCourseMember = (selectedCourseId: string) =>
   ({
@@ -36,7 +37,7 @@ export const GenerateRandomCourseMember = () => {
 
       if (courseMembersOfSelectedCourse && resCourseMember) {
         const updatedUserCourseMembers = [
-          ...courseMembersOfSelectedCourse.filter(Boolean),
+          ...courseMembersOfSelectedCourse,
           resCourseMember
         ];
         setCourseMembersOfSelectedCourse(updatedUserCourseMembers);
@@ -46,11 +47,11 @@ export const GenerateRandomCourseMember = () => {
     }
   };
 
-  return (
-    selectedCourseId && (
-      <Button variant="default" onClick={handleClick}>
-        Generate Random Course Member
-      </Button>
-    )
+  return selectedCourseId ? (
+    <Button variant="default" onClick={handleClick}>
+      Generate Random Course Member
+    </Button>
+  ) : (
+    <Loading />
   );
 };
