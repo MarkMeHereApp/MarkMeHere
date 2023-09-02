@@ -8,23 +8,50 @@ datasource db {
   directUrl = env("NON_POOLING_DATABASE_URL") // uses a direct connection
 }
 
-
 model User {
-  id                String            @id @default(cuid())
-  email             String            @unique
-  firstName         String            @db.VarChar(255)
-  lastName          String            @db.VarChar(255)
-  dateCreated       DateTime?         @default(now())
-  password          String?           @db.VarChar(255)
-  selectedCourseId    String?           @db.VarChar(255)
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  dateCreated      DateTime? @default(now())
+  selectedCourseId String?   @db.VarChar(255)
   //courseMembers     CourseMember[]  
+  accounts         Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Lecture {
   id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
   courseId          String            @unique
-  lectureDate       DateTime          
+  lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
 }
 
@@ -39,11 +66,11 @@ model AttendanceEntry {
 }
 
 model Course {
-  id          String                    @id @default(cuid())
-  courseLabel String                    @unique @db.VarChar(255)
-  name        String                    @db.VarChar(255)
-  lmsId       String?                   @unique
-  dateCreated DateTime                  @default(now())
+  id          String         @id @default(cuid())
+  courseLabel String         @unique @db.VarChar(255)
+  name        String         @db.VarChar(255)
+  lmsId       String?        @unique
+  dateCreated DateTime       @default(now())
   StartDate   DateTime?
   EndDate     DateTime?
   lectures    Lecture[]
@@ -51,21 +78,21 @@ model Course {
 }
 
 model CourseMember {
-  id                String              @id @default(cuid())
-  lmsId             String?                                // We need this when registering a student     
+  id                String            @id @default(cuid())
+  lmsId             String? // We need this when registering a student     
   email             String
-  name              String             @db.VarChar(255)   // Right now optional
+  name              String            @db.VarChar(255) // Right now optional
   courseId          String
-  course            Course             @relation(fields: [courseId], references: [id])
+  course            Course            @relation(fields: [courseId], references: [id])
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
-  role              String              @default("student") 
-  attendanceEntries AttendanceEntry[] 
+  role              String            @default("student")
+  attendanceEntries AttendanceEntry[]
 }
 
 model qrcode {
-  id         String           @id @default(cuid())
+  id        String   @id @default(cuid())
   //lectureId  String
   //lecture    Lecture          @relation(fields: [lectureId], references: [id])
-  code       String
-  createdAt  DateTime         @default(now())
+  code      String
+  createdAt DateTime @default(now())
 }

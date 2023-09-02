@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Course, CourseMember, Lecture } from '@prisma/client';
+import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
 
