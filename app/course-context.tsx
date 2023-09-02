@@ -30,11 +30,13 @@ export default function CoursesContext({
   className,
   userCourses: initialUserCourses,
   userCourseMemberships: initialUserCourseMemberships,
+  selectedCourseId: initialSelectedCourseId,
   children
 }: {
   className?: string;
   userCourses?: Course[];
   userCourseMemberships?: CourseMember[];
+  selectedCourseId?: string;
   children?: React.ReactNode;
 }) {
   const [userCourses, setUserCourses] = useState<Course[] | null>(
@@ -44,10 +46,10 @@ export default function CoursesContext({
     CourseMember[] | null
   >(initialUserCourseMemberships || null);
 
-  const initialSelectedCourseId = userCourses?.[0]?.id || null;
+  const courseId = initialSelectedCourseId || userCourses?.[0]?.id || null;
 
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
-    initialSelectedCourseId || null
+    courseId
   );
 
   return (
