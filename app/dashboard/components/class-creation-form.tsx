@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { useGlobalContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/course-context';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -72,12 +72,8 @@ export default function CreateCourseForm({
 
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
-  const {
-    setUserCourses,
-    setuserCourseMemberships,
-    setSelectedCourse,
-    setSelectedCourseMember
-  } = useGlobalContext();
+  const { setUserCourses, setuserCourseMemberships, setSelectedCourseId } =
+    useCourseContext();
 
   type CourseFormInput = Course & {
     autoEnroll: boolean;
@@ -134,7 +130,7 @@ export default function CreateCourseForm({
       const newCourse = handleCreateCourseResult.resCourse;
 
       setUserCourses((userCourses) => [...(userCourses || []), newCourse]);
-      setSelectedCourse(newCourse);
+      setSelectedCourseId(newCourse.id);
 
       if (newEnrollment === null) {
         toast({
@@ -147,7 +143,6 @@ export default function CreateCourseForm({
           ...(prevMemberships || []),
           newEnrollment
         ]);
-        setSelectedCourseMember(newEnrollment);
         toast({
           title: `${newCourse.name} Added Successfully!`,
           description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,

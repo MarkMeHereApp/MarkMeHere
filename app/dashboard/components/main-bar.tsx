@@ -39,7 +39,7 @@ import Search from '@/app/dashboard/components/search';
 import UserNav from '@/app/dashboard/components/user-nav';
 import MainNav from '@/app/dashboard/components/main-nav';
 
-import { useGlobalContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/course-context';
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -51,11 +51,9 @@ export default function CourseSwitcher({ className }: { className?: string }) {
     setUserCourses,
     userCourseMemberships,
     setuserCourseMemberships,
-    selectedCourse,
-    setSelectedCourse,
-    selectedCourseMember,
-    setSelectedCourseMember
-  } = useGlobalContext();
+    selectedCourseId,
+    setSelectedCourseId
+  } = useCourseContext();
 
   const [open, setOpen] = React.useState(false);
   const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
@@ -69,6 +67,10 @@ export default function CourseSwitcher({ className }: { className?: string }) {
   ]
     .sort()
     .reverse();
+
+  const selectedCourse = userCourses?.find(
+    (course) => course.id === selectedCourseId
+  );
 
   return (
     <div className="border-b">
@@ -127,13 +129,7 @@ export default function CourseSwitcher({ className }: { className?: string }) {
                             <CommandItem
                               key={course.id}
                               onSelect={() => {
-                                setSelectedCourse(course);
-                                const courseMember =
-                                  userCourseMemberships.find(
-                                    (member) => member.courseId === course.id
-                                  ) || null;
-                                setSelectedCourseMember(courseMember);
-
+                                setSelectedCourseId(course.id);
                                 setOpen(false);
                               }}
                               className="text-sm"
