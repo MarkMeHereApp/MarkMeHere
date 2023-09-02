@@ -77,7 +77,7 @@ export default function CoursesContext({
 
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
-      courseId: selectedCourseId as any
+      courseId: selectedCourseId || ''
     },
     {
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
