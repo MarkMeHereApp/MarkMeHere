@@ -49,8 +49,8 @@ export default function CourseSwitcher({ className }: { className?: string }) {
   const {
     userCourses,
     setUserCourses,
-    userCourseMemberships,
-    setuserCourseMemberships,
+    userCourseMembers,
+    setUserCourseMembers,
     selectedCourseId,
     setSelectedCourseId
   } = useCourseContext();
@@ -60,9 +60,7 @@ export default function CourseSwitcher({ className }: { className?: string }) {
 
   const uniqueRoles = [
     ...new Set(
-      userCourseMemberships
-        ? userCourseMemberships.map((item) => item.role)
-        : []
+      userCourseMembers ? userCourseMembers.map((item) => item.role) : []
     )
   ]
     .sort()
@@ -79,9 +77,9 @@ export default function CourseSwitcher({ className }: { className?: string }) {
           <Popover open={open} onOpenChange={setOpen}>
             {selectedCourse &&
             userCourses &&
-            userCourses.length > 0 &&
-            userCourseMemberships &&
-            userCourseMemberships.length > 0 ? (
+            userCourses?.length > 0 &&
+            userCourseMembers &&
+            userCourseMembers?.length > 0 ? (
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -113,8 +111,8 @@ export default function CourseSwitcher({ className }: { className?: string }) {
             {selectedCourse &&
               userCourses &&
               userCourses.length > 0 &&
-              userCourseMemberships &&
-              userCourseMemberships.length > 0 && (
+              userCourseMembers &&
+              userCourseMembers.length > 0 && (
                 <PopoverContent className="w-[200px] p-0">
                   <Command>
                     <CommandList>

@@ -71,7 +71,7 @@ export default async function RootLayout({
             <Providers>
               <CoursesContext
                 userCourses={courses}
-                userCourseMemberships={courseMemberships}
+                userCourseMembers={courseMemberships}
                 userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
               >
                 {children}

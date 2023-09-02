@@ -72,7 +72,7 @@ export default function CreateCourseForm({
 
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
-  const { setUserCourses, setuserCourseMemberships, setSelectedCourseId } =
+  const { setUserCourses, setUserCourseMembers, setSelectedCourseId } =
     useCourseContext();
 
   type CourseFormInput = Course & {
@@ -139,8 +139,8 @@ export default function CreateCourseForm({
           icon: 'success'
         });
       } else {
-        setuserCourseMemberships((prevMemberships) => [
-          ...(prevMemberships || []),
+        setUserCourseMembers((prevMembers) => [
+          ...(prevMembers || []),
           newEnrollment
         ]);
         toast({
