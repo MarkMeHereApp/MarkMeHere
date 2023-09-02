@@ -1,5 +1,5 @@
 'use client';
-import { useGlobalContext } from '@/app/dashboard/components/main-bar';
+import { useGlobalContext } from '@/app/global-context';
 
 const Page = () => {
   const data = useGlobalContext();
