@@ -102,8 +102,8 @@ export default function CreateCourseForm({
       throw new Error('User name or email is undefined, ');
     }
 
-    const handleCreateCourse = async () => {
-      return await createCourseMutation.mutateAsync({
+    try {
+      const handleCreateCourseResult = await createCourseMutation.mutateAsync({
         newCourseData: {
           courseLabel: courseform.courseLabel,
           name: courseform.name,
@@ -116,10 +116,6 @@ export default function CreateCourseForm({
           role: 'professor'
         }
       });
-    };
-
-    try {
-      const handleCreateCourseResult = await handleCreateCourse();
 
       if (handleCreateCourseResult.success === false) {
         setLoading(false);
