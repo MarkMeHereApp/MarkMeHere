@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { useGlobalContext } from '@/app/dashboard/components/main-bar';
 
 const Page = () => {
