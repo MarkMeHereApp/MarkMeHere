@@ -73,7 +73,7 @@ export default function CreateCourseForm({
   const [loading, setLoading] = useState(false);
 
   const session = useSession();
-  const mutation = trpc.course.createCourse.useMutation();
+  const createCourseMutation = trpc.course.createCourse.useMutation();
 
   type CourseFormInput = Course & {
     autoEnroll: boolean;
@@ -103,7 +103,7 @@ export default function CreateCourseForm({
     }
 
     const handleCreateCourse = async () => {
-      return await mutation.mutateAsync({
+      return await createCourseMutation.mutateAsync({
         newCourseData: {
           courseLabel: courseform.courseLabel,
           name: courseform.name,
