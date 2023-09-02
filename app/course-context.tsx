@@ -10,14 +10,14 @@ import { trpc } from '@/app/_trpc/client';
 interface CourseContextType {
   userCourses: Course[] | null;
   setUserCourses: React.Dispatch<React.SetStateAction<Course[] | null>>;
-  userCourseMemberships: CourseMember[] | null;
-  setuserCourseMemberships: React.Dispatch<
+  userCourseMembers: CourseMember[] | null;
+  setUserCourseMembers: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
   selectedCourseId: string | null;
   setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
-  courseMembershipsOfSelectedCourse: CourseMember[] | null;
-  setCourseMembershipsOfSelectedCourse: React.Dispatch<
+  courseMembersOfSelectedCourse: CourseMember[] | null;
+  setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
 }
@@ -25,33 +25,33 @@ interface CourseContextType {
 const CourseContext = createContext<CourseContextType>({
   userCourses: [],
   setUserCourses: () => {},
-  userCourseMemberships: [],
-  setuserCourseMemberships: () => {},
+  userCourseMembers: [],
+  setUserCourseMembers: () => {},
   selectedCourseId: null,
   setSelectedCourseId: () => {},
-  courseMembershipsOfSelectedCourse: [],
-  setCourseMembershipsOfSelectedCourse: () => {}
+  courseMembersOfSelectedCourse: [],
+  setCourseMembersOfSelectedCourse: () => {}
 });
 
 export default function CoursesContext({
   className,
   userCourses: initialUserCourses,
-  userCourseMemberships: initialUserCourseMemberships,
+  userCourseMembers: initialUserCourseMembers,
   userSelectedCourseId: initialSelectedCourseId,
   children
 }: {
   className?: string;
   userCourses?: Course[];
-  userCourseMemberships?: CourseMember[];
+  userCourseMembers?: CourseMember[];
   userSelectedCourseId?: string | null;
   children?: React.ReactNode;
 }) {
   const [userCourses, setUserCourses] = useState<Course[] | null>(
     initialUserCourses || null
   );
-  const [userCourseMemberships, setuserCourseMemberships] = useState<
+  const [userCourseMembers, setUserCourseMembers] = useState<
     CourseMember[] | null
-  >(initialUserCourseMemberships || null);
+  >(initialUserCourseMembers || null);
 
   const courseId = initialSelectedCourseId || userCourses?.[0]?.id || null;
 
@@ -59,10 +59,8 @@ export default function CoursesContext({
     courseId
   );
 
-  const [
-    courseMembershipsOfSelectedCourse,
-    setCourseMembershipsOfSelectedCourse
-  ] = useState<CourseMember[] | null>(null);
+  const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
+    useState<CourseMember[] | null>(null);
 
   const courseMembers: {
     data: CourseMember[] | null | undefined;
@@ -77,7 +75,7 @@ export default function CoursesContext({
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
       onSuccess: (data: CourseMember[]) => {
         if (!data) return;
-        setCourseMembershipsOfSelectedCourse(data);
+        setCourseMembersOfSelectedCourse(data);
       }
     }
   );
@@ -85,9 +83,9 @@ export default function CoursesContext({
   useEffect(() => {
     if (
       selectedCourseId &&
-      !(courseMembershipsOfSelectedCourse?.[0]?.courseId === selectedCourseId)
+      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId)
     ) {
-      setCourseMembershipsOfSelectedCourse(null);
+      setCourseMembersOfSelectedCourse(null);
       courseMembers.refetch();
     }
   }, [selectedCourseId]);
@@ -97,12 +95,12 @@ export default function CoursesContext({
       value={{
         userCourses,
         setUserCourses,
-        userCourseMemberships,
-        setuserCourseMemberships,
+        userCourseMembers,
+        setUserCourseMembers,
         selectedCourseId,
         setSelectedCourseId,
-        courseMembershipsOfSelectedCourse,
-        setCourseMembershipsOfSelectedCourse
+        courseMembersOfSelectedCourse,
+        setCourseMembersOfSelectedCourse
       }}
     >
       {children}
