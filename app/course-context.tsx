@@ -1,10 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
+import { trpc } from '@/app/_trpc/client';
 
 interface CourseContextType {
   userCourses: Course[] | null;
@@ -15,6 +16,10 @@ interface CourseContextType {
   >;
   selectedCourseId: string | null;
   setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
+  courseMembershipsOfSelectedCourse: CourseMember[] | null;
+  setCourseMembershipsOfSelectedCourse: React.Dispatch<
+    React.SetStateAction<CourseMember[] | null>
+  >;
 }
 
 const CourseContext = createContext<CourseContextType>({
@@ -23,7 +28,9 @@ const CourseContext = createContext<CourseContextType>({
   userCourseMemberships: [],
   setuserCourseMemberships: () => {},
   selectedCourseId: null,
-  setSelectedCourseId: () => {}
+  setSelectedCourseId: () => {},
+  courseMembershipsOfSelectedCourse: [],
+  setCourseMembershipsOfSelectedCourse: () => {}
 });
 
 export default function CoursesContext({
@@ -52,6 +59,39 @@ export default function CoursesContext({
     courseId
   );
 
+  const [
+    courseMembershipsOfSelectedCourse,
+    setCourseMembershipsOfSelectedCourse
+  ] = useState<CourseMember[] | null>(null);
+
+  const courseMembers: {
+    data: CourseMember[] | null | undefined;
+    isLoading: boolean;
+    error: any;
+    refetch: () => void;
+  } = trpc.courseMember.getCourseMembersOfCourse.useQuery(
+    {
+      courseId: selectedCourseId as any
+    },
+    {
+      enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
+      onSuccess: (data: CourseMember[]) => {
+        if (!data) return;
+        setCourseMembershipsOfSelectedCourse(data);
+      }
+    }
+  );
+
+  useEffect(() => {
+    if (
+      selectedCourseId &&
+      !(courseMembershipsOfSelectedCourse?.[0]?.courseId === selectedCourseId)
+    ) {
+      setCourseMembershipsOfSelectedCourse(null);
+      courseMembers.refetch();
+    }
+  }, [selectedCourseId]);
+
   return (
     <CourseContext.Provider
       value={{
@@ -60,7 +100,9 @@ export default function CoursesContext({
         userCourseMemberships,
         setuserCourseMemberships,
         selectedCourseId,
-        setSelectedCourseId
+        setSelectedCourseId,
+        courseMembershipsOfSelectedCourse,
+        setCourseMembershipsOfSelectedCourse
       }}
     >
       {children}

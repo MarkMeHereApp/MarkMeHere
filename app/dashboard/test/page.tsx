@@ -1,8 +1,8 @@
 'use client';
-import { useGlobalContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/course-context';
 
 const Page = () => {
-  const data = useGlobalContext();
+  const data = useCourseContext();
 
   return <div>{JSON.stringify(data)}</div>;
 };

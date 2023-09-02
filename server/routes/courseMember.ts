@@ -1,10 +1,13 @@
 import { publicProcedure, router } from '../trpc';
-import { User } from '@prisma/client';
+import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 
 export const zRequestExample = z.object({
   // The input schema goes here
+});
+export const zGetCourseMembersOfCourse = z.object({
+  courseId: z.string()
 });
 
 export const courseMemberRouter = router({
@@ -13,6 +16,17 @@ export const courseMemberRouter = router({
     .mutation(async (requestData) => {
       // The logic for this procedure goes here
       return { success: true };
+    }),
+
+  getCourseMembersOfCourse: publicProcedure
+    .input(zGetCourseMembersOfCourse)
+    .query(async (requestData) => {
+      const courseMembers = await prisma.courseMember.findMany({
+        where: {
+          courseId: requestData.input.courseId
+        }
+      });
+      return courseMembers;
     })
 });
 

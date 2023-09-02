@@ -68,13 +68,15 @@ export default async function RootLayout({
         <Suspense fallback="...">{}</Suspense>
         <div>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            <CoursesContext
-              userCourses={courses}
-              userCourseMemberships={courseMemberships}
-              userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
-            >
-              <Providers>{children}</Providers>
-            </CoursesContext>
+            <Providers>
+              <CoursesContext
+                userCourses={courses}
+                userCourseMemberships={courseMemberships}
+                userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
+              >
+                {children}
+              </CoursesContext>
+            </Providers>
           </ThemeProvider>
         </div>
       </body>
