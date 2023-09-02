@@ -4,7 +4,13 @@ import { useCourseContext } from '@/app/course-context';
 const Page = () => {
   const data = useCourseContext();
 
-  return <div>{JSON.stringify(data.selectedAttendanceDate)}</div>;
+  return (
+    <div>
+      {Object.entries(data).map(([key, value]) => (
+        <p key={key}>{`${key}: ${JSON.stringify(value)}`}</p>
+      ))}
+    </div>
+  );
 };
 
 export default Page;

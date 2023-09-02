@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Course, CourseMember } from '@prisma/client';
+import { Course, CourseMember, Lecture } from '@prisma/client';
 import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
 
@@ -67,16 +67,17 @@ export default function CoursesContext({
     useState<CourseMember[] | null>(null);
 
   const [selectedAttendanceDate, setSelectedAttendanceDate] =
-    useState<Date | null>(new Date());
+    useState<Date | null>(null);
 
-  const courseMembers: {
-    data: CourseMember[] | null | undefined;
-    isLoading: boolean;
-    error: any;
-    refetch: () => void;
-  } = trpc.courseMember.getCourseMembersOfCourse.useQuery(
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setSelectedAttendanceDate(today);
+  }, []);
+
+  const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
-      courseId: selectedCourseId as any
+      courseId: selectedCourseId || ''
     },
     {
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
