@@ -30,13 +30,13 @@ export default function CoursesContext({
   className,
   userCourses: initialUserCourses,
   userCourseMemberships: initialUserCourseMemberships,
-  selectedCourseId: initialSelectedCourseId,
+  userSelectedCourseId: initialSelectedCourseId,
   children
 }: {
   className?: string;
   userCourses?: Course[];
   userCourseMemberships?: CourseMember[];
-  selectedCourseId?: string;
+  userSelectedCourseId?: string | null;
   children?: React.ReactNode;
 }) {
   const [userCourses, setUserCourses] = useState<Course[] | null>(

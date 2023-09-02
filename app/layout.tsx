@@ -53,6 +53,15 @@ export default async function RootLayout({
     }
   });
 
+  const userSelectedCourseId = await prisma.user.findFirst({
+    where: {
+      email: email
+    },
+    select: {
+      selectedCourseId: true
+    }
+  });
+
   return (
     <html lang="en" className={OpenSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
@@ -62,6 +71,7 @@ export default async function RootLayout({
             <CoursesContext
               userCourses={courses}
               userCourseMemberships={courseMemberships}
+              userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
             >
               <Providers>{children}</Providers>
             </CoursesContext>
