@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs-react';
-import prisma from '@/prisma';
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -10,28 +8,28 @@ export async function POST(request: Request) {
 
   try {
     // Find the user with the provided email
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
+    // const user = await prisma.user.findUnique({
+    //   where: { email }
+    // });
 
-    if (!user) {
-      return NextResponse.json({ success: false, error: 'Email not found' });
-    }
+    // if (!user) {
+    //   return NextResponse.json({ success: false, error: 'Email not found' });
+    // }
 
-    // Ensure that password is not null before using bcrypt.compare
-    if (user.password !== null) {
-      // Compare the provided password with the stored hashed password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+    // // Ensure that password is not null before using bcrypt.compare
+    // if (user.password !== null) {
+    //   // Compare the provided password with the stored hashed password
+    //   const isPasswordValid = await bcrypt.compare(password, user.password);
 
-      if (!isPasswordValid) {
-        return NextResponse.json({ success: false, error: 'Invalid password' });
-      }
-    } else {
-      return NextResponse.json({
-        success: false,
-        error: 'Password is missing'
-      });
-    }
+    //   if (!isPasswordValid) {
+    //     return NextResponse.json({ success: false, error: 'Invalid password' });
+    //   }
+    // } else {
+    //   return NextResponse.json({
+    //     success: false,
+    //     error: 'Password is missing'
+    //   });
+    // }
 
     // TODO: Generate and send an authentication token to the client
     // const authToken = 'your-auth-token-here';

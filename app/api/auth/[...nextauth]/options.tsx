@@ -1,8 +1,6 @@
-import CredentialsProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
 import ZoomProvider from 'next-auth/providers/zoom';
 import type { NextAuthOptions } from 'next-auth';
-import bcrypt from 'bcryptjs-react';
 import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 
