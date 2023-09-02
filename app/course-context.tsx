@@ -5,7 +5,6 @@ import { useState } from 'react';
 
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
-import Cookies from 'js-cookie';
 
 interface GlobalContextType {
   userCourses: Course[] | null;
@@ -51,9 +50,9 @@ export default function CoursesContext({
     CourseMember[] | null
   >(initialUserCourseMemberships || null);
 
-  let initialSelectedCourse = userCourses?.[0] || null;
+  const initialSelectedCourse = userCourses?.[0] || null;
 
-  let initialSelectedCourseMember = userCourseMemberships?.[0] || null;
+  const initialSelectedCourseMember = userCourseMemberships?.[0] || null;
 
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(
     initialSelectedCourse || null

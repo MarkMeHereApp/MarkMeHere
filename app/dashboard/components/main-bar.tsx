@@ -33,14 +33,13 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 
-import { Course, CourseMember } from '@prisma/client';
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '@/app/dashboard/components/class-creation-form';
 import Search from '@/app/dashboard/components/search';
 import UserNav from '@/app/dashboard/components/user-nav';
 import MainNav from '@/app/dashboard/components/main-nav';
 
-import { useGlobalContext } from '@/app/global-context';
+import { useGlobalContext } from '@/app/course-context';
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger

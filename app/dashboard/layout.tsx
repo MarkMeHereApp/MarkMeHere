@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import TeamSwitcher from '@/app/dashboard/components/main-bar';
-import CoursesContext from '@/app/global-context';
 
 import { getServerSession } from 'next-auth/next';
 import { PrismaClient } from '@prisma/client';

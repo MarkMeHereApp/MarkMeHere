@@ -16,9 +16,9 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Course, CourseMember } from '@prisma/client';
+import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { useGlobalContext } from '@/app/global-context';
+import { useGlobalContext } from '@/app/course-context';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z

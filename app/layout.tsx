@@ -6,7 +6,7 @@ import { Open_Sans } from 'next/font/google';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
-import CoursesContext from '@/app/global-context';
+import CoursesContext from '@/app/course-context';
 
 import { getServerSession } from 'next-auth/next';
 import { PrismaClient } from '@prisma/client';
