@@ -4,13 +4,10 @@ import ZoomProvider from 'next-auth/providers/zoom';
 import type { NextAuthOptions } from 'next-auth';
 import bcrypt from 'bcryptjs-react';
 import prisma from '@/prisma';
-import { PrismaAdapter } from "@auth/prisma-adapter";
-
-/*
-Today we need to Throw the custom error
-*/
+import { PrismaAdapter } from '@auth/prisma-adapter';
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -20,7 +17,7 @@ export const authOptions: NextAuthOptions = {
     ZoomProvider({
       clientId: process.env.ZOOM_CLIENT_ID as string,
       clientSecret: process.env.ZOOM_CLIENT_SECRET as string
-    }),
+    })
 
     // credentials are commented until normal auth is working perfectly
     // CredentialsProvider({
@@ -69,10 +66,13 @@ export const authOptions: NextAuthOptions = {
     //   }
     // })
   ],
+  session: {
+    strategy: 'jwt'
+  },
 
   pages: {
     signIn: '/signin',
-    newUser: '/signup',
+    newUser: '/dashboard/overview',
     error: '/error'
   }
 };
