@@ -6,6 +6,7 @@ import { SessionProvider } from 'next-auth/react';
 import { Student } from '@/utils/sharedTypes';
 import { Toaster } from '@/components/ui/toaster';
 import { studentDataAPI } from './api/students/studentDataAPI';
+import TRPC_Provider from './_trpc/TRPC_Provider';
 
 type Props = {
   children?: React.ReactNode;
@@ -42,10 +43,12 @@ export const Providers = ({ children }: Props) => {
 
   return (
     <>
-      <StudentDataContext.Provider value={memoizedValue}>
-        <Toaster />
-        <SessionProvider>{children}</SessionProvider>
-      </StudentDataContext.Provider>
+      <TRPC_Provider>
+        <StudentDataContext.Provider value={memoizedValue}>
+          <Toaster />
+          <SessionProvider>{children}</SessionProvider>
+        </StudentDataContext.Provider>
+      </TRPC_Provider>
     </>
   );
 };

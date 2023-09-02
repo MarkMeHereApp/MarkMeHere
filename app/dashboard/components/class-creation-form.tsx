@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import * as z from 'zod';
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
-
+import { trpc } from '@/app/_trpc/client';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -73,6 +73,7 @@ export default function CreateCourseForm({
   const [loading, setLoading] = useState(false);
 
   const session = useSession();
+  const mutation = trpc.course.createCourse.useMutation();
 
   type CourseFormInput = Course & {
     autoEnroll: boolean;
@@ -86,95 +87,69 @@ export default function CreateCourseForm({
     }
   });
 
-  async function createCourse(
-    data: Course,
-    bShouldEnroll: boolean,
-    userFullName: string | null | undefined,
-    email: string,
-    role: string
-  ): Promise<{ newCourse: Course | null; newEnrollment: CourseMember | null }> {
-    try {
-      const response: Response = await fetch('/api/courses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          courseData: data,
-          enroll: bShouldEnroll,
-          email: email,
-          name: userFullName,
-          role: role
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const res = await response.json();
-      const resCourse = res.resCourse;
-      const resEnrollment = res.resEnrollment;
-
-      // Return the course object instead of just the id
-      return { newCourse: resCourse, newEnrollment: resEnrollment };
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast({
-        title: 'Error creating course',
-        icon: 'error',
-        description: message
-      });
-
-      // Return null in case of an error
-      return { newCourse: null, newEnrollment: null }; // or replace null with a default CourseMember object
-    }
-  }
-
   async function onSubmit(courseform: CourseFormInput) {
     setLoading(true);
     const sessionData = session.data;
-    if (sessionData && sessionData.user?.email) {
-      const { autoEnroll, ...course } = courseform;
-      const { newCourse, newEnrollment } = await createCourse(
-        course,
-        autoEnroll,
-        sessionData.user?.name,
-        sessionData.user?.email,
-        'professor'
-      );
-
-      if (newCourse !== null && newCourse !== undefined) {
-        if (newEnrollment !== null && newEnrollment !== undefined) {
-          toast({
-            title: `${newCourse.name} Added Successfully!`,
-            description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
-            icon: 'success'
-          });
-
-          // Call the onSuccess prop with the new course and new enrollment
-          onSuccess(newCourse, newEnrollment);
-        } else {
-          toast({
-            title: `${newCourse.name} Added Successfully!`,
-            description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
-            icon: 'success'
-          });
-
-          // Call the onSuccess prop with the new course
-          onSuccess(newCourse, null);
-        }
-        setLoading(false);
-        return;
-      }
-
-      toast({
-        title: `ERROR: Course and CourseMember Undefined/Null!`
-      });
+    if (!sessionData) {
+      setLoading(false);
+      throw new Error('Session data is undefined, ');
     }
 
-    setLoading(false);
+    const userFullName = sessionData?.user?.name;
+    const userEmail = sessionData?.user?.email;
+    if (!userFullName || !userEmail) {
+      setLoading(false);
+      throw new Error('User name or email is undefined, ');
+    }
+
+    const handleCreateCourse = async () => {
+      return await mutation.mutateAsync({
+        newCourseData: {
+          courseLabel: courseform.courseLabel,
+          name: courseform.name,
+          lmsId: courseform.lmsId || undefined
+        },
+        autoEnroll: courseform.autoEnroll,
+        newMemberData: {
+          email: userEmail,
+          name: userFullName,
+          role: 'professor'
+        }
+      });
+    };
+
+    try {
+      const handleCreateCourseResult = await handleCreateCourse();
+
+      if (handleCreateCourseResult.success === false) {
+        setLoading(false);
+        throw new Error('Unexpected server error.');
+      }
+
+      const newEnrollment = handleCreateCourseResult.resEnrollment;
+      const newCourse = handleCreateCourseResult.resCourse;
+
+      if (newEnrollment === null) {
+        toast({
+          title: `${newCourse.name} Added Successfully!`,
+          description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
+          icon: 'success'
+        });
+      } else {
+        toast({
+          title: `${newCourse.name} Added Successfully!`,
+          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
+          icon: 'success'
+        });
+      }
+
+      onSuccess(newCourse, newEnrollment);
+      setLoading(false);
+      return;
+    } catch (error) {
+      setLoading(false);
+      throw new Error('Unexpected server error.');
+    }
   }
 
   return (
