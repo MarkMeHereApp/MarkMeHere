@@ -67,7 +67,13 @@ export default function CoursesContext({
     useState<CourseMember[] | null>(null);
 
   const [selectedAttendanceDate, setSelectedAttendanceDate] =
-    useState<Date | null>(new Date());
+    useState<Date | null>(null);
+
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setSelectedAttendanceDate(today);
+  }, []);
 
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
