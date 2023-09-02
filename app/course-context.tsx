@@ -20,6 +20,8 @@ interface CourseContextType {
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
+  selectedAttendanceDate: Date | null;
+  setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date | null>>;
 }
 
 const CourseContext = createContext<CourseContextType>({
@@ -30,7 +32,9 @@ const CourseContext = createContext<CourseContextType>({
   selectedCourseId: null,
   setSelectedCourseId: () => {},
   courseMembersOfSelectedCourse: [],
-  setCourseMembersOfSelectedCourse: () => {}
+  setCourseMembersOfSelectedCourse: () => {},
+  selectedAttendanceDate: null,
+  setSelectedAttendanceDate: () => {}
 });
 
 export default function CoursesContext({
@@ -61,6 +65,9 @@ export default function CoursesContext({
 
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
+
+  const [selectedAttendanceDate, setSelectedAttendanceDate] =
+    useState<Date | null>(new Date());
 
   const courseMembers: {
     data: CourseMember[] | null | undefined;
@@ -100,7 +107,9 @@ export default function CoursesContext({
         selectedCourseId,
         setSelectedCourseId,
         courseMembersOfSelectedCourse,
-        setCourseMembersOfSelectedCourse
+        setCourseMembersOfSelectedCourse,
+        selectedAttendanceDate,
+        setSelectedAttendanceDate
       }}
     >
       {children}
