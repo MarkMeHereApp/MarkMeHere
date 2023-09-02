@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/app/dashboard/take-attendance/components/data-table-view-options';
 
-import { priorities, statuses } from '../data/data';
+import { statuses } from '../data/data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
+import AttendanceButtons from '../AttendanceButtons';
+import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -23,10 +25,10 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter tasks..."
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
+          placeholder="Search for a student..."
+          value={(table.getColumn('firstName')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('title')?.setFilterValue(event.target.value)
+            table.getColumn('firstName')?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
@@ -37,13 +39,7 @@ export function DataTableToolbar<TData>({
             options={statuses}
           />
         )}
-        {table.getColumn('priority') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('priority')}
-            title="Priority"
-            options={priorities}
-          />
-        )}
+        <AttendanceButtons />
         {isFiltered && (
           <Button
             variant="ghost"
@@ -55,6 +51,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      <CalendarDateRangePicker className="mr-2" />
       <DataTableViewOptions table={table} />
     </div>
   );
