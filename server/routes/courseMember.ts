@@ -11,6 +11,7 @@ export const courseMemberRouter = router({
   createCourseMember: publicProcedure
     .input(zRequestExample)
     .mutation(async (requestData) => {
+      // The logic for this procedure goes here
       return { success: true };
     })
 });

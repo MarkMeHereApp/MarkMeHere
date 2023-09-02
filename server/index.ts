@@ -4,7 +4,8 @@ import { courseRouter } from './routes/course';
 import { courseMemberRouter } from './routes/courseMember';
 
 export const appRouter = router({
-  course: courseRouter
+  course: courseRouter,
+  courseMember: courseMemberRouter
 });
 
 export type AppRouter = typeof appRouter;
