@@ -1,8 +1,8 @@
 'use client';
-import { ShowCurrentCourseMembers } from '@/components/devUtils/ShowCurrentCourseMembers';
 import { useCourseContext } from '@/app/course-context';
+import CRUDButtons from '@/components/devUtils/CRUDButtons';
 
-const Page = () => {
+const TestPage = () => {
   const data = useCourseContext();
 
   return (
@@ -10,10 +10,9 @@ const Page = () => {
       {Object.entries(data).map(([key, value]) => (
         <p key={key}>{`${key}: ${JSON.stringify(value)}`}</p>
       ))}
-      <ShowCurrentCourseMembers />
+      <CRUDButtons />
     </div>
   );
 };
 
-export default Page;
-export {};
+export default TestPage;

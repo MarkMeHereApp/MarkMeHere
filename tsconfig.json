@@ -32,5 +32,5 @@
     ".next/types/**/*.ts",
     "app/dashboard/overview/components/crudButtons"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "deprecated"]
 }

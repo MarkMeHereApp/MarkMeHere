@@ -9,7 +9,7 @@ import { Providers } from './providers';
 import CoursesContext from '@/app/course-context';
 
 import { getServerSession } from 'next-auth/next';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/prisma';
 
 const OpenSans = Open_Sans({ subsets: ['latin'] });
 
@@ -25,7 +25,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const serverSession = await getServerSession();
-  const prisma = new PrismaClient();
   const email = serverSession?.user?.email || '';
 
   // By fetching the CourseMemberships in this server component,

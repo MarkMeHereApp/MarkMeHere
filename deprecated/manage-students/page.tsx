@@ -2,7 +2,7 @@
 
 import StudentCRUDButtons, {
   EnrollNewStudentButton
-} from '@/components/devUtils/StudentCRUDButtons';
+} from '@/deprecated/StudentCRUDButtons';
 
 const ManageStudents = () => {
   return (

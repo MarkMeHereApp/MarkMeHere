@@ -2,7 +2,7 @@
 
 import { lazy } from 'react'; // Import React
 
-import StudentCRUDButtons from '@/components/devUtils/StudentCRUDButtons';
+import StudentCRUDButtons from '@/deprecated/StudentCRUDButtons';
 
 const AttendanceView = lazy(() => import('./AttendanceView'));
 
