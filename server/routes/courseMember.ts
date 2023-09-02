@@ -1,5 +1,5 @@
 import { publicProcedure, router } from '../trpc';
-import { CourseMember } from '@prisma/client';
+import { User } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 

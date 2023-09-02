@@ -5,43 +5,38 @@ import { useState } from 'react';
 
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
-import Cookies from 'js-cookie';
 
-interface GlobalContextType {
+interface CourseContextType {
   userCourses: Course[] | null;
   setUserCourses: React.Dispatch<React.SetStateAction<Course[] | null>>;
   userCourseMemberships: CourseMember[] | null;
   setuserCourseMemberships: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
-  selectedCourse: Course | null;
-  setSelectedCourse: React.Dispatch<React.SetStateAction<Course | null>>;
-  selectedCourseMember: CourseMember | null;
-  setSelectedCourseMember: React.Dispatch<
-    React.SetStateAction<CourseMember | null>
-  >;
+  selectedCourseId: string | null;
+  setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const GlobalContext = createContext<GlobalContextType>({
+const CourseContext = createContext<CourseContextType>({
   userCourses: [],
   setUserCourses: () => {},
   userCourseMemberships: [],
   setuserCourseMemberships: () => {},
-  selectedCourse: null,
-  setSelectedCourse: () => {},
-  selectedCourseMember: null,
-  setSelectedCourseMember: () => {}
+  selectedCourseId: null,
+  setSelectedCourseId: () => {}
 });
 
 export default function CoursesContext({
   className,
   userCourses: initialUserCourses,
   userCourseMemberships: initialUserCourseMemberships,
+  selectedCourseId: initialSelectedCourseId,
   children
 }: {
   className?: string;
   userCourses?: Course[];
   userCourseMemberships?: CourseMember[];
+  selectedCourseId?: string;
   children?: React.ReactNode;
 }) {
   const [userCourses, setUserCourses] = useState<Course[] | null>(
@@ -51,32 +46,26 @@ export default function CoursesContext({
     CourseMember[] | null
   >(initialUserCourseMemberships || null);
 
-  let initialSelectedCourse = userCourses?.[0] || null;
+  const courseId = initialSelectedCourseId || userCourses?.[0]?.id || null;
 
-  let initialSelectedCourseMember = userCourseMemberships?.[0] || null;
-
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(
-    initialSelectedCourse || null
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
+    courseId
   );
-  const [selectedCourseMember, setSelectedCourseMember] =
-    useState<CourseMember | null>(initialSelectedCourseMember || null);
 
   return (
-    <GlobalContext.Provider
+    <CourseContext.Provider
       value={{
         userCourses,
         setUserCourses,
         userCourseMemberships,
         setuserCourseMemberships,
-        selectedCourse,
-        setSelectedCourse,
-        selectedCourseMember,
-        setSelectedCourseMember
+        selectedCourseId,
+        setSelectedCourseId
       }}
     >
       {children}
-    </GlobalContext.Provider>
+    </CourseContext.Provider>
   );
 }
 
-export const useGlobalContext = () => React.useContext(GlobalContext);
+export const useCourseContext = () => React.useContext(CourseContext);

@@ -16,6 +16,7 @@ model User {
   lastName          String            @db.VarChar(255)
   dateCreated       DateTime?         @default(now())
   password          String?           @db.VarChar(255)
+  selectedCourseId    String?           @db.VarChar(255)
   //courseMembers     CourseMember[]  
 }
 

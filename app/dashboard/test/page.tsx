@@ -1,5 +1,5 @@
 'use client';
-import { useGlobalContext } from '@/app/global-context';
+import { useGlobalContext } from '@/app/course-context';
 
 const Page = () => {
   const data = useGlobalContext();
