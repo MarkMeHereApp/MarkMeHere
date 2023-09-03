@@ -2,7 +2,7 @@
 import { useCourseContext } from '@/app/course-context';
 import CRUDButtons from '@/components/devUtils/CRUDButtons';
 
-const TestPage = () => {
+const AldrichTestPage = () => {
   const data = useCourseContext();
 
   return (
@@ -15,4 +15,4 @@ const TestPage = () => {
   );
 };
 
-export default TestPage;
+export default AldrichTestPage;
