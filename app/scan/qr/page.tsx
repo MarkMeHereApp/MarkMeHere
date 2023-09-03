@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation'; // Import useRoute
 import { trpc } from '@/app/_trpc/client';
 
 export default function QR() {
-  const [progress, setProgress] = React.useState(100);
+  const [progress, setProgress] = React.useState(0);
   const [activeCode, setActiveCode] = React.useState('LOADING');
   const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
   const timerUpdateRate = 100; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
@@ -68,6 +68,12 @@ export default function QR() {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
+        if (
+          (oldProgress < 100 && bufferCodeRef.current === 'LOADING') ||
+          activeCodeRef.current === 'LOADING'
+        ) {
+          setProgress(100);
+        }
         if (oldProgress >= 100) {
           if (activeCodeRef.current !== bufferCodeRef.current) {
             setProgress(0); // Reset progress to 0 once it reaches 100
