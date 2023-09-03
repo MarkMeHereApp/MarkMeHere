@@ -12,7 +12,7 @@ function customPrismaAdapter(prisma: PrismaClient) {
     createUser: (data: any) => {
       const role = 'ADMIN';
 
-      console.log("role" + role)
+      console.log("role:" + role)
       return prisma.user.create({ data: { ...data, role: role, } });
     }
   };
