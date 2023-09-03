@@ -87,6 +87,7 @@ model CourseMember {
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
   role              String            @default("student")
   attendanceEntries AttendanceEntry[]
+  @@unique([email, courseId])
 }
 
 model qrcode {
