@@ -116,14 +116,14 @@ export default function MainNav({
         temp sign out
       </button>
       <Link
-        href="/dashboard/test"
+        href="/dashboard/tests"
         className={
-          isActive('/dashboard/test')
+          isActive('/dashboard/tests')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
       >
-        Test
+        Testing Page
       </Link>
       <a
         href="https://cdn.discordapp.com/attachments/1078896207486787584/1078896797512122452/boom.gif"
