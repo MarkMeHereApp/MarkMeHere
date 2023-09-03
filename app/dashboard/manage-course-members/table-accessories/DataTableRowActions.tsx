@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
+import { useSession } from 'next-auth/react';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -41,6 +42,10 @@ export function DataTableRowActions<TData>({
         }
       }
     );
+
+  const session = useSession();
+  const userEmail = session.data?.user?.email;
+
   const courseMemberData = row.original as CourseMember;
 
   const handleDialogOpen = () => {
@@ -65,7 +70,9 @@ export function DataTableRowActions<TData>({
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger onClick={() => handleDialogOpen()} asChild>
-          <TrashIcon className="h-4 w-4 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" />
+          {userEmail !== courseMemberData.email && (
+            <TrashIcon className="h-4 w-4 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" />
+          )}
         </DialogTrigger>
         <DialogContent onClose={() => handleDialogClose()}>
           <DialogHeader>
