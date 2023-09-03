@@ -7,16 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
-
+import { trpc } from '@/app/_trpc/client';
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 export default function QR() {
-  const [progress, setProgress] = React.useState(0);
-  const [code, setCode] = React.useState(generateCode()); // Initialize code
+  const [progress, setProgress] = React.useState(100);
+  const [activeCode, setActiveCode] = React.useState('LOADING');
+  const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
   const timerUpdateRate = 100; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
-  const progressbarLength = 50; // The length of the progress bar in ms
+  const progressbarLength = 100; // The length of the progress bar in ms
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
   const mode =
@@ -50,14 +51,41 @@ export default function QR() {
     }
   }, [mode]);
 
+  const bufferCodeRef = React.useRef('LOADING'); //code in buffer
+  const activeCodeRef = React.useRef('LOADING'); // Active code reference
+
+  const saveCode = async () => {
+    try {
+      const newBufferCode = await createQRMutator.mutateAsync({
+        activeCodeToSave: activeCodeRef.current
+      });
+
+      if (newBufferCode.success) {
+        console.log('SettingBufferToNew: ' + newBufferCode.qrCode);
+        bufferCodeRef.current = newBufferCode.qrCode;
+      }
+    } catch (error) {
+      throw new Error('Unexpected server error.');
+    }
+  };
+
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         if (oldProgress >= 100) {
-          setProgress(0); // Reset progress to 0 once it reaches 100
-          setCode(generateCode()); // Generate a new code when progress reaches 100
-          return 0;
+          if (activeCodeRef.current !== bufferCodeRef.current) {
+            setProgress(0); // Reset progress to 0 once it reaches 100
+            setActiveCode(bufferCodeRef.current);
+            activeCodeRef.current = bufferCodeRef.current;
+          } else {
+            setActiveCode('LOADING');
+            activeCodeRef.current = 'LOADING';
+          }
+
+          saveCode();
+          console.log('Saved code');
         }
+
         const newProgress = oldProgress + timerUpdateRate / progressbarLength; // Increase progress by timerLength / timerUpdateRate each step
         return newProgress;
       });
@@ -81,7 +109,9 @@ export default function QR() {
           }}
         >
           {DynamicQRCode && (
-            <DynamicQRCode url={process.env.NEXTAUTH_URL + '/submit/' + code} />
+            <DynamicQRCode
+              url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+            />
           )}
         </div>
 
@@ -110,29 +140,32 @@ export default function QR() {
           </Button>
         </CardHeader>
 
-        <CardContent className="h-full w-full flex-grow flex-shrink flex flex-col items-center justify-between space-y-2">
-          <QRCode
-            value={process.env.NEXTAUTH_URL + '/submit/' + code}
-            className="h-full w-full"
-          />
+        <CardContent className="flex-grow flex-shrink flex flex-col items-center justify-between ">
+          {activeCode === 'LOADING' ? (
+            <div> </div>
+          ) : (
+            <QRCode
+              value={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+              className="h-full w-full"
+            />
+          )}
 
           <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
             <span>Or go to the website and enter the code</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
               attendify.rickleincker.com/submit
             </div>
+            <div className="pt-5">
+              <Progress value={progress} className="w-[100%]" />
+            </div>
 
             <Card className="flex justify-center items-center p">
               <CardHeader>
                 <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
-                  {code}
+                  {activeCode}
                 </CardTitle>
               </CardHeader>
             </Card>
-          </div>
-
-          <div className="pt-5 hidden lg:block">
-            <Progress value={progress} className="w-full" />
           </div>
         </CardContent>
       </Card>
