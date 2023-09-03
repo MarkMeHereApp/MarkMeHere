@@ -5,6 +5,8 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { DataTableViewOptions } from './DataTableViewOptions';
 import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
+import { DataTableFacetedFilter } from './DataTableFacetedFilter';
+import { roles } from './dataUtils';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -28,6 +30,13 @@ export function DataTableToolbar<TData>({
           }}
           className="h-8 w-[150px] lg:w-[250px]"
         />
+        {table.getColumn('role') && (
+          <DataTableFacetedFilter
+            column={table.getColumn('role')}
+            title="Roles"
+            options={roles}
+          />
+        )}
         {isFiltered && (
           <Button
             variant="ghost"

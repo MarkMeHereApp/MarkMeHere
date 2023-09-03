@@ -25,8 +25,9 @@ import {
 
 import { DataTablePagination } from './table-accessories/DataTablePagination';
 import { DataTableToolbar } from './table-accessories/DataTableToolbar';
-import { useContext, useEffect, useState } from 'react';
-import { StudentDataContext } from '@/app/providers';
+import { useState } from 'react';
+import { useCourseContext } from '@/app/course-context';
+import Loading from '@/components/general/loading';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,13 +36,13 @@ interface DataTableProps<TData, TValue> {
 export default function DataTable<TData, TValue>({
   columns
 }: DataTableProps<TData, TValue>) {
-  const { students } = useContext(StudentDataContext);
+  const { courseMembersOfSelectedCourse } = useCourseContext();
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const data = students as TData[];
+  const data = courseMembersOfSelectedCourse as TData[];
   const table = useReactTable({
     data,
     columns,
@@ -64,11 +65,7 @@ export default function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   });
 
-  useEffect(() => {
-    table.getColumn('fullName')?.toggleVisibility(false);
-  }, []);
-
-  return (
+  return courseMembersOfSelectedCourse ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
       <div className="rounded-md border">
@@ -123,5 +120,7 @@ export default function DataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
+  ) : (
+    <Loading />
   );
 }

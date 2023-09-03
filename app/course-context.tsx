@@ -81,9 +81,9 @@ export default function CoursesContext({
     },
     {
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
-      onSuccess: (data: CourseMember[]) => {
+      onSuccess: (data) => {
         if (!data) return;
-        setCourseMembersOfSelectedCourse(data);
+        setCourseMembersOfSelectedCourse(data.courseMembers);
       }
     }
   );

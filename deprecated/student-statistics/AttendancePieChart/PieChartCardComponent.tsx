@@ -5,7 +5,7 @@ import { CardTitle } from '@/components/ui/card';
 import { DonutChart } from '@/components/tremorcharts/';
 import { Legend } from '@/components/tremorcharts/common/legend';
 import React from 'react';
-import { Student } from '@/utils/sharedTypes';
+import { Student } from '@/utils/globalVariables';
 import { faker } from '@faker-js/faker';
 interface PieChartCardProps {
   selectedStudent: Student;

@@ -1,5 +1,3 @@
-import { studentDataAPI } from '@/app/api/students/studentDataAPI';
-import { StudentDataContext } from '@/app/providers';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,11 +9,14 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { Student } from '@/utils/sharedTypes';
 import { TrashIcon } from '@radix-ui/react-icons';
 
 import { Row } from '@tanstack/react-table';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
+import { CourseMember } from '@prisma/client';
+import { useCourseContext } from '@/app/course-context';
+import { trpc } from '@/app/_trpc/client';
+import { useSession } from 'next-auth/react';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -25,9 +26,27 @@ export function DataTableRowActions<TData>({
   row
 }: DataTableRowActionsProps<TData>) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { students, setStudents } = useContext(StudentDataContext);
+  const { selectedCourseId, setCourseMembersOfSelectedCourse } =
+    useCourseContext();
+  const deleteCourseMemberMutation =
+    trpc.courseMember.deleteCourseMember.useMutation();
+  const getCourseMembersOfCourseQuery =
+    trpc.courseMember.getCourseMembersOfCourse.useQuery(
+      {
+        courseId: selectedCourseId || ''
+      },
+      {
+        onSuccess: (data) => {
+          if (!data) return;
+          setCourseMembersOfSelectedCourse(data.courseMembers);
+        }
+      }
+    );
 
-  const studentRowData = row.original as Student;
+  const session = useSession();
+  const userEmail = session.data?.user?.email;
+
+  const courseMemberData = row.original as CourseMember;
 
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
@@ -37,18 +56,23 @@ export function DataTableRowActions<TData>({
     setIsDialogOpen(false);
   };
 
-  async function handleConfirmDelete(selectedStudent: Student) {
-    await studentDataAPI(students, setStudents).deleteStudent(selectedStudent);
+  async function handleConfirmDelete() {
+    await deleteCourseMemberMutation.mutateAsync({
+      courseMemberData
+    });
     handleDialogClose();
+    await getCourseMembersOfCourseQuery.refetch();
     toast({
-      title: `Successfully deleted ${studentRowData.firstName} ${studentRowData.lastName}`
+      title: `Successfully deleted ${courseMemberData.name}`
     });
   }
   return (
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger onClick={() => handleDialogOpen()} asChild>
-          <TrashIcon className="h-4 w-4 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" />
+          {userEmail !== courseMemberData.email && (
+            <TrashIcon className="h-4 w-4 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" />
+          )}
         </DialogTrigger>
         <DialogContent onClose={() => handleDialogClose()}>
           <DialogHeader>
@@ -58,7 +82,7 @@ export function DataTableRowActions<TData>({
                 This action is irreversible. Are you certain you wish to
                 permanently delete all data related to{' '}
                 <span className="underline text-red-500">
-                  {`${studentRowData.firstName} ${studentRowData.lastName}`}
+                  {`${courseMemberData.name}`}
                 </span>
                 ?
               </DialogDescription>
@@ -68,7 +92,7 @@ export function DataTableRowActions<TData>({
             <Button
               variant="destructive"
               onClick={() => {
-                handleConfirmDelete(studentRowData);
+                handleConfirmDelete();
               }}
             >
               Yes

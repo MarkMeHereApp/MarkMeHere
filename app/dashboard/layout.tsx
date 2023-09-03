@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import TeamSwitcher from '@/app/dashboard/components/main-bar';
 
 import { getServerSession } from 'next-auth/next';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/prisma';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -15,7 +15,6 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const serverSession = await getServerSession();
-  const prisma = new PrismaClient();
   const email = serverSession?.user?.email || '';
 
   // Fetch the CourseMember records

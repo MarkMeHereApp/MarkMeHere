@@ -3,10 +3,11 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
+import { CourseMember } from '@prisma/client';
+import _ from 'lodash';
 import { DataTableRowActions } from './table-accessories/DataTableRowActions';
-import { Student } from '@/utils/sharedTypes';
 
-export const columns: ColumnDef<Student>[] = [
+export const columns: ColumnDef<CourseMember>[] = [
   {
     id: 'id',
     header: ({ table }) => (
@@ -29,24 +30,12 @@ export const columns: ColumnDef<Student>[] = [
     enableHiding: true
   },
   {
-    accessorKey: 'firstName',
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('firstName')}</div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
-  },
-  {
-    accessorKey: 'lastName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('lastName')}</div>
+      <div className="flex w-full">{row.getValue('name')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
@@ -60,6 +49,21 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => (
       <div className="flex w-full">{row.getValue('email')}</div>
     ),
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
+    accessorKey: 'role',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Role" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex w-full">{_.capitalize(row.getValue('role'))}</div>
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true

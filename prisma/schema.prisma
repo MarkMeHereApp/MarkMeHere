@@ -86,8 +86,10 @@ model CourseMember {
   courseId          String
   course            Course            @relation(fields: [courseId], references: [id])
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
+  dateEnrolled    DateTime           @default(now())
   role              String            @default("student")
   attendanceEntries AttendanceEntry[]
+  @@unique([email, courseId])
 }
 
 model qrcode {
@@ -96,4 +98,5 @@ model qrcode {
   //lecture    Lecture          @relation(fields: [lectureId], references: [id])
   code      String
   createdAt DateTime @default(now())
+  expiresAt DateTime
 }
