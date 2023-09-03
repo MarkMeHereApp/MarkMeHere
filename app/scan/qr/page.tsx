@@ -8,9 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
-function generateCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
 
 export default function QR() {
   const [progress, setProgress] = React.useState(100);
@@ -61,8 +58,7 @@ export default function QR() {
       });
 
       if (newBufferCode.success) {
-        console.log('SettingBufferToNew: ' + newBufferCode.qrCode);
-        bufferCodeRef.current = newBufferCode.qrCode;
+        bufferCodeRef.current = newBufferCode.qrCode.code;
       }
     } catch (error) {
       throw new Error('Unexpected server error.');
