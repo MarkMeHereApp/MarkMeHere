@@ -58,9 +58,12 @@ export default function QR() {
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
   const activeCodeRef = React.useRef(initialCode); // Active code reference
-  const bIsFetchingNewCode = React.useRef(false); // Is the code currently being fetched
+  const bIsFetchingInitCodes = React.useRef(false); // Is the code currently being fetched
 
-  const saveCode = async () => {
+  // This function will update the active code with the buffer code.
+  // Then it will fetch a new buffer code asynchronously.
+  // We do this so that we don't have to "wait" for a code to be fetched.
+  const updateCodes = async () => {
     setActiveCode(bufferCodeRef.current.code);
     activeCodeRef.current = bufferCodeRef.current;
     try {
@@ -75,6 +78,9 @@ export default function QR() {
       throw new Error('Unexpected server error.');
     }
   };
+
+  // This function will initialize BOTH the buffer and active code at the same time
+  // However, the codes might need to be initialized more than once (see useEffect) to see why...
   const initCodes = async () => {
     setActiveCode('LOADING');
     try {
@@ -95,7 +101,7 @@ export default function QR() {
         bufferCodeRef.current = newBufferCode.qrCode;
       }
 
-      bIsFetchingNewCode.current = false;
+      bIsFetchingInitCodes.current = false;
     } catch (error) {
       throw new Error('Unexpected server error.');
     }
@@ -104,33 +110,40 @@ export default function QR() {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
-        if (bIsFetchingNewCode.current) {
+        // If the codes are loading for the first time, we want to "suspend" the progress bar.
+        if (bIsFetchingInitCodes.current) {
           return 0;
         }
 
+        // If the user is not on the page, reset the code.
+        // Functionally this is not needed, the page will correct itself when they go back
+        // but when the document is  hidden, the timer will run slower, so this is to prevent
+        // UI weirdness.
         if (document.hidden) {
           bufferCodeRef.current = initialCode;
           activeCodeRef.current = initialCode;
           return 0;
         }
 
+        // If the code is expired, reset the code
         if (activeCodeRef.current.expiresAt.getTime() <= Date.now()) {
           bufferCodeRef.current = initialCode;
           activeCodeRef.current = initialCode;
         }
 
+        // This handles if the buffer code hasn't been initialized yet
         if (
           bufferCodeRef.current === initialCode &&
-          !bIsFetchingNewCode.current
+          !bIsFetchingInitCodes.current
         ) {
-          bIsFetchingNewCode.current = true;
+          bIsFetchingInitCodes.current = true;
           initCodes();
           return 0;
         }
 
         if (oldProgress >= 100) {
-          setProgress(0); // Reset progress to 0 once it reaches 100
-          saveCode();
+          setProgress(0);
+          updateCodes();
         }
 
         const secondsLeft =
