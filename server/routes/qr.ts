@@ -32,7 +32,7 @@ export const qrRouter = router({
           await prisma.qrcode.deleteMany({
             where: {
               expiresAt: {
-                lte: new Date()
+                lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
               }
             }
           });
