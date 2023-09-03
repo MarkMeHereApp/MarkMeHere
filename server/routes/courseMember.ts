@@ -63,6 +63,8 @@ export const courseMemberRouter = router({
         throw new Error('Error getting course members');
       }
     }),
+
+  // TODO: If there is duplicate data, overwrite the existing data.
   createMultipleCourseMembers: publicProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
