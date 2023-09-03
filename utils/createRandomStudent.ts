@@ -35,7 +35,7 @@ export default function createRandomStudent(): CourseMember {
     email: faker ? faker.internet.email() : 'test@example.com',
     name: firstName + ' ' + lastName,
     dateEnrolled: new Date(),
-    role: 'STUDENT',
+    role: 'student',
     courseId: GlobalDevCourseId
     // attendanceEntries: []
   };

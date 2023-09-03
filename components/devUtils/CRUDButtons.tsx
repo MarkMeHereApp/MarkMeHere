@@ -1,3 +1,4 @@
+import { DeleteAllStudents } from './DeleteAllStudentsButton';
 import { GenerateRandomCourseMember } from './GenerateRandomCourseMember';
 import { ShowCurrentCourseMembers } from './ShowCurrentCourseMembers';
 
@@ -6,6 +7,7 @@ const CRUDButtons = () => {
     <>
       <GenerateRandomCourseMember />
       <ShowCurrentCourseMembers />
+      <DeleteAllStudents />
     </>
   );
 };

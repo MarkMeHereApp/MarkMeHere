@@ -4,9 +4,9 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import { z } from 'zod';
 
-export const zNewCourseMember = z.object({
+export const zCourseMember = z.object({
   // The input schema goes here
-  newMemberData: z.object({
+  courseMemberData: z.object({
     id: z.string(),
     lmsId: z.string().nullable(),
     email: z.string(),
@@ -34,12 +34,12 @@ export const zCreateMultipleCourseMembers = z.object({
 
 export const courseMemberRouter = router({
   createCourseMember: publicProcedure
-    .input(zNewCourseMember)
+    .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input.newMemberData
+            ...requestData.input.courseMemberData
           }
         });
         return { success: true, resEnrollment };
@@ -49,6 +49,36 @@ export const courseMemberRouter = router({
       }
     }),
 
+  deleteCourseMember: publicProcedure
+    .input(zCourseMember)
+    .mutation(async (requestData) => {
+      try {
+        await prisma.courseMember.delete({
+          where: {
+            id: requestData.input.courseMemberData.id
+          }
+        });
+        return { success: true };
+      } catch (error) {
+        console.error(error);
+        return { success: false };
+      }
+    }),
+
+  deleteAllStudents: publicProcedure.mutation(async (requestData) => {
+    try {
+      await prisma.courseMember.deleteMany({
+        where: {
+          role: 'student'
+        }
+      });
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      return { success: false };
+    }
+  }),
+
   getCourseMembersOfCourse: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
@@ -56,6 +86,9 @@ export const courseMemberRouter = router({
         const courseMembers = await prisma.courseMember.findMany({
           where: {
             courseId: requestData.input.courseId
+          },
+          orderBy: {
+            name: 'asc'
           }
         });
         return { success: true, courseMembers };
