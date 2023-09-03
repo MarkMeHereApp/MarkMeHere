@@ -1,28 +1,15 @@
 'use client';
 
+import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
 import { Button } from 'components/ui/button';
-import { CourseMember } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import { trpc } from '@/app/_trpc/client';
 import Loading from '../general/loading';
 
-const createRandomCourseMember = (selectedCourseId: string) =>
-  ({
-    id: faker.string.uuid(),
-    lmsId: faker.string.uuid(),
-    email: faker.internet.email(),
-    name: faker.person.fullName(),
-    courseId: selectedCourseId,
-    dateEnrolled: new Date(),
-    role: 'student'
-  }) as CourseMember;
-
-export const GenerateRandomCourseMember = () => {
+export const DeleteAllStudents = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
-  const createCourseMemberMutation =
-    trpc.courseMember.createCourseMember.useMutation();
+  const deleteAllStudentsMutation =
+    trpc.courseMember.deleteAllStudents.useMutation();
   const getCourseMembersOfCourseQuery =
     trpc.courseMember.getCourseMembersOfCourse.useQuery(
       {
@@ -35,12 +22,10 @@ export const GenerateRandomCourseMember = () => {
         }
       }
     );
+
   const handleClick = async () => {
     if (selectedCourseId) {
-      const newMemberData = createRandomCourseMember(selectedCourseId);
-      await createCourseMemberMutation.mutateAsync({
-        newMemberData
-      });
+      await deleteAllStudentsMutation.mutateAsync();
       await getCourseMembersOfCourseQuery.refetch();
     } else {
       throw new Error('No selected course');
@@ -49,7 +34,7 @@ export const GenerateRandomCourseMember = () => {
 
   return selectedCourseId ? (
     <Button variant="default" onClick={handleClick}>
-      Generate Random Course Member
+      Delete All Students
     </Button>
   ) : (
     <Loading />

@@ -61,6 +61,20 @@ export const courseMemberRouter = router({
       }
     }),
 
+  deleteAllStudents: publicProcedure.mutation(async (requestData) => {
+    try {
+      await prisma.courseMember.deleteMany({
+        where: {
+          role: 'student'
+        }
+      });
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      return { success: false };
+    }
+  }),
+
   getCourseMembersOfCourse: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
@@ -68,6 +82,9 @@ export const courseMemberRouter = router({
         const courseMembers = await prisma.courseMember.findMany({
           where: {
             courseId: requestData.input.courseId
+          },
+          orderBy: {
+            name: 'asc'
           }
         });
         return { success: true, courseMembers };

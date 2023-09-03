@@ -6,7 +6,7 @@ import {
 
 export const roles = [
   {
-    value: 'STUDENT',
+    value: 'student',
     label: 'Student',
     icon: PiStudent
   },
