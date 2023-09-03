@@ -1,8 +1,10 @@
 'use client';
 import { useCourseContext } from '@/app/course-context';
-import CRUDButtons from '@/components/devUtils/CRUDButtons';
+import { CourseMember } from '@prisma/client';
+import { trpc } from '@/app/_trpc/client';
+import React, { useEffect } from 'react';
 
-const TestPage = () => {
+const SamsTestPage = () => {
   const data = useCourseContext();
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
@@ -33,9 +35,9 @@ const TestPage = () => {
       {Object.entries(data).map(([key, value]) => (
         <p key={key}>{`${key}: ${JSON.stringify(value)}`}</p>
       ))}
-      <CRUDButtons />
+      <button onClick={handleButtonClick}>Click me</button>
     </div>
   );
 };
 
-export default TestPage;
+export default SamsTestPage;
