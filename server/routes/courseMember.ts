@@ -1,10 +1,11 @@
+import { zNewCourseMember } from './courseMember';
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 import { z } from 'zod';
 
-export const zNewCourseMember = z.object({
+export const zCourseMember = z.object({
   // The input schema goes here
   newMemberData: z.object({
     id: z.string(),
@@ -34,7 +35,7 @@ export const zCreateMultipleCourseMembers = z.object({
 
 export const courseMemberRouter = router({
   createCourseMember: publicProcedure
-    .input(zNewCourseMember)
+    .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
         const resEnrollment = await prisma.courseMember.create({
@@ -43,6 +44,17 @@ export const courseMemberRouter = router({
           }
         });
         return { success: true, resEnrollment };
+      } catch (error) {
+        console.error(error);
+        return { success: false };
+      }
+    }),
+
+  deleteCourseMember: publicProcedure
+    .input(zCourseMember)
+    .mutation(async (requestData) => {
+      try {
+        return { success: true };
       } catch (error) {
         console.error(error);
         return { success: false };

@@ -15,7 +15,7 @@ const createRandomCourseMember = (selectedCourseId: string) =>
     name: faker.person.fullName(),
     courseId: selectedCourseId,
     dateEnrolled: new Date(),
-    role: 'STUDENT'
+    role: 'student'
   }) as CourseMember;
 
 export const GenerateRandomCourseMember = () => {
