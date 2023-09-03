@@ -98,3 +98,9 @@ model qrcode {
   code      String
   createdAt DateTime @default(now())
 }
+
+model QRCode {
+  id         String           @id @default(cuid())
+  code       String
+  createdAt  DateTime         @default(now())
+}
