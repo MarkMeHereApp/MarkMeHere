@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 
 export const zCreateQRCode = z.object({
-  activeCodeToSave: z.string()
+  secondsToExpireNewCode: z.number()
 });
 
 export const qrRouter = router({
@@ -11,25 +11,29 @@ export const qrRouter = router({
     .input(zCreateQRCode)
     .mutation(async (requestData) => {
       try {
-        await prisma.qrcode.deleteMany({
-          where: {
-            code: {
-              not: {
-                equals: requestData.input.activeCodeToSave
-              }
-            }
-          }
-        });
-
         const newCode = Math.random()
           .toString(36)
           .substring(2, 8)
           .toUpperCase();
 
+        const newExpiry = new Date();
+        newExpiry.setSeconds(
+          newExpiry.getSeconds() + requestData.input.secondsToExpireNewCode
+        );
+
         try {
           const returnCode = await prisma.qrcode.create({
             data: {
-              code: newCode
+              code: newCode,
+              expiresAt: newExpiry
+            }
+          });
+
+          await prisma.qrcode.deleteMany({
+            where: {
+              expiresAt: {
+                lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
+              }
             }
           });
 
