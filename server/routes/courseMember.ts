@@ -1,4 +1,3 @@
-import { zNewCourseMember } from './courseMember';
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { Prisma, PrismaClient } from '@prisma/client';
@@ -7,7 +6,7 @@ import { z } from 'zod';
 
 export const zCourseMember = z.object({
   // The input schema goes here
-  newMemberData: z.object({
+  courseMemberData: z.object({
     id: z.string(),
     lmsId: z.string().nullable(),
     email: z.string(),
@@ -40,7 +39,7 @@ export const courseMemberRouter = router({
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input.newMemberData
+            ...requestData.input.courseMemberData
           }
         });
         return { success: true, resEnrollment };
@@ -54,6 +53,11 @@ export const courseMemberRouter = router({
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
+        await prisma.courseMember.delete({
+          where: {
+            id: requestData.input.courseMemberData.id
+          }
+        });
         return { success: true };
       } catch (error) {
         console.error(error);

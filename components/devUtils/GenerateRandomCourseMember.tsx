@@ -39,7 +39,7 @@ export const GenerateRandomCourseMember = () => {
     if (selectedCourseId) {
       const newMemberData = createRandomCourseMember(selectedCourseId);
       await createCourseMemberMutation.mutateAsync({
-        newMemberData
+        courseMemberData: newMemberData
       });
       await getCourseMembersOfCourseQuery.refetch();
     } else {
