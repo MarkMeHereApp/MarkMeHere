@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
 
@@ -13,8 +14,8 @@ export default function QR() {
   const [progress, setProgress] = React.useState(0);
   const [activeCode, setActiveCode] = React.useState('LOADING');
   const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
-  const timerUpdateRate = 100; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
-  const progressbarLength = 100; // The length of the progress bar in ms
+  const expirationTime = 5; // This is how long the QR code will last in seconds
+  const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
   const mode =
@@ -48,18 +49,53 @@ export default function QR() {
     }
   }, [mode]);
 
-  const bufferCodeRef = React.useRef('LOADING'); //code in buffer
-  const activeCodeRef = React.useRef('LOADING'); // Active code reference
+  const initialCode: qrcode = {
+    id: 'LOADING',
+    code: 'LOADING',
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...
+  };
+
+  const bufferCodeRef = React.useRef(initialCode); //code in buffer
+  const activeCodeRef = React.useRef(initialCode); // Active code reference
+  const bIsFetchingNewCode = React.useRef(false); // Is the code currently being fetched
 
   const saveCode = async () => {
+    setActiveCode(bufferCodeRef.current.code);
+    activeCodeRef.current = bufferCodeRef.current;
     try {
       const newBufferCode = await createQRMutator.mutateAsync({
-        activeCodeToSave: activeCodeRef.current
+        secondsToExpireNewCode: expirationTime * 2 // 5 seconds * 2 (to account for the buffer the buffer)
       });
 
       if (newBufferCode.success) {
-        bufferCodeRef.current = newBufferCode.qrCode.code;
+        bufferCodeRef.current = newBufferCode.qrCode;
       }
+    } catch (error) {
+      throw new Error('Unexpected server error.');
+    }
+  };
+  const initCodes = async () => {
+    setActiveCode('LOADING');
+    try {
+      const newActiveCode = await createQRMutator.mutateAsync({
+        secondsToExpireNewCode: expirationTime // 5 seconds
+      });
+
+      if (newActiveCode.success) {
+        activeCodeRef.current = newActiveCode.qrCode;
+      }
+      setActiveCode(activeCodeRef.current.code);
+
+      const newBufferCode = await createQRMutator.mutateAsync({
+        secondsToExpireNewCode: expirationTime * 2 // 5 seconds * 2 (to account for the buffer the buffer)
+      });
+
+      if (newBufferCode.success) {
+        bufferCodeRef.current = newBufferCode.qrCode;
+      }
+
+      bIsFetchingNewCode.current = false;
     } catch (error) {
       throw new Error('Unexpected server error.');
     }
@@ -68,30 +104,46 @@ export default function QR() {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
+        if (bIsFetchingNewCode.current) {
+          return 0;
+        }
+
+        if (document.hidden) {
+          bufferCodeRef.current = initialCode;
+          activeCodeRef.current = initialCode;
+          return 0;
+        }
+
+        if (activeCodeRef.current.expiresAt.getTime() <= Date.now()) {
+          bufferCodeRef.current = initialCode;
+          activeCodeRef.current = initialCode;
+        }
+
         if (
-          (oldProgress < 100 && bufferCodeRef.current === 'LOADING') ||
-          activeCodeRef.current === 'LOADING'
+          bufferCodeRef.current === initialCode &&
+          !bIsFetchingNewCode.current
         ) {
-          setProgress(100);
+          bIsFetchingNewCode.current = true;
+          initCodes();
+          return 0;
         }
+
         if (oldProgress >= 100) {
-          if (activeCodeRef.current !== bufferCodeRef.current) {
-            setProgress(0); // Reset progress to 0 once it reaches 100
-            setActiveCode(bufferCodeRef.current);
-            activeCodeRef.current = bufferCodeRef.current;
-          } else {
-            setActiveCode('LOADING');
-            activeCodeRef.current = 'LOADING';
-          }
-
+          setProgress(0); // Reset progress to 0 once it reaches 100
           saveCode();
-          console.log('Saved code');
         }
 
-        const newProgress = oldProgress + timerUpdateRate / progressbarLength; // Increase progress by timerLength / timerUpdateRate each step
+        const secondsLeft =
+          (activeCodeRef.current.expiresAt.getTime() - Date.now()) / 1000;
+
+        if (secondsLeft <= 0) {
+          return 100;
+        }
+
+        const newProgress = oldProgress + timerUpdateRate / (secondsLeft * 10); // Increase progress by timerLength / timerUpdateRate each step
         return newProgress;
       });
-    }, timerUpdateRate); // 100ms * 50 steps = 5 seconds
+    }, timerUpdateRate);
     return () => clearInterval(timer);
   }, []);
 

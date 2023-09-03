@@ -97,10 +97,5 @@ model qrcode {
   //lecture    Lecture          @relation(fields: [lectureId], references: [id])
   code      String
   createdAt DateTime @default(now())
-}
-
-model QRCode {
-  id         String           @id @default(cuid())
-  code       String
-  createdAt  DateTime         @default(now())
+  expiresAt DateTime
 }
