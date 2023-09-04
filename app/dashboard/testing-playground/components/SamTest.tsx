@@ -4,7 +4,7 @@ import { trpc } from '@/app/_trpc/client';
 import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -23,18 +23,17 @@ const SamsTestPage = () => {
   const [tableValues, setTableValues] = useState<string[][]>([]);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [isDialogOpen, setDialogOpen] = useState(false);
   interface CSVData {
     [key: string]: string;
   }
 
-  const openDialog = () => {
-    setDialogOpen(true);
-  };
-
   const closeDialog = () => {
-    setDialogOpen(false);
+    // Clear the input file by setting its value to an empty string
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,12 +87,18 @@ const SamsTestPage = () => {
       {Object.entries(data).map(([key, value]) => (
         <p key={key}>{`${key}: ${JSON.stringify(value)}`}</p>
       ))}
-      <Input id="csv" type="file" accept=".csv" onChange={handleFileChange} />
+      <div className="grid w-full max-w-sm items-center gap-1.5">
+        <Input
+          ref={fileInputRef}
+          id="csv"
+          type="file"
+          accept=".csv"
+          onChange={handleFileChange}
+        />
+      </div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button disabled={!isFileUploaded} onClick={openDialog}>
-            Preview
-          </Button>
+          <Button disabled={!isFileUploaded}>Preview</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[1000px]">
           <DialogHeader>
@@ -106,9 +111,12 @@ const SamsTestPage = () => {
             <DataTable data={tableValues} />
           </div>
           <DialogFooter>
-            <Button type="button" variant="secondary" onClick={closeDialog}>
-              Cancel
-            </Button>
+            <DialogTrigger asChild>
+              <Button type="button" variant="secondary" onClick={closeDialog}>
+                Cancel
+              </Button>
+            </DialogTrigger>
+
             <Button type="submit">Import</Button>
           </DialogFooter>
         </DialogContent>
