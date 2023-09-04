@@ -43,11 +43,15 @@ export const canvasRouter = router({
         }
         const json = await response.json();
         // Validate the data with Zod
-        const courses: CourseType[] = json.map((course: any) =>
-          zCourseSchema.parse(course)
-        );
+        try {
+          const courses: CourseType[] = json.map((course: any) =>
+            zCourseSchema.parse(course)
+          );
 
-        return { success: true, courseList: courses };
+          return { success: true, courseList: courses };
+        } catch (error) {
+          throw new Error(`Failed to parse courses from Canvas: ${error}`);
+        }
       } catch (error) {
         throw new Error(`Failed to fetch courses from Canvas: ${error}`);
       }
