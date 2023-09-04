@@ -103,7 +103,7 @@ const SamsTestPage = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <DataTable data={tableValues} courseID={data.selectedCourseId} />
+            <DataTable data={tableValues} />
           </div>
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={closeDialog}>

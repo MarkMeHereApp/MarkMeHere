@@ -1,11 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon
-} from '@radix-ui/react-icons';
+import { CaretSortIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -24,12 +20,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -38,11 +30,10 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { CourseMember } from '@prisma/client';
 
 let data = [];
 
-export const createColumns: (useCourse: any) => ColumnDef<CourseMember>[] = (
+export const createColumns: (useCourse: any) => ColumnDef<string[]>[] = (
   useCourse
 ) => {
   return [
@@ -92,7 +83,7 @@ export const createColumns: (useCourse: any) => ColumnDef<CourseMember>[] = (
   ];
 };
 
-export function DataTable(props: { data: CourseMember[] }) {
+export function DataTable(props: { data: string[][] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
