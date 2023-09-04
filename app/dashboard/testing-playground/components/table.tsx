@@ -1,20 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { CaretSortIcon } from '@radix-ui/react-icons';
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table';
+
+
 import { useCourseContext } from '@/app/course-context';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
