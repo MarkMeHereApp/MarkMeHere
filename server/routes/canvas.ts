@@ -21,7 +21,6 @@ export const canvasRouter = router({
   getCanvasCourses: publicProcedure
     .input(z.object({}))
     .query(async (requestData) => {
-      console.log('asdasdasd');
       if (!CANVAS_API_TOKEN || !CANVAS_DOMAIN) {
         throw new Error('Canvas API token and domain not provided');
       }

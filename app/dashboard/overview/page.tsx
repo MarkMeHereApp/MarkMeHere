@@ -1,4 +1,4 @@
-import TestingPage from '../tests/page';
+import TestingPage from '../testing-playground/page';
 
 export default async function DashboardPage() {
   return (
