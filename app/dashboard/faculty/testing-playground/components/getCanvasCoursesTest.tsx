@@ -24,9 +24,7 @@ const GetCanvasCourses = () => {
         ? 'Loading...'
         : getCanvasCoursesQuery.data && (
             <h4>
-              <pre>
-                {JSON.stringify(getCanvasCoursesQuery.data.courseList, null, 2)}
-              </pre>
+              <pre>{JSON.stringify(getCanvasCoursesQuery.data, null, 2)}</pre>
             </h4>
           )}
     </div>
