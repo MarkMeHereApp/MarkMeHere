@@ -1,3 +1,4 @@
+import { canvasRouter } from './routes/canvas';
 import { router } from './trpc';
 
 import { courseRouter } from './routes/course';
@@ -13,7 +14,8 @@ export const appRouter = router({
   user: userRouter,
   qr: qrRouter,
   lecture: lectureRouter,
-  attendance: attendanceRouter
+  attendance: attendanceRouter,
+  canvas: canvasRouter
 });
 
 export type AppRouter = typeof appRouter;

@@ -6,11 +6,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import SamTest from './components/SamTest';
 import AldrichTest from './components/AldrichTest';
 import ErrorTest from './components/ErrorTest';
+import GetCanvasCourses from './components/getCanvasCoursesTest';
 
 const tabComponents = [
   { value: 'Aldrich Test', component: <AldrichTest /> },
   { value: 'Sams Test', component: <SamTest /> },
-  { value: 'Error Test', component: <ErrorTest /> }
+  { value: 'Error Test', component: <ErrorTest /> },
+  { value: 'GetCanvasCourses', component: <GetCanvasCourses /> }
+
   // Add more components here
 ];
 
