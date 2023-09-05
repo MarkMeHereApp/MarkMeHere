@@ -1,9 +1,8 @@
 'use client';
 import { useCourseContext } from '@/app/course-context';
-import { CourseMember } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/app/_trpc/client';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const SamsTestPage = () => {
   const data = useCourseContext();

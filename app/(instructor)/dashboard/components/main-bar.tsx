@@ -33,11 +33,11 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 
-import { ModeToggle } from '@/app/dashboard/components/theme-toggle';
+import { ModeToggle } from '@/app/(instructor)/dashboard/components/theme-toggle';
 import { Separator } from '@/components/ui/separator';
-import ProfileForm from '@/app/dashboard/components/class-creation-form';
-import UserNav from '@/app/dashboard/components/user-nav';
-import MainNav from '@/app/dashboard/components/main-nav';
+import ProfileForm from '@/app/(instructor)/dashboard/components/class-creation-form';
+import UserNav from '@/app/(instructor)/dashboard/components/user-nav';
+import MainNav from '@/app/(instructor)/dashboard/components/main-nav';
 
 import { useCourseContext } from '@/app/course-context';
 
