@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
+  // const formData = await request.formData();
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  // const email = formData.get('email') as string;
+  // const password = formData.get('password') as string;
 
   try {
     // Find the user with the provided email
