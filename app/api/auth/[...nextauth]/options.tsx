@@ -3,9 +3,21 @@ import ZoomProvider from 'next-auth/providers/zoom';
 import type { NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import type { PrismaClient } from '@prisma/client';
+import { Adapter } from 'next-auth/adapters';
+
+function customPrismaAdapter(prisma: PrismaClient) {
+  return {
+    ...PrismaAdapter(prisma),
+    createUser: (data: any) => {
+      const role = 'ADMIN';
+      return prisma.user.create({ data: { ...data, role: role, } });
+    }
+  };
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: customPrismaAdapter(prisma) as Adapter,
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
