@@ -1,5 +1,4 @@
 import { publicProcedure, router } from '../trpc';
-import { Lecture } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 
@@ -8,7 +7,8 @@ export const zGetLecturesOfCourse = z.object({
 });
 
 export const zCreateLecture = z.object({
-  courseId: z.string()
+  courseId: z.string(),
+  lectureDate: z.date()
 });
 
 export const lectureRouter = router({
@@ -30,21 +30,19 @@ export const lectureRouter = router({
     .input(zCreateLecture)
     .mutation(async (requestData) => {
       try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
         const existingLecture = await prisma.lecture.findFirst({
           where: {
             courseId: requestData.input.courseId,
-            lectureDate: today
+            lectureDate: requestData.input.lectureDate
           }
         });
         if (existingLecture) {
-          throw new Error('A lecture already exists for today');
+          throw new Error(`A lecture already exists for ${requestData.input.lectureDate}`);
         }
-        const resLecture = await prisma.lecture.create({
+        await prisma.lecture.create({
           data: {
             courseId: requestData.input.courseId,
-            lectureDate: today
+            lectureDate: requestData.input.lectureDate
           }
         });
         const lectures = await prisma.lecture.findMany({
