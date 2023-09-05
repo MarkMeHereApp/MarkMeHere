@@ -50,7 +50,7 @@ model VerificationToken {
 model Lecture {
   id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
-  courseId          String            @unique
+  courseId          String            
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
 }
