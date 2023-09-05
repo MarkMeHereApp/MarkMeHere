@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
 import { roles } from './dataUtils';
-
+import ImportCSV from './DataTableImportCSV';
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -37,6 +37,7 @@ export function DataTableToolbar<TData>({
             options={roles}
           />
         )}
+        <ImportCSV />
         {isFiltered && (
           <Button
             variant="ghost"
