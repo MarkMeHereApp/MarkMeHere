@@ -66,7 +66,7 @@ export default async function RootLayout({
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
         <div>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Providers>
               <CoursesContext
                 userCourses={courses}

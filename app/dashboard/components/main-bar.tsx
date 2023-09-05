@@ -33,6 +33,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 
+import { ModeToggle } from '@/app/dashboard/components/theme-toggle';
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '@/app/dashboard/components/class-creation-form';
 import UserNav from '@/app/dashboard/components/user-nav';
@@ -198,6 +199,7 @@ export default function CourseSwitcher({ className }: { className?: string }) {
         </Sheet>
         <MainNav className="mx-6" />
         <div className="ml-auto flex items-center space-x-4">
+          <ModeToggle />
           <UserNav />
         </div>
       </div>
