@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import TeamSwitcher from '@/app/dashboard/components/main-bar';
+import CourseSwitcher from '@/app/(instructor)/dashboard/components/main-bar';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
@@ -43,7 +43,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <TeamSwitcher />
+      <CourseSwitcher />
       {children}
     </>
   );
