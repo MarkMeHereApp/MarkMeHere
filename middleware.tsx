@@ -13,20 +13,52 @@ export default withAuth(
   //If this returns true the user is allowed to access the admin dahsboard
   function middleware(req) {
     console.log(req.nextauth.token);
-    console.log(req.nextUrl)
-    //console.log(req.nextauth.token?.role);
+    console.log(req.nextUrl);
+
+    //If user is not an admin redirect them
     if (
-      req.nextUrl.pathname === '/adminDash' &&
+      req.nextUrl.pathname === '/dashboard/admin' &&
       req.nextauth.token?.role !== 'ADMIN'
     ) {
-        //Here we can add a check for what role the user is
-        //There role will determine where we redirect back to
-        const url = req.nextUrl.clone()
-        url.pathname = '/dashboard/overview'
-        return NextResponse.redirect(url)
+      //Here we can add a check for what role the user is
+      //There role will determine where we redirect back to
+      const url = req.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
     }
 
-    return undefined;
+    //If user is not a faculty member redirect them
+    if (
+      req.nextUrl.pathname === '/dashboard/faculty' &&
+      req.nextauth.token?.role !== 'FACULTY'
+    ) {
+      //Here we can add a check for what role the user is
+      //There role will determine where we redirect back to
+      const url = req.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+
+    //If user is not a student redirect them
+    if (
+      req.nextUrl.pathname === '/dashboard/student' &&
+      req.nextauth.token?.role !== 'STUDENT'
+    ) {
+      //Here we can add a check for what role the user is
+      //There role will determine where we redirect back to
+      const url = req.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.json(
+      {
+        message: 'User granted access through middleware'
+      },
+      {
+        status: 200
+      }
+    );
   },
   {
     //This runs first. If the user has a valid JWT this returns true
