@@ -1,14 +1,11 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-
 import { Checkbox } from '@/components/ui/checkbox';
-
-import { statuses } from '../data/data';
-import { Task } from '../data/schema';
 import { DataTableColumnHeader } from './data-table-column-header';
+import { CourseMember } from '@prisma/client';
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<CourseMember>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -40,54 +37,42 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'firstName',
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('firstName')}</div>
+      <div className="flex w-full">{row.getValue('name')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
   },
-  {
-    accessorKey: 'lastName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('lastName')}</div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.getValue('status')
-      );
+//   {
+//     accessorKey: 'status',
+//     header: ({ column }) => (
+//       <DataTableColumnHeader column={column} title="Status" />
+//     ),
+//     cell: ({ row }) => {
+//       const status = statuses.find(
+//         (status) => status.value === row.getValue('status')
+//       );
 
-      if (!status) {
-        return null;
-      }
+//       if (!status) {
+//         return null;
+//       }
 
-      return (
-        <div className="flex w-[100px] items-center">
-          {status.icon && (
-            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{status.label}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    }
-  }
+//       return (
+//         <div className="flex w-[100px] items-center">
+//           {status.icon && (
+//             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+//           )}
+//           <span>{status.label}</span>
+//         </div>
+//       );
+//     },
+//     filterFn: (row, id, value) => {
+//       return value.includes(row.getValue(id));
+//     }
+//   }
 ];
