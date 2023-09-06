@@ -70,6 +70,7 @@ model Course {
   id          String         @id @default(cuid())
   courseLabel String         @unique @db.VarChar(255)
   name        String         @db.VarChar(255)
+  lmsType     String?        @default("canvas")
   lmsId       String?        @unique
   dateCreated DateTime       @default(now())
   StartDate   DateTime?

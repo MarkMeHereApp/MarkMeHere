@@ -2,23 +2,11 @@ import { publicProcedure, router } from '../trpc';
 import z from 'zod';
 // Import Prisma client
 import { PrismaClient } from '@prisma/client';
+import { zCanvasCourseSchema } from '@/types/sharedZodTypes';
 const prisma = new PrismaClient();
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
-
-// Define the Zod schema for the course data
-const zCourseSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  course_code: z.string(),
-  start_at: z.string().nullable(),
-  end_at: z.string().nullable(),
-  enrollments: z.array(z.object({ role: z.string() })).default([])
-});
-
-// We have to export the schema type here.
-export type CourseType = z.infer<typeof zCourseSchema>;
 
 export const canvasRouter = router({
   getCanvasCourses: publicProcedure
@@ -47,8 +35,10 @@ export const canvasRouter = router({
         const json = await response.json();
         // Validate the data with Zod
         try {
+          type CourseType = z.infer<typeof zCanvasCourseSchema>;
+
           const courses: CourseType[] = json.map((course: any) =>
-            zCourseSchema.parse(course)
+            zCanvasCourseSchema.parse(course)
           );
 
           const matchingCoursesLMSIds = await prisma.course.findMany({
