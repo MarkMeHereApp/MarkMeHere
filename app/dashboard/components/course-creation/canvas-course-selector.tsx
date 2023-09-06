@@ -27,12 +27,13 @@ import {
   ExclamationTriangleIcon,
   CrossCircledIcon
 } from '@radix-ui/react-icons';
+import { zCreateCourseErrorDescriptions } from '@/types/sharedZodTypes';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 
 export function CanvasCourseSelector() {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(-1);
+  const [value, setValue] = React.useState('');
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
 
   return (
@@ -45,9 +46,9 @@ export function CanvasCourseSelector() {
             aria-expanded={open}
             className="w-full"
           >
-            {value && value !== -1
+            {value && value !== ''
               ? getCanvasCoursesQuery?.data?.courseList.find(
-                  (course) => course.id === value
+                  (course) => course.lmsId === value
                 )?.name || `ID: ${value} - Course name not available`
               : 'Import From Canvas (optional)'}
             <Icons.canvas className="text-xs text-destructive ml-auto" />
@@ -67,9 +68,9 @@ export function CanvasCourseSelector() {
                   <HoverCard>
                     <HoverCardTrigger>
                       <CommandItem
-                        key={course.id}
+                        key={course.lmsId}
                         onSelect={() => {
-                          setValue(course.id === value ? -1 : course.id);
+                          setValue(course.lmsId === value ? '' : course.lmsId);
                           setOpen(false);
                         }}
                         disabled={false}
@@ -77,13 +78,15 @@ export function CanvasCourseSelector() {
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            value === course.id ? 'opacity-100' : 'opacity-0'
+                            value === course.lmsId ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         {course.name ? (
                           course.name
                         ) : (
-                          <span>ID: {course.id} - Course name unnavilable</span>
+                          <span>
+                            ID: {course.lmsId} - Course name unnavilable
+                          </span>
                         )}
                       </CommandItem>
                     </HoverCardTrigger>
@@ -107,7 +110,7 @@ export function CanvasCourseSelector() {
                           <p className="text-xs">
                             <i>
                               <b>Course ID: </b>
-                              {course.id}
+                              {course.lmsId}
                             </i>
                           </p>
                           <p className="text-xs">
@@ -130,24 +133,21 @@ export function CanvasCourseSelector() {
                             </i>
                           </p>
                           <p className="text-sm">
-                            {true ? (
+                            {course.ableToCreateCourse ? (
                               <span className="flex items-start flex-wrap">
-                                <CrossCircledIcon className="mr-2 mt-1 text-destructive" />
-                                {'  This class already has been imported.'}
-                              </span>
-                            ) : false ? (
-                              <span className="flex items-start flex-wrap">
-                                <CrossCircledIcon className="mr-2 mt-1 text-destructive" />
-                                <span style={{ maxWidth: '90%' }}>
-                                  Access to view the emails of course members
-                                  for this course is currently restricted. This
-                                  app requires access to course member emails.
-                                </span>
+                                <CheckCircledIcon className="mr-2 mt-1 text-primary" />
+                                {' This course is available to import.'}
                               </span>
                             ) : (
                               <span className="flex items-start flex-wrap">
-                                <CheckCircledIcon className="mr-2 mt-1 text-primary" />
-                                {' You can import this course.'}
+                                <CrossCircledIcon className="mr-2 mt-1 text-destructive" />
+                                <span style={{ maxWidth: '90%' }}>
+                                  {course.createCourseError
+                                    ? zCreateCourseErrorDescriptions[
+                                        course.createCourseError
+                                      ]
+                                    : 'Unexpected Erorr'}
+                                </span>
                               </span>
                             )}
                           </p>
