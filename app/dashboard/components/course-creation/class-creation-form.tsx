@@ -20,6 +20,8 @@ import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
 import { CanvasCourseSelector } from './canvas-course-selector';
+import { zLMSCourseScheme, zLMSCourseSchemeType } from '@/types/sharedZodTypes';
+import { useEffect } from 'react';  
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -70,7 +72,8 @@ export default function CreateCourseForm({
   onSuccess: () => void;
 }) {
   const [loading, setLoading] = useState(false);
-
+  const [getLMSSelectedCourse, setLMSSelectedCourse] =
+    useState<zLMSCourseSchemeType | null>(null);
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const { setUserCourses, setUserCourseMembers, setSelectedCourseId } =
@@ -155,10 +158,32 @@ export default function CreateCourseForm({
     }
   }
 
+  useEffect(() => {
+    
+    if (getLMSSelectedCourse) {
+      if (getLMSSelectedCourse.course_code) {
+        form.setValue('courseLabel', getLMSSelectedCourse.course_code);
+      }
+      if (getLMSSelectedCourse.name) {
+        form.setValue('name', getLMSSelectedCourse.name);
+      }
+      if (getLMSSelectedCourse.lmsId){
+        form.setValue('lmsId', getLMSSelectedCourse.lmsId);
+      }
+    }
+    else{
+      form.setValue('courseLabel', '');
+      form.setValue('name', '');
+      form.setValue('lmsId', null);
+    }
+  }, [getLMSSelectedCourse]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CanvasCourseSelector />
+      <CanvasCourseSelector setSelectedCourse={(setLMSSelectedCourse)}/>
+
+
         <FormField
           control={form.control}
           name="courseLabel"
@@ -177,7 +202,6 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="name"

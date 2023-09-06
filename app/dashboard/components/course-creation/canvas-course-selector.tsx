@@ -23,7 +23,9 @@ import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './course-hover-content';
-import { zCreateCourseErrorStatus } from '@/types/sharedZodTypes';
+import {
+  zLMSCourseSchemeType
+} from '@/types/sharedZodTypes';
 
 function formatStatus(status: string) {
   return (
@@ -35,7 +37,13 @@ function formatStatus(status: string) {
       .join('')
   );
 }
-export function CanvasCourseSelector() {
+export function CanvasCourseSelector({
+  setSelectedCourse
+}: {
+  setSelectedCourse: React.Dispatch<
+    React.SetStateAction<zLMSCourseSchemeType | null>
+  >;
+}) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
@@ -94,6 +102,9 @@ export function CanvasCourseSelector() {
                                 setValue(
                                   course.lmsId === value ? '' : course.lmsId
                                 );
+                                setSelectedCourse(
+                                  course.lmsId === value ? null : course
+                                ); // Save the selected course
                                 setOpen(false);
                               }}
                               disabled={!course.ableToCreateCourse}
