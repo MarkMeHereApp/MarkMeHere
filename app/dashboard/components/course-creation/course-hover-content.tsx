@@ -7,6 +7,7 @@ import {
   zLMSCourseScheme,
   zLMSCourseSchemeType
 } from '@/types/sharedZodTypes';
+import { Cousine } from 'next/font/google';
 
 const CourseHoverCardContent = ({
   course
@@ -53,21 +54,20 @@ const CourseHoverCardContent = ({
             </i>
           </p>
           <p className="text-sm">
-            {course.ableToCreateCourse ? (
-              <span className="flex items-start flex-wrap">
+            <span className="flex items-start flex-wrap">
+              {course.ableToCreateCourse ? (
                 <CheckCircledIcon className="mr-2 mt-1 text-primary" />
-                {' This course is available to import.'}
-              </span>
-            ) : (
-              <span className="flex items-start flex-wrap">
+              ) : (
                 <CrossCircledIcon className="mr-2 mt-1 text-destructive" />
-                <span style={{ maxWidth: '90%' }}>
-                  {course.createCourseError
-                    ? zCreateCourseErrorDescriptions[course.createCourseError]
-                    : 'Unexpected Erorr'}
-                </span>
+              )}
+              <span style={{ maxWidth: '90%' }}>
+                {course.createCourseErrorStatus
+                  ? zCreateCourseErrorDescriptions[
+                      course.createCourseErrorStatus
+                    ]
+                  : 'Unexpected Error'}
               </span>
-            )}
+            </span>
           </p>
 
           <div className="flex items-center pt-2">
