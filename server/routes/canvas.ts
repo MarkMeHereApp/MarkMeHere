@@ -69,10 +69,14 @@ export const canvasRouter = router({
               );
 
               if (!enrollmentResponse.ok) {
-                break;
+                course.ableToCreateCourse = false;
+                course.createCourseError =
+                  zCreateCourseErrors.Enum.noEmailAccess;
+                continue;
               }
 
               const enrollmentJson = await enrollmentResponse.json();
+              console.log(enrollmentJson);
               if (
                 enrollmentJson &&
                 enrollmentJson[0] &&
