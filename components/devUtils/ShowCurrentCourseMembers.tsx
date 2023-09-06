@@ -3,7 +3,7 @@
 import { useCourseContext } from '@/app/course-context';
 import { Button } from 'components/ui/button';
 
-export const ShowCurrentCourseMembers = () => {
+const ShowCurrentCourseMembers = () => {
   const { userCourseMembers } = useCourseContext();
   return (
     <Button
@@ -16,3 +16,5 @@ export const ShowCurrentCourseMembers = () => {
     </Button>
   );
 };
+
+export default ShowCurrentCourseMembers;

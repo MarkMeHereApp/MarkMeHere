@@ -1,6 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import { z } from 'zod';
 

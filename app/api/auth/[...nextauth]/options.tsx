@@ -11,7 +11,7 @@ function customPrismaAdapter(prisma: PrismaClient) {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
       const role = 'ADMIN';
-      return prisma.user.create({ data: { ...data, role: role, } });
+      return prisma.user.create({ data: { ...data, role: role } });
     }
   };
 }
