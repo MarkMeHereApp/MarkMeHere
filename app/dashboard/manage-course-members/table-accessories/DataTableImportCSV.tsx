@@ -4,6 +4,7 @@ import { trpc } from '@/app/_trpc/client';
 import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { useState, useRef } from 'react';
 import {
   Dialog,
@@ -61,23 +62,20 @@ const ImportCSV = () => {
       setIsFileUploaded(false);
     }
   };
-  const handleButtonClick = async () => {
+  const handleImport = async () => {
     if (data.selectedCourseId === null) return;
+    setIsImporting(true);
+    const transformedTableValues = tableValues.map((row) => ({
+      role: 'student',
+      name: row[1],
+      email: row[2],
+      lmsId: row[0]
+    }));
     const newMembers = await createManyCourseMembers.mutateAsync({
       courseId: data.selectedCourseId,
-      courseMembers: [
-        {
-          name: 'Test',
-          email: 'test@example.com',
-          role: 'student'
-        },
-        {
-          name: 'Test2',
-          email: 'test2@example.com',
-          role: 'student'
-        }
-      ]
+      courseMembers: transformedTableValues
     });
+    setIsImporting(false);
 
     data.setCourseMembersOfSelectedCourse(newMembers.allCourseMembersOfClass);
   };
@@ -115,7 +113,12 @@ const ImportCSV = () => {
               </Button>
             </DialogTrigger>
 
-            <Button type="submit">Import</Button>
+            <Button type="submit" onClick={handleImport} disabled={isImporting}>
+              {isImporting && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Import
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
