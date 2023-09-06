@@ -1,7 +1,8 @@
 import {
   CheckCircledIcon,
   CircleIcon,
-  CrossCircledIcon
+  CrossCircledIcon,
+  ClockIcon
 } from '@radix-ui/react-icons';
 
 export const statuses = [
@@ -19,5 +20,10 @@ export const statuses = [
     value: 'excused',
     label: 'Excused',
     icon: CircleIcon
+  },
+  {
+    value: 'late',
+    label: 'Late',
+    icon: ClockIcon
   }
 ];

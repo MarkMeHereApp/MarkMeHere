@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/app/dashboard/take-attendance/components/data-table-view-options';
 
-import { statuses } from '../data/data';
+import { statuses } from './data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
@@ -26,9 +26,9 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Search for a student..."
-          value={(table.getColumn('firstName')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('firstName')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
