@@ -18,7 +18,7 @@ const createRandomCourseMember = (selectedCourseId: string) =>
     role: 'student'
   }) as CourseMember;
 
-export const GenerateRandomCourseMember = () => {
+const GenerateRandomCourseMember = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
   const createCourseMemberMutation =
@@ -55,3 +55,5 @@ export const GenerateRandomCourseMember = () => {
     <Loading />
   );
 };
+
+export default GenerateRandomCourseMember;

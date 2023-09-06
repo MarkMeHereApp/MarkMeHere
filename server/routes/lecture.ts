@@ -1,5 +1,4 @@
 import { publicProcedure, router } from '../trpc';
-import { Lecture } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 

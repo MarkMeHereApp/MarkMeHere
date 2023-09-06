@@ -5,7 +5,7 @@ import { useCourseContext } from '@/app/course-context';
 import { Button } from 'components/ui/button';
 import Loading from '../general/loading';
 
-export const DeleteAllStudents = () => {
+const DeleteAllStudents = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
   const deleteAllStudentsMutation =
@@ -40,3 +40,5 @@ export const DeleteAllStudents = () => {
     <Loading />
   );
 };
+
+export default DeleteAllStudents;
