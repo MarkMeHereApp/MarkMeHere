@@ -3,7 +3,11 @@ import z from 'zod';
 export const zLMSProvider = z.enum(['canvas', 'moodle']);
 export type zLMSProviderType = z.infer<typeof zLMSProvider>;
 
-export const zCreateCourseErrors = z.enum(['duplicate', 'noEmailAccess']);
+export const zCreateCourseErrors = z.enum([
+  'duplicate',
+  'noEmailAccess',
+  'noEnrollmentAccess'
+]);
 
 export const zCreateCourseErrorDescriptions: Record<
   z.infer<typeof zCreateCourseErrors>,
@@ -11,7 +15,9 @@ export const zCreateCourseErrorDescriptions: Record<
 > = {
   duplicate: 'The course already exists in the database.',
   noEmailAccess:
-    'Access to view the emails of course members for this course is currently restricted. This app requires access to course member emails.'
+    'Access to view the emails of course members for this course is currently restricted. This app requires access to course member emails.',
+  noEnrollmentAccess:
+    'Access to view the enrollments of course members for this course is currently unnavailable. This app requires access to course member enrollments.'
 };
 
 /**
