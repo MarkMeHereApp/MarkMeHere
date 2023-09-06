@@ -1,26 +1,6 @@
-import * as z from 'zod';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
-import React, { useContext, useState } from 'react';
-import { Student, Role, GlobalDevCourseId } from '@/utils/globalVariables';
-
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import useCourseContext from '@/app/course-context';
 import createRandomStudent from '@/utils/createRandomStudent';
-import { toast } from '@/components/ui/use-toast';
-import { useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export const AddRandomStudentButton = () => {
   const randomStudent = createRandomStudent();
