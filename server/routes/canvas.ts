@@ -32,7 +32,7 @@ export const canvasRouter = router({
       }
       try {
         const response = await fetch(
-          `${CANVAS_DOMAIN}api/v1/courses?per_page=1000000&include[]=email`, //&enrollment_state=active
+          `${CANVAS_DOMAIN}api/v1/courses?per_page=1000000&enrollment_state=active&include[]=email`, //&enrollment_state=active
           {
             method: 'GET',
             headers: {

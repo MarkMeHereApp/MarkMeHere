@@ -218,28 +218,24 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="lmsId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Learning Management System ID (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  className="resize-none"
-                  {...field}
-                  value={field.value || ''}
-                />
-              </FormControl>
-              <FormDescription>
-                This is your course's Learning Management System ID (like Canvas
-                or Moodle). This can help organize your courses. It is optional,
-                but it must be unique.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+          <FormField
+            control={form.control}
+            name="lmsId"
+            render={({ field }) => (
+              <FormItem>    
+                <FormDescription>
+                <span>
+                  {getLMSSelectedCourse && (getLMSSelectedCourse.lmsType.charAt(0).toUpperCase() + getLMSSelectedCourse.lmsType.slice(1) + ' ID: ')}
+                  
+                  {field.value}
+                </span>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
         <FormField
           control={form.control}
           name="autoEnroll"
