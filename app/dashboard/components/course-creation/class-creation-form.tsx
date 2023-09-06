@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
+import { CanvasCourseSelector } from './canvas-course-selector';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -157,6 +158,7 @@ export default function CreateCourseForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <CanvasCourseSelector />
         <FormField
           control={form.control}
           name="courseLabel"
