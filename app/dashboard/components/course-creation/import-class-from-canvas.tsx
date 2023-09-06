@@ -8,10 +8,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/ui/icons';
-import { CanvasCourseSelector } from './canvas-course-selector';
 
 export function ImportClassFromCanvas() {
   return (
@@ -31,7 +28,7 @@ export function ImportClassFromCanvas() {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <CanvasCourseSelector />
+            TEST
           </div>
         </div>
         <DialogFooter>
