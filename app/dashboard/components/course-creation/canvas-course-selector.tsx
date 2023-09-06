@@ -23,11 +23,32 @@ import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './course-hover-content';
+import { zCreateCourseErrorStatus } from '@/types/sharedZodTypes';
 
+function formatStatus(status: string) {
+  return (
+    status.charAt(0).toUpperCase() +
+    status
+      .slice(1)
+      .split('')
+      .map((char, i) => (char === char.toUpperCase() ? ' ' + char : char))
+      .join('')
+  );
+}
 export function CanvasCourseSelector() {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
+
+  const uniqueErrorStatus = getCanvasCoursesQuery.data?.courseList
+    ? [
+        ...new Set(
+          getCanvasCoursesQuery.data.courseList.map(
+            (item) => item.createCourseErrorStatus
+          )
+        )
+      ].sort()
+    : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,42 +79,62 @@ export function CanvasCourseSelector() {
               getCanvasCoursesQuery.data.courseList.length === 0 ? (
                 <CommandEmpty>No Courses found.</CommandEmpty>
               ) : (
-                <CommandGroup>
-                  {getCanvasCoursesQuery.data.courseList.map((course) => (
-                    <HoverCard>
-                      <HoverCardTrigger>
-                        <CommandItem
-                          key={course.lmsId}
-                          onSelect={() => {
-                            setValue(
-                              course.lmsId === value ? '' : course.lmsId
-                            );
-                            setOpen(false);
-                          }}
-                          disabled={false}
-                        >
-                          <Check
-                            className={cn(
-                              'mr-2 h-4 w-4',
-                              value === course.lmsId
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            )}
-                          />
-                          {course.name ? (
-                            course.name
-                          ) : (
-                            <span>
-                              ID: {course.lmsId} - <i></i>Course name
-                              unnavilable
-                            </span>
-                          )}
-                        </CommandItem>
-                      </HoverCardTrigger>
-                      <CourseHoverCardContent course={course} />
-                    </HoverCard>
-                  ))}
-                </CommandGroup>
+                uniqueErrorStatus.map((status: string) => (
+                  <CommandGroup key={status} heading={formatStatus(status)}>
+                    {getCanvasCoursesQuery.data.courseList
+                      .filter(
+                        (course) => course.createCourseErrorStatus === status
+                      )
+                      .map((course) => (
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <CommandItem
+                              key={course.lmsId}
+                              onSelect={() => {
+                                setValue(
+                                  course.lmsId === value ? '' : course.lmsId
+                                );
+                                setOpen(false);
+                              }}
+                              disabled={!course.ableToCreateCourse}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  value === course.lmsId
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                                )}
+                              />
+                              {course.name ? (
+                                <span
+                                  className={
+                                    course.ableToCreateCourse
+                                      ? ''
+                                      : 'opacity-50'
+                                  }
+                                >
+                                  {course.name}
+                                </span>
+                              ) : (
+                                <span
+                                  className={
+                                    course.ableToCreateCourse
+                                      ? ''
+                                      : 'opacity-50'
+                                  }
+                                >
+                                  ID: {course.lmsId} - <i></i>Course name
+                                  unnavilable
+                                </span>
+                              )}
+                            </CommandItem>
+                          </HoverCardTrigger>
+                          <CourseHoverCardContent course={course} />
+                        </HoverCard>
+                      ))}
+                  </CommandGroup>
+                ))
               )}
             </CommandList>
             <CommandSeparator />

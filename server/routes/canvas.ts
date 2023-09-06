@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import {
   zLMSCourseScheme,
   zLMSCourseSchemeType,
-  zCreateCourseErrors
+  zCreateCourseErrorStatus
 } from '@/types/sharedZodTypes';
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ const zCanvasCourseSchema = z.object({
   end_at: z.string().nullable().optional(),
   enrollments: z.array(z.object({ role: z.string() })).default([]),
   ableToCreateCourse: z.boolean().default(true),
-  createCourseError: zCreateCourseErrors.nullable().optional()
+  createCourseErrorStatus: zCreateCourseErrorStatus.default('available')
 });
 
 export const canvasRouter = router({
@@ -70,8 +70,8 @@ export const canvasRouter = router({
 
               if (!enrollmentResponse.ok) {
                 course.ableToCreateCourse = false;
-                course.createCourseError =
-                  zCreateCourseErrors.Enum.noEmailAccess;
+                course.createCourseErrorStatus =
+                  zCreateCourseErrorStatus.Enum.noEnrollmentAccess;
                 continue;
               }
 
@@ -86,8 +86,8 @@ export const canvasRouter = router({
                 course.ableToCreateCourse = true;
               } else {
                 course.ableToCreateCourse = false;
-                course.createCourseError =
-                  zCreateCourseErrors.Enum.noEmailAccess;
+                course.createCourseErrorStatus =
+                  zCreateCourseErrorStatus.Enum.noEmailAccess;
               }
             } catch (error) {
               console.error(
@@ -113,8 +113,8 @@ export const canvasRouter = router({
             );
             if (courseToUpdate) {
               courseToUpdate.ableToCreateCourse = false;
-              courseToUpdate.createCourseError =
-                zCreateCourseErrors.Enum.duplicate;
+              courseToUpdate.createCourseErrorStatus =
+                zCreateCourseErrorStatus.Enum.duplicate;
             }
           });
 
@@ -130,7 +130,7 @@ export const canvasRouter = router({
                 end_at: course.end_at,
                 enrollments: course.enrollments,
                 ableToCreateCourse: course.ableToCreateCourse,
-                createCourseError: course.createCourseError
+                createCourseErrorStatus: course.createCourseErrorStatus
               };
             }
           );

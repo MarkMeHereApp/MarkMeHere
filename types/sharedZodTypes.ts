@@ -3,16 +3,18 @@ import z from 'zod';
 export const zLMSProvider = z.enum(['canvas', 'moodle']);
 export type zLMSProviderType = z.infer<typeof zLMSProvider>;
 
-export const zCreateCourseErrors = z.enum([
+export const zCreateCourseErrorStatus = z.enum([
+  'available',
   'duplicate',
   'noEmailAccess',
   'noEnrollmentAccess'
 ]);
 
 export const zCreateCourseErrorDescriptions: Record<
-  z.infer<typeof zCreateCourseErrors>,
+  z.infer<typeof zCreateCourseErrorStatus>,
   string
 > = {
+  available: 'The course is available to be created.',
   duplicate: 'The course already exists in the database.',
   noEmailAccess:
     'Access to view the emails of course members for this course is currently restricted. This app requires access to course member emails.',
@@ -43,33 +45,15 @@ export const zCreateCourseErrorDescriptions: Record<
  *
  * @var {string|null} createCourseError - The error message if the course cannot be created. It can be null. This links with zErrorDescriptions
  */
-export const zLMSCourseScheme = z
-  .object({
-    lmsId: z.string(),
-    lmsType: zLMSProvider,
-    name: z.string().nullable().optional(),
-    course_code: z.string().nullable().optional(),
-    start_at: z.string().nullable().optional(),
-    end_at: z.string().nullable().optional(),
-    enrollments: z.array(z.object({ role: z.string() })).default([]),
-    ableToCreateCourse: z.boolean().default(true),
-    createCourseError: zCreateCourseErrors.nullable().optional()
-  })
-  .refine(
-    (data) => {
-      // If ableToCreateCourse is false, createCourseError must not be null or undefined
-      if (!data.ableToCreateCourse) {
-        return data.createCourseError != null;
-      }
-      // If ableToCreateCourse is true, createCourseError must be null or undefined
-      else {
-        return data.createCourseError == null;
-      }
-    },
-    {
-      // Custom error message
-      message:
-        "If 'ableToCreateCourse' is false, 'createCourseError' must contain an error message. If 'ableToCreateCourse' is true, 'createCourseError' must be null or undefined."
-    }
-  );
+export const zLMSCourseScheme = z.object({
+  lmsId: z.string(),
+  lmsType: zLMSProvider,
+  name: z.string().nullable().optional(),
+  course_code: z.string().nullable().optional(),
+  start_at: z.string().nullable().optional(),
+  end_at: z.string().nullable().optional(),
+  enrollments: z.array(z.object({ role: z.string() })).default([]),
+  ableToCreateCourse: z.boolean().default(true),
+  createCourseErrorStatus: zCreateCourseErrorStatus.default('available')
+});
 export type zLMSCourseSchemeType = z.infer<typeof zLMSCourseScheme>;
