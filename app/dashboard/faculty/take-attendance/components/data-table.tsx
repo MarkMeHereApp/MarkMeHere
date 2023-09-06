@@ -102,10 +102,6 @@ export function DataTable<TData, TValue>({
     }
   );
 
-    useEffect(() => {
-        getLecturesOfCourseQuery.refetch();
-    }, [setLecture, selectedAttendanceDate])
-
     const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
     async function handleCreateNewLecture() {
         console.log(selectedCourseId);
@@ -130,6 +126,10 @@ export function DataTable<TData, TValue>({
             }
         });
     
+    useEffect(() => {
+        getLecturesOfCourseQuery.refetch();
+    }, [createNewLectureMutation.isSuccess, selectedAttendanceDate]);
+
     return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
