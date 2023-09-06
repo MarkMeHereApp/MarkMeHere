@@ -13,23 +13,29 @@ export default withAuth(
   //If this returns true the user is allowed to access the admin dahsboard
   function middleware(req) {
     console.log(req.nextauth.token);
+    console.log(req.nextUrl)
     //console.log(req.nextauth.token?.role);
-    // if(
-    //     req.nextUrl.pathname === "/adminDash" &&
-    //     req.nextauth.token?.role !== "ADMIN"
-    // )
-    // {
-    //     return new NextResponse("You are not authorized");
-    // }
+    if (
+      req.nextUrl.pathname === '/adminDash' &&
+      req.nextauth.token?.role !== 'ADMIN'
+    ) {
+        //Here we can add a check for what role the user is
+        //There role will determine where we redirect back to
+        const url = req.nextUrl.clone()
+        url.pathname = '/dashboard/overview'
+        return NextResponse.redirect(url)
+    }
 
     return undefined;
   },
   {
     //This runs first. If the user has a valid JWT this returns true
     callbacks: {
-      authorized: ({ token }) => token?.role === 'ADMIN'
+      authorized: ({ token }) => !!token
     }
   }
 );
 
-export const config = { matcher: ['/dashboard/:path*'] };
+//Our middleware needs to run over all routes besides signin/signup
+// export const config = { matcher: ['/dashboard/:path*'] };
+export const config = { matcher: ['/adminDash'] };

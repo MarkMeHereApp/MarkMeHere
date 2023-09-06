@@ -10,7 +10,7 @@ function customPrismaAdapter(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
-      const role = 'ADMIN';
+      const role = 'A';
       return prisma.user.create({ data: { ...data, role: role } });
     }
   };
@@ -76,9 +76,7 @@ export const authOptions: NextAuthOptions = {
     //   }
     // })
   ],
-  //This runs when JWT is created
-  //In theory this will store the role of the user in their JWT (Use this in middleware)
-  //User now has role added to its type
+  //When JWT is created store user role in the token
   callbacks: {
     jwt({ token, user }) {
       if(user) token.role = user.role
