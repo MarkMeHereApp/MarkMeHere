@@ -181,7 +181,7 @@ export default function SignInForm({
                   }));
                   try {
                     await signIn(provider.id, {
-                      callbackUrl: '/dashboard/overview'
+                      callbackUrl: '/dashboard/faculty/overview'
                     });
                   } catch (error) {
                     console.error('Sign In Error: ', error);

@@ -4,7 +4,7 @@ import CRUDButtons from '@/components/devUtils/CRUDButtons';
 import DataTable from './DataTable';
 import { columns } from './columns';
 import { Button } from '@/components/ui/button';
-import { ModeToggle } from '../components/theme-toggle';
+import { ModeToggle } from '../../components/theme-toggle';
 import { useCourseContext } from '@/app/course-context';
 
 const HeaderView = () => {

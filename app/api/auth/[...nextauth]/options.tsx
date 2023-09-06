@@ -10,7 +10,7 @@ function customPrismaAdapter(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
-      const role = 'ADMIN';
+      const role = 'FACULTY';
       return prisma.user.create({ data: { ...data, role: role } });
     }
   };
@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: '/signin',
-    newUser: '/dashboard/overview',
+    newUser: '/dashboard/faculty/overview',
     error: '/error'
   }
 };

@@ -22,9 +22,9 @@ export default function MainNav({
       {...props}
     >
       <Link
-        href="/dashboard/overview"
+        href="/dashboard/faculty/overview"
         className={
-          isActive('/dashboard/overview')
+          isActive('/dashboard/faculty/overview')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -32,9 +32,9 @@ export default function MainNav({
         Dashboard
       </Link>
       <Link
-        href="/dashboard/take-attendance"
+        href="/dashboard/faculty/take-attendance"
         className={
-          isActive('/dashboard/take-attendance')
+          isActive('/dashboard/faculty/take-attendance')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -42,9 +42,9 @@ export default function MainNav({
         Attendance Management
       </Link>
       <Link
-        href="/dashboard/manage-course-members"
+        href="/dashboard/faculty/manage-course-members"
         className={
-          isActive('/dashboard/manage-course-members')
+          isActive('/dashboard/faculty/manage-course-members')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -62,9 +62,9 @@ export default function MainNav({
         Student Statistics
       </Link> */}
       <Link
-        href="/dashboard/class-settings"
+        href="/dashboard/faculty/class-settings"
         className={
-          isActive('/dashboard/class-settings')
+          isActive('/dashboard/faculty/class-settings')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
@@ -93,7 +93,7 @@ export default function MainNav({
       </Link>
 
       <Link
-        href="/scan/qr"
+        href="/dashboard/faculty/qr"
         className={
           isActive('/gather-attendance/qr')
             ? 'text-sm font-medium text-primary'
@@ -116,9 +116,9 @@ export default function MainNav({
         temp sign out
       </button>
       <Link
-        href="/dashboard/testing-playground"
+        href="/dashboard/faculty/testing-playground"
         className={
-          isActive('/dashboard/tests')
+          isActive('/dashboard/faculty/tests')
             ? 'text-sm font-medium text-primary'
             : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
         }
