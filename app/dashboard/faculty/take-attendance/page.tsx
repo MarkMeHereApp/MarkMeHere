@@ -18,7 +18,7 @@ async function getTasks() {
   const data = await fs.readFile(
     path.join(
       process.cwd(),
-      'app/(instructor)/dashboard/take-attendance/data/tasks.json'
+      'app/dashboard/faculty/take-attendance/data/tasks.json'
     )
   );
 

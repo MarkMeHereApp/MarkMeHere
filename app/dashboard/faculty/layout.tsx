@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import CourseSwitcher from '@/app/(instructor)/dashboard/components/main-bar';
+import CourseSwitcher from '@/app/dashboard/components/main-bar';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Dashboard to manage instructors'
+  title: 'Dashboard',
+  description: 'Dashboard to manage your classes'
 };
 
 export default async function DashboardLayout({
@@ -27,10 +27,23 @@ export default async function DashboardLayout({
     }
   });
 
+  // Extract the course IDs from the CourseMember records
+  const courseIds = courseMemberships.map(
+    (courseMember) => courseMember.courseId
+  );
+
+  // Fetch the courses using the extracted IDs
+  const courses = await prisma.course.findMany({
+    where: {
+      id: {
+        in: courseIds
+      }
+    }
+  });
+
   return (
     <>
       <CourseSwitcher />
-      <div>This is the Admin layout! ^^^</div>
       {children}
     </>
   );

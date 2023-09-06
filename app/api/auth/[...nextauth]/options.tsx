@@ -10,7 +10,7 @@ function customPrismaAdapter(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
-      const role = 'ADMIN';
+      const role = 'FACULTY';
       return prisma.user.create({ data: { ...data, role: role } });
     }
   };
@@ -76,13 +76,20 @@ export const authOptions: NextAuthOptions = {
     //   }
     // })
   ],
+  //When JWT is created store user role in the token
+  callbacks: {
+    jwt({ token, user }) {
+      if(user) token.role = user.role
+      return token
+    },
+  },
   session: {
     strategy: 'jwt'
   },
 
   pages: {
     signIn: '/signin',
-    newUser: '/dashboard/overview',
+    newUser: '/dashboard/faculty/overview',
     error: '/error'
   }
 };
