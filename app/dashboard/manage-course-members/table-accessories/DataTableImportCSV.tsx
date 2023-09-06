@@ -71,13 +71,25 @@ const ImportCSV = () => {
       email: row[2],
       lmsId: row[0]
     }));
-    const newMembers = await createManyCourseMembers.mutateAsync({
-      courseId: data.selectedCourseId,
-      courseMembers: transformedTableValues
-    });
-    setIsImporting(false);
+    try {
+      const newMembers = await createManyCourseMembers.mutateAsync({
+        courseId: data.selectedCourseId,
+        courseMembers: transformedTableValues
+      });
+      if (newMembers.success) {
+        data.setCourseMembersOfSelectedCourse(
+          newMembers.allCourseMembersOfClass
+        );
+      } else {
+        throw new Error('Unable new members');
+      }
+      setIsImporting(false);
+    } catch (error) {
+      //throw new Error(error);
+      setIsImporting(false);
 
-    data.setCourseMembersOfSelectedCourse(newMembers.allCourseMembersOfClass);
+      throw new Error('error unable to import');
+    }
   };
 
   return (
