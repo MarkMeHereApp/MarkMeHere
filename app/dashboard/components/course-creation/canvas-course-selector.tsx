@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { CalendarIcon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +9,9 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem
+  CommandItem,
+  CommandList,
+  CommandSeparator
 } from '@/components/ui/command';
 import {
   Popover,
@@ -48,45 +49,54 @@ export function CanvasCourseSelector() {
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0">
+        <PopoverContent className=" p-0">
           <Command>
-            <CommandInput placeholder="Search Courses..." />
-            {!getCanvasCoursesQuery.data ||
-            getCanvasCoursesQuery.data.courseList.length === 0 ? (
-              <CommandEmpty>No Courses found.</CommandEmpty>
-            ) : (
-              <CommandGroup>
-                {getCanvasCoursesQuery.data.courseList.map((course) => (
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <CommandItem
-                        key={course.lmsId}
-                        onSelect={() => {
-                          setValue(course.lmsId === value ? '' : course.lmsId);
-                          setOpen(false);
-                        }}
-                        disabled={false}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            value === course.lmsId ? 'opacity-100' : 'opacity-0'
+            <CommandList>
+              <CommandInput placeholder="Search Courses..." />
+
+              {!getCanvasCoursesQuery.data ||
+              getCanvasCoursesQuery.data.courseList.length === 0 ? (
+                <CommandEmpty>No Courses found.</CommandEmpty>
+              ) : (
+                <CommandGroup>
+                  {getCanvasCoursesQuery.data.courseList.map((course) => (
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <CommandItem
+                          key={course.lmsId}
+                          onSelect={() => {
+                            setValue(
+                              course.lmsId === value ? '' : course.lmsId
+                            );
+                            setOpen(false);
+                          }}
+                          disabled={false}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              value === course.lmsId
+                                ? 'opacity-100'
+                                : 'opacity-0'
+                            )}
+                          />
+                          {course.name ? (
+                            course.name
+                          ) : (
+                            <span>
+                              ID: {course.lmsId} - <i></i>Course name
+                              unnavilable
+                            </span>
                           )}
-                        />
-                        {course.name ? (
-                          course.name
-                        ) : (
-                          <span>
-                            ID: {course.lmsId} - <i>Course name unnavilable</i>
-                          </span>
-                        )}
-                      </CommandItem>
-                    </HoverCardTrigger>
-                    <CourseHoverCardContent course={course} />
-                  </HoverCard>
-                ))}
-              </CommandGroup>
-            )}
+                        </CommandItem>
+                      </HoverCardTrigger>
+                      <CourseHoverCardContent course={course} />
+                    </HoverCard>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+            <CommandSeparator />
           </Command>
         </PopoverContent>
       </div>
