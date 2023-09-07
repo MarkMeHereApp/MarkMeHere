@@ -54,6 +54,7 @@ export const zLMSCourseScheme = z.object({
   start_at: z.string().nullable().optional(),
   end_at: z.string().nullable().optional(),
   enrollments: z.array(z.object({ role: z.string() })).default([]),
+  totalStudents: z.number().nullable().optional(),
   ableToCreateCourse: z.boolean().default(true),
   createCourseErrorStatus: zCreateCourseErrorStatus.default('available')
 });
