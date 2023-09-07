@@ -20,7 +20,12 @@ import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
 import { LMSCourseSelector } from './lms-course-selector';
-import { zLMSCourseScheme, zLMSCourseSchemeType } from '@/types/sharedZodTypes';
+import {
+  zLMSCourseScheme,
+  zLMSCourseSchemeType,
+  zLMSProvider,
+  zLMSProviderType
+} from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString } from '@/utils/globalFunctions';
 
@@ -50,21 +55,9 @@ const CreateCourseFormSchema = z.object({
       message: 'Course Name cannot contain double spaces'
     })
     .transform((val) => val.trim()),
-  lmsId: z
-    .string()
-    .min(2, {
-      message: 'Learning Management System ID must be at least 2 characters.'
-    })
-    .max(255, {
-      message:
-        'Learning Management System ID must not be longer than 255 characters.'
-    })
-    .refine((value) => !/\s\s/.test(value), {
-      message: 'Learning Management System ID contain double spaces'
-    })
-    .transform((val) => val.trim())
-    .optional(),
-  autoEnroll: z.boolean().default(true).optional()
+  lmsId: z.string().optional().nullable(),
+  lmsType: zLMSProvider,
+  autoEnroll: z.boolean().default(true)
 });
 
 export default function CreateCourseForm({
@@ -113,7 +106,8 @@ export default function CreateCourseForm({
         newCourseData: {
           courseCode: courseform.courseCode,
           name: courseform.name,
-          lmsId: courseform.lmsId || undefined
+          lmsId: courseform.lmsId || undefined,
+          lmsType: courseform.lmsType as zLMSProviderType
         },
         autoEnroll: courseform.autoEnroll,
         newMemberData: {
@@ -172,10 +166,14 @@ export default function CreateCourseForm({
       if (getLMSSelectedCourse.lmsId) {
         form.setValue('lmsId', getLMSSelectedCourse.lmsId);
       }
+      if (getLMSSelectedCourse.lmsType) {
+        form.setValue('lmsType', getLMSSelectedCourse.lmsType);
+      }
     } else {
       form.setValue('courseCode', '');
       form.setValue('name', '');
       form.setValue('lmsId', null);
+      form.setValue('lmsType', 'none');
     }
   }, [getLMSSelectedCourse]);
 
@@ -217,6 +215,12 @@ export default function CreateCourseForm({
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        <FormField
+          control={form.control}
+          name="lmsType"
+          render={({ field }) => <FormItem />}
         />
 
         <FormField

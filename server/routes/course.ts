@@ -2,12 +2,14 @@ import { publicProcedure, router } from '../trpc';
 import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { zLMSProvider } from '@/types/sharedZodTypes';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
     courseCode: z.string(),
     name: z.string(),
-    lmsId: z.string().optional()
+    lmsId: z.string().optional(),
+    lmsType: zLMSProvider
   }),
 
   autoEnroll: z.boolean().optional().default(false),
