@@ -7,6 +7,7 @@ import {
   zLMSCourseScheme,
   zLMSCourseSchemeType
 } from '@/types/sharedZodTypes';
+import { formatString } from '@/utils/globalFunctions';
 import { Cousine } from 'next/font/google';
 
 const CourseHoverCardContent = ({
@@ -34,16 +35,17 @@ const CourseHoverCardContent = ({
           </p>
           <p className="text-xs">
             <i>
-              <b>Course ID: </b>
+              <b>{formatString(course.lmsType) + ' ID: '}</b>
               {course.lmsId}
             </i>
           </p>
           <p className="text-xs">
             <i>
               <b>
-                {course.enrollments.length > 1
-                  ? 'Course Roles: '
-                  : 'Course Role: '}
+                {formatString(course.lmsType) +
+                  ' Role' +
+                  (course.enrollments.length > 1 ? 's' : '') +
+                  ': '}
               </b>
               {course.enrollments.map((enrollment, index, array) => (
                 <span key={index}>

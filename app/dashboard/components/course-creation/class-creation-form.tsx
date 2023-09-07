@@ -22,6 +22,7 @@ import { useCourseContext } from '@/app/course-context';
 import { CanvasCourseSelector } from './canvas-course-selector';
 import { zLMSCourseScheme, zLMSCourseSchemeType } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
+import { formatString } from '@/utils/globalFunctions';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -226,10 +227,7 @@ export default function CreateCourseForm({
               <FormDescription>
                 <span>
                   {getLMSSelectedCourse &&
-                    getLMSSelectedCourse.lmsType.charAt(0).toUpperCase() +
-                      getLMSSelectedCourse.lmsType.slice(1) +
-                      ' ID: '}
-
+                    formatString(getLMSSelectedCourse.lmsType) + ' ID: '}
                   {field.value}
                 </span>
               </FormDescription>

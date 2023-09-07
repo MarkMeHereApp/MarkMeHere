@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/popover';
 import { CourseCreationSheet } from './course-creation-sheet';
 import { useCourseContext } from '@/app/course-context';
-
+import { formatString } from '@/utils/globalFunctions';
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
@@ -107,10 +107,7 @@ export default function CourseSelection({ className }: { className?: string }) {
                     <CommandInput placeholder="Search Course..." />
                     <CommandEmpty>No Course found.</CommandEmpty>
                     {uniqueRoles.map((role) => (
-                      <CommandGroup
-                        key={role}
-                        heading={role.charAt(0).toUpperCase() + role.slice(1)}
-                      >
+                      <CommandGroup key={role} heading={formatString(role)}>
                         {userCourses.map((course) => (
                           <CommandItem
                             key={course.id}
