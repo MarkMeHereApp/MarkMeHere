@@ -6,7 +6,7 @@ import { columns } from './columns';
 import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
 import EnrollCourseMemberButton from '@/components/devUtils/EnrollCourseMemberButton';
-
+import Import_CSV from './CSV_Import';
 const HeaderView = () => {
   return (
     <div className="flex items-center justify-between space-y-2">
@@ -14,8 +14,9 @@ const HeaderView = () => {
         Manage Course Members
       </h2>
       <div className="flex items-center space-x-2">
-        ] <EnrollCourseMemberButton />
-        <Button>Import CSV</Button>
+        <EnrollCourseMemberButton />
+        <Import_CSV />
+
         <Button>Export CSV</Button>
       </div>
     </div>
