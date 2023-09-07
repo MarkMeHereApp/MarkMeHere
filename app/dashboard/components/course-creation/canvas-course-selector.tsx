@@ -19,7 +19,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card';
-
+import { Skeleton } from '@/components/ui/skeleton';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './course-hover-content';
@@ -35,7 +35,9 @@ export function CanvasCourseSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
-  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
+  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
+    staleTime: 24 * 60 * 60 * 1000 // Cache for one day
+  });
 
   const uniqueErrorStatus = getCanvasCoursesQuery.data?.courseList
     ? [
@@ -72,8 +74,19 @@ export function CanvasCourseSelector({
             <CommandList>
               <CommandInput placeholder="Search Courses..." />
 
-              {!getCanvasCoursesQuery.data ||
-              getCanvasCoursesQuery.data.courseList.length === 0 ? (
+              {getCanvasCoursesQuery.isLoading ? (
+                <CommandGroup key={'Loading'}>
+                  {[...Array(5)].map((_, index) => (
+                    <CommandItem key={index}>
+                      <Skeleton
+                        className="h-7 mx-auto"
+                        style={{ width: '80%' }}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ) : !getCanvasCoursesQuery.data ||
+                getCanvasCoursesQuery.data.courseList.length === 0 ? (
                 <CommandEmpty>No Courses found.</CommandEmpty>
               ) : (
                 uniqueErrorStatus.map((status: string) => (
@@ -106,28 +119,17 @@ export function CanvasCourseSelector({
                                     : 'opacity-0'
                                 )}
                               />
-                              {course.name ? (
-                                <span
-                                  className={
-                                    course.ableToCreateCourse
-                                      ? ''
-                                      : 'opacity-50'
-                                  }
-                                >
-                                  {course.name}
-                                </span>
-                              ) : (
-                                <span
-                                  className={
-                                    course.ableToCreateCourse
-                                      ? ''
-                                      : 'opacity-50'
-                                  }
-                                >
-                                  ID: {course.lmsId} - <i></i>Course name
-                                  unnavilable
-                                </span>
-                              )}
+                              <span
+                                className={
+                                  course.ableToCreateCourse ? '' : 'opacity-50'
+                                }
+                              >
+                                {course.name
+                                  ? course.name
+                                  : 'ID: ' +
+                                    course.lmsId +
+                                    ' - Course name unnavilable'}
+                              </span>
                             </CommandItem>
                           </HoverCardTrigger>
                           <CourseHoverCardContent course={course} />
