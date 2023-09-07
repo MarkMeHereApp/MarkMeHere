@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
-import { CanvasCourseSelector } from './canvas-course-selector';
+import { LMSCourseSelector } from './lms-course-selector';
 import { zLMSCourseScheme, zLMSCourseSchemeType } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString } from '@/utils/globalFunctions';
@@ -182,7 +182,7 @@ export default function CreateCourseForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CanvasCourseSelector setSelectedCourse={setLMSSelectedCourse} />
+        <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
 
         <FormField
           control={form.control}
