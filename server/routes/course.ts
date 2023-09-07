@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
-    courseLabel: z.string(),
+    courseCode: z.string(),
     name: z.string(),
     lmsId: z.string().optional()
   }),
