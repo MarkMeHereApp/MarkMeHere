@@ -33,15 +33,19 @@ To get started with Mark Me Here!, follow these steps:
    npm install
    ```
 
-3. **Configure**: Set up the required configurations, such as database connections and authentication methods, as described in the project documentation.
+3. **Configure**: Set up the required configurations, such as database connections and authentication methods, as described in the project documentation. Confirm the app is configured correctly by running:
 
-4. **Run the Application**: Start the application by running:
+   ```bash
+      npm run build
+   ```
+
+5. **Run the Application**: Start the application by running:
 
    ```bash
    npm run start
    ```
 
-5. **Access the Web Interface**: Open your web browser and go to `http://localhost:3000` to access Mark Me Here!
+6. **Access the Web Interface**: Open your web browser and go to `http://localhost:3000` to access Mark Me Here!
 
 ## Contributing
 
