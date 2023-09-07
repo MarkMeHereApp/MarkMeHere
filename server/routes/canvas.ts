@@ -26,12 +26,13 @@ const zCanvasCourseSchema = z.object({
 
 export const canvasRouter = router({
   getCanvasCourses: publicProcedure
-    .input(z.object({}))
+    .input(z.object({ userEmail: z.string().optional() }))
     .query(async (requestData) => {
       if (!CANVAS_API_TOKEN || !CANVAS_DOMAIN) {
         throw new Error('Canvas API token and domain not provided');
       }
       try {
+        // First, get all the Canvas courses from the API Key
         const response = await fetch(
           `${CANVAS_DOMAIN}api/v1/courses?per_page=1000&enrollment_state=active&include=total_students`, //
           {
@@ -42,13 +43,19 @@ export const canvasRouter = router({
           }
         );
 
+        const json = await response.json();
+
         // Check for errors in the response
         if (!response.ok) {
-          throw new Error(
-            `Failed to fetch courses from Canvas: ${response.statusText}`
-          );
+          let errorMessage = `${response.statusText}: `;
+          if (json.errors && json.errors[0] && json.errors[0].message) {
+            errorMessage += json.errors[0].message;
+          } else {
+            errorMessage += 'No error message provided';
+          }
+          throw new Error(errorMessage);
         }
-        const json = await response.json();
+
         // Validate the data with Zod
         try {
           type CourseType = z.infer<typeof zCanvasCourseSchema>;
@@ -57,25 +64,42 @@ export const canvasRouter = router({
             zCanvasCourseSchema.parse(course)
           );
 
+          // Now we need to find out if any of these courses already exist in the database.
           const matchingCoursesLMSIds = await prisma.course.findMany({
             where: {
               lmsId: {
                 in: courses.map((course) => course.id.toString())
               }
             },
-            select: {
-              lmsId: true
+            include: {
+              enrollments: true
             }
           });
 
           matchingCoursesLMSIds.forEach((matchingCourse) => {
             const courseToUpdate = courses.find(
-              (course) => course.id.toString() === matchingCourse.lmsId
+              (course) =>
+                course.id.toString() === matchingCourse.lmsId &&
+                matchingCourse.lmsType === 'canvas'
             );
             if (courseToUpdate) {
               courseToUpdate.ableToCreateCourse = false;
               courseToUpdate.createCourseErrorStatus =
                 zCreateCourseErrorStatus.Enum.duplicate;
+
+              // if the user is enrolled in this course, we should be more specific with the error.
+              if (
+                requestData.input.userEmail &&
+                matchingCoursesLMSIds.some((course) =>
+                  course.enrollments.some(
+                    (enrollment) =>
+                      enrollment.email === requestData.input.userEmail
+                  )
+                )
+              ) {
+                courseToUpdate.createCourseErrorStatus =
+                  zCreateCourseErrorStatus.Enum.alreadyEnrolled;
+              }
             }
           });
 

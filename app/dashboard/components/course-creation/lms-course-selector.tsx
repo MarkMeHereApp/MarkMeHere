@@ -35,6 +35,10 @@ export function LMSCourseSelector({
   const [value, setValue] = React.useState('');
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
 
+  if (getCanvasCoursesQuery.error) {
+    throw getCanvasCoursesQuery.error;
+  }
+
   const uniqueErrorStatus = getCanvasCoursesQuery.data?.courseList
     ? [
         ...new Set(
