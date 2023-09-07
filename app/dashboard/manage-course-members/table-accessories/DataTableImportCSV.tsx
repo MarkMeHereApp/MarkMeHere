@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useState, useRef } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ const ImportCSV = () => {
   const [tableValues, setTableValues] = useState<string[][]>([]);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   interface CSVData {
@@ -31,7 +33,6 @@ const ImportCSV = () => {
   }
 
   const closeDialog = () => {
-    // Clear the input file by setting its value to an empty string
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -77,15 +78,26 @@ const ImportCSV = () => {
         courseMembers: transformedTableValues
       });
       if (newMembers.success) {
+        toast({
+          title: 'Imported CSV successfully'
+        });
         data.setCourseMembersOfSelectedCourse(
           newMembers.allCourseMembersOfClass
         );
       } else {
         setIsImporting(false);
-        throw new Error('Unable new members');
+        toast({
+          variant: 'destructive',
+          title: 'Importing CSV failed. Try Again. '
+        });
+        throw new Error('Unable to add new members');
       }
     } catch (error: unknown) {
       setIsImporting(false);
+      toast({
+        variant: 'destructive',
+        title: 'Importing CSV failed. Try Again. ' + error
+      });
       throw new Error('error unable to import' + error);
     }
     setIsImporting(false);
