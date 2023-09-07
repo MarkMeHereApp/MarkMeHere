@@ -25,7 +25,7 @@ import { useEffect } from 'react';
 import { formatString } from '@/utils/globalFunctions';
 
 const CreateCourseFormSchema = z.object({
-  courseLabel: z
+  courseCode: z
     .string()
     .min(2, {
       message: 'Course Label must be at least 2 characters.'
@@ -111,7 +111,7 @@ export default function CreateCourseForm({
     try {
       const handleCreateCourseResult = await createCourseMutation.mutateAsync({
         newCourseData: {
-          courseLabel: courseform.courseLabel,
+          courseCode: courseform.courseCode,
           name: courseform.name,
           lmsId: courseform.lmsId || undefined
         },
@@ -164,7 +164,7 @@ export default function CreateCourseForm({
   useEffect(() => {
     if (getLMSSelectedCourse) {
       if (getLMSSelectedCourse.course_code) {
-        form.setValue('courseLabel', getLMSSelectedCourse.course_code);
+        form.setValue('courseCode', getLMSSelectedCourse.course_code);
       }
       if (getLMSSelectedCourse.name) {
         form.setValue('name', getLMSSelectedCourse.name);
@@ -173,7 +173,7 @@ export default function CreateCourseForm({
         form.setValue('lmsId', getLMSSelectedCourse.lmsId);
       }
     } else {
-      form.setValue('courseLabel', '');
+      form.setValue('courseCode', '');
       form.setValue('name', '');
       form.setValue('lmsId', null);
     }
@@ -186,16 +186,16 @@ export default function CreateCourseForm({
 
         <FormField
           control={form.control}
-          name="courseLabel"
+          name="courseCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Unique Course Label</FormLabel>
+              <FormLabel>Unique Course Code</FormLabel>
               <FormControl>
                 <Input placeholder="COP4935-23FALL 0002" {...field} />
               </FormControl>
               <FormDescription>
-                This is your course label, it must be <b>unique</b>. We
-                recommend referencing the term, year, and section.
+                This is your course code, it must be <b>unique</b>. We recommend
+                referencing the term, year, and section.
                 <i> Note, the label will be converted to all uppercase.</i>
               </FormDescription>
               <FormMessage />
