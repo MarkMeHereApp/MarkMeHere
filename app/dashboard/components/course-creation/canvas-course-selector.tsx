@@ -23,20 +23,9 @@ import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './course-hover-content';
-import {
-  zLMSCourseSchemeType
-} from '@/types/sharedZodTypes';
+import { zLMSCourseSchemeType } from '@/types/sharedZodTypes';
+import { formatString } from '@/utils/globalFunctions';
 
-function formatStatus(status: string) {
-  return (
-    status.charAt(0).toUpperCase() +
-    status
-      .slice(1)
-      .split('')
-      .map((char, i) => (char === char.toUpperCase() ? ' ' + char : char))
-      .join('')
-  );
-}
 export function CanvasCourseSelector({
   setSelectedCourse
 }: {
@@ -88,7 +77,7 @@ export function CanvasCourseSelector({
                 <CommandEmpty>No Courses found.</CommandEmpty>
               ) : (
                 uniqueErrorStatus.map((status: string) => (
-                  <CommandGroup key={status} heading={formatStatus(status)}>
+                  <CommandGroup key={status} heading={formatString(status)}>
                     {getCanvasCoursesQuery.data.courseList
                       .filter(
                         (course) => course.createCourseErrorStatus === status
