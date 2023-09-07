@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const zLMSProvider = z.enum(['canvas', 'moodle']);
+export const zLMSProvider = z.enum(['none', 'canvas', 'moodle']);
 export type zLMSProviderType = z.infer<typeof zLMSProvider>;
 
 export const zCreateCourseErrorStatus = z.enum([
@@ -25,20 +25,6 @@ export const zCreateCourseErrorDescriptions: Record<
 
 /**
  * zLMSCourseScheme is a Zod schema for validating LMS course data. All LMS Providers should use this schema.
- *
- * @var {string} lmsId - The unique identifier for the LMS course.
- *
- * @var {zLMSProvider} lmsType - The type of LMS provider. It can be either 'canvas' or 'moodle'.
- *
- * @var {string|null} name - The name of the course. It can be null.
- *
- * @var {string|null} course_code - The code of the course. It can be null.
- *
- * @var {string|null} start_at - The start date of the course. It can be null.
- *
- * @var {string|null} end_at - The end date of the course. It can be null.
- *
- * @var {Array<{role: string}>} enrollments - The list of enrollments in the course. Each enrollment has a role.
  *
  * @var {boolean} ableToCreateCourse - A flag indicating whether the course can be created. It defaults to true.
  *                                   - This can be caused by the course already existing in the database,
