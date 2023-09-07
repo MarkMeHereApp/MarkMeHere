@@ -23,13 +23,13 @@ To get started with Mark Me Here!, follow these steps:
 1. **Clone the Repository**: Clone this repository to your local machine using the following command:
 
    ```bash
-   git clone https://github.com/SpartanFA/UCFAttendWeb.git
+   git clone https://github.com/MarkMeHereApp/MarkMeHere.git
    ```
 
 2. **Install Dependencies**: Navigate to the project directory and install the necessary dependencies:
 
    ```bash
-   cd UCFAttendWeb
+   cd MarkMeHere
    npm install
    ```
 
@@ -55,5 +55,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 We would like to thank all contributors for their hard work and dedication to making Mark Me Here! a valuable tool for educators and organizations.
 ```
-
-You can copy and paste this content into a markdown file as needed.
