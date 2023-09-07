@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
 import { roles } from './dataUtils';
-
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -22,7 +21,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Search for a student..."
+          placeholder="Search for a course member..."
           value={'globalFilter' in table.getState() ? globalFilter : ''}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const searchString = event.target.value;
@@ -30,6 +29,7 @@ export function DataTableToolbar<TData>({
           }}
           className="h-8 w-[150px] lg:w-[250px]"
         />
+        <DataTableViewOptions table={table} />
         {table.getColumn('role') && (
           <DataTableFacetedFilter
             column={table.getColumn('role')}
@@ -48,7 +48,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex flex-row space-x-2"></div>
     </div>
   );
 }

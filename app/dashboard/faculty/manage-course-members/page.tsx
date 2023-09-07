@@ -4,8 +4,8 @@ import CRUDButtons from '@/components/devUtils/CRUDButtons';
 import DataTable from './DataTable';
 import { columns } from './columns';
 import { Button } from '@/components/ui/button';
-import { ModeToggle } from '../../components/theme-toggle';
 import { useCourseContext } from '@/app/course-context';
+import EnrollCourseMemberButton from '@/components/devUtils/EnrollCourseMemberButton';
 
 const HeaderView = () => {
   return (
@@ -14,7 +14,7 @@ const HeaderView = () => {
         Manage Course Members
       </h2>
       <div className="flex items-center space-x-2">
-        <ModeToggle />
+        ] <EnrollCourseMemberButton />
         <Button>Import CSV</Button>
         <Button>Export CSV</Button>
       </div>
