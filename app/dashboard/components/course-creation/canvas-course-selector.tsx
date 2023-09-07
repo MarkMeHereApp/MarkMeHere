@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,9 +33,7 @@ export function CanvasCourseSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
-  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
-    staleTime: 24 * 60 * 60 * 1000 // Cache for one day
-  });
+  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
 
   const uniqueErrorStatus = getCanvasCoursesQuery.data?.courseList
     ? [
