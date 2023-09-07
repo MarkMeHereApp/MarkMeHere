@@ -20,14 +20,14 @@ import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
-import CourseHoverCardContent from './course-hover-content';
+import CourseHoverCardContent from './lms-hover-content';
 import { zLMSCourseSchemeType } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 
-export function CanvasCourseSelector({
-  setSelectedCourse
+export function LMSCourseSelector({
+  setSelectedLMSCourse
 }: {
-  setSelectedCourse: React.Dispatch<
+  setSelectedLMSCourse: React.Dispatch<
     React.SetStateAction<zLMSCourseSchemeType | null>
   >;
 }) {
@@ -100,7 +100,7 @@ export function CanvasCourseSelector({
                                 setValue(
                                   course.lmsId === value ? '' : course.lmsId
                                 );
-                                setSelectedCourse(
+                                setSelectedLMSCourse(
                                   course.lmsId === value ? null : course
                                 ); // Save the selected course
                                 setOpen(false);
