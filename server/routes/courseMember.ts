@@ -5,16 +5,13 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 export const zCourseMember = z.object({
-  // The input schema goes here
-  courseMemberData: z.object({
-    id: z.string(),
-    lmsId: z.string().nullable(),
-    email: z.string(),
-    name: z.string(),
-    courseId: z.string(),
-    dateEnrolled: z.date(),
-    role: z.string()
-  })
+  id: z.string().optional(),
+  lmsId: z.string().nullable(),
+  email: z.string(),
+  name: z.string(),
+  courseId: z.string(),
+  dateEnrolled: z.date(),
+  role: z.string()
 });
 
 export const zGetCourseMembersOfCourse = z.object({
@@ -39,7 +36,7 @@ export const courseMemberRouter = router({
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input.courseMemberData
+            ...requestData.input
           }
         });
         return { success: true, resEnrollment };
@@ -55,7 +52,7 @@ export const courseMemberRouter = router({
       try {
         await prisma.courseMember.delete({
           where: {
-            id: requestData.input.courseMemberData.id
+            id: requestData.input.id
           }
         });
         return { success: true };

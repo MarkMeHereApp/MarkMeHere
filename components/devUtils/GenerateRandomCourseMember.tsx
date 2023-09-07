@@ -6,6 +6,7 @@ import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { trpc } from '@/app/_trpc/client';
 import Loading from '../general/loading';
+import { zCourseMember } from '@/server/routes/courseMember';
 
 const createRandomCourseMember = (selectedCourseId: string) =>
   ({
@@ -39,7 +40,7 @@ const GenerateRandomCourseMember = () => {
     if (selectedCourseId) {
       const newMemberData = createRandomCourseMember(selectedCourseId);
       await createCourseMemberMutation.mutateAsync({
-        courseMemberData: newMemberData
+        ...newMemberData
       });
       await getCourseMembersOfCourseQuery.refetch();
     } else {
