@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { Cross2Icon, TrashIcon } from '@radix-ui/react-icons';
 import { DataTableViewOptions } from './DataTableViewOptions';
 import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
@@ -15,6 +15,8 @@ export function DataTableToolbar<TData>({
   table
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+  const isSelected =
+    table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
 
   return (
@@ -45,6 +47,16 @@ export function DataTableToolbar<TData>({
           >
             Reset
             <Cross2Icon className="ml-2 h-4 w-4" />
+          </Button>
+        )}
+        {isSelected && (
+          <Button
+            variant="destructive"
+            onClick={() => table.resetColumnFilters()}
+            className="h-8 px-2 lg:px-3"
+          >
+            <TrashIcon className="mr-2 h-4 w-4" />
+            Delete Selected Course Member(s)
           </Button>
         )}
       </div>
