@@ -68,15 +68,16 @@ model AttendanceEntry {
 
 model Course {
   id          String         @id @default(cuid())
-  courseCode String         @unique @db.VarChar(255)
+  courseCode  String         @unique @db.VarChar(255)
   name        String         @db.VarChar(255)
   lmsType     String
-  lmsId       String?        @unique
+  lmsId       String?        
   dateCreated DateTime       @default(now())
   StartDate   DateTime?
   EndDate     DateTime?
   lectures    Lecture[]
   enrollments CourseMember[]
+  @@unique([lmsType, lmsId])
 }
 
 model CourseMember {
