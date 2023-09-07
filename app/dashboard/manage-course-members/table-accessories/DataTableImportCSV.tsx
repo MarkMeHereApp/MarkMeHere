@@ -81,15 +81,14 @@ const ImportCSV = () => {
           newMembers.allCourseMembersOfClass
         );
       } else {
+        setIsImporting(false);
         throw new Error('Unable new members');
       }
+    } catch (error: unknown) {
       setIsImporting(false);
-    } catch (error) {
-      //throw new Error(error);
-      setIsImporting(false);
-
-      throw new Error('error unable to import');
+      throw new Error('error unable to import' + error);
     }
+    setIsImporting(false);
   };
 
   return (
@@ -124,13 +123,18 @@ const ImportCSV = () => {
                 Cancel
               </Button>
             </DialogTrigger>
-
-            <Button type="submit" onClick={handleImport} disabled={isImporting}>
-              {isImporting && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Import
-            </Button>
+            <DialogTrigger>
+              <Button
+                type="submit"
+                onClick={handleImport}
+                disabled={isImporting}
+              >
+                {isImporting && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Import
+              </Button>
+            </DialogTrigger>
           </DialogFooter>
         </DialogContent>
       </Dialog>
