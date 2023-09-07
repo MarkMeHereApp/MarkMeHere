@@ -22,23 +22,28 @@ const CourseHoverCardContent = ({
           <h4 className="text-sm font-semibold">
             {course.name || 'No Course Name'}
           </h4>
+          {
+            // Course Codde (we currently call it label in the db).
+          }
           <p className="text-xs">
             <i>
-              {course.course_code ? (
-                <>
-                  <b>Course Code:</b> {course.course_code}
-                </>
-              ) : (
-                'No Course Code'
-              )}
+              <b>Course Code:</b>{' '}
+              {course.course_code ? course.course_code : 'No Course Code'}
             </i>
           </p>
+          {
+            // LMS ID
+          }
           <p className="text-xs">
             <i>
               <b>{formatString(course.lmsType) + ' ID: '}</b>
               {course.lmsId}
             </i>
           </p>
+
+          {
+            // Roles
+          }
           <p className="text-xs">
             <i>
               <b>
@@ -49,12 +54,24 @@ const CourseHoverCardContent = ({
               </b>
               {course.enrollments.map((enrollment, index, array) => (
                 <span key={index}>
-                  {enrollment.role.split(/(?=[A-Z])/).join(' ')}
+                  {formatString(enrollment.role)}
                   {index < array.length - 1 ? ', ' : ''}
                 </span>
               ))}
             </i>
           </p>
+          {
+            // Number of Students
+          }
+          <p className="text-xs">
+            <i>
+              <b>Number of Students: </b>
+              {course.totalStudents || 'Not Available'}
+            </i>
+          </p>
+          {
+            // Able to create course
+          }
           <p className="text-sm">
             <span className="flex items-start flex-wrap">
               {course.ableToCreateCourse ? (
@@ -72,6 +89,9 @@ const CourseHoverCardContent = ({
             </span>
           </p>
 
+          {
+            // Course Dates
+          }
           <div className="flex items-center pt-2">
             <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />{' '}
             <span className="text-xs text-muted-foreground">
