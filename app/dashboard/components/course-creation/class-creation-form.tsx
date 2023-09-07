@@ -21,7 +21,7 @@ import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
 import { CanvasCourseSelector } from './canvas-course-selector';
 import { zLMSCourseScheme, zLMSCourseSchemeType } from '@/types/sharedZodTypes';
-import { useEffect } from 'react';  
+import { useEffect } from 'react';
 
 const CreateCourseFormSchema = z.object({
   courseLabel: z
@@ -78,6 +78,7 @@ export default function CreateCourseForm({
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const { setUserCourses, setUserCourseMembers, setSelectedCourseId } =
     useCourseContext();
+  const utils = trpc.useContext();
 
   type CourseFormInput = Course & {
     autoEnroll: boolean;
@@ -149,6 +150,7 @@ export default function CreateCourseForm({
           icon: 'success'
         });
       }
+      utils.canvas.getCanvasCourses.invalidate();
       onSuccess();
       setLoading(false);
       return;
@@ -159,7 +161,6 @@ export default function CreateCourseForm({
   }
 
   useEffect(() => {
-    
     if (getLMSSelectedCourse) {
       if (getLMSSelectedCourse.course_code) {
         form.setValue('courseLabel', getLMSSelectedCourse.course_code);
@@ -167,11 +168,10 @@ export default function CreateCourseForm({
       if (getLMSSelectedCourse.name) {
         form.setValue('name', getLMSSelectedCourse.name);
       }
-      if (getLMSSelectedCourse.lmsId){
+      if (getLMSSelectedCourse.lmsId) {
         form.setValue('lmsId', getLMSSelectedCourse.lmsId);
       }
-    }
-    else{
+    } else {
       form.setValue('courseLabel', '');
       form.setValue('name', '');
       form.setValue('lmsId', null);
@@ -181,8 +181,7 @@ export default function CreateCourseForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <CanvasCourseSelector setSelectedCourse={(setLMSSelectedCourse)}/>
-
+        <CanvasCourseSelector setSelectedCourse={setLMSSelectedCourse} />
 
         <FormField
           control={form.control}
@@ -219,22 +218,25 @@ export default function CreateCourseForm({
           )}
         />
 
-          <FormField
-            control={form.control}
-            name="lmsId"
-            render={({ field }) => (
-              <FormItem>    
-                <FormDescription>
+        <FormField
+          control={form.control}
+          name="lmsId"
+          render={({ field }) => (
+            <FormItem>
+              <FormDescription>
                 <span>
-                  {getLMSSelectedCourse && (getLMSSelectedCourse.lmsType.charAt(0).toUpperCase() + getLMSSelectedCourse.lmsType.slice(1) + ' ID: ')}
-                  
+                  {getLMSSelectedCourse &&
+                    getLMSSelectedCourse.lmsType.charAt(0).toUpperCase() +
+                      getLMSSelectedCourse.lmsType.slice(1) +
+                      ' ID: '}
+
                   {field.value}
                 </span>
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

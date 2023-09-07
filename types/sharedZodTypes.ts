@@ -15,7 +15,8 @@ export const zCreateCourseErrorDescriptions: Record<
   string
 > = {
   available: 'The course is available to be created.',
-  duplicate: 'The course already exists in the database.',
+  duplicate:
+    'The course already exists in the database. A professor of the course, or a site administrator can add you to the course.',
   noEmailAccess:
     'Access to view the emails of course members for this course is currently restricted. This app requires access to course member emails.',
   noEnrollmentAccess:
