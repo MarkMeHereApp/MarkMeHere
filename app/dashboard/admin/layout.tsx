@@ -4,11 +4,6 @@ import MainBarAdmin from '@/app/dashboard/admin/components/layout/MainBarAdmin';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
-export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Dashboard to manage instructors'
-};
-
 export default async function DashboardLayout({
   children
 }: {

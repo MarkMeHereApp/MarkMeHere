@@ -8,11 +8,6 @@ import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/user-nav';
 import { taskSchema } from './data/schema';
 
-export const metadata: Metadata = {
-  title: 'Tasks',
-  description: 'A task and issue tracker build using Tanstack Table.'
-};
-
 // Simulate a database read for tasks.
 async function getTasks() {
   const data = await fs.readFile(

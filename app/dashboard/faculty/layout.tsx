@@ -4,11 +4,6 @@ import CourseSwitcher from '@/app/dashboard/components/main-bar';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Dashboard to manage your classes'
-};
-
 export default async function DashboardLayout({
   children
 }: {

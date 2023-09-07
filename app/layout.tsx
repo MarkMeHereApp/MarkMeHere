@@ -14,9 +14,9 @@ import prisma from '@/prisma';
 const OpenSans = Open_Sans({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Next.js 13 + PlanetScale + NextAuth + Tailwind CSS',
+  title: 'Mark Me Here!',
   description:
-    'A user admin dashboard configured with Next.js, PlanetScale, NextAuth, Tailwind CSS, TypeScript, ESLint, and Prettier.'
+    'Mark Me Here! is a robust web application that allows users take attendance in their classes and easily manage their attendance data.'
 };
 
 export default async function RootLayout({

@@ -4,11 +4,6 @@ import dynamic from 'next/dynamic';
 
 import SignUpForm from '@/app/signup/components/signUpForm';
 
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
-
 export default function SignUpPage() {
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
