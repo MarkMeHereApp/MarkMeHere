@@ -36,6 +36,11 @@ import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
+import {
+  zAttendanceStatus,
+  ExtendedCourseMember,
+  zAttendanceStatusType
+} from '@/types/sharedZodTypes';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -65,16 +70,26 @@ export function DataTable<TData, TValue>({
 
   useEffect(() => {
     if (courseMembersOfSelectedCourse) {
-      const newCourseMembers: CourseMember[] =
-        courseMembersOfSelectedCourse?.filter(
-          (member) =>
-            member.courseId === selectedCourseId && member.role === 'student'
-        );
-      setCourseMembers(newCourseMembers);
+      if (courseMembersOfSelectedCourse) {
+        // We need this to refetch the attendance entries when the date is changed
+        const newCourseMembers: ExtendedCourseMember[] =
+          courseMembersOfSelectedCourse
+            ?.map((member) => ({
+              ...member,
+              AttendanceStatus: 'here' as zAttendanceStatusType
+            }))
+            .filter(
+              (member) =>
+                member.courseId === selectedCourseId &&
+                member.role === 'student'
+            );
+        setCourseMembers(newCourseMembers);
+      }
     }
   }, [courseMembersOfSelectedCourse]);
 
   const data = courseMembers as TData[];
+
   const table = useReactTable({
     data,
     columns,

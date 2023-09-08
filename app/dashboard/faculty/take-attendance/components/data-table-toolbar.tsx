@@ -7,10 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/app/dashboard/faculty/take-attendance/components/data-table-view-options';
 
-import { statuses } from './data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
+import {
+  zAttendanceStatus,
+  zAttendanceStatusIcons
+} from '@/types/sharedZodTypes';
+import { formatString } from '@/utils/globalFunctions';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -20,6 +24,12 @@ export function DataTableToolbar<TData>({
   table
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+
+  const statuses = zAttendanceStatus.options.map((status) => ({
+    label: status as string,
+    value: formatString(status),
+    icon: zAttendanceStatusIcons[status]
+  }));
 
   return (
     <div className="flex items-center justify-between">
