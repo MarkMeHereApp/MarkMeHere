@@ -7,12 +7,14 @@ import SamTest from './components/SamTest';
 import AldrichTest from './components/AldrichTest';
 import ErrorTest from './components/ErrorTest';
 import GetCanvasCourses from './components/getCanvasCoursesTest';
+import IconsTest from './components/IconsTest';
 
 const tabComponents = [
   { value: 'Aldrich Test', component: <AldrichTest /> },
   { value: 'Sams Test', component: <SamTest /> },
   { value: 'Error Test', component: <ErrorTest /> },
-  { value: 'GetCanvasCourses', component: <GetCanvasCourses /> }
+  { value: 'GetCanvasCourses', component: <GetCanvasCourses /> },
+  { value: 'Icons', component: <IconsTest /> }
 
   // Add more components here
 ];
