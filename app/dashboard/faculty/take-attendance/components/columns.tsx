@@ -1,14 +1,12 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-
 import { Checkbox } from '@/components/ui/checkbox';
-
-import { statuses } from '../data/data';
-import { Task } from '../data/schema';
 import { DataTableColumnHeader } from './data-table-column-header';
+import { CourseMember } from '@prisma/client';
+import { statuses } from './data';
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<CourseMember>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -40,24 +38,24 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'firstName',
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('firstName')}</div>
+      <div className="flex w-full">{row.getValue('name')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
   },
   {
-    accessorKey: 'lastName',
+    accessorKey: 'email',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('lastName')}</div>
+      <div className="flex w-full">{row.getValue('email')}</div>
     ),
     enableSorting: true,
     enableHiding: true,

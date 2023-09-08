@@ -1,4 +1,25 @@
 import { Button } from '@/components/ui/button';
+import { trpc } from '@/app/_trpc/client';
+import { toast } from '@/components/ui/use-toast';
+
+// Create a new attendance entry for a selected student
+const createAttendanceEntry = () => {
+    const attendanceEntryMutation = trpc.attendance.updateSelectedCourseId.useMutation();
+    
+    async function handleCreateAttendanceEntry(attendanceStatus: string) {
+    await attendanceEntryMutation.mutateAsync(
+        {
+            lectureId: '',
+            courseMemberId: '',
+            attendanceStatus: '',
+            returnAllAttendanceEntries: true
+        });
+        toast({
+            title: `Successfully marked student(s) as ${attendanceStatus}`
+        });
+    };
+};
+
 
 const MarkPresentButton = () => {
   return (
