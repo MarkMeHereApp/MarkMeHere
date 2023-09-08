@@ -14,6 +14,7 @@ import {
   CrossCircledIcon,
   BookmarkFilledIcon
 } from '@radix-ui/react-icons';
+import { Icons } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/use-toast';
 import { z } from 'zod';
 import { zIconPresets } from '@/types/sharedZodTypes';
@@ -29,10 +30,12 @@ export function Toaster() {
     z.infer<typeof zIconPresets>,
     JSX.Element
   > = {
-    success: <CheckCircledIcon className="mr-2 text-primary" />,
+    success: <Icons.logo className="mr-2 text-primary wave" />,
     warning: <ExclamationTriangleIcon className="mr-2 text-primary" />,
-    error: <CrossCircledIcon className="mr-2  text-destructive" />,
-    error_foreground: (
+    error_for_destructive_toasts: (
+      <CrossCircledIcon className="mr-2  text-destructive" />
+    ),
+    error_for_nondestructive_toasts: (
       <CrossCircledIcon className="mr-2  text-destructive-foreground" />
     ),
     bookmark: <BookmarkFilledIcon className="mr-2 text-primary" />
