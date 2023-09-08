@@ -45,17 +45,11 @@ export const zCreateCourseErrorStatus = z.enum([
 /////////////////////////////////////////////////////////////////////////////////
 // ATTENDANCE TYPES
 
-export const zAttendanceStatus = z.enum([
-  'here',
-  'absent',
-  'excused',
-  'late',
-  'loading'
-]);
+export const zAttendanceStatus = z.enum(['here', 'absent', 'excused', 'late']);
 export type zAttendanceStatusType = z.infer<typeof zAttendanceStatus>;
 
 export type ExtendedCourseMember = CourseMember & {
-  AttendanceStatus: zAttendanceStatusType;
+  AttendanceStatus?: zAttendanceStatusType;
 };
 
 export const zAttendanceStatusIcons: Record<
@@ -65,8 +59,7 @@ export const zAttendanceStatusIcons: Record<
   here: () => <Icons.logo className="text-primary wave" />,
   absent: () => <CrossCircledIcon className="text-destructive" />,
   late: () => <ClockIcon />,
-  excused: () => <CircleIcon />,
-  loading: () => <Icons.spinner className="animate-spin" />
+  excused: () => <CircleIcon />
 };
 
 /////////////////////////////////////////////////////////////////////////////////
