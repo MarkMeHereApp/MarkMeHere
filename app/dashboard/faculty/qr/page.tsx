@@ -53,7 +53,7 @@ export default function QR() {
     id: 'LOADING',
     code: 'LOADING',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...
+    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ? 
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
