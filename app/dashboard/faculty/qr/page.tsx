@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -27,6 +28,15 @@ export default function QR() {
   const [DynamicQRCode, setDynamicQRCode] = React.useState<React.ComponentType<{
     url: string;
   }> | null>(null);
+
+
+  React.useEffect(() => {
+    if (activeCode === 'LOADING') {
+      // Insert your loader animation code here
+    }
+  }, [activeCode]);
+
+  
 
   React.useEffect(() => {
     if (mode === 'minimal') {
@@ -209,12 +219,27 @@ export default function QR() {
 
         <CardContent className="flex-grow flex-shrink flex flex-col items-center justify-between ">
           {activeCode === 'LOADING' ? (
-            <div> </div>
+            
+            <div  
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%'
+            }}> 
+              <ReloadIcon
+                className="animate-spin"
+                style={{ height: '100px', width: '100px' }}
+              />
+            </div>
+
           ) : (
+
             <QRCode
               value={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
               className="h-full w-full"
             />
+            
           )}
 
           <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
