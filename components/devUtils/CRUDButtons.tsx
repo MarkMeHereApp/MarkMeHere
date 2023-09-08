@@ -14,10 +14,12 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const CRUDButtons = () => {
   return isDevMode ? (
     <Suspense fallback={<div>Loading...</div>}>
-      <EnrollCourseMemberButton />
-      <GenerateRandomCourseMember />
-      <ShowCurrentCourseMembers />
-      <DeleteAllStudents />
+      <div className="flex flex-row space-x-4">
+        <EnrollCourseMemberButton />
+        <GenerateRandomCourseMember />
+        <ShowCurrentCourseMembers />
+        <DeleteAllStudents />
+      </div>
     </Suspense>
   ) : null;
 };
