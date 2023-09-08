@@ -34,6 +34,7 @@ const CSV_Import = () => {
 
   const closeDialog = () => {
     if (fileInputRef.current) {
+      setIsFileUploaded(false);
       fileInputRef.current.value = '';
     }
   };
@@ -106,7 +107,7 @@ const CSV_Import = () => {
   return (
     <>
       {' '}
-      <div className="grid w-full max-w-sm items-center gap-1.5">
+      <div className="grid  max-w-sm items-center gap-1.5">
         <Input
           ref={fileInputRef}
           id="csv"
@@ -115,11 +116,8 @@ const CSV_Import = () => {
           onChange={handleFileChange}
         />
       </div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button disabled={!isFileUploaded}>Preview</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[1000px]">
+      <Dialog open={isFileUploaded}>
+        <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
