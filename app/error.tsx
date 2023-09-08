@@ -28,7 +28,7 @@ const ErrorComponent = ({
   useEffect(() => {
     toast({
       title: 'Error',
-      icon: 'error_foreground',
+      icon: 'error_for_destructive_toasts',
       variant: 'destructive',
       description: error.message,
       duration: 5000

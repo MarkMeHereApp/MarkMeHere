@@ -4,9 +4,7 @@ import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 
 const GetCanvasCourses = () => {
-  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
-    enabled: true
-  });
+  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
 
   // Later in your code
   if (getCanvasCoursesQuery.error) {
