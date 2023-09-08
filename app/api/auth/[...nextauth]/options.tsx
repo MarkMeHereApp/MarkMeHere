@@ -79,9 +79,9 @@ export const authOptions: NextAuthOptions = {
   //When JWT is created store user role in the token
   callbacks: {
     jwt({ token, user }) {
-      if(user) token.role = user.role
-      return token
-    },
+      if (user) token.role = user.role;
+      return token;
+    }
   },
   session: {
     strategy: 'jwt'
@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: '/signin',
-    newUser: '/dashboard/faculty/overview',
-    error: '/error'
+    newUser: '/',
+    error: '/'
   }
 };

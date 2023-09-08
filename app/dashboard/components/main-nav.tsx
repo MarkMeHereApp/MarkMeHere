@@ -62,60 +62,6 @@ export default function MainNav({
         Student Statistics
       </Link> */}
       <Link
-        href="/dashboard/faculty/class-settings"
-        className={
-          isActive('/dashboard/faculty/class-settings')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Class Settings
-      </Link>
-      <Link
-        href="/api/auth/signin"
-        className={
-          isActive('/api/auth/signin')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        temp sign in
-      </Link>
-      <Link
-        href="/api/auth/signup"
-        className={
-          isActive('/api/auth/signup')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        temp sign up
-      </Link>
-
-      <Link
-        href="/dashboard/faculty/qr"
-        className={
-          isActive('/gather-attendance/qr')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        QR Attendance
-      </Link>
-
-      <button
-        onClick={() => {
-          signOut({ callbackUrl: '/api/auth/signin' });
-        }}
-        className={
-          isActive('/signup')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        temp sign out
-      </button>
-      <Link
         href="/dashboard/faculty/testing-playground"
         className={
           isActive('/dashboard/faculty/tests')
@@ -125,18 +71,6 @@ export default function MainNav({
       >
         Testing Playground
       </Link>
-      <a
-        href="https://cdn.discordapp.com/attachments/1078896207486787584/1078896797512122452/boom.gif"
-        className={
-          isActive('/asdasd')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        I dare you to click this button
-      </a>
     </nav>
   );
 }
