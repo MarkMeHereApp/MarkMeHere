@@ -177,7 +177,7 @@ export default function QR() {
         >
           {DynamicQRCode && (
             <DynamicQRCode
-              url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+              url={process.env.NEXT_PUBLIC_BASE_URL + '/submit/' + activeCode}
             />
           )}
         </div>
@@ -190,6 +190,7 @@ export default function QR() {
       </>
     );
   }
+
 
   return (
     <div className="relative min-h-screen">
@@ -212,7 +213,7 @@ export default function QR() {
             <div> </div>
           ) : (
             <QRCode
-              value={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+              value={process.env.NEXT_PUBLIC_BASE_URL + '/submit/' + activeCode}
               className="h-full w-full"
             />
           )}
