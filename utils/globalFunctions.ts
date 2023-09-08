@@ -15,7 +15,7 @@ export function minimalError(
 ) {
   toast({
     title: 'Error',
-    icon: 'error_foreground',
+    icon: 'error_for_destructive_toasts',
     variant: 'destructive',
     description: error,
     action: action
