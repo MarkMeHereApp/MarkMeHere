@@ -88,6 +88,10 @@ export default function CoursesContext({
     }
   );
 
+  if (courseMembers.error) {
+    throw courseMembers.error;
+  }
+
   useEffect(() => {
     if (
       selectedCourseId &&
