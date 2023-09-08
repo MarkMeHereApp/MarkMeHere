@@ -1,9 +1,25 @@
 import z from 'zod';
+import { CourseMember } from '@prisma/client';
+import {
+  CheckCircledIcon,
+  CircleIcon,
+  CrossCircledIcon,
+  ClockIcon
+} from '@radix-ui/react-icons';
+import { Icons } from '@/components/ui/icons';
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// LMS TYPES
 
 // Currently supported LMS Providers: Canvas
 // None is used if there is no LMS Provider.
 export const zLMSProvider = z.enum(['none', 'canvas']);
 export type zLMSProviderType = z.infer<typeof zLMSProvider>;
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// ROLE TYPES
 
 // Admin: Can do anything
 // Moderator: Can create classes and are always enrolled in those classes. They can also delete their classes.
@@ -24,6 +40,38 @@ export const zCreateCourseErrorStatus = z.enum([
   'noEmailAccess',
   'noEnrollmentAccess'
 ]);
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// ATTENDANCE TYPES
+
+export const zAttendanceStatus = z.enum([
+  'here',
+  'absent',
+  'excused',
+  'late',
+  'loading'
+]);
+export type zAttendanceStatusType = z.infer<typeof zAttendanceStatus>;
+
+export type ExtendedCourseMember = CourseMember & {
+  AttendanceStatus: zAttendanceStatusType;
+};
+
+export const zAttendanceStatusIcons: Record<
+  zAttendanceStatusType,
+  React.ComponentType
+> = {
+  here: () => <Icons.logo className="text-primary wave" />,
+  absent: () => <CrossCircledIcon className="text-destructive" />,
+  late: () => <ClockIcon />,
+  excused: () => <CircleIcon />,
+  loading: () => <Icons.spinner className="animate-spin" />
+};
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// CREATE COURSE ERROR TYPES
 
 export const zCreateCourseErrorDescriptions: Record<
   z.infer<typeof zCreateCourseErrorStatus>,
@@ -62,6 +110,10 @@ export const zLMSCourseScheme = z.object({
   createCourseErrorStatus: zCreateCourseErrorStatus.default('available')
 });
 export type zLMSCourseSchemeType = z.infer<typeof zLMSCourseScheme>;
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// TOAST TYPES
 
 export const zIconPresets = z.enum([
   'success',
