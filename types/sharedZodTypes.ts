@@ -48,3 +48,12 @@ export const zLMSCourseScheme = z.object({
   createCourseErrorStatus: zCreateCourseErrorStatus.default('available')
 });
 export type zLMSCourseSchemeType = z.infer<typeof zLMSCourseScheme>;
+
+export const zIconPresets = z.enum([
+  'success',
+  'warning',
+  'error_for_destructive_toasts',
+  'error_for_nondestructive_toasts',
+  'bookmark'
+]);
+export type zIconPresetsType = z.infer<typeof zIconPresets>;

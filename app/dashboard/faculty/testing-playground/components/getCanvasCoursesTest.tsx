@@ -12,7 +12,7 @@ const GetCanvasCourses = () => {
     toast({
       title: 'ERROR Fetching Canvas Coursesd',
       description: getCanvasCoursesQuery.error.message,
-      icon: 'error'
+      icon: 'error_for_nondestructive_toasts'
     });
   }
 
