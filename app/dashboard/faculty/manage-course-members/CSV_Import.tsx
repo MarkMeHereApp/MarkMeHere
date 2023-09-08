@@ -78,9 +78,15 @@ const CSV_Import = () => {
         courseId: data.selectedCourseId,
         courseMembers: transformedTableValues
       });
+      closeDialog();
       if (newMembers.success) {
         toast({
-          title: 'Imported CSV successfully'
+          title: 'Imported CSV successfully',
+          icon: 'success',
+          description:
+            'Added ' +
+            newMembers.allCourseMembersOfClass.length +
+            ' new members'
         });
         data.setCourseMembersOfSelectedCourse(
           newMembers.allCourseMembersOfClass
@@ -99,6 +105,7 @@ const CSV_Import = () => {
         variant: 'destructive',
         title: 'Importing CSV failed. Try Again. ' + error
       });
+      closeDialog();
       throw new Error('error unable to import' + error);
     }
     setIsImporting(false);
@@ -107,7 +114,7 @@ const CSV_Import = () => {
   return (
     <>
       {' '}
-      <div className="grid  max-w-sm items-center gap-1.5">
+      <div className="grid max-w-sm items-center gap-1.5">
         <Input
           ref={fileInputRef}
           id="csv"

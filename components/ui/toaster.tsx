@@ -15,6 +15,8 @@ import {
   BookmarkFilledIcon
 } from '@radix-ui/react-icons';
 import { useToast } from '@/components/ui/use-toast';
+import { z } from 'zod';
+import { zIconPresets } from '@/types/sharedZodTypes';
 
 export function Toaster() {
   const { toasts } = useToast();
@@ -23,7 +25,10 @@ export function Toaster() {
     [key: string]: JSX.Element | undefined;
   };
 
-  const iconPresets: IconPresetsType = {
+  const zIconPresetsDescriptions: Record<
+    z.infer<typeof zIconPresets>,
+    JSX.Element
+  > = {
     success: <CheckCircledIcon className="mr-2 text-primary" />,
     warning: <ExclamationTriangleIcon className="mr-2 text-primary" />,
     error: <CrossCircledIcon className="mr-2  text-destructive" />,
@@ -38,8 +43,8 @@ export function Toaster() {
       {toasts.map(({ id, title, icon, description, action, ...props }) => {
         let IconComponent = null;
         if (icon) {
-          if (iconPresets[icon]) {
-            IconComponent = iconPresets[icon];
+          if (zIconPresetsDescriptions[icon]) {
+            IconComponent = zIconPresetsDescriptions[icon];
           } else {
             IconComponent = (
               <span className="text-destructive"> INVALID ICON PROP </span>
