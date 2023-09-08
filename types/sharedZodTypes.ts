@@ -1,7 +1,21 @@
 import z from 'zod';
 
-export const zLMSProvider = z.enum(['none', 'canvas', 'moodle']);
+// Currently supported LMS Providers: Canvas
+// None is used if there is no LMS Provider.
+export const zLMSProvider = z.enum(['none', 'canvas']);
 export type zLMSProviderType = z.infer<typeof zLMSProvider>;
+
+// Admin: Can do anything
+// Moderator: Can create classes and are always enrolled in those classes. They can also delete their classes.
+// User: Can only view classes they are enrolled in.
+export const zSiteRoles = z.enum(['admin', 'moderator', 'user']);
+export type zSiteRolesType = z.infer<typeof zSiteRoles>;
+
+// Teacher: Can Add/Remove students from their course
+// TA: Can Take Attendance
+// Student: Can view their attendance data
+export const zCourseRoles = z.enum(['teacher', 'ta', 'student']);
+export type zCourseRolesType = z.infer<typeof zCourseRoles>;
 
 export const zCreateCourseErrorStatus = z.enum([
   'available',
