@@ -53,10 +53,17 @@ export function DataTable<TData, TValue>({
   const [lecture, setLecture] = React.useState(false);
   const [attendanceEntries, setAttendanceEntries] = React.useState<AttendanceEntry[]>([]);
   const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
+  const [courseMembers, setCourseMembers] = React.useState<CourseMember[]>([]);
   
-  const courseMembers = courseMembersOfSelectedCourse?.filter(
-    (member) => member.courseId === selectedCourseId && member.role === 'student'
-  )
+  useEffect(() => {
+    if (courseMembersOfSelectedCourse) {
+        const newCourseMembers:CourseMember[] = courseMembersOfSelectedCourse?.filter(
+            (member) => member.courseId === selectedCourseId && member.role === 'student'
+          )
+          setCourseMembers(newCourseMembers);
+    }
+  }, [courseMembersOfSelectedCourse]);    
+  
   const data = courseMembers as TData[];
   const table = useReactTable({
     data,
@@ -78,7 +85,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
-  });
+  });//
 
   // handle checking if the lecture exists for a specific date
   const getLecturesOfCourseQuery = trpc.lecture.getLecturesofCourse.useQuery(
