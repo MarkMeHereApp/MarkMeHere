@@ -36,33 +36,43 @@ import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
-import { CreateNewLectureButton } from './CreateNewLectureButton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
 
 export function DataTable<TData, TValue>({
-  columns,
+  columns
 }: DataTableProps<TData, TValue>) {
-  const { selectedAttendanceDate, courseMembersOfSelectedCourse, selectedCourseId } = useCourseContext();
+  const {
+    selectedAttendanceDate,
+    courseMembersOfSelectedCourse,
+    selectedCourseId
+  } = useCourseContext();
   const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [lecture, setLecture] = React.useState(false);
-  const [attendanceEntries, setAttendanceEntries] = React.useState<AttendanceEntry[]>([]);
+  const [attendanceEntries, setAttendanceEntries] = React.useState<
+    AttendanceEntry[]
+  >([]);
   const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
   const [courseMembers, setCourseMembers] = React.useState<CourseMember[]>([]);
-  
+
   useEffect(() => {
     if (courseMembersOfSelectedCourse) {
-        const newCourseMembers:CourseMember[] = courseMembersOfSelectedCourse?.filter(
-            (member) => member.courseId === selectedCourseId && member.role === 'student'
-          )
-          setCourseMembers(newCourseMembers);
+      const newCourseMembers: CourseMember[] =
+        courseMembersOfSelectedCourse?.filter(
+          (member) =>
+            member.courseId === selectedCourseId && member.role === 'student'
+        );
+      setCourseMembers(newCourseMembers);
     }
-  }, [courseMembersOfSelectedCourse]);    
+  }, [courseMembersOfSelectedCourse]);
 
   const data = courseMembers as TData[];
   const table = useReactTable({
@@ -85,133 +95,142 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
-  });//
+  }); //
 
   // handle checking if the lecture exists for a specific date
   const getLecturesOfCourseQuery = trpc.lecture.getLecturesofCourse.useQuery(
     {
-        courseId: selectedCourseId || '',
+      courseId: selectedCourseId || ''
     },
     {
-        onSuccess: (data) => {
-            if (!data) return;
-            const lectures = data.lectures;
-            const lectureStatus = lectures.some((lecture: Lecture) => {
-                // Check if lectureDate matches selectedAttendanceDate
-                const dateMatch = lecture.lectureDate.getTime() === selectedAttendanceDate?.getTime();
-                
-                if (dateMatch) {
-                    setCurrentLectureId(lecture.id);
-                    getAttendanceEntriesOfLectureQuery.refetch();
-                }
-    
-                return dateMatch;
-              });
-              setLecture(lectureStatus);
-        }
+      onSuccess: (data) => {
+        if (!data) return;
+        const lectures = data.lectures;
+        const lectureStatus = lectures.some((lecture: Lecture) => {
+          // Check if lectureDate matches selectedAttendanceDate
+          const dateMatch =
+            lecture.lectureDate.getTime() === selectedAttendanceDate?.getTime();
+
+          if (dateMatch) {
+            setCurrentLectureId(lecture.id);
+            getAttendanceEntriesOfLectureQuery.refetch();
+          }
+
+          return dateMatch;
+        });
+        setLecture(lectureStatus);
+      }
     }
   );
 
-    // const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
+  // handle getting the attendance entries for the lecture
+  const getAttendanceEntriesOfLectureQuery =
+    trpc.attendance.getAttendanceDataOfCourse.useQuery(
+      {
+        lectureId: currentLectureId || ''
+      },
+      {
+        onSuccess: (data) => {
+          if (!data) return;
+          setAttendanceEntries(data.attendanceEntries);
+        }
+      }
+    );
 
-    // async function handleCreateNewLecture() {
-    //     await createNewLectureMutation.mutateAsync({
-    //         courseId: selectedCourseId || '',
-    //         lectureDate: selectedAttendanceDate || new Date(),
-    //     });
-    //     await getLecturesOfCourseQuery.refetch();
-    //     toast({
-    //         title: `Successfully created a new lecture for ${selectedAttendanceDate}`
-    //     });
-    // }
+  useEffect(() => {
+    getLecturesOfCourseQuery.refetch();
+  }, [selectedAttendanceDate]);
 
-    // handle getting the attendance entries for the lecture
-    const getAttendanceEntriesOfLectureQuery = trpc.attendance.getAttendanceDataOfCourse.useQuery(
-        {
-            lectureId: currentLectureId || '' 
-        },
-        {
-            onSuccess: (data) => {
-                if (!data) return;
-                setAttendanceEntries(data.attendanceEntries);
-            }
+  const CreateNewLectureButton = () => {
+    const { selectedCourseId, selectedAttendanceDate } = useCourseContext();
+    const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
+
+    const handleClick = async () => {
+      if (selectedCourseId && selectedAttendanceDate) {
+        await createNewLectureMutation.mutateAsync({
+          courseId: selectedCourseId || '',
+          lectureDate: selectedAttendanceDate || new Date()
         });
-    
-    useEffect(() => {
-        getLecturesOfCourseQuery.refetch();
-    }, [selectedAttendanceDate]);
+        await getLecturesOfCourseQuery.refetch();
+        toast({
+          title: `Successfully created a new lecture for ${selectedAttendanceDate}`
+        });
+      }
+    };
+    return <Button onClick={() => handleClick()}>Create a new lecture</Button>;
+  };
 
-    return courseMembersOfSelectedCourse ? (
+  return courseMembersOfSelectedCourse ? (
+    <div className="space-y-4">
+      <DataTableToolbar table={table} />
+      {lecture ? (
         <div className="space-y-4">
-        <DataTableToolbar table={table}/>
-        {lecture ? (
-            <div className="space-y-4">
-            <div className="rounded-md border">
-                <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                        return (
-                            <TableHead key={header.id}>
-                            {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                )}
-                            </TableHead>
-                        );
-                        })}
-                    </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                        <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                        >
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                            {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                            )}
-                            </TableCell>
-                        ))}
-                        </TableRow>
-                    ))
-                    ) : (
-                    <TableRow>
-                        <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                        >
-                        No results.
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </TableCell>
+                      ))}
                     </TableRow>
-                    )}
-                </TableBody>
-                </Table>
-            </div>
-            <DataTablePagination table={table} />
-            </div>
-        ) : (
-            <div className="pt-24 flex justify-center items-center">
-            <Card className="w-85 h-50">
-                <CardHeader>
-                <CardTitle>
-                    There is no attendance data available for this date.
-                </CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center items-center">
-                <CreateNewLectureButton />
-                </CardContent>
-            </Card>
-            </div>
-        )}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <DataTablePagination table={table} />
         </div>
-    ) : null;
+      ) : (
+        <div className="pt-24 flex justify-center items-center">
+          <Card className="w-85 h-50">
+            <CardHeader>
+              <CardTitle>
+                There is no attendance data available for this date.
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center items-center">
+              <CreateNewLectureButton />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  ) : null;
 }
