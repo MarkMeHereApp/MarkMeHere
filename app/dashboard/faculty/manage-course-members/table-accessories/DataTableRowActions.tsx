@@ -60,6 +60,7 @@ export function DataTableRowActions<TData>({
     await deleteCourseMemberMutation.mutateAsync([courseMemberData]);
     handleDialogClose();
     await getCourseMembersOfCourseQuery.refetch();
+
     toast({
       title: `Successfully deleted ${courseMemberData.name}`
     });
