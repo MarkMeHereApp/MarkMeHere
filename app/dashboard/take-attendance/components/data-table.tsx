@@ -36,6 +36,7 @@ import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
+import { CreateNewLectureButton } from './CreateNewLectureButton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,9 +53,11 @@ export function DataTable<TData, TValue>({
   const [lecture, setLecture] = React.useState(false);
   const [attendanceEntries, setAttendanceEntries] = React.useState<AttendanceEntry[]>([]);
   const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
-  const [lectureAttendees, setLectureAttendees] = React.useState<CourseMember[]>([]);
-
-  const data = attendanceEntries as TData[];
+  
+  const courseMembers = courseMembersOfSelectedCourse?.filter(
+    (member) => member.courseId === selectedCourseId && member.role === 'student'
+  )
+  const data = courseMembers as TData[];
   const table = useReactTable({
     data,
     columns,
@@ -102,17 +105,18 @@ export function DataTable<TData, TValue>({
     }
   );
 
-    const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
-    async function handleCreateNewLecture() {
-        console.log(selectedCourseId);
-        await createNewLectureMutation.mutateAsync({
-            courseId: selectedCourseId || '',
-            lectureDate: selectedAttendanceDate || new Date(),
-        });
-        toast({
-            title: `Successfully created a new lecture for ${selectedAttendanceDate}`
-        });
-    }
+    // const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
+
+    // async function handleCreateNewLecture() {
+    //     await createNewLectureMutation.mutateAsync({
+    //         courseId: selectedCourseId || '',
+    //         lectureDate: selectedAttendanceDate || new Date(),
+    //     });
+    //     await getLecturesOfCourseQuery.refetch();
+    //     toast({
+    //         title: `Successfully created a new lecture for ${selectedAttendanceDate}`
+    //     });
+    // }
 
     // handle getting the attendance entries for the lecture
     const getAttendanceEntriesOfLectureQuery = trpc.attendance.getAttendanceDataOfCourse.useQuery(
@@ -126,81 +130,81 @@ export function DataTable<TData, TValue>({
             }
         });
     
-    useEffect(() => {
-        getLecturesOfCourseQuery.refetch();
-    }, [createNewLectureMutation.isSuccess, selectedAttendanceDate]);
+    // useEffect(() => {
+    //     getLecturesOfCourseQuery.refetch();
+    // }, [selectedAttendanceDate]);
 
-    return (
-    <div className="space-y-4">
-      <DataTableToolbar table={table} />
-      {lecture && courseMembersOfSelectedCourse && attendanceEntries ? (
+    return courseMembersOfSelectedCourse ? (
         <div className="space-y-4">
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
+        <DataTableToolbar table={table}/>
+        {lecture ? (
+            <div className="space-y-4">
+            <div className="rounded-md border">
+                <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => {
+                        return (
+                            <TableHead key={header.id}>
+                            {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
+                            </TableHead>
+                        );
+                        })}
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <DataTablePagination table={table} />
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                        <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        >
+                        {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                            {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                            )}
+                            </TableCell>
+                        ))}
+                        </TableRow>
+                    ))
+                    ) : (
+                    <TableRow>
+                        <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                        >
+                        No results.
+                        </TableCell>
+                    </TableRow>
+                    )}
+                </TableBody>
+                </Table>
+            </div>
+            <DataTablePagination table={table} />
+            </div>
+        ) : (
+            <div className="pt-24 flex justify-center items-center">
+            <Card className="w-85 h-50">
+                <CardHeader>
+                <CardTitle>
+                    There is no attendance data available for this date.
+                </CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center">
+                <CreateNewLectureButton />
+                </CardContent>
+            </Card>
+            </div>
+        )}
         </div>
-      ) : (
-        <div className="pt-24 flex justify-center items-center">
-          <Card className="w-85 h-50">
-            <CardHeader>
-              <CardTitle>
-                There is no attendance data available for this date.
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center">
-              <Button onClick={() => {handleCreateNewLecture()}}>Create a new lecture</Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
-  );
+    ) : null;
 }
