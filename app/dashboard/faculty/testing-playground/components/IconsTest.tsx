@@ -5,7 +5,7 @@ const IconsTest = () => {
     <div>
       asdasd
       <Icons.logo
-        className="primary-foreground wave"
+        className="wave primary-foreground"
         style={{ height: '100px', width: '100px' }}
       />
     </div>
