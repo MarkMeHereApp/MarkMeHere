@@ -63,7 +63,7 @@ export function DataTable<TData, TValue>({
           setCourseMembers(newCourseMembers);
     }
   }, [courseMembersOfSelectedCourse]);    
-  
+
   const data = courseMembers as TData[];
   const table = useReactTable({
     data,
@@ -137,9 +137,9 @@ export function DataTable<TData, TValue>({
             }
         });
     
-    // useEffect(() => {
-    //     getLecturesOfCourseQuery.refetch();
-    // }, [selectedAttendanceDate]);
+    useEffect(() => {
+        getLecturesOfCourseQuery.refetch();
+    }, [selectedAttendanceDate]);
 
     return courseMembersOfSelectedCourse ? (
         <div className="space-y-4">
