@@ -39,13 +39,13 @@ To get started with Mark Me Here!, follow these steps:
       npm run build
    ```
 
-5. **Run the Application**: Start the application by running:
+4. **Run the Application**: Start the application by running:
 
    ```bash
    npm run start
    ```
 
-6. **Access the Web Interface**: Open your web browser and go to `http://localhost:3000` to access Mark Me Here!
+5. **Access the Web Interface**: Open your web browser and go to `http://localhost:3000` to access Mark Me Here!
 
 ## Contributing
 
