@@ -5,6 +5,7 @@ export type zLMSProviderType = z.infer<typeof zLMSProvider>;
 
 export const zCreateCourseErrorStatus = z.enum([
   'available',
+  'alreadyEnrolled',
   'duplicate',
   'noEmailAccess',
   'noEnrollmentAccess'
@@ -15,6 +16,8 @@ export const zCreateCourseErrorDescriptions: Record<
   string
 > = {
   available: 'The course is available to be created.',
+  alreadyEnrolled:
+    'You are already enrolled in a course linked to this LMS course.',
   duplicate:
     'The course already exists in the database. A professor of the course, or a site administrator can add you to the course.',
   noEmailAccess:
