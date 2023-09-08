@@ -1,6 +1,7 @@
 'use client';
 
 import { ReloadIcon } from '@radix-ui/react-icons';
+import { Icons } from '@/components/ui/icons';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -22,7 +23,7 @@ export default function HomePage() {
         height: '100vh'
       }}
     >
-      <ReloadIcon
+      <Icons.spinner
         className="animate-spin"
         style={{ height: '100px', width: '100px' }}
       />

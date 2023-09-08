@@ -34,6 +34,7 @@ const CSV_Import = () => {
 
   const closeDialog = () => {
     if (fileInputRef.current) {
+      setIsFileUploaded(false);
       fileInputRef.current.value = '';
     }
   };
@@ -77,9 +78,15 @@ const CSV_Import = () => {
         courseId: data.selectedCourseId,
         courseMembers: transformedTableValues
       });
+      closeDialog();
       if (newMembers.success) {
         toast({
-          title: 'Imported CSV successfully'
+          title: 'Imported CSV successfully',
+          icon: 'success',
+          description:
+            'Added ' +
+            newMembers.allCourseMembersOfClass.length +
+            ' new members'
         });
         data.setCourseMembersOfSelectedCourse(
           newMembers.allCourseMembersOfClass
@@ -98,6 +105,7 @@ const CSV_Import = () => {
         variant: 'destructive',
         title: 'Importing CSV failed. Try Again. ' + error
       });
+      closeDialog();
       throw new Error('error unable to import' + error);
     }
     setIsImporting(false);
@@ -106,7 +114,7 @@ const CSV_Import = () => {
   return (
     <>
       {' '}
-      <div className="grid w-full max-w-sm items-center gap-1.5">
+      <div className="grid max-w-sm items-center gap-1.5">
         <Input
           ref={fileInputRef}
           id="csv"
@@ -115,11 +123,8 @@ const CSV_Import = () => {
           onChange={handleFileChange}
         />
       </div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button disabled={!isFileUploaded}>Preview</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[1000px]">
+      <Dialog open={isFileUploaded}>
+        <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
