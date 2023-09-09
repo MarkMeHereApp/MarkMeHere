@@ -1,7 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-import { generateTypedError } from '@/server/errorTypes';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number()
@@ -44,18 +43,40 @@ export const qrRouter = router({
 
           return { success: true, qrCode: returnCode };
         } catch (error) {
-          throw generateTypedError(error as Error);
+          throw new Error('Error creating QR code');
         }
       } catch (error) {
-        throw generateTypedError(error as Error);
+        throw new Error('Error Removing QR code');
       }
     }),
 
   //Search qrcode table for QRCode sent by the user
 
 
-  //http://localhost:3000/api/trpc/qr.ValidateQRCode?input=MTEATD
   ValidateQRCode: publicProcedure
+    .input(zQRCode)
+    .query(async ({ input }) => {
+      try {
+        console.log(input);
+        const storedQRCode = await prisma.qrcode.findFirst({
+          where: {
+            code: input.qr
+          }
+        });
+
+        //Check if we find a code in our DB that matches the code sent by the user
+        if (!!storedQRCode) {
+          return { success: true };
+        } else {
+          return { success: false };
+        }
+
+      } catch (error) {
+        throw new Error('Error finding QR code');
+      }
+    }),
+
+    CreateAttendanceToken: publicProcedure
     .input(zQRCode)
     .query(async ({ input }) => {
       try {
