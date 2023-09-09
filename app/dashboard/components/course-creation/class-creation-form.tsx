@@ -35,8 +35,8 @@ const CreateCourseFormSchema = z.object({
     .min(2, {
       message: 'Course Label must be at least 2 characters.'
     })
-    .max(30, {
-      message: 'Course Label must not be longer than 30 characters.'
+    .max(255, {
+      message: 'Course Label must not be longer than 255 characters.'
     })
     .refine((value) => !/\s\s/.test(value), {
       message: 'Course Label cannot contain double spaces'
@@ -48,8 +48,8 @@ const CreateCourseFormSchema = z.object({
     .min(2, {
       message: 'Course Name must be at least 2 characters.'
     })
-    .max(30, {
-      message: 'Course Name must not be longer than 30 characters.'
+    .max(255, {
+      message: 'Course Name must not be longer than 255 characters.'
     })
     .refine((value) => !/\s\s/.test(value), {
       message: 'Course Name cannot contain double spaces'
