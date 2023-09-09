@@ -3,6 +3,8 @@ import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 
+//We have to create the attendance token and redirect students to a attendance marked page
+
 export async function GET(req: NextRequest) {
   //Needed to call TRPC routes from serverside
   const caller = appRouter.createCaller({});
