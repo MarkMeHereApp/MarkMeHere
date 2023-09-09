@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
+import superjson from 'superjson';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -180,7 +181,7 @@ export default function QR() {
               url={
                 process.env.NEXT_PUBLIC_BASE_URL +
                 `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
-                  JSON.stringify({ qr: activeCode })
+                  superjson.stringify({ qr: activeCode })
                 )}`
               }
             />
@@ -220,7 +221,7 @@ export default function QR() {
               value={
                 process.env.NEXT_PUBLIC_BASE_URL +
                 `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
-                  JSON.stringify({ qr: activeCode })
+                  superjson.stringify({ qr: activeCode })
                 )}`
               }
               className="h-full w-full"
