@@ -3,6 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
+import { Icons } from '@/components/ui/icons';
 import { CourseMember } from '@prisma/client';
 import {
   zAttendanceStatus,
@@ -77,7 +78,11 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       const StatusIcon = zAttendanceStatusIcons[status];
 
       if (!status) {
-        return null;
+        return (
+          <div className="flex w-[100px] items-center">
+            <Icons.spinner className="animate-spin" />
+          </div>
+        );
       }
 
       return (

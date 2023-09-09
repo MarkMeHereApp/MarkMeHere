@@ -1,7 +1,5 @@
 'use client';
-import { useEffect } from 'react';
-import { toast } from '@/components/ui/use-toast';
-import Link from 'next/link';
+
 import { ReloadIcon } from '@radix-ui/react-icons';
 import dynamic from 'next/dynamic';
 import {
@@ -25,16 +23,6 @@ const ErrorComponent = ({
   reset: () => void;
   className?: string;
 }) => {
-  useEffect(() => {
-    toast({
-      title: 'Error',
-      icon: 'error_for_destructive_toasts',
-      variant: 'destructive',
-      description: error.message,
-      duration: 5000
-    });
-  }, [error]);
-
   const DynamicStars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
   });

@@ -1,5 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import z from 'zod';
+import { generateTypedError } from '@/server/errorTypes';
 // Import Prisma client
 import { PrismaClient } from '@prisma/client';
 import {
@@ -8,6 +9,7 @@ import {
   zCreateCourseErrorStatus
 } from '@/types/sharedZodTypes';
 const prisma = new PrismaClient();
+const { TRPCError } = require('@trpc/server');
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
@@ -29,7 +31,13 @@ export const canvasRouter = router({
     .input(z.object({ userEmail: z.string().optional() }))
     .query(async (requestData) => {
       if (!CANVAS_API_TOKEN || !CANVAS_DOMAIN) {
-        throw new Error('Canvas API token and domain not provided');
+        throw generateTypedError(
+          new TRPCError({
+            code: 'BAD_REQUEST',
+            message:
+              'Canvas API token and domain not provided. Please contact your administrator.'
+          })
+        );
       }
       try {
         // First, get all the Canvas courses from the API Key
@@ -53,7 +61,13 @@ export const canvasRouter = router({
           } else {
             errorMessage += 'No error message provided';
           }
-          throw new Error(errorMessage);
+
+          throw generateTypedError(
+            new TRPCError({
+              code: 'PRECONDITION_FAILED',
+              message: `Canvas Error: ${errorMessage})`
+            })
+          );
         }
 
         // Validate the data with Zod
@@ -139,8 +153,9 @@ export const canvasRouter = router({
                   zCreateCourseErrorStatus.Enum.noEmailAccess;
               }
             } catch (error) {
-              console.error(
-                `Failed to fetch enrollments for course ${course.id} from Canvas: ${error}`
+              throw generateTypedError(
+                error as Error,
+                `Failed to fetch enrollments for course ${course.id} from Canvas`
               );
             }
           }
@@ -168,10 +183,10 @@ export const canvasRouter = router({
             courseList: convertedCourses
           };
         } catch (error) {
-          throw new Error(`Failed to parse courses from Canvas: ${error}`);
+          throw generateTypedError(error as Error, `Unexpected Canvas Error`);
         }
       } catch (error) {
-        throw new Error(`Failed to fetch courses from Canvas: ${error}`);
+        throw generateTypedError(error as Error, `Unexpected Canvas Error`);
       }
     })
 });

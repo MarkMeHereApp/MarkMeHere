@@ -1,6 +1,7 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { generateTypedError } from '@/server/errorTypes';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number()
@@ -43,10 +44,10 @@ export const qrRouter = router({
 
           return { success: true, qrCode: returnCode };
         } catch (error) {
-          throw new Error('Error creating QR code');
+          throw generateTypedError(error as Error);
         }
       } catch (error) {
-        throw new Error('Error Removing QR code');
+        throw generateTypedError(error as Error);
       }
     }),
 

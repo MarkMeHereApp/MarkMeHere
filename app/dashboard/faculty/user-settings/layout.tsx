@@ -7,23 +7,23 @@ import { SidebarNav } from '@/components/general/sidebar-nav';
 const sidebarNavItems = [
   {
     title: 'Profile',
-    href: '/class-settings'
+    href: '/dashboard/faculty/user-settings'
   },
   {
     title: 'Account',
-    href: '/class-settings/account'
+    href: '/dashboard/faculty/user-settings/account'
   },
   {
     title: 'Appearance',
-    href: '/class-settings/appearance'
+    href: '/dashboard/faculty/user-settings/appearance'
   },
   {
     title: 'Notifications',
-    href: '/class-settings/notifications'
+    href: '/dashboard/faculty/user-settings/notifications'
   },
   {
     title: 'Display',
-    href: '/class-settings/display'
+    href: '/dashboard/faculty/user-settings/display'
   }
 ];
 
