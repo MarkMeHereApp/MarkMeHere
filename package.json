@@ -45,6 +45,7 @@
     "@tremor/react": "^2.0.1",
     "@trpc/client": "^10.38.1",
     "@trpc/react-query": "^10.38.1",
+    "@trpc/server": "^10.38.1",
     "@types/js-cookie": "^3.0.3",
     "@types/node": "18.14.2",
     "@types/react": "18.0.28",

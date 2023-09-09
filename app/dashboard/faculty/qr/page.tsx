@@ -177,7 +177,12 @@ export default function QR() {
         >
           {DynamicQRCode && (
             <DynamicQRCode
-              url={process.env.NEXT_PUBLIC_BASE_URL + '/submit/' + activeCode}
+              url={
+                process.env.NEXT_PUBLIC_BASE_URL +
+                `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
+                  JSON.stringify({ qr: activeCode })
+                )}`
+              }
             />
           )}
         </div>
@@ -190,7 +195,6 @@ export default function QR() {
       </>
     );
   }
-
 
   return (
     <div className="relative min-h-screen">
@@ -213,7 +217,12 @@ export default function QR() {
             <div> </div>
           ) : (
             <QRCode
-              value={process.env.NEXT_PUBLIC_BASE_URL + '/submit/' + activeCode}
+              value={
+                process.env.NEXT_PUBLIC_BASE_URL +
+                `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
+                  JSON.stringify({ qr: activeCode })
+                )}`
+              }
               className="h-full w-full"
             />
           )}

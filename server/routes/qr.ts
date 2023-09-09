@@ -7,7 +7,7 @@ export const zCreateQRCode = z.object({
 });
 
 export const zQRCode = z.object({
-  activeQRCode: z.string()
+  qr: z.string()
 });
 
 export const qrRouter = router({
@@ -51,18 +51,22 @@ export const qrRouter = router({
     }),
 
   //Search qrcode table for QRCode sent by the user
+
+
+  //http://localhost:3000/api/trpc/qr.ValidateQRCode?input=MTEATD
   ValidateQRCode: publicProcedure
     .input(zQRCode)
-    .mutation(async (requestData) => {
+    .query(async ({ input }) => {
       try {
+        console.log(input);
         const storedQRCode = await prisma.qrcode.findFirst({
           where: {
-            code: requestData.input.activeQRCode
+            code: input.qr
           }
         });
 
         //Check if we find a code in our DB that matches the code sent by the user
-        if (storedQRCode) {
+        if (!!storedQRCode) {
           return { success: true };
         } else {
           return { success: false };
