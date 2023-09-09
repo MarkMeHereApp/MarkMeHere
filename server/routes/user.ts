@@ -1,6 +1,7 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { generateTypedError } from '@/server/errorTypes';
 
 export const zUpdateSelectedCourseId = z.object({
   email: z.string(),
@@ -14,11 +15,15 @@ export const userRouter = router({
     .input(zUpdateSelectedCourseId)
     .mutation(async (requestData) => {
       // Update the selectedCourseId of the user with the given email
-      const updatedUsers = await prisma.user.update({
-        where: { email: requestData.input.email },
-        data: { selectedCourseId: requestData.input.newCourseId }
-      });
-      return { success: true };
+      try {
+        const updatedUsers = await prisma.user.update({
+          where: { email: requestData.input.email },
+          data: { selectedCourseId: requestData.input.newCourseId }
+        });
+        return { success: true };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
     })
 });
 

@@ -28,8 +28,6 @@ import {
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString, throwErrorOrShowToast } from '@/utils/globalFunctions';
-import { Prisma } from '@prisma/client';
-import { TRPCClientError } from '@trpc/client';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -78,11 +76,9 @@ export default function CreateCourseForm({
   const utils = trpc.useContext();
 
   if (error) {
-    if (error) {
-      setLoading(false);
-      throwErrorOrShowToast(error);
-      setError(null);
-    }
+    setLoading(false);
+    throwErrorOrShowToast(error);
+    setError(null);
   }
 
   type CourseFormInput = Course & {

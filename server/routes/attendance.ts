@@ -5,6 +5,8 @@ import {
   zAttendanceStatus,
   zAttendanceStatusType
 } from '@/types/sharedZodTypes';
+import { generateTypedError } from '@/server/errorTypes';
+import { TRPCError } from '@trpc/server';
 
 export const zGetCourseMembersOfLecture = z.object({
   lectureId: z.string()
@@ -33,7 +35,7 @@ export const attendanceRouter = router({
         });
         return { success: true, attendanceEntries };
       } catch (error) {
-        throw new Error('Error getting attendance data');
+        throw generateTypedError(error as Error);
       }
     }),
 
@@ -52,8 +54,12 @@ export const attendanceRouter = router({
           }
         });
         if (!lectures || lectures.length === 0) {
-          throw new Error(
-            'Multiple of lectures exist on the same day. This should never happen'
+          throw generateTypedError(
+            new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message:
+                'Multiple of lectures exist on the same day. This should never happen'
+            })
           );
         }
 
@@ -84,14 +90,14 @@ export const attendanceRouter = router({
           }
         });
 
-        if (!courseMembers || courseMembers.length === 0) {
-          throw new Error('No course members found');
-        }
-
         interface AttendanceEntryMapped {
           courseMemberId: string;
           checkInDate: Date | null;
           status: zAttendanceStatusType;
+        }
+
+        if (!courseMembers || courseMembers.length === 0) {
+          return { success: true, attendanceEntriesMapped: [] };
         }
 
         const attendanceEntriesMapped: AttendanceEntryMapped[] =
@@ -115,7 +121,7 @@ export const attendanceRouter = router({
           });
         return { success: true, attendanceEntriesMapped };
       } catch (error) {
-        throw new Error('Error getting attendance data');
+        throw generateTypedError(error as Error);
       }
     }),
 
@@ -139,13 +145,13 @@ export const attendanceRouter = router({
             });
             return { success: true, attendanceEntries };
           } catch (error) {
-            throw new Error('Error getting attendance data');
+            throw generateTypedError(error as Error);
           }
         }
 
         return { success: true, newAttendanceEntry };
       } catch (error) {
-        throw new Error('Error creating attendance data');
+        throw generateTypedError(error as Error);
       }
     })
 });

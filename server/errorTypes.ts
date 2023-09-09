@@ -7,7 +7,10 @@ import { z } from 'zod';
 
 // TRPC errors are thrown when a procedure fails, even if the error is a Prisma error.
 // This function allows us to preserve the Prisma error type and also assign a TRPC error code.
-export function tryGenerateTypedError(error: Error): Error {
+export function generateTypedError(
+  error: Error,
+  customMessage?: string
+): Error {
   const prismaError = error as Prisma.PrismaClientKnownRequestError;
   if (prismaError) {
     const prismaErrorCode = prismaError.code as zPrismaErrorType;
@@ -19,9 +22,11 @@ export function tryGenerateTypedError(error: Error): Error {
 
       return new TRPCError({
         code: zPrismaErrorTRPCCode[prismaErrorCode],
-        message: `${zPrismaErrorMessage[prismaErrorCode](field)} (${
-          prismaError.code
-        })`,
+        message: customMessage
+          ? `${customMessage} (${prismaError.code})`
+          : `${zPrismaErrorMessage[prismaErrorCode](field)} (${
+              prismaError.code
+            })`,
         cause: prismaError
       });
     }
@@ -29,7 +34,9 @@ export function tryGenerateTypedError(error: Error): Error {
     // If we haven't defined what to do with this error, throw an internal server error
     return new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: ` ${prismaError.message} (${prismaError.code})`,
+      message: customMessage
+        ? `${customMessage} (${prismaError.code})`
+        : `${prismaError.message} (${prismaError.code})`,
       cause: prismaError
     });
   }
@@ -38,7 +45,7 @@ export function tryGenerateTypedError(error: Error): Error {
   if (zodError) {
     return new TRPCError({
       code: 'BAD_REQUEST',
-      message: `Invalid input data.`,
+      message: customMessage ? customMessage : `Invalid input data.`,
       cause: zodError
     });
   }
