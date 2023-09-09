@@ -6,6 +6,10 @@ export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number()
 });
 
+export const zQRCode = z.object({
+  activeQRCode: z.string()
+});
+
 export const qrRouter = router({
   CreateNewQRCode: publicProcedure
     .input(zCreateQRCode)
@@ -43,6 +47,29 @@ export const qrRouter = router({
         }
       } catch (error) {
         throw new Error('Error Removing QR code');
+      }
+    }),
+
+  //Search qrcode table for QRCode sent by the user
+  ValidateQRCode: publicProcedure
+    .input(zQRCode)
+    .mutation(async (requestData) => {
+      try {
+        const storedQRCode = await prisma.qrcode.findFirst({
+          where: {
+            code: requestData.input.activeQRCode
+          }
+        });
+
+        //Check if we find a code in our DB that matches the code sent by the user
+        if (storedQRCode) {
+          return { success: true };
+        } else {
+          return { success: false };
+        }
+
+      } catch (error) {
+        throw new Error('Error finding QR code');
       }
     })
 });
