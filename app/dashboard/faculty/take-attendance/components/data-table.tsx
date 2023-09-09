@@ -64,7 +64,8 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [courseMembers, setCourseMembers] = React.useState<CourseMember[]>([]);
+
+  const [courseMembers, setCourseMembers] = React.useState<ExtendedCourseMember[]>([]);
   const [error, setError] = React.useState<Error | null>(null);
 
   if (error) {
@@ -78,10 +79,16 @@ export function DataTable<TData, TValue>({
         // We need this to refetch the attendance entries when the date is changed
         const newCourseMembers: ExtendedCourseMember[] =
           courseMembersOfSelectedCourse
-            ?.map((member) => ({
-              ...member,
-              AttendanceStatus: 'here' as zAttendanceStatusType
-            }))
+            ?.map((member) => {
+              // Find the corresponding attendance entry for the member
+              const attendanceEntry = attendanceEntries.find(
+                (entry) => entry.courseMemberId === member.id
+              );
+              return {
+                ...member,
+                AttendanceEntry: attendanceEntry
+              };
+            })
             .filter(
               (member) =>
                 member.courseId === selectedCourseId &&

@@ -74,15 +74,15 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
-    accessorKey: 'AttendanceStatus',
+    accessorKey: 'status',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const attendanceEntry = row.getValue(
-        'AttendanceEntry'
-      ) as AttendanceEntry;
-      const status = attendanceEntry ? attendanceEntry.status : undefined;
+      const originalValue = row.original as ExtendedCourseMember;
+      const status = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.status
+        : undefined;
 
       if (!status) {
         return (
@@ -93,15 +93,34 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         );
       }
 
-      return (
-        <div className="flex w-[100px] items-center">
-          <Icons.logo />
-          <span className="ml-1">{formatString(status)}</span>
-        </div>
-      );
+      try {
+        const statusAsZod = zAttendanceStatus.parse(status);
+        const IconComponent = zAttendanceStatusIcons[statusAsZod];
+
+        return (
+          <div className="flex w-[100px] items-center">
+            <>
+              <IconComponent />
+
+              <span>{formatString(statusAsZod)}</span>
+            </>
+          </div>
+        );
+      } catch (e) {
+        throw new Error(`Invalid attendance status: ${status}`);
+      }
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      const originalValue = row.original as ExtendedCourseMember;
+      const status = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.status
+        : undefined;
+
+      if (value.includes('absent')) {
+        return status === undefined;
+      }
+
+      return value.includes(status);
     }
   }
 ];
