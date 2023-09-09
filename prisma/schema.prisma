@@ -54,6 +54,7 @@ model Lecture {
   courseId          String            
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
+  @@unique([courseId, lectureDate])
 }
 
 model AttendanceEntry {

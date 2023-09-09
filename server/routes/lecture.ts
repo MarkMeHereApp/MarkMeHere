@@ -10,8 +10,7 @@ export const zGetLecturesOfCourse = z.object({
 
 export const zTryGetLectureFromDate = z.object({
   courseId: z.string(),
-  lectureDate: z.date(),
-  returnAttendance: z.boolean().optional()
+  lectureDate: z.date()
 });
 
 export const zCreateLecture = z.object({
@@ -34,6 +33,7 @@ export const lectureRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
+  // This function returns the lecture object, and if returnAttendance is true, it also returns the attendance entries for that lecture.
   tryGetLectureFromDate: publicProcedure
     .input(zTryGetLectureFromDate)
     .query(async (requestData) => {
@@ -53,10 +53,6 @@ export const lectureRouter = router({
           throw new Error(
             'More than one lecture found with the same date. This should never happen'
           );
-        }
-
-        if (lectures[0] && !requestData.input.returnAttendance) {
-          return { success: true, lecture: lectures[0] };
         }
 
         try {
@@ -91,20 +87,15 @@ export const lectureRouter = router({
             )
           );
         }
-        await prisma.lecture.create({
+        const newLecture = await prisma.lecture.create({
           data: {
             courseId: requestData.input.courseId,
             lectureDate: requestData.input.lectureDate
           }
         });
-        const lectures = await prisma.lecture.findMany({
-          where: {
-            courseId: requestData.input.courseId
-          }
-        });
 
-        if (lectures) {
-          return { success: true, lectures };
+        if (newLecture) {
+          return { success: true, newLecture };
         }
         throw generateTypedError(
           new TRPCError({

@@ -1,5 +1,5 @@
 import z from 'zod';
-import { CourseMember } from '@prisma/client';
+import { CourseMember, AttendanceEntry } from '@prisma/client';
 import {
   CheckCircledIcon,
   CircleIcon,
@@ -49,7 +49,7 @@ export const zAttendanceStatus = z.enum(['here', 'absent', 'excused', 'late']);
 export type zAttendanceStatusType = z.infer<typeof zAttendanceStatus>;
 
 export type ExtendedCourseMember = CourseMember & {
-  AttendanceStatus?: zAttendanceStatusType;
+  AttendanceEntry?: AttendanceEntry;
 };
 
 export const zAttendanceStatusIcons: Record<
