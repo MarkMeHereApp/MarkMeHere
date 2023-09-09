@@ -43,6 +43,7 @@ import {
   zAttendanceStatusType
 } from '@/types/sharedZodTypes';
 import { throwErrorOrShowToast } from '@/utils/globalFunctions';
+import { Icons } from '@/components/ui/icons';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -63,21 +64,12 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [lecture, setLecture] = React.useState(false);
-  const [attendanceEntries, setAttendanceEntries] = React.useState<
-    AttendanceEntry[]
-  >([]);
-  const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
-  const [courseMembers, setCourseMembers] = React.useState<
-    ExtendedCourseMember[]
-  >([]);
+
+  const [courseMembers, setCourseMembers] = React.useState<ExtendedCourseMember[]>([]);
   const [error, setError] = React.useState<Error | null>(null);
 
   if (error) {
-    setLecture(false);
-    setCurrentLectureId('');
     setCourseMembers([]);
-    setAttendanceEntries([]);
     throwErrorOrShowToast(error as Error);
   }
 
@@ -129,7 +121,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
-  }); //
+  }); 
 
   // handle checking if the lecture exists for a specific date
   const getLectureOfCourseQuery = trpc.lecture.tryGetLectureFromDate.useQuery(
@@ -138,25 +130,7 @@ export function DataTable<TData, TValue>({
       lectureDate: selectedAttendanceDate
     },
     {
-      enabled: !!selectedAttendanceDate && !!selectedCourseId,
-      onSuccess: (data) => {
-        if (!data) throw new Error('No data returned from query');
-
-        if (data.success === false) {
-          setLecture(false);
-          return;
-        }
-
-        if (!data.lecture) {
-          throw new Error('Success is true but no lecture was returned');
-        }
-
-        const lecture = data.lecture;
-        setLecture(true);
-        setCurrentLectureId(lecture.id);
-        setAttendanceEntries(data.attendance);
-        return true;
-      }
+      enabled: !!selectedAttendanceDate && !!selectedCourseId
     }
   );
 
@@ -165,25 +139,19 @@ export function DataTable<TData, TValue>({
   }
 
   useEffect(() => {
-    setLecture(false);
     getLectureOfCourseQuery.refetch();
   }, [selectedAttendanceDate]);
 
   const CreateNewLectureButton = () => {
-    const { selectedCourseId, selectedAttendanceDate } = useCourseContext();
     const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
 
     const handleClick = async () => {
       if (selectedCourseId && selectedAttendanceDate) {
         try {
-          const newLecture = await createNewLectureMutation.mutateAsync({
+          await createNewLectureMutation.mutateAsync({
             courseId: selectedCourseId,
             lectureDate: selectedAttendanceDate
           });
-          setCurrentLectureId(newLecture.newLecture.id);
-          setLecture(true);
-          setAttendanceEntries([]);
-
           toast({
             title: 'Created New Lecture!',
             description: `Successfully created a new lecture for ${selectedAttendanceDate}`,
@@ -200,11 +168,15 @@ export function DataTable<TData, TValue>({
   return selectedCourseId ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-
       {getLectureOfCourseQuery.isLoading ||
       getLectureOfCourseQuery.isFetching ? (
-        <div>Loading...</div>
-      ) : lecture ? (
+        <div className="pt-8 flex justify-center items-center">
+            <Icons.logo
+                className="wave primary-foreground"
+                style={{ height: '100px', width: '100px' }}
+            />
+        </div>
+      ) : getLectureOfCourseQuery.data.lecture ? (
         <div className="space-y-4">
           <div className="rounded-md border">
             <Table>
@@ -259,7 +231,7 @@ export function DataTable<TData, TValue>({
           <DataTablePagination table={table} />
         </div>
       ) : (
-        <div className="min-h-screen flex justify-center items-center">
+        <div className="pt-8 flex justify-center items-center">
           <Card className="w-85 h-50">
             <CardHeader>
               <CardTitle>
@@ -273,5 +245,9 @@ export function DataTable<TData, TValue>({
         </div>
       )}
     </div>
-  ) : null;
+  ) : (
+    <div className="pt-8 flex justify-center items-center">
+        <h3>Create/Choose a course!</h3>
+    </div>
+  );
 }
