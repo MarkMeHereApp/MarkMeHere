@@ -3,8 +3,6 @@ import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 
-//We have to create the attendance token and redirect students to a attendance marked page
-
 export async function GET(req: NextRequest) {
   //Needed to call TRPC routes from serverside
   const caller = appRouter.createCaller({});
@@ -19,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // the server-side call
-    const { success } = await caller.qr.ValidateQRCode({ qr: qr, courseId: courseId });
+    const { success } = await caller.recordQRAttendance.ValidateQRCode({ qr: qr, courseId: courseId });
     console.log(success);
 
     //If qr code is valid create new attendance token in database and redirect to

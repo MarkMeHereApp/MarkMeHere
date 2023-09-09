@@ -5,6 +5,7 @@ import { courseRouter } from './routes/course';
 import { courseMemberRouter } from './routes/courseMember';
 import { userRouter } from './routes/user';
 import { qrRouter } from './routes/qr';
+import { recordQRAttendanceRouter } from './routes/recordQRAttendance';
 import { lectureRouter } from './routes/lecture';
 import { attendanceRouter } from './routes/attendance';
 
@@ -13,6 +14,7 @@ export const appRouter = router({
   courseMember: courseMemberRouter,
   user: userRouter,
   qr: qrRouter,
+  recordQRAttendance: recordQRAttendanceRouter,
   lecture: lectureRouter,
   attendance: attendanceRouter,
   canvas: canvasRouter
