@@ -35,7 +35,9 @@ const ManageCourseMembers = () => {
             <DataTable columns={columns} />
           </>
         ) : (
-          <h3>Create/Choose a course!</h3>
+            <div className="min-h-screen flex justify-center items-center">
+                <h3>Create/Choose a course!</h3>
+            </div>
         )}
       </div>
     </div>

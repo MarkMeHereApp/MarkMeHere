@@ -175,7 +175,7 @@ export function DataTable<TData, TValue>({
     return <Button onClick={() => handleClick()}>Create a new lecture</Button>;
   };
 
-  return courseMembersOfSelectedCourse ? (
+  return selectedCourseId ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
       {lecture ? (
@@ -233,7 +233,7 @@ export function DataTable<TData, TValue>({
           <DataTablePagination table={table} />
         </div>
       ) : (
-        <div className="pt-24 flex justify-center items-center">
+        <div className="min-h-screen flex justify-center items-center">
           <Card className="w-85 h-50">
             <CardHeader>
               <CardTitle>
@@ -247,5 +247,9 @@ export function DataTable<TData, TValue>({
         </div>
       )}
     </div>
-  ) : null;
+  ) : (
+    <div className="min-h-screen flex justify-center items-center">
+        <h3>Create/Choose a course!</h3>
+    </div>
+  );
 }
