@@ -108,7 +108,7 @@ model qrcode {
 model AttendanceToken {
   id        String   @id @default(cuid())
   token     String
-  lectureId String
+  courseId String
   createdAt DateTime @default(now())
 
   // We could implement a system where these are auto deleted after expiration (e.g 10 mins)

@@ -3,7 +3,7 @@ import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   //Needed to call TRPC routes from serverside
   const caller = appRouter.createCaller({});
   const params = req.nextUrl.searchParams;
@@ -12,22 +12,27 @@ export async function GET(req: NextRequest) {
   const queryCourseId: string | null = params.get('lectureId');
 
   //Convert string | null type to string
-  const qr: string = queryQR ?? ''; 
+  const qr: string = queryQR ?? '';
   const courseId: string = queryCourseId ?? '';
 
   try {
     // the server-side call
-    const { success } = await caller.recordQRAttendance.ValidateQRCode({ qr: qr, courseId: courseId });
-    console.log(success);
+    const { success } = await caller.recordQRAttendance.ValidateQRCode({
+      qr: qr,
+      courseId: courseId
+    });
 
-    //If qr code is valid create new attendance token in database and redirect to
-    //mark attendance page that will make a db call to mark you present and show
-    //either success or failure
+
+    //Here we need to redirect to our attendance marked page
+    //and mark their attendance from there
+
+
+    //If QR code is valid create an attendance token
     if (success) {
-      //Create attendance token
-      // return NextResponse.json({ message: `Valid QR code` });
-      console.log("successfully redirecting")
-      return NextResponse.redirect(new URL('/', req.url))
+      await caller.recordQRAttendance.CreateAttendanceToken({
+        courseId: courseId
+      });
+      //return NextResponse.redirect(new URL('/', req.url));
     } else {
       return NextResponse.json({
         error: { message: `Invalid QR code` }
