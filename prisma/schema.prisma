@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -96,7 +97,7 @@ model CourseMember {
 
 model qrcode {
   id        String   @id @default(cuid())
-  //lectureId  String
+  courseId  String
   //lecture    Lecture          @relation(fields: [lectureId], references: [id])
   code      String
   createdAt DateTime @default(now())

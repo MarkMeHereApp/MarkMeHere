@@ -6,13 +6,18 @@ import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 export async function GET(req: NextRequest) {
   //Needed to call TRPC routes from serverside
   const caller = appRouter.createCaller({});
+  const params = req.nextUrl.searchParams;
 
-  const queryQR: string | null = req.nextUrl.searchParams.get('qr');
-  const qr: string = queryQR ?? ''; //Convert string | null type to string
+  const queryQR: string | null = params.get('qr');
+  const queryCourseId: string | null = params.get('lectureId');
+
+  //Convert string | null type to string
+  const qr: string = queryQR ?? ''; 
+  const courseId: string = queryCourseId ?? '';
 
   try {
     // the server-side call
-    const { success } = await caller.qr.ValidateQRCode({ qr: qr });
+    const { success } = await caller.qr.ValidateQRCode({ qr: qr, courseId: courseId });
     console.log(success);
 
     //If qr code is valid create new attendance token in database and redirect to

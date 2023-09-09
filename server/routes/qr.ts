@@ -3,11 +3,13 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 
 export const zCreateQRCode = z.object({
-  secondsToExpireNewCode: z.number()
+  secondsToExpireNewCode: z.number(),
+  courseId: z.string()
 });
 
-export const zQRCode = z.object({
-  qr: z.string()
+export const zValidateCode = z.object({
+  qr: z.string(),
+  courseId: z.string()
 });
 
 export const qrRouter = router({
@@ -20,6 +22,8 @@ export const qrRouter = router({
           .substring(2, 8)
           .toUpperCase();
 
+        const courseId = requestData.input.courseId;
+
         const newExpiry = new Date();
         newExpiry.setSeconds(
           newExpiry.getSeconds() + requestData.input.secondsToExpireNewCode
@@ -29,6 +33,7 @@ export const qrRouter = router({
           const returnCode = await prisma.qrcode.create({
             data: {
               code: newCode,
+              courseId: courseId,
               expiresAt: newExpiry
             }
           });
@@ -52,32 +57,31 @@ export const qrRouter = router({
 
   //Search qrcode table for QRCode sent by the user
 
+  ValidateQRCode: publicProcedure.input(zValidateCode).query(async ({ input }) => {
+    try {
+      const qr = input.qr;
+      const courseId = input.courseId;
 
-  ValidateQRCode: publicProcedure
-    .input(zQRCode)
-    .query(async ({ input }) => {
-      try {
-        console.log(input);
-        const storedQRCode = await prisma.qrcode.findFirst({
-          where: {
-            code: input.qr
-          }
-        });
-
-        //Check if we find a code in our DB that matches the code sent by the user
-        if (!!storedQRCode) {
-          return { success: true };
-        } else {
-          return { success: false };
+      const storedQRCode = await prisma.qrcode.findFirst({
+        where: {
+          code: qr,
+          courseId: courseId
         }
+      });
 
-      } catch (error) {
-        throw new Error('Error finding QR code');
+      //Check if we find a code in our DB that matches the code sent by the user
+      if (!!storedQRCode) {
+        return { success: true };
+      } else {
+        return { success: false };
       }
-    }),
+    } catch (error) {
+      throw new Error('Error finding QR code');
+    }
+  }),
 
-    CreateAttendanceToken: publicProcedure
-    .input(zQRCode)
+  CreateAttendanceToken: publicProcedure
+    .input(zValidateCode)
     .query(async ({ input }) => {
       try {
         console.log(input);
@@ -93,7 +97,6 @@ export const qrRouter = router({
         } else {
           return { success: false };
         }
-
       } catch (error) {
         throw new Error('Error finding QR code');
       }

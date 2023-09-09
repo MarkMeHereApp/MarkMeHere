@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
+import { useCourseContext } from '@/app/course-context';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -18,6 +19,10 @@ export default function QR() {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
+  const { selectedCourseId } = useCourseContext();
+
+  //Convert string | null type to string
+  const courseId: string = selectedCourseId ?? '';
   const mode =
     searchParams && searchParams.get('mode')
       ? searchParams.get('mode')
@@ -52,6 +57,7 @@ export default function QR() {
   const initialCode: qrcode = {
     id: 'LOADING',
     code: 'LOADING',
+    courseId: 'LOADING',
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...
   };
@@ -68,7 +74,8 @@ export default function QR() {
     activeCodeRef.current = bufferCodeRef.current;
     try {
       const newBufferCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime * 2 // 5 seconds * 2 (to account for the buffer the buffer)
+        secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
+        courseId: courseId
       });
 
       if (newBufferCode.success) {
@@ -85,7 +92,8 @@ export default function QR() {
     setActiveCode('LOADING');
     try {
       const newActiveCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime // 5 seconds
+        secondsToExpireNewCode: expirationTime, // 5 seconds
+        courseId: courseId
       });
 
       if (newActiveCode.success) {
@@ -94,7 +102,8 @@ export default function QR() {
       setActiveCode(activeCodeRef.current.code);
 
       const newBufferCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime * 2 // 5 seconds * 2 (to account for the buffer the buffer)
+        secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
+        courseId: courseId
       });
 
       if (newBufferCode.success) {
@@ -179,9 +188,10 @@ export default function QR() {
             <DynamicQRCode
               url={
                 process.env.NEXT_PUBLIC_BASE_URL +
-                `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
-                  JSON.stringify({ qr: activeCode })
-                )}`
+                `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
+                  JSON.stringify(selectedCourseId)
+                )}
+                &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
               }
             />
           )}
@@ -219,9 +229,10 @@ export default function QR() {
             <QRCode
               value={
                 process.env.NEXT_PUBLIC_BASE_URL +
-                `/api/trpc/qr.ValidateQRCode?input=${encodeURIComponent(
-                  JSON.stringify(activeCode)
-                )}`
+                `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
+                  JSON.stringify(selectedCourseId)
+                )}
+              &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
               }
               className="h-full w-full"
             />
