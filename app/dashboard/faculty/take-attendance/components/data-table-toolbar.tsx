@@ -6,13 +6,15 @@ import { Table } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/app/dashboard/faculty/take-attendance/components/data-table-view-options';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
 import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
 import {
   zAttendanceStatus,
-  zAttendanceStatusIcons
+  zAttendanceStatusIcons,
+  zAttendanceStatusType
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 
@@ -23,14 +25,29 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
+  type StatusType = {
+    label: string;
+    value: zAttendanceStatusType | 'absent';
+    icon: React.ComponentType;
+  };
 
-  const statuses = zAttendanceStatus.options.map((status) => ({
-    label: status as string,
-    value: formatString(status),
+  const isFiltered = table.getState().columnFilters.length > 0;
+  const attendanceTypes = zAttendanceStatus.options.map((status) => ({
+    label: ` ${formatString(status)}`,
+    value: status,
     icon: zAttendanceStatusIcons[status]
   }));
 
+  const statuses: StatusType[] = attendanceTypes;
+
+  statuses.push({
+    label: 'Absent',
+    value: 'absent',
+    icon: () => <CrossCircledIcon className="mr-1 text-destructive " />
+  });
+
+  //  absent: () => <CrossCircledIcon className="text-destructive" />,
+  //  absent: () => <CrossCircledIcon className="text-destructive" />,
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
