@@ -1,5 +1,6 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
+import { TRPCClientError } from '@trpc/client';
 
 export function formatString(str: string): string {
   return str
@@ -8,11 +9,21 @@ export function formatString(str: string): string {
     .join(' ');
 }
 
+export function throwErrorOrShowToast(error: Error) {
+  if (!(error instanceof TRPCClientError)) {
+    throw error;
+  }
+
+  if (error.shape?.data?.toastError) {
+    toastError(error.message);
+    return;
+  }
+
+  throw error;
+}
+
 // These are errors that are expected: duplicate course, already enrolled, etc.
-export function minimalError(
-  error: string,
-  action: ToastActionElement | undefined
-) {
+export function toastError(error: string, action?: ToastActionElement) {
   toast({
     title: 'Error',
     icon: 'error_for_destructive_toasts',
@@ -23,9 +34,9 @@ export function minimalError(
 }
 
 // These are warnings that are expected.
-export function minimalWarning(
+export function toastWarning(
   warning: string,
-  action: ToastActionElement | undefined
+  action?: ToastActionElement | undefined
 ) {
   toast({
     title: 'Warning',

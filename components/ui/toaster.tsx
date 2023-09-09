@@ -32,10 +32,10 @@ export function Toaster() {
   > = {
     success: <Icons.logo className="mr-2 text-primary wave" />,
     warning: <ExclamationTriangleIcon className="mr-2 text-primary" />,
-    error_for_destructive_toasts: (
+    error_for_nondestructive_toasts: (
       <CrossCircledIcon className="mr-2  text-destructive" />
     ),
-    error_for_nondestructive_toasts: (
+    error_for_destructive_toasts: (
       <CrossCircledIcon className="mr-2  text-destructive-foreground" />
     ),
     bookmark: <BookmarkFilledIcon className="mr-2 text-primary" />

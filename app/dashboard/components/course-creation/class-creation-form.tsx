@@ -27,7 +27,9 @@ import {
   zLMSProviderType
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
-import { formatString } from '@/utils/globalFunctions';
+import { formatString, throwErrorOrShowToast } from '@/utils/globalFunctions';
+import { Prisma } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -72,7 +74,16 @@ export default function CreateCourseForm({
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const { setUserCourses, setUserCourseMembers, setSelectedCourseId } =
     useCourseContext();
+  const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
+
+  if (error) {
+    if (error) {
+      setLoading(false);
+      throwErrorOrShowToast(error);
+      setError(null);
+    }
+  }
 
   type CourseFormInput = Course & {
     autoEnroll: boolean;
@@ -90,15 +101,15 @@ export default function CreateCourseForm({
     setLoading(true);
     const sessionData = session.data;
     if (!sessionData) {
-      setLoading(false);
-      throw new Error('Session data is undefined, ');
+      setError(new Error('SessionData is undefined.'));
+      return;
     }
 
     const userFullName = sessionData?.user?.name;
     const userEmail = sessionData?.user?.email;
     if (!userFullName || !userEmail) {
-      setLoading(false);
-      throw new Error('User name or email is undefined, ');
+      setError(new Error('User name or email is undefined.'));
+      return;
     }
 
     try {
@@ -117,9 +128,12 @@ export default function CreateCourseForm({
         }
       });
 
-      if (handleCreateCourseResult.success === false) {
-        setLoading(false);
-        throw new Error('Unexpected server error.');
+      if (!handleCreateCourseResult.resCourse) {
+        setError(
+          //prettier-ignore
+          new Error('Unexpected server error: No course returned from createCourseMutation.')
+        );
+        return;
       }
 
       const newEnrollment = handleCreateCourseResult.resEnrollment;
@@ -150,8 +164,8 @@ export default function CreateCourseForm({
       setLoading(false);
       return;
     } catch (error) {
-      setLoading(false);
-      throw new Error('Unexpected server error.');
+      setError(error as Error);
+      return;
     }
   }
 

@@ -3,6 +3,7 @@ import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { zLMSProvider } from '@/types/sharedZodTypes';
+import { tryGenerateTypedError } from '@/server/errorTypes';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
@@ -58,7 +59,7 @@ export const courseRouter = router({
 
         return { success: true, resCourse, resEnrollment };
       } catch (error) {
-        throw new Error('Error creating course');
+        throw tryGenerateTypedError(error as Error);
       }
     })
 });
