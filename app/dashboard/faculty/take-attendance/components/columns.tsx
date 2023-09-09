@@ -4,7 +4,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
 import { Icons } from '@/components/ui/icons';
-import { CourseMember } from '@prisma/client';
+import {
+  CrossCircledIcon,
+  CheckCircledIcon,
+  ClockIcon
+} from '@radix-ui/react-icons';
+import { AttendanceEntry, CourseMember } from '@prisma/client';
 import {
   zAttendanceStatus,
   zAttendanceStatusType,
@@ -74,20 +79,23 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue('AttendanceStatus') as zAttendanceStatusType;
-      const StatusIcon = zAttendanceStatusIcons[status];
+      const attendanceEntry = row.getValue(
+        'AttendanceEntry'
+      ) as AttendanceEntry;
+      const status = attendanceEntry ? attendanceEntry.status : undefined;
 
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <Icons.spinner className="animate-spin" />
+            <CrossCircledIcon className="text-destructive" />
+            <span className="ml-1">Absent</span>
           </div>
         );
       }
 
       return (
         <div className="flex w-[100px] items-center">
-          <StatusIcon />
+          <Icons.logo />
           <span className="ml-1">{formatString(status)}</span>
         </div>
       );

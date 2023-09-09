@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { toastError } from '@/utils/globalFunctions';
 
 import { DataTablePagination } from '../components/data-table-pagination';
 import { DataTableToolbar } from '../components/data-table-toolbar';
@@ -35,12 +36,13 @@ import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
-import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
+import { AttendanceEntry, CourseMember } from '@prisma/client';
 import {
   zAttendanceStatus,
   ExtendedCourseMember,
   zAttendanceStatusType
 } from '@/types/sharedZodTypes';
+import { throwErrorOrShowToast } from '@/utils/globalFunctions';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,6 +69,15 @@ export function DataTable<TData, TValue>({
   >([]);
   const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
   const [courseMembers, setCourseMembers] = React.useState<CourseMember[]>([]);
+  const [error, setError] = React.useState<Error | null>(null);
+
+  if (error) {
+    setLecture(false);
+    setCurrentLectureId('');
+    setCourseMembers([]);
+    setAttendanceEntries([]);
+    throwErrorOrShowToast(error as Error);
+  }
 
   useEffect(() => {
     if (courseMembersOfSelectedCourse) {
@@ -113,47 +124,43 @@ export function DataTable<TData, TValue>({
   }); //
 
   // handle checking if the lecture exists for a specific date
-  const getLecturesOfCourseQuery = trpc.lecture.getLecturesofCourse.useQuery(
+  const getLectureOfCourseQuery = trpc.lecture.tryGetLectureFromDate.useQuery(
     {
-      courseId: selectedCourseId || ''
+      courseId: selectedCourseId || '',
+      lectureDate: selectedAttendanceDate
     },
     {
+      enabled: !!selectedAttendanceDate && !!selectedCourseId,
       onSuccess: (data) => {
-        if (!data) return;
-        const lectures = data.lectures;
-        const lectureStatus = lectures.some((lecture: Lecture) => {
-          // Check if lectureDate matches selectedAttendanceDate
-          const dateMatch =
-            lecture.lectureDate.getTime() === selectedAttendanceDate?.getTime();
+        if (!data) throw new Error('No data returned from query');
 
-          if (dateMatch) {
-            setCurrentLectureId(lecture.id);
-            getAttendanceEntriesOfLectureQuery.refetch();
-          }
+        if (data.success === false) {
+          setLecture(false);
+          return;
+        }
 
-          return dateMatch;
-        });
-        setLecture(lectureStatus);
+        if (!data.lecture) {
+          throw new Error('Success is true but no lecture was returned');
+        }
+
+        console.log(data);
+        const lecture = data.lecture;
+        setLecture(true);
+        setCurrentLectureId(lecture.id);
+        setAttendanceEntries(data.attendance);
+
+        return true;
       }
     }
   );
 
-  // handle getting the attendance entries for the lecture
-  const getAttendanceEntriesOfLectureQuery =
-    trpc.attendance.getAttendanceDataOfCourse.useQuery(
-      {
-        lectureId: currentLectureId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setAttendanceEntries(data.attendanceEntries);
-        }
-      }
-    );
+  if (getLectureOfCourseQuery.error) {
+    throw getLectureOfCourseQuery.error;
+  }
 
   useEffect(() => {
-    getLecturesOfCourseQuery.refetch();
+    setLecture(false);
+    getLectureOfCourseQuery.refetch();
   }, [selectedAttendanceDate]);
 
   const CreateNewLectureButton = () => {
@@ -162,14 +169,23 @@ export function DataTable<TData, TValue>({
 
     const handleClick = async () => {
       if (selectedCourseId && selectedAttendanceDate) {
-        await createNewLectureMutation.mutateAsync({
-          courseId: selectedCourseId || '',
-          lectureDate: selectedAttendanceDate || new Date()
-        });
-        await getLecturesOfCourseQuery.refetch();
-        toast({
-          title: `Successfully created a new lecture for ${selectedAttendanceDate}`
-        });
+        try {
+          const newLecture = await createNewLectureMutation.mutateAsync({
+            courseId: selectedCourseId,
+            lectureDate: selectedAttendanceDate
+          });
+          setCurrentLectureId(newLecture.newLecture.id);
+          setLecture(true);
+          setAttendanceEntries([]);
+
+          toast({
+            title: 'Created New Lecture!',
+            description: `Successfully created a new lecture for ${selectedAttendanceDate}`,
+            icon: 'success'
+          });
+        } catch (error) {
+          setError(error as Error);
+        }
       }
     };
     return <Button onClick={() => handleClick()}>Create a new lecture</Button>;
@@ -178,7 +194,11 @@ export function DataTable<TData, TValue>({
   return selectedCourseId ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      {lecture ? (
+
+      {getLectureOfCourseQuery.isLoading ||
+      getLectureOfCourseQuery.isFetching ? (
+        <div>Loading...</div>
+      ) : lecture ? (
         <div className="space-y-4">
           <div className="rounded-md border">
             <Table>
