@@ -1,6 +1,7 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
+import { generateTypedError } from '@/server/errorTypes';
 
 import { z } from 'zod';
 
@@ -41,8 +42,7 @@ export const courseMemberRouter = router({
         });
         return { success: true, resEnrollment };
       } catch (error) {
-        console.error(error);
-        return { success: false };
+        throw generateTypedError(error as Error);
       }
     }),
 
@@ -57,8 +57,7 @@ export const courseMemberRouter = router({
         });
         return { success: true };
       } catch (error) {
-        console.error(error);
-        return { success: false };
+        throw generateTypedError(error as Error);
       }
     }),
 
@@ -71,8 +70,7 @@ export const courseMemberRouter = router({
       });
       return { success: true };
     } catch (error) {
-      console.error(error);
-      return { success: false };
+      throw generateTypedError(error as Error);
     }
   }),
 
@@ -90,7 +88,7 @@ export const courseMemberRouter = router({
         });
         return { success: true, courseMembers };
       } catch (error) {
-        throw new Error('Error getting course members');
+        throw generateTypedError(error as Error);
       }
     }),
 
@@ -112,16 +110,7 @@ export const courseMemberRouter = router({
         });
         return { success: true, allCourseMembersOfClass };
       } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002'
-        ) {
-          throw new Error(
-            'Unique constraint error: A course member with the same email already exists'
-          );
-        } else {
-          throw new Error('Error creating course members');
-        }
+        throw generateTypedError(error as Error);
       }
     })
 });

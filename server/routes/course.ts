@@ -3,6 +3,8 @@ import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { zLMSProvider } from '@/types/sharedZodTypes';
+import { generateTypedError } from '@/server/errorTypes';
+import { TRPCError } from '@trpc/server';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
@@ -27,6 +29,7 @@ export const zCreateCourseRequest = z.object({
 export const courseRouter = router({
   createCourse: publicProcedure
     .input(zCreateCourseRequest)
+
     .mutation(async (requestData) => {
       try {
         const resCourse = await prisma.course.create({
@@ -38,8 +41,11 @@ export const courseRouter = router({
         // Check if enrollment flag is true
         if (requestData.input.autoEnroll) {
           if (requestData.input.newMemberData === undefined) {
-            throw new Error(
-              'Error: autoEnroll flag is true but no newMemberData was provided'
+            throw generateTypedError(
+              new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'autoEnroll flag is true but no newMemberData provided'
+              })
             );
           }
 
@@ -52,13 +58,16 @@ export const courseRouter = router({
               }
             });
           } catch (error) {
-            throw new Error('Error: Created course but failed to enroll user');
+            throw generateTypedError(
+              error as Error,
+              'Created course but failed to enroll user'
+            );
           }
         }
 
         return { success: true, resCourse, resEnrollment };
       } catch (error) {
-        throw new Error('Error creating course');
+        throw generateTypedError(error as Error);
       }
     })
 });
