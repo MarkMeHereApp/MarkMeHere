@@ -208,8 +208,12 @@ export default function QR() {
       </div>
 
       <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-        <CardHeader className="flex items-center justify-between hidden lg:block">
-          <CardTitle className="font-bold pr-8">
+        <CardHeader className="flex items-center justify-between hidden lg:block" 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+            }}>
+          <CardTitle className="font-bold pr-8 text-center">
             Scan the QR code with your phone to sign in
           </CardTitle>
           <Button onClick={() => router.push('/dashboard/take-attendance')}>
