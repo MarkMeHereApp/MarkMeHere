@@ -5,7 +5,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { CourseMember } from '@prisma/client';
 import _ from 'lodash';
-import { DataTableRowActions } from './table-accessories/DataTableRowActions';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
