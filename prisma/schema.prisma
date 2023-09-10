@@ -58,8 +58,8 @@ model Lecture {
 
 model AttendanceEntry {
   id             String       @id @default(cuid())
-  lecture        Lecture      @relation(fields: [lectureId], references: [id])
-  lectureId      String
+  course        Lecture      @relation(fields: [courseId], references: [id])
+  courseId       String
   courseMemberId String
   courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
   checkInDate    DateTime     @default(now())
@@ -108,7 +108,7 @@ model qrcode {
 model AttendanceToken {
   id        String   @id @default(cuid())
   token     String
-  courseId String
+  courseId  String
   createdAt DateTime @default(now())
 
   // We could implement a system where these are auto deleted after expiration (e.g 10 mins)

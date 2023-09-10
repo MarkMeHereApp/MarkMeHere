@@ -2,14 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
+import { cookies } from 'next/headers';
 
-export async function POST(req: NextRequest) {
+/*
+Here we need to figure out why the redirect does not work when we make this route
+a post request
+*/
+
+export async function GET(req: NextRequest) {
   //Needed to call TRPC routes from serverside
   const caller = appRouter.createCaller({});
   const params = req.nextUrl.searchParams;
 
   const queryQR: string | null = params.get('qr');
-  const queryCourseId: string | null = params.get('lectureId');
+  const queryCourseId: string | null = params.get('courseId');
 
   //Convert string | null type to string
   const qr: string = queryQR ?? '';
@@ -17,22 +23,47 @@ export async function POST(req: NextRequest) {
 
   try {
     // the server-side call
+    //In this call also make sure qr code we are retrieving is before expiration date
     const { success } = await caller.recordQRAttendance.ValidateQRCode({
       qr: qr,
       courseId: courseId
     });
 
-
     //Here we need to redirect to our attendance marked page
     //and mark their attendance from there
 
-
     //If QR code is valid create an attendance token
     if (success) {
-      await caller.recordQRAttendance.CreateAttendanceToken({
+      const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
         courseId: courseId
       });
-      //return NextResponse.redirect(new URL('/', req.url));
+      const expires = new Date();
+      /*
+      Make sure cookie expires 10 seconds after it is created
+      We will have read the cookie and rendered the page before it expires
+      */
+
+      cookies().set({
+        name: 'attendanceToken',
+        value: token,
+        // httpOnly: true,
+        // secure: true,
+        // sameSite: 'strict',
+        // path: '/dashboard',
+        // expires: expires.setSeconds(expires.getSeconds() + 100)
+      });
+
+      cookies().set({
+        name: 'courseId',
+        value: courseId,
+        // httpOnly: true,
+        // secure: true,
+        // sameSite: 'strict',
+        // path: '/dashboard',
+        // expires: expires.setSeconds(expires.getSeconds() + 100)
+      });
+
+      return NextResponse.redirect(new URL('/dashboard/student/markAttendance', req.url));
     } else {
       return NextResponse.json({
         error: { message: `Invalid QR code` }

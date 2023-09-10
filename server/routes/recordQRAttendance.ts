@@ -13,6 +13,16 @@ export const zCreateAttendanceToken = z.object({
   courseId: z.string()
 });
 
+export const zMarkAttendance = z.object({
+  courseId: z.string(),
+  courseMemberId: z.string()
+});
+
+export const zFindCourseMember = z.object({
+  courseId: z.string(),
+  email: z.string()
+});
+
 export const recordQRAttendanceRouter = router({
   //Search qrcode table for QRCode and lectureId sent by the user
 
@@ -52,16 +62,64 @@ export const recordQRAttendanceRouter = router({
         const token = uuidv4();
         const courseId = input.courseId;
 
-        const result = await prisma.attendanceToken.create({
+        const { id } = await prisma.attendanceToken.create({
           data: {
             token: token,
             courseId: courseId
           }
         });
 
-        console.log(result);
         //Return the id of the token instead of the token itself
-        return { token: result.id };
+        return { token: id };
+      } catch (error) {
+        throw generateTypedError(
+          error as Error,
+          'Failed to create attendance token'
+        );
+      }
+    }),
+
+    MarkAttendance: publicProcedure
+    .input(zMarkAttendance)
+    .mutation(async ({ input }) => {
+      try {
+        const courseId = input.courseId;
+        const courseMemberId = input.courseMemberId;
+       
+
+        const { id } = await prisma.attendanceEntry.create({
+          data: {
+            courseId: courseId,
+            courseMemberId: courseMemberId,
+          }
+        });
+
+        //Return the id of the token instead of the token itself
+        return { token: id };
+      } catch (error) {
+        throw generateTypedError(
+          error as Error,
+          'Failed to create attendance token'
+        );
+      }
+    }),
+
+    FindCourseMember: publicProcedure
+    .input(zFindCourseMember)
+    .mutation(async ({ input }) => {
+      try {
+        const courseId = input.courseId;
+        const email = input.email;
+       
+        const id = await prisma.courseMember.findFirst({
+          where: {
+            courseId: courseId,
+            email: email,
+          }
+        });
+
+        //Return the id of the token instead of the token itself
+        return { token: id };
       } catch (error) {
         throw generateTypedError(
           error as Error,

@@ -37,6 +37,7 @@ export default function SignInForm({
   const _callbackUrl = searchParams
     ? searchParams.get('callbackUrl') || '/'
     : '/';
+  console.log('url: ' + _callbackUrl);
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
@@ -181,7 +182,7 @@ export default function SignInForm({
                   }));
                   try {
                     await signIn(provider.id, {
-                      callbackUrl: '/dashboard/faculty/overview'
+                      callbackUrl: _callbackUrl
                     });
                   } catch (error) {
                     console.error('Sign In Error: ', error);
