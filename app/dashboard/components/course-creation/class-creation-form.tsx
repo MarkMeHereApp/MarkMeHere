@@ -21,7 +21,6 @@ import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
 import { LMSCourseSelector } from './lms-course-selector';
 import {
-  zLMSCourseScheme,
   zLMSCourseSchemeType,
   zLMSProvider,
   zLMSProviderType
