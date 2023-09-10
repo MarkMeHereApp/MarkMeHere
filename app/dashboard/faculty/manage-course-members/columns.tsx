@@ -5,7 +5,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { CourseMember } from '@prisma/client';
 import _ from 'lodash';
-import { DataTableRowActions } from './table-accessories/DataTableRowActions';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -67,9 +66,5 @@ export const columns: ColumnDef<CourseMember>[] = [
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />
   }
 ];

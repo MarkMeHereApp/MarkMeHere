@@ -16,11 +16,10 @@ export const zGetCourseMembersOfLectureFromDate = z.object({
   courseId: z.string()
 });
 
-export const zCreateNewAttendanceRequest = z.object({
+export const zCreateNewManyAttendanceRequest = z.object({
   lectureId: z.string(),
-  courseMemberId: z.string(),
   attendanceStatus: z.string(),
-  returnAllAttendanceEntries: z.boolean().optional().default(false)
+  courseMemberIds: z.array(z.string())
 });
 
 export const attendanceRouter = router({
@@ -125,31 +124,52 @@ export const attendanceRouter = router({
       }
     }),
 
-  updateSelectedCourseId: publicProcedure
-    .input(zCreateNewAttendanceRequest)
+  createManyAttendanceRecords: publicProcedure
+    .input(zCreateNewManyAttendanceRequest)
     .mutation(async (requestData) => {
       try {
-        const newAttendanceEntry = await prisma.attendanceEntry.create({
+        const createdAttendanceEntries = await prisma.attendanceEntry.findMany({
+          where: {
+            lectureId: requestData.input.lectureId
+          }
+        });
+
+        const existingAttendanceEntries = createdAttendanceEntries.map(
+          (entry) => entry.courseMemberId
+        );
+
+        await prisma.attendanceEntry.updateMany({
+          where: {
+            id: {
+              in: existingAttendanceEntries
+            }
+          },
           data: {
-            lectureId: requestData.input.lectureId,
-            courseMemberId: requestData.input.courseMemberId,
             status: requestData.input.attendanceStatus
           }
         });
-        if (requestData.input.returnAllAttendanceEntries) {
-          try {
-            const attendanceEntries = await prisma.attendanceEntry.findMany({
-              where: {
-                lectureId: requestData.input.lectureId
-              }
-            });
-            return { success: true, attendanceEntries };
-          } catch (error) {
-            throw generateTypedError(error as Error);
-          }
-        }
 
-        return { success: true, newAttendanceEntry };
+        const courseMembersWithEntries =
+          requestData.input.courseMemberIds.filter(
+            (courseMemberId) =>
+              !existingAttendanceEntries.includes(courseMemberId)
+          );
+
+        await prisma.attendanceEntry.createMany({
+          data: courseMembersWithEntries.map((courseMemberId) => ({
+            lectureId: requestData.input.lectureId,
+            courseMemberId: courseMemberId,
+            status: requestData.input.attendanceStatus
+          }))
+        });
+
+        const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
+          where: {
+            lectureId: requestData.input.lectureId
+          }
+        });
+
+        return { success: true, updatedAttendanceEntries };
       } catch (error) {
         throw generateTypedError(error as Error);
       }

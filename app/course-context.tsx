@@ -20,8 +20,8 @@ interface CourseContextType {
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
-  selectedAttendanceDate: Date | null;
-  setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  selectedAttendanceDate: Date;
+  setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 const CourseContext = createContext<CourseContextType>({
@@ -33,18 +33,16 @@ const CourseContext = createContext<CourseContextType>({
   setSelectedCourseId: () => {},
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {},
-  selectedAttendanceDate: null,
+  selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
   setSelectedAttendanceDate: () => {}
 });
 
 export default function CoursesContext({
-  className,
   userCourses: initialUserCourses,
   userCourseMembers: initialUserCourseMembers,
   userSelectedCourseId: initialSelectedCourseId,
   children
 }: {
-  className?: string;
   userCourses?: Course[];
   userCourseMembers?: CourseMember[];
   userSelectedCourseId?: string | null;
@@ -66,14 +64,9 @@ export default function CoursesContext({
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
 
-  const [selectedAttendanceDate, setSelectedAttendanceDate] =
-    useState<Date | null>(null);
-
-  useEffect(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    setSelectedAttendanceDate(today);
-  }, []);
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<Date>(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
 
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {

@@ -2,10 +2,14 @@
 
 import * as React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, DayClickEventHandler } from 'react-day-picker';
+import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+
+const bookedDays = [new Date(2023, 9, 9), new Date(2023, 9, 9)];
+const bookedStyle = { border: '2px solid currentColor' };
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,10 +19,22 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const { lectures } = useLecturesContext();
+
+  let bookedDays: Date[] = [];
+
+  if (!lectures) {
+    bookedDays = [];
+  } else {
+    bookedDays = lectures.map((lecture) => new Date(lecture.lectureDate));
+  }
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
+      modifiers={{ booked: bookedDays }}
+      modifiersStyles={{ booked: bookedStyle }}
       classNames={{
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4',

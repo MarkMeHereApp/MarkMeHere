@@ -1,6 +1,6 @@
-import { Metadata } from 'next';
 import CourseSwitcher from '@/app/dashboard/components/main-bar';
 
+import LecturesContext from '@/app/dashboard/faculty/lecture-context';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
@@ -28,7 +28,7 @@ export default async function DashboardLayout({
   );
 
   // Fetch the courses using the extracted IDs
-  const courses = await prisma.course.findMany({
+  const _courses = await prisma.course.findMany({
     where: {
       id: {
         in: courseIds
@@ -39,7 +39,7 @@ export default async function DashboardLayout({
   return (
     <>
       <CourseSwitcher />
-      {children}
+      <LecturesContext>{children}</LecturesContext>
     </>
   );
 }

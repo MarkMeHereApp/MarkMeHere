@@ -33,14 +33,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
+import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
-import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
-import {
-  zAttendanceStatus,
-  ExtendedCourseMember,
-  zAttendanceStatusType
-} from '@/types/sharedZodTypes';
+import { ExtendedCourseMember } from '@/types/sharedZodTypes';
+import { Icons } from '@/components/ui/icons';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -54,6 +51,8 @@ export function DataTable<TData, TValue>({
     courseMembersOfSelectedCourse,
     selectedCourseId
   } = useCourseContext();
+
+  const { setLectures, lectures } = useLecturesContext();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -61,34 +60,18 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [lecture, setLecture] = React.useState(false);
-  const [attendanceEntries, setAttendanceEntries] = React.useState<
-    AttendanceEntry[]
+
+  const [extendedCourseMembers, setExtendedCourseMembers] = React.useState<
+    ExtendedCourseMember[]
   >([]);
-  const [currentLectureId, setCurrentLectureId] = React.useState<string>('');
-  const [courseMembers, setCourseMembers] = React.useState<CourseMember[]>([]);
+  const [error, setError] = React.useState<Error | null>(null);
 
-  useEffect(() => {
-    if (courseMembersOfSelectedCourse) {
-      if (courseMembersOfSelectedCourse) {
-        // We need this to refetch the attendance entries when the date is changed
-        const newCourseMembers: ExtendedCourseMember[] =
-          courseMembersOfSelectedCourse
-            ?.map((member) => ({
-              ...member,
-              AttendanceStatus: 'here' as zAttendanceStatusType
-            }))
-            .filter(
-              (member) =>
-                member.courseId === selectedCourseId &&
-                member.role === 'student'
-            );
-        setCourseMembers(newCourseMembers);
-      }
-    }
-  }, [courseMembersOfSelectedCourse]);
+  if (error) {
+    setExtendedCourseMembers([]);
+    throw error;
+  }
 
-  const data = courseMembers as TData[];
+  const data = extendedCourseMembers as TData[];
 
   const table = useReactTable({
     data,
@@ -110,66 +93,76 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
-  }); //
+  });
 
-  // handle checking if the lecture exists for a specific date
-  const getLecturesOfCourseQuery = trpc.lecture.getLecturesofCourse.useQuery(
-    {
-      courseId: selectedCourseId || ''
-    },
-    {
-      onSuccess: (data) => {
-        if (!data) return;
-        const lectures = data.lectures;
-        const lectureStatus = lectures.some((lecture: Lecture) => {
-          // Check if lectureDate matches selectedAttendanceDate
-          const dateMatch =
-            lecture.lectureDate.getTime() === selectedAttendanceDate?.getTime();
-
-          if (dateMatch) {
-            setCurrentLectureId(lecture.id);
-            getAttendanceEntriesOfLectureQuery.refetch();
-          }
-
-          return dateMatch;
-        });
-        setLecture(lectureStatus);
-      }
+  const getCurrentLecture = () => {
+    if (lectures) {
+      return lectures.find((lecture) => {
+        return (
+          lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+        );
+      });
     }
-  );
-
-  // handle getting the attendance entries for the lecture
-  const getAttendanceEntriesOfLectureQuery =
-    trpc.attendance.getAttendanceDataOfCourse.useQuery(
-      {
-        lectureId: currentLectureId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setAttendanceEntries(data.attendanceEntries);
-        }
-      }
-    );
+  };
 
   useEffect(() => {
-    getLecturesOfCourseQuery.refetch();
-  }, [selectedAttendanceDate]);
+    if (lectures) {
+      // We need this to refetch the attendance entries when the date is changed
+      const currentLecture = getCurrentLecture();
+      if (!currentLecture) return;
+
+      const newExtendedCourseMembers: ExtendedCourseMember[] = (
+        courseMembersOfSelectedCourse || []
+      )
+        ?.map((member) => {
+          // Find the corresponding attendance entry for the member
+          const attendanceEntry = currentLecture?.attendanceEntries.find(
+            (entry) => entry.courseMemberId === member.id
+          );
+          return {
+            ...member,
+            AttendanceEntry: attendanceEntry
+          };
+        })
+        .filter(
+          (member) =>
+            member.courseId === selectedCourseId && member.role === 'student'
+        );
+      setExtendedCourseMembers(newExtendedCourseMembers);
+    }
+  }, [lectures, selectedAttendanceDate]);
 
   const CreateNewLectureButton = () => {
-    const { selectedCourseId, selectedAttendanceDate } = useCourseContext();
     const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
 
     const handleClick = async () => {
       if (selectedCourseId && selectedAttendanceDate) {
-        await createNewLectureMutation.mutateAsync({
-          courseId: selectedCourseId || '',
-          lectureDate: selectedAttendanceDate || new Date()
-        });
-        await getLecturesOfCourseQuery.refetch();
-        toast({
-          title: `Successfully created a new lecture for ${selectedAttendanceDate}`
-        });
+        try {
+          // You shouldn't be able to create a new lecture if we are loading lecture data.
+          if (!lectures) throw new Error('Unexpected server error.');
+          const newLecture = await createNewLectureMutation.mutateAsync({
+            courseId: selectedCourseId,
+            lectureDate: selectedAttendanceDate
+          });
+          if (!newLecture || !newLecture.newLecture)
+            throw new Error('Unexpected server error.');
+
+          const newLectures = [
+            ...lectures,
+            { attendanceEntries: [], ...newLecture.newLecture }
+          ];
+          setLectures(newLectures);
+
+          toast({
+            title: 'Created New Lecture!',
+            description: `Successfully created a new lecture for ${
+              selectedAttendanceDate.toISOString().split('T')[0]
+            }`,
+            icon: 'success'
+          });
+        } catch (error) {
+          setError(error as Error);
+        }
       }
     };
     return <Button onClick={() => handleClick()}>Create a new lecture</Button>;
@@ -178,7 +171,14 @@ export function DataTable<TData, TValue>({
   return selectedCourseId ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      {lecture ? (
+      {lectures === null ? (
+        <div className="pt-8 flex justify-center items-center">
+          <Icons.logo
+            className="wave primary-foreground"
+            style={{ height: '100px', width: '100px' }}
+          />
+        </div>
+      ) : getCurrentLecture() ? (
         <div className="space-y-4">
           <div className="rounded-md border">
             <Table>
@@ -233,7 +233,7 @@ export function DataTable<TData, TValue>({
           <DataTablePagination table={table} />
         </div>
       ) : (
-        <div className="min-h-screen flex justify-center items-center">
+        <div className="pt-8 flex justify-center items-center">
           <Card className="w-85 h-50">
             <CardHeader>
               <CardTitle>
@@ -248,8 +248,8 @@ export function DataTable<TData, TValue>({
       )}
     </div>
   ) : (
-    <div className="min-h-screen flex justify-center items-center">
-        <h3>Create/Choose a course!</h3>
+    <div className="pt-8 flex justify-center items-center">
+      <h3>Create/Choose a course!</h3>
     </div>
   );
 }

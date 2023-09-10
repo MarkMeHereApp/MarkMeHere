@@ -1,25 +1,11 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
-import { TRPCClientError } from '@trpc/client';
 
 export function formatString(str: string): string {
   return str
     .split(/(?=[A-Z])/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-}
-
-export function throwErrorOrShowToast(error: Error) {
-  if (!(error instanceof TRPCClientError)) {
-    throw error;
-  }
-
-  if (error.shape?.data?.toastError) {
-    toastError(error.message);
-    return;
-  }
-
-  throw error;
 }
 
 // These are errors that are expected: duplicate course, already enrolled, etc.

@@ -21,13 +21,13 @@ import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
 import { LMSCourseSelector } from './lms-course-selector';
 import {
-  zLMSCourseScheme,
   zLMSCourseSchemeType,
   zLMSProvider,
   zLMSProviderType
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
-import { formatString, throwErrorOrShowToast } from '@/utils/globalFunctions';
+import { formatString, toastError } from '@/utils/globalFunctions';
+import { TRPCClientError } from '@trpc/client';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -77,8 +77,15 @@ export default function CreateCourseForm({
 
   if (error) {
     setLoading(false);
-    throwErrorOrShowToast(error);
-    setError(null);
+    if (
+      error instanceof TRPCClientError &&
+      error.shape?.data?.isUniqueConstraintError
+    ) {
+      toastError(error.message);
+      setError(null);
+    } else {
+      throw error;
+    }
   }
 
   type CourseFormInput = Course & {

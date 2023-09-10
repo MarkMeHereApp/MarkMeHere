@@ -3,11 +3,9 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { Icons } from '@/components/ui/icons';
-import { CourseMember } from '@prisma/client';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 import {
   zAttendanceStatus,
-  zAttendanceStatusType,
   ExtendedCourseMember,
   zAttendanceStatusIcons
 } from '@/types/sharedZodTypes';
@@ -69,31 +67,53 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
-    accessorKey: 'AttendanceStatus',
+    accessorKey: 'status',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue('AttendanceStatus') as zAttendanceStatusType;
-      const StatusIcon = zAttendanceStatusIcons[status];
+      const originalValue = row.original as ExtendedCourseMember;
+      const status = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.status
+        : undefined;
 
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <Icons.spinner className="animate-spin" />
+            <CrossCircledIcon className="text-destructive" />
+            <span className="ml-1">Absent</span>
           </div>
         );
       }
 
-      return (
-        <div className="flex w-[100px] items-center">
-          <StatusIcon />
-          <span className="ml-1">{formatString(status)}</span>
-        </div>
-      );
+      try {
+        const statusAsZod = zAttendanceStatus.parse(status);
+        const IconComponent = zAttendanceStatusIcons[statusAsZod];
+
+        return (
+          <div className="flex w-[100px] items-center">
+            <>
+              <IconComponent />
+
+              <span>{formatString(statusAsZod)}</span>
+            </>
+          </div>
+        );
+      } catch (e) {
+        throw new Error(`Invalid attendance status: ${status}`);
+      }
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      const originalValue = row.original as ExtendedCourseMember;
+      const status = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.status
+        : undefined;
+
+      if (value.includes('absent')) {
+        return status === undefined;
+      }
+
+      return value.includes(status);
     }
   }
 ];

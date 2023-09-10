@@ -1,3 +1,5 @@
+'use client';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RocketIcon } from '@radix-ui/react-icons';
 
@@ -8,6 +10,7 @@ import AldrichTest from './components/AldrichTest';
 import ErrorTest from './components/ErrorTest';
 import GetCanvasCourses from './components/getCanvasCoursesTest';
 import IconsTest from './components/IconsTest';
+import CRUDButtons from '@/components/devUtils/CRUDButtons';
 
 const tabComponents = [
   { value: 'Aldrich Test', component: <AldrichTest /> },
@@ -38,7 +41,7 @@ export default function TabsDemo() {
           </ol>
         </AlertDescription>
       </Alert>
-
+      <CRUDButtons />
       <Tabs defaultValue={tabComponents[0].value}>
         <TabsList>
           {tabComponents.map((tab) => (
