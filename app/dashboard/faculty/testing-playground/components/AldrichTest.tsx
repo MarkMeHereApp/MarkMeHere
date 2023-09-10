@@ -7,10 +7,10 @@ const AldrichTestPage = () => {
 
   return (
     <div>
+      <CRUDButtons />
       {Object.entries(data).map(([key, value]) => (
         <p key={key}>{`${key}: ${JSON.stringify(value)}`}</p>
       ))}
-      <CRUDButtons />
     </div>
   );
 };

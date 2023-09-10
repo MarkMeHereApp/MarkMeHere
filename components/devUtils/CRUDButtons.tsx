@@ -15,7 +15,7 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const CRUDButtons = () => {
   return isDevMode ? (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="border border-yellow-500 p-4">
+      <div className="border border-yellow-500 p-4 my-4">
         <p className="text-sm mb-4">
           These buttons only show up in development mode
         </p>
