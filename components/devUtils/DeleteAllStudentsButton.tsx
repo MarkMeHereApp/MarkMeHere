@@ -32,13 +32,11 @@ const DeleteAllStudents = () => {
     }
   };
 
-  return (
-    selectedCourseId && (
-      <Button variant="default" onClick={handleClick}>
-        Delete All Students
-      </Button>
-    )
-  );
+  return selectedCourseId ? (
+    <Button variant="default" onClick={handleClick}>
+      Delete All Students
+    </Button>
+  ) : null;
 };
 
 export default DeleteAllStudents;

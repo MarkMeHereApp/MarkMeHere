@@ -92,113 +92,111 @@ const EnrollCourseMemberButton = () => {
     handleDialogClose();
   }
 
-  return (
-    selectedCourseId && (
-      <>
-        <Dialog open={isDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="default" onClick={() => handleDialogOpen()}>
-              <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-              Enroll New Course Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent
-            className="sm:max-w-[425px]"
-            onClose={() => setIsDialogOpen(false)}
-          >
-            <DialogHeader onClick={handleDialogClose}>
-              <DialogTitle>Enroll Course Member</DialogTitle>
-              <DialogDescription>
-                Fill in the course member&apos;s information below and click
-                enroll when you&apos;re done.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="grid gap-4 py-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Name</FormLabel>
+  return selectedCourseId ? (
+    <>
+      <Dialog open={isDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" onClick={() => handleDialogOpen()}>
+            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
+            Enroll New Course Member
+          </Button>
+        </DialogTrigger>
+        <DialogContent
+          className="sm:max-w-[425px]"
+          onClose={() => setIsDialogOpen(false)}
+        >
+          <DialogHeader onClick={handleDialogClose}>
+            <DialogTitle>Enroll Course Member</DialogTitle>
+            <DialogDescription>
+              Fill in the course member&apos;s information below and click
+              enroll when you&apos;re done.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="grid gap-4 py-4"
+            >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="text-right">Name</FormLabel>
+                    <FormControl className="col-span-3">
+                      <Input placeholder="Aldrich Agabin" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="text-right">Email</FormLabel>
+                    <FormControl className="col-span-3">
+                      <Input
+                        type="email"
+                        placeholder="Richard.Leinecker@ucf.edu"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                defaultValue="student"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="text-right">Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue="student"
+                    >
                       <FormControl className="col-span-3">
-                        <Input placeholder="Aldrich Agabin" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
                       </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Email</FormLabel>
-                      <FormControl className="col-span-3">
-                        <Input
-                          type="email"
-                          placeholder="Richard.Leinecker@ucf.edu"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="role"
-                  defaultValue="student"
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Role</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue="student"
-                      >
-                        <FormControl className="col-span-3">
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="student">Student</SelectItem>
-                          <SelectItem value="professor">Professor</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lmsId"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">
-                        LMS ID (Optional)
-                      </FormLabel>
-                      <FormControl className="col-span-3">
-                        <Input
-                          placeholder="abc123"
-                          {...field}
-                          value={field.value || ''}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <DialogFooter>
-                  <Button type="submit">Enroll Course Member</Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </>
-    )
-  );
+                      <SelectContent>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="professor">Professor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lmsId"
+                defaultValue=""
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="text-right">
+                      LMS ID (Optional)
+                    </FormLabel>
+                    <FormControl className="col-span-3">
+                      <Input
+                        placeholder="abc123"
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit">Enroll Course Member</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
+  ) : null;
 };
 
 export default EnrollCourseMemberButton;
