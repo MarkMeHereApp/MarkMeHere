@@ -9,18 +9,18 @@ import CourseSelection from './course-selection'; // Import the new component
 
 export default function MainBar() {
   return (
-    <div className="border-b ">
-      <div className="">
-        <div className=" items-center mt-4 mx-4  pr-8">
+    <div className="border-b flex-col">
+      <div className="flex items-center mt-4 mb-4 pr-8 justify-between">
+        <div className="ml-4">
           <CourseSelection />
         </div>
-        <div className="flex items-center justify-end space-x-4 mx-4">
+        <div className="flex align-top items-center justify-end space-x-4 mt-0 p-0">
           <ModeToggle />
           <UserNav />
         </div>
       </div>
-      <div className="flex mx-6 mt-4 h-2 items-center px-4">
-        <MainNav className="-mt-10" />
+      <div className="flex my-4 items-center px-4">
+        <MainNav />
       </div>
     </div>
   );
