@@ -40,27 +40,28 @@ export async function GET(req: NextRequest) {
       const expires = new Date();
       /*
       Make sure cookie expires 10 seconds after it is created
+      Alternatively we can remember to delete the cookie when we are done (This may be better)
       We will have read the cookie and rendered the page before it expires
       */
 
       cookies().set({
-        name: 'attendanceToken',
+        name: 'attendanceTokenId',
         value: token,
-        // httpOnly: true,
-        // secure: true,
-        // sameSite: 'strict',
-        // path: '/dashboard',
-        // expires: expires.setSeconds(expires.getSeconds() + 100)
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/dashboard',
+        expires: expires.setSeconds(expires.getSeconds() + 100)
       });
 
       cookies().set({
         name: 'courseId',
         value: courseId,
-        // httpOnly: true,
-        // secure: true,
-        // sameSite: 'strict',
-        // path: '/dashboard',
-        // expires: expires.setSeconds(expires.getSeconds() + 100)
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/dashboard',
+        expires: expires.setSeconds(expires.getSeconds() + 100)
       });
 
       return NextResponse.redirect(new URL('/dashboard/student/markAttendance', req.url));

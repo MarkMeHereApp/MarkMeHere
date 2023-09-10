@@ -111,7 +111,7 @@ export const recordQRAttendanceRouter = router({
         const courseId = input.courseId;
         const email = input.email;
        
-        const id = await prisma.courseMember.findFirst({
+        const courseMember = await prisma.courseMember.findFirst({
           where: {
             courseId: courseId,
             email: email,
@@ -119,7 +119,7 @@ export const recordQRAttendanceRouter = router({
         });
 
         //Return the id of the token instead of the token itself
-        return { token: id };
+        return { courseMember: courseMember };
       } catch (error) {
         throw generateTypedError(
           error as Error,
