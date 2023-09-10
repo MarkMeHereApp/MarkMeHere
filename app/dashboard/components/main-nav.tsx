@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
 export default function MainNav({

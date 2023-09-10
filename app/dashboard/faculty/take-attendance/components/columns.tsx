@@ -3,16 +3,9 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { Icons } from '@/components/ui/icons';
-import {
-  CrossCircledIcon,
-  CheckCircledIcon,
-  ClockIcon
-} from '@radix-ui/react-icons';
-import { AttendanceEntry, CourseMember } from '@prisma/client';
+import { CrossCircledIcon } from '@radix-ui/react-icons';
 import {
   zAttendanceStatus,
-  zAttendanceStatusType,
   ExtendedCourseMember,
   zAttendanceStatusIcons
 } from '@/types/sharedZodTypes';

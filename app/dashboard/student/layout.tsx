@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import CourseSwitcher from '@/app/dashboard/components/main-bar';
 
 import { getServerSession } from 'next-auth/next';

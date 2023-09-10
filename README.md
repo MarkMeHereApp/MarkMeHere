@@ -1,20 +1,20 @@
 # Mark Me Here!
 
-Mark Me Here! is a collaborative project developed by a team of 6 students. This web application simplifies the process of tracking student attendance in various educational settings. Whether you're a teacher, professor, or an organization leader, this tool helps you efficiently monitor attendance and keep records.
+Mark Me Here! is a collaborative project developed and designed by a team of 6 university student developers, for both instructors and students. It streamlines course management by simplifying the input of course details and schedules. The app efficiently records attendance, providing flexible options for marking students as here, absent, excused, or late. Moreover, it generates comprehensive attendance reports, enabling a thorough assessment of student participation trends. Mark Me Here! ensures accessibility across various devices and even offers a convenient QR code feature for in-person attendance tracking.
 
-## Features
+## Key Features
 
-- **User-Friendly Interface**: The web application offers an intuitive and user-friendly interface for easy use by instructors and students.
+- **Intuitive Interface**: Our web application boasts a user-friendly interface designed for the ease of instructors and students alike.
 
-- **Course Management**: Create and manage courses effortlessly. Add course details, schedules, and other relevant information.
+- **Effortless Course Management**: Simplify the creation and management of courses. Easily input course details, schedules, and other essential information.
 
-- **Attendance Tracking**: Mark attendance for each class session, with options to mark students as present, absent, or tardy.
+- **Precise Attendance Tracking**: Efficiently record attendance for each class session. Choose from options to mark students as present, absent, or tardy.
 
-- **Attendance Reports**: Generate detailed attendance reports to assess student participation and track trends over time.
+- **Comprehensive Attendance Reports**: Generate in-depth attendance reports for a thorough assessment of student participation and trends over time.
 
-- **Student Profiles**: Maintain a database of student profiles, allowing you to keep track of individual attendance records.
+- **Cross-Platform Accessibility**: Mark Me Here! ensures accessibility across multiple devices, providing convenience for both instructors and students.
 
-- **Multi-Platform Access**: Mark Me Here! is accessible from various devices, ensuring convenience for both instructors and students.
+- **Attendance QR Codes**: Additionally, our web app offers the ability to generate temporary QR codes. These QR codes enable students to mark themselves present in person swiftly.
 
 ## Getting Started
 
@@ -36,7 +36,7 @@ To get started with Mark Me Here!, follow these steps:
 3. **Configure**: Set up the required configurations, such as database connections and authentication methods, as described in the project documentation. Confirm the app is configured correctly by running:
 
    ```bash
-      npm run build
+   npm run build
    ```
 
 4. **Run the Application**: Start the application by running:
@@ -55,7 +55,15 @@ We welcome contributions to improve Mark Me Here!. If you'd like to contribute, 
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Acknowledgments
+**Acknowledgments**
 
-We would like to thank all contributors for their hard work and dedication to making Mark Me Here! a valuable tool for educators and organizations.
-```
+We would like to extend our appreciation to the initial group of university student developers who played a pivotal role in launching Mark Me Here!:
+
+- [Benjamin Werner](https://www.linkedin.com/in/benjamin-w-842ab2116/)
+- [Aldrich Agabin](https://www.linkedin.com/in/aldrich-agabin/)
+- [Nicholas Walsh](https://www.linkedin.com/in/nicholas-walsh-6a2830206/)
+- [Jadyn LaPace](https://www.linkedin.com/in/jadyn-lapace/)
+- [Sam Dosi](https://www.linkedin.com/in/samdosi/)
+- [Josef Vodicka](https://www.linkedin.com/in/josef-vodicka/)
+
+Their contributions were essential in getting this project off the ground.

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Cross2Icon, TrashIcon } from '@radix-ui/react-icons';
 import { DataTableViewOptions } from './DataTableViewOptions';
 import { Input } from '@/components/ui/input';
-import { ColumnDef, Table } from '@tanstack/react-table';
+import { Table } from '@tanstack/react-table';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
 import { roles } from './dataUtils';
 import { trpc } from '@/app/_trpc/client';

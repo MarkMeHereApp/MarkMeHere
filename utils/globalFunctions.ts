@@ -1,6 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
-import { TRPCClientError } from '@trpc/client';
 
 export function formatString(str: string): string {
   return str

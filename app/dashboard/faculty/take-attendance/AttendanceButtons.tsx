@@ -1,6 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { trpc } from '@/app/_trpc/client';
-import { toast } from '@/components/ui/use-toast';
 
 // Create a new attendance entry for a selected student
 const createAttendanceEntry = () => {};
