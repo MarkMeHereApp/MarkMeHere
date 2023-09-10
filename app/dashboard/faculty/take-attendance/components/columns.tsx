@@ -10,6 +10,7 @@ import {
   zAttendanceStatusIcons
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
+import { DataTableRowActions } from './data-table-row-actions';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -80,7 +81,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <CrossCircledIcon className="text-destructive" />
+            <CrossCircledIcon className="text-primary" />
             <span className="ml-1">Absent</span>
           </div>
         );
@@ -115,5 +116,9 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
 
       return value.includes(status);
     }
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <DataTableRowActions row={row} />
   }
 ];
