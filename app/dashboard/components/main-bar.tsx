@@ -1,6 +1,8 @@
 'use client';
 
+import * as React from 'react';
 import { ModeToggle } from '@/app/dashboard/components/theme-toggle';
+import { Separator } from '@/components/ui/separator';
 import UserNav from '@/app/dashboard/components/user-nav';
 import MainNav from '@/app/dashboard/components/main-nav';
 import CourseSelection from './course-selection'; // Import the new component

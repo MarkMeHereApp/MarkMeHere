@@ -38,11 +38,13 @@ const CourseContext = createContext<CourseContextType>({
 });
 
 export default function CoursesContext({
+  className,
   userCourses: initialUserCourses,
   userCourseMembers: initialUserCourseMembers,
   userSelectedCourseId: initialSelectedCourseId,
   children
 }: {
+  className?: string;
   userCourses?: Course[];
   userCourseMembers?: CourseMember[];
   userSelectedCourseId?: string | null;
