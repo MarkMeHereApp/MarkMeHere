@@ -32,12 +32,12 @@ const DeleteAllStudents = () => {
     }
   };
 
-  return selectedCourseId ? (
-    <Button variant="default" onClick={handleClick}>
-      Delete All Students
-    </Button>
-  ) : (
-    <Loading />
+  return (
+    selectedCourseId && (
+      <Button variant="default" onClick={handleClick}>
+        Delete All Students
+      </Button>
+    )
   );
 };
 

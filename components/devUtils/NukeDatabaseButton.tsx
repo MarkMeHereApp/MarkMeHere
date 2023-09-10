@@ -7,7 +7,7 @@ import { toast } from '../ui/use-toast';
 const NukeDatabaseButton = () => {
   const deleteDatabaseMutation = trpc.utils.deleteDatabase.useMutation();
 
-  const handleClick = async () => {
+  const handleNukeClick = async () => {
     await deleteDatabaseMutation.mutateAsync();
     toast({
       title: 'Database Nuked!',
@@ -18,7 +18,7 @@ const NukeDatabaseButton = () => {
   };
 
   return (
-    <Button variant="default" onClick={handleClick}>
+    <Button variant="destructive" onClick={handleNukeClick}>
       Nuke the Database!!!
     </Button>
   );

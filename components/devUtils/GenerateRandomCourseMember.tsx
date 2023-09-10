@@ -48,12 +48,12 @@ const GenerateRandomCourseMember = () => {
     }
   };
 
-  return selectedCourseId ? (
-    <Button variant="default" onClick={handleClick}>
-      Generate Random Course Member
-    </Button>
-  ) : (
-    <Loading />
+  return (
+    selectedCourseId && (
+      <Button variant="default" onClick={handleClick}>
+        Generate Random Course Member
+      </Button>
+    )
   );
 };
 
