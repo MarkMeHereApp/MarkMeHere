@@ -1,5 +1,6 @@
 'use client';
 
+import CRUDButtons from '@/components/devUtils/CRUDButtons';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/user-nav';
@@ -16,6 +17,7 @@ export default function ManageAttendance() {
             <StartScanningButton />
           </div>
         </div>
+        <CRUDButtons />
         <DataTable columns={columns} />
       </div>
     </>
