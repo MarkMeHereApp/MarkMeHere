@@ -9,19 +9,6 @@ export function formatString(str: string): string {
     .join(' ');
 }
 
-export function throwErrorOrShowToast(error: Error) {
-  if (!(error instanceof TRPCClientError)) {
-    throw error;
-  }
-
-  if (error.shape?.data?.toastError) {
-    toastError(error.message);
-    return;
-  }
-
-  throw error;
-}
-
 // These are errors that are expected: duplicate course, already enrolled, etc.
 export function toastError(error: string, action?: ToastActionElement) {
   toast({

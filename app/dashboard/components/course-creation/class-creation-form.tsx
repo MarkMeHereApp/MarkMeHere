@@ -27,7 +27,8 @@ import {
   zLMSProviderType
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
-import { formatString, throwErrorOrShowToast } from '@/utils/globalFunctions';
+import { formatString, toastError } from '@/utils/globalFunctions';
+import { TRPCClientError } from '@trpc/client';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -77,8 +78,15 @@ export default function CreateCourseForm({
 
   if (error) {
     setLoading(false);
-    throwErrorOrShowToast(error);
-    setError(null);
+    if (
+      error instanceof TRPCClientError &&
+      error.shape?.data?.isUniqueConstraintError
+    ) {
+      toastError(error.message);
+      setError(null);
+    } else {
+      throw error;
+    }
   }
 
   type CourseFormInput = Course & {
