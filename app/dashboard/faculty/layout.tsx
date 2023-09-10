@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import CourseSwitcher from '@/app/dashboard/components/main-bar';
 
+import LecturesContext from '@/app/dashboard/faculty/lecture-context';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
@@ -39,7 +40,7 @@ export default async function DashboardLayout({
   return (
     <>
       <CourseSwitcher />
-      {children}
+      <LecturesContext>{children}</LecturesContext>
     </>
   );
 }
