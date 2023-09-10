@@ -65,41 +65,17 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  const [courseMembers, setCourseMembers] = React.useState<ExtendedCourseMember[]>([]);
+  const [extendedCourseMembers, setExtendedCourseMembers] = React.useState<
+    ExtendedCourseMember[]
+  >([]);
   const [error, setError] = React.useState<Error | null>(null);
 
   if (error) {
-    setCourseMembers([]);
+    setExtendedCourseMembers([]);
     throwErrorOrShowToast(error as Error);
   }
 
-  useEffect(() => {
-    if (courseMembersOfSelectedCourse) {
-      if (courseMembersOfSelectedCourse) {
-        // We need this to refetch the attendance entries when the date is changed
-        const newCourseMembers: ExtendedCourseMember[] =
-          courseMembersOfSelectedCourse
-            ?.map((member) => {
-              // Find the corresponding attendance entry for the member
-              const attendanceEntry = attendanceEntries.find(
-                (entry) => entry.courseMemberId === member.id
-              );
-              return {
-                ...member,
-                AttendanceEntry: attendanceEntry
-              };
-            })
-            .filter(
-              (member) =>
-                member.courseId === selectedCourseId &&
-                member.role === 'student'
-            );
-        setCourseMembers(newCourseMembers);
-      }
-    }
-  }, [courseMembersOfSelectedCourse]);
-
-  const data = courseMembers as TData[];
+  const data = extendedCourseMembers as TData[];
 
   const table = useReactTable({
     data,
@@ -121,7 +97,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
-  }); 
+  });
 
   // handle checking if the lecture exists for a specific date
   const getLectureOfCourseQuery = trpc.lecture.tryGetLectureFromDate.useQuery(
@@ -141,6 +117,32 @@ export function DataTable<TData, TValue>({
   useEffect(() => {
     getLectureOfCourseQuery.refetch();
   }, [selectedAttendanceDate]);
+
+  useEffect(() => {
+    if (courseMembersOfSelectedCourse && getLectureOfCourseQuery.data) {
+      // We need this to refetch the attendance entries when the date is changed
+      const newExtendedCourseMembers: ExtendedCourseMember[] =
+        courseMembersOfSelectedCourse
+          ?.map((member) => {
+            // Find the corresponding attendance entry for the member
+            let attendanceEntry: AttendanceEntry | undefined;
+            if (getLectureOfCourseQuery.data.attendance) {
+              attendanceEntry = getLectureOfCourseQuery.data.attendance.find(
+                (entry: AttendanceEntry) => entry.courseMemberId === member.id
+              );
+            }
+            return {
+              ...member,
+              AttendanceEntry: attendanceEntry
+            };
+          })
+          .filter(
+            (member) =>
+              member.courseId === selectedCourseId && member.role === 'student'
+          );
+      setExtendedCourseMembers(newExtendedCourseMembers);
+    }
+  }, [getLectureOfCourseQuery.isSuccess]);
 
   const CreateNewLectureButton = () => {
     const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
@@ -171,10 +173,10 @@ export function DataTable<TData, TValue>({
       {getLectureOfCourseQuery.isLoading ||
       getLectureOfCourseQuery.isFetching ? (
         <div className="pt-8 flex justify-center items-center">
-            <Icons.logo
-                className="wave primary-foreground"
-                style={{ height: '100px', width: '100px' }}
-            />
+          <Icons.logo
+            className="wave primary-foreground"
+            style={{ height: '100px', width: '100px' }}
+          />
         </div>
       ) : getLectureOfCourseQuery.data.lecture ? (
         <div className="space-y-4">
@@ -247,7 +249,7 @@ export function DataTable<TData, TValue>({
     </div>
   ) : (
     <div className="pt-8 flex justify-center items-center">
-        <h3>Create/Choose a course!</h3>
+      <h3>Create/Choose a course!</h3>
     </div>
   );
 }
