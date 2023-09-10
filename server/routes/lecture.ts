@@ -69,6 +69,24 @@ export const lectureRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
+  getAllLecturesAndAttendance: publicProcedure
+    .input(zGetLecturesOfCourse)
+
+    .query(async (requestData) => {
+      try {
+        const lectures = await prisma.lecture.findMany({
+          where: {
+            courseId: requestData.input.courseId
+          },
+          include: {
+            attendanceEntries: true
+          }
+        });
+        return { success: true, lectures };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
 
   CreateLecture: publicProcedure
     .input(zCreateLecture)
