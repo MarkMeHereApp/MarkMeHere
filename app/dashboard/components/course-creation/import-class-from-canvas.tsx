@@ -27,7 +27,9 @@ export function ImportClassFromCanvas() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">TEST</div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            TEST
+          </div>
         </div>
         <DialogFooter>
           <Button type="submit">Import</Button>

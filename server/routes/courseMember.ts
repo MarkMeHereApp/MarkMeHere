@@ -1,5 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
+import { Prisma } from '@prisma/client';
 import { generateTypedError } from '@/server/errorTypes';
 
 import { z } from 'zod';

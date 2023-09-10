@@ -1,7 +1,9 @@
 import z from 'zod';
 import { CourseMember, AttendanceEntry } from '@prisma/client';
 import {
+  CheckCircledIcon,
   CircleIcon,
+  CrossCircledIcon,
   ClockIcon
 } from '@radix-ui/react-icons';
 import { Icons } from '@/components/ui/icons';

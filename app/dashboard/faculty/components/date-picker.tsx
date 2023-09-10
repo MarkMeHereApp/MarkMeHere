@@ -17,11 +17,8 @@ import { useCourseContext } from '@/app/course-context';
 export function CalendarDateRangePicker({
   className
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const { selectedAttendanceDate, setSelectedAttendanceDate } =
-    useCourseContext();
-  const [date, setDate] = React.useState<Date | undefined>(
-    selectedAttendanceDate || new Date()
-  );
+    const { selectedAttendanceDate, setSelectedAttendanceDate } = useCourseContext();
+    const [date, setDate] = React.useState<Date | undefined>(selectedAttendanceDate || new Date());
 
   const handleDateClick = (day: Date) => {
     setDate(day);
@@ -41,7 +38,11 @@ export function CalendarDateRangePicker({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, 'LLL dd, y') : <span>Pick a date</span>}
+            {date ? (
+                format(date, 'LLL dd, y')
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
@@ -51,10 +52,10 @@ export function CalendarDateRangePicker({
             defaultMonth={date}
             selected={date}
             onSelect={(date) => {
-              if (date) {
-                handleDateClick(date);
-              }
-            }}
+                if (date) {
+                  handleDateClick(date);
+                }
+              }}
             numberOfMonths={1}
           />
         </PopoverContent>
@@ -62,6 +63,7 @@ export function CalendarDateRangePicker({
     </div>
   );
 }
+
 
 // 'use client';
 
@@ -89,10 +91,10 @@ export function CalendarDateRangePicker({
 //   const handleDateClick = (day: DateRange) => {
 //     console.log(day.from );
 //     setDate({ from: day.from, to: day.to });
-
+   
 //     setSelectedAttendanceDate(day.from ?? null);
 //   };
-
+   
 //   React.useEffect(() => {
 //     if (selectedAttendanceDate) {
 //         setDate({ from: selectedAttendanceDate, to: selectedAttendanceDate});

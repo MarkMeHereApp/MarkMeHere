@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import CourseSwitcher from '@/app/dashboard/components/main-bar';
 
 import LecturesContext from '@/app/dashboard/faculty/lecture-context';
@@ -28,7 +29,7 @@ export default async function DashboardLayout({
   );
 
   // Fetch the courses using the extracted IDs
-  const _courses = await prisma.course.findMany({
+  const courses = await prisma.course.findMany({
     where: {
       id: {
         in: courseIds

@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { toastError } from '@/utils/globalFunctions';
 
 import { DataTablePagination } from '../components/data-table-pagination';
 import { DataTableToolbar } from '../components/data-table-toolbar';
@@ -36,7 +37,12 @@ import { useCourseContext } from '@/app/course-context';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
-import { ExtendedCourseMember } from '@/types/sharedZodTypes';
+import { AttendanceEntry, CourseMember, Lecture } from '@prisma/client';
+import {
+  zAttendanceStatus,
+  ExtendedCourseMember,
+  zAttendanceStatusType
+} from '@/types/sharedZodTypes';
 import { Icons } from '@/components/ui/icons';
 
 interface DataTableProps<TData, TValue> {
