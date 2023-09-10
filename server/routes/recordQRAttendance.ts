@@ -14,7 +14,7 @@ export const zCreateAttendanceToken = z.object({
 });
 
 export const recordQRAttendanceRouter = router({
-  //Search qrcode table for QRCode sent by the user
+  //Search qrcode table for QRCode and lectureId sent by the user
 
   ValidateQRCode: publicProcedure
     .input(zValidateCode)
@@ -43,22 +43,25 @@ export const recordQRAttendanceRouter = router({
 
   //Create a token that can be used to validate users who take too long to sign in
   //before the QR code expires
-  //The user will be given the token in the process so basically if their token exists
-  //In the database they are let through
+  //The user will be given the token in the process so if their token exists
+  //In the database they can be marked as attended
   CreateAttendanceToken: publicProcedure
     .input(zCreateAttendanceToken)
     .mutation(async ({ input }) => {
       try {
+        const token = uuidv4();
         const courseId = input.courseId;
 
-        await prisma.attendanceToken.create({
+        const result = await prisma.attendanceToken.create({
           data: {
-            token: uuidv4(),
+            token: token,
             courseId: courseId
           }
         });
 
-        return;
+        console.log(result);
+        //Return the id of the token instead of the token itself
+        return { token: result.id };
       } catch (error) {
         throw generateTypedError(
           error as Error,
