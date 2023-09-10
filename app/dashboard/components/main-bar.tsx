@@ -17,7 +17,7 @@ export default function MainBar() {
           <UserNav />
         </div>
       </div>
-      <div className="flex my-4 items-center px-4">
+      <div className="flex px-4">
         <MainNav />
       </div>
     </div>

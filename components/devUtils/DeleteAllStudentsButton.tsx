@@ -36,9 +36,7 @@ const DeleteAllStudents = () => {
     <Button variant="default" onClick={handleClick}>
       Delete All Students
     </Button>
-  ) : (
-    <Loading />
-  );
+  ) : null;
 };
 
 export default DeleteAllStudents;
