@@ -73,6 +73,7 @@ export function DataTable<TData, TValue>({
   if (error) {
     setExtendedCourseMembers([]);
     throwErrorOrShowToast(error as Error);
+    setError(null);
   }
 
   const data = extendedCourseMembers as TData[];
@@ -154,6 +155,7 @@ export function DataTable<TData, TValue>({
             courseId: selectedCourseId,
             lectureDate: selectedAttendanceDate
           });
+          getLectureOfCourseQuery.refetch();
           toast({
             title: 'Created New Lecture!',
             description: `Successfully created a new lecture for ${selectedAttendanceDate}`,
