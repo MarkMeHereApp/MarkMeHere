@@ -1,14 +1,11 @@
-import React from 'react';
 import { HoverCardContent } from '@/components/ui/hover-card';
 import { CheckCircledIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import {
   zCreateCourseErrorDescriptions,
-  zLMSCourseScheme,
   zLMSCourseSchemeType
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
-import { Cousine } from 'next/font/google';
 
 const CourseHoverCardContent = ({
   course

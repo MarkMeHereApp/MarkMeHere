@@ -1,4 +1,3 @@
-import NextAuth from 'next-auth';
 
 //Override the user type nextauth uses
 

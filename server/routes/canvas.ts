@@ -4,12 +4,11 @@ import { generateTypedError } from '@/server/errorTypes';
 // Import Prisma client
 import { PrismaClient } from '@prisma/client';
 import {
-  zLMSCourseScheme,
   zLMSCourseSchemeType,
   zCreateCourseErrorStatus
 } from '@/types/sharedZodTypes';
 const prisma = new PrismaClient();
-const { TRPCError } = require('@trpc/server');
+import { TRPCError } from '@trpc/server';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
