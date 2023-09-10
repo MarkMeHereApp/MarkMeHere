@@ -24,7 +24,7 @@ export default function HomePage() {
     >
       <Icons.logo
         className="wave primary-foreground"
-        style={{ height: '100px', width: '100px' }}
+        style={{ height: 'auto', width: '150px' }}
       />
     </div>
   );

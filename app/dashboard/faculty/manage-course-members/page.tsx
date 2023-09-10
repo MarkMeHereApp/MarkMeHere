@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
 import EnrollCourseMemberButton from '@/components/devUtils/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
+import { Icons } from '@/components/ui/icons';
 
 const ManageCourseMembers = () => {
   const { selectedCourseId } = useCourseContext();
@@ -34,7 +35,11 @@ const ManageCourseMembers = () => {
           </>
         ) : (
           <div className="pt-8 flex justify-center items-center">
-            <h3>Create/Choose a course!</h3>
+            <Icons.logo
+              className="wave-infinite primary-foreground"
+              style={{ width: '150px', height: 'auto' }}
+            />
+            <h3 className="text-3xl tracking-tight">Create/Choose a course!</h3>
           </div>
         )}
       </div>

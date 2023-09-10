@@ -16,7 +16,7 @@ export default function MainNav({
   }
 
   const getLinkClassName = (path: string) => {
-    const commonClasses = 'flex text-sm font-medium pb-0';
+    const commonClasses = 'flex text-sm font-mediu n pb-0';
     const activeLinkStyles = `${commonClasses} text-primary`;
     const inactiveLinkStyles = `${commonClasses} text-muted-foreground hover:text-primary`;
     return isActive(path) ? activeLinkStyles : inactiveLinkStyles;
