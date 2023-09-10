@@ -70,6 +70,7 @@ export function DataTableToolbar<TData>({
       return member.email !== userEmail;
     });
     await deleteCourseMemberMutation.mutateAsync(filteredCourseMembers);
+    table.resetRowSelection();
     handleDialogClose();
     await getCourseMembersOfCourseQuery.refetch();
 
@@ -78,7 +79,9 @@ export function DataTableToolbar<TData>({
       .join(', ');
 
     toast({
-      title: `Successfully deleted: ${deletedNames}`
+      title: `Successfully deleted ${filteredCourseMembers.length} course member(s)!`,
+      description: `Deleted: ${deletedNames}`,
+      icon: 'success'
     });
   };
 

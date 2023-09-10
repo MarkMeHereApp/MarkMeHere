@@ -67,9 +67,5 @@ export const columns: ColumnDef<CourseMember>[] = [
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />
   }
 ];
