@@ -122,7 +122,7 @@ export function DataTable<TData, TValue>({
       )
         ?.map((member) => {
           // Find the corresponding attendance entry for the member
-          let attendanceEntry = currentLecture?.attendanceEntries.find(
+          const attendanceEntry = currentLecture?.attendanceEntries.find(
             (entry) => entry.courseMemberId === member.id
           );
           return {
