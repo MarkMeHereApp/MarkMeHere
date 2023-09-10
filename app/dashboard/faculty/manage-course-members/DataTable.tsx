@@ -65,10 +65,6 @@ export default function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   });
 
-  useEffect(() => {
-    table.resetRowSelection();
-  }, [courseMembersOfSelectedCourse]);
-
   return courseMembersOfSelectedCourse ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
