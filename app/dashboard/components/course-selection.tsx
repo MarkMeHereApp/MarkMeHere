@@ -56,7 +56,7 @@ export default function CourseSelection({ className }: { className?: string }) {
   );
 
   return (
-    <span className={cn('h-16 items-center px-4', className)}>
+    <>
       <CourseCreationSheet
         showNewCourseSheet={showNewCourseSheet}
         onOpenChange={setShowNewCourseSheet}
@@ -160,6 +160,6 @@ export default function CourseSelection({ className }: { className?: string }) {
             </PopoverContent>
           )}
       </Popover>
-    </span>
+    </>
   );
 }
