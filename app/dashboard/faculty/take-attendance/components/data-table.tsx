@@ -42,7 +42,6 @@ import {
   ExtendedCourseMember,
   zAttendanceStatusType
 } from '@/types/sharedZodTypes';
-import { throwErrorOrShowToast } from '@/utils/globalFunctions';
 import { Icons } from '@/components/ui/icons';
 
 interface DataTableProps<TData, TValue> {
@@ -72,8 +71,7 @@ export function DataTable<TData, TValue>({
 
   if (error) {
     setExtendedCourseMembers([]);
-    throwErrorOrShowToast(error as Error);
-    setError(null);
+    throw error;
   }
 
   const data = extendedCourseMembers as TData[];

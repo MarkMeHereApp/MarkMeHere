@@ -62,7 +62,7 @@ model AttendanceEntry {
   lecture        Lecture      @relation(fields: [lectureId], references: [id])
   lectureId      String
   courseMemberId String
-  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
+  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
   checkInDate    DateTime     @default(now())
   status         String       @default("present")
 }
