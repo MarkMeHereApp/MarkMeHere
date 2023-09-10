@@ -25,7 +25,7 @@ import {
 
 import { DataTablePagination } from './table-accessories/DataTablePagination';
 import { DataTableToolbar } from './table-accessories/DataTableToolbar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCourseContext } from '@/app/course-context';
 import Loading from '@/components/general/loading';
 
@@ -64,6 +64,10 @@ export default function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
   });
+
+  useEffect(() => {
+    table.resetRowSelection();
+  }, [courseMembersOfSelectedCourse]);
 
   return courseMembersOfSelectedCourse ? (
     <div className="space-y-4">

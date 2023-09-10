@@ -29,7 +29,7 @@ export function DataTableRowActions<TData>({
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
   const deleteCourseMemberMutation =
-    trpc.courseMember.deleteCourseMember.useMutation();
+    trpc.courseMember.deleteCourseMembers.useMutation();
   const getCourseMembersOfCourseQuery =
     trpc.courseMember.getCourseMembersOfCourse.useQuery(
       {
@@ -57,11 +57,10 @@ export function DataTableRowActions<TData>({
   };
 
   async function handleConfirmDelete() {
-    await deleteCourseMemberMutation.mutateAsync({
-      ...courseMemberData
-    });
+    await deleteCourseMemberMutation.mutateAsync([courseMemberData]);
     handleDialogClose();
     await getCourseMembersOfCourseQuery.refetch();
+
     toast({
       title: `Successfully deleted ${courseMemberData.name}`
     });

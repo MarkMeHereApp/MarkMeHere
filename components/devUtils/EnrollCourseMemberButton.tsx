@@ -75,6 +75,7 @@ const EnrollCourseMemberButton = () => {
 
         const response = await createCourseMemberMutation.mutateAsync({
           ...data,
+          id: '',
           courseId: selectedCourseId,
           dateEnrolled: new Date()
         });

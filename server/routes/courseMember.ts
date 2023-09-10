@@ -6,7 +6,7 @@ import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod';
 
 export const zCourseMember = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   lmsId: z.string().nullable(),
   email: z.string(),
   name: z.string(),
@@ -37,7 +37,8 @@ export const courseMemberRouter = router({
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input
+            ...requestData.input,
+            id: requestData.input.id || undefined
           }
         });
         return { success: true, resEnrollment };
@@ -46,15 +47,27 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteCourseMember: publicProcedure
-    .input(zCourseMember)
+  deleteCourseMembers: publicProcedure
+    .input(z.array(zCourseMember))
     .mutation(async (requestData) => {
       try {
-        await prisma.courseMember.delete({
+        // Extract valid course member IDs from the input array
+        const memberIdsToDelete = requestData.input.map((member) => member.id);
+
+        // Check if there are valid IDs to delete
+        if (memberIdsToDelete.length === 0) {
+          throw new Error('No valid course member IDs provided');
+        }
+
+        // Delete course members by their IDs
+        await prisma.courseMember.deleteMany({
           where: {
-            id: requestData.input.id
+            id: {
+              in: memberIdsToDelete
+            }
           }
         });
+
         return { success: true };
       } catch (error) {
         throw generateTypedError(error as Error);
