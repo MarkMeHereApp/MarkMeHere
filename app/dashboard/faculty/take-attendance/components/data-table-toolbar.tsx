@@ -10,7 +10,7 @@ import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
-import { CalendarDateRangePicker } from '@/components/general/date-range-picker';
+import { CalendarDateRangePicker } from '@/app/dashboard/faculty/components/date-picker';
 import {
   zAttendanceStatus,
   zAttendanceStatusIcons,
