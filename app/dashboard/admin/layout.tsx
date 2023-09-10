@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import MainBarAdmin from '@/app/dashboard/admin/components/layout/MainBarAdmin';
 
 import { getServerSession } from 'next-auth/next';
