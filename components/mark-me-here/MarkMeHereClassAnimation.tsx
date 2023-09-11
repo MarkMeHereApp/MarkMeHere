@@ -1,4 +1,5 @@
 import { Icons } from '../ui/icons';
+import { firaSansFont } from '@/utils/fonts';
 
 const MarkMeHereClassAnimation = () => {
   return (
@@ -37,9 +38,9 @@ const MarkMeHereClassAnimation = () => {
           style={{ width: '25px', height: 'auto' }}
         />
       </div>
-      <h2 className="text-3xl italic font-bold tracking-tight">
-        "Mark Me Here!"
-      </h2>
+      <span className={firaSansFont.className}>
+        <h2 className="text-3xl font-bold ">Mark Me Here!</h2>
+      </span>
     </div>
   );
 };
