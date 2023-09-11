@@ -15,6 +15,7 @@ import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import type { Lecture } from '@prisma/client';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -32,7 +33,7 @@ export default function QR() {
 
   const { setLectures, lectures } = useLecturesContext();
 
-  //Get the lecture currently active in the QR code(selected in the calendar)
+  //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
     if (lectures) {
       return lectures.find((lecture) => {
@@ -43,8 +44,9 @@ export default function QR() {
     }
   };
 
-  //Convert string | null type to string
-  const courseId: string = selectedCourseId ?? '';
+  //Get Current lecture (context will never be null)
+  const currentLecture = getCurrentLecture()!;
+
   const mode =
     searchParams && searchParams.get('mode')
       ? searchParams.get('mode')
@@ -55,14 +57,11 @@ export default function QR() {
     url: string;
   }> | null>(null);
 
-
   React.useEffect(() => {
     if (activeCode === 'LOADING') {
       // Insert your loader animation code here
     }
   }, [activeCode]);
-
-  
 
   React.useEffect(() => {
     if (mode === 'minimal') {
@@ -88,9 +87,10 @@ export default function QR() {
   const initialCode: qrcode = {
     id: 'LOADING',
     code: 'LOADING',
+    lectureId: 'LOADING',
     courseId: 'LOADING',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ? 
+    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ?
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
@@ -106,7 +106,8 @@ export default function QR() {
     try {
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        courseId: courseId
+        lectureId: currentLecture.id,
+        courseId: currentLecture.courseId
       });
 
       if (newBufferCode.success) {
@@ -124,7 +125,8 @@ export default function QR() {
     try {
       const newActiveCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime, // 5 seconds
-        courseId: courseId
+        lectureId: currentLecture.id,
+        courseId: currentLecture.courseId
       });
 
       if (newActiveCode.success) {
@@ -134,7 +136,8 @@ export default function QR() {
 
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        courseId: courseId
+        lectureId: currentLecture.id,
+        courseId: currentLecture.courseId
       });
 
       if (newBufferCode.success) {
@@ -244,11 +247,13 @@ export default function QR() {
       </div>
 
       <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-        <CardHeader className="flex items-center justify-between hidden lg:block" 
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}>
+        <CardHeader
+          className="flex items-center justify-between hidden lg:block"
+          style={{
+            display: 'flex',
+            justifyContent: 'center'
+          }}
+        >
           <CardTitle className="font-bold pr-8 text-center">
             Scan the QR code with your phone to sign in
           </CardTitle>
@@ -259,22 +264,20 @@ export default function QR() {
 
         <CardContent className="flex-grow flex-shrink flex flex-col items-center justify-between ">
           {activeCode === 'LOADING' ? (
-            
-            <div  
+            <div
               style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%'
-            }}> 
+              }}
+            >
               <ReloadIcon
                 className="animate-spin"
                 style={{ height: '100px', width: '100px' }}
               />
             </div>
-
           ) : (
-
             <QRCode
               value={
                 process.env.NEXT_PUBLIC_BASE_URL +
@@ -285,7 +288,6 @@ export default function QR() {
               }
               className="h-full w-full"
             />
-            
           )}
 
           <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">

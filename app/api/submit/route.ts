@@ -14,14 +14,16 @@ export async function GET(req: NextRequest) {
   const caller = appRouter.createCaller({});
   const params = req.nextUrl.searchParams;
 
-  const qr: string = params.get('qr') || '';
-  const courseId: string = params.get('courseId') || '';
+  const qr: string = params.get('qr') ?? '';
+  const lectureId: string = params.get('lectureId') ?? '';
+  const courseId: string = params.get('courseId') ?? '';
 
   try {
     // the server-side call
     //In this call also make sure qr code we are retrieving is before expiration date
-    const { success } = await caller.recordQRAttendance.ValidateQRCode({
+    const qrRow = await caller.recordQRAttendance.ValidateQRCode({
       qr: qr,
+      lectureId: lectureId,
       courseId: courseId
     });
 
@@ -29,7 +31,7 @@ export async function GET(req: NextRequest) {
     /*Maybe pass lectureId into attendance token instead of course*/
 
     //If QR code is valid create an attendance token
-    if (success) {
+    if (qrRow) {
       const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
         courseId: courseId
       });
@@ -66,7 +68,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard/student/markAttendance', req.url));
     } else {
       return NextResponse.json({
-        error: { message: `Invalid QR code or courseId` }
+        error: { message: `Invalid QR code, lectureId, or courseId` }
       });
     }
   } catch (cause) {

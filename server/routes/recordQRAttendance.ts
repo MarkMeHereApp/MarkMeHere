@@ -3,20 +3,23 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  zAttendanceStatus,
+  zAttendanceStatusType
+} from '@/types/sharedZodTypes';
 
 export const zValidateCode = z.object({
-  qr: z.string(),
-  courseId: z.string()
+  qr: z.string()
 });
 
 export const zCreateAttendanceToken = z.object({
-  courseId: z.string()
+  lectureId: z.string()
 });
 
 export const zMarkAttendance = z.object({
   courseId: z.string(),
   courseMemberId: z.string(),
-  status: z.string()
+  status: zAttendanceStatus
 });
 
 export const zFindCourseMember = z.object({
@@ -31,28 +34,20 @@ export const zFindAttendanceToken = z.object({
 });
 
 export const recordQRAttendanceRouter = router({
-  //Search qrcode table for QRCode and lectureId sent by the user
-
+  //Search qrcode table for QRCode
   ValidateQRCode: publicProcedure
     .input(zValidateCode)
     .query(async ({ input }) => {
       try {
         const qr = input.qr;
-        const courseId = input.courseId;
 
-        const storedQRCode = await prisma.qrcode.findFirst({
+        const qrRow = await prisma.qrcode.findFirst({
           where: {
-            code: qr,
-            courseId: courseId
+            code: qr
           }
         });
 
-        //Check if we find a code in our DB that matches the code sent by the user
-        if (!!storedQRCode) {
-          return { success: true };
-        } else {
-          return { success: false };
-        }
+        return qrRow;
       } catch (error) {
         throw new Error('Error finding QR code');
       }
@@ -67,12 +62,12 @@ export const recordQRAttendanceRouter = router({
     .mutation(async ({ input }) => {
       try {
         const token = uuidv4();
-        const courseId = input.courseId;
+        const lectureId = input.lectureId;
 
         const { id } = await prisma.attendanceToken.create({
           data: {
             token: token,
-            courseId: courseId
+            lectureId: lectureId
           }
         });
 

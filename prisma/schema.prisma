@@ -51,10 +51,11 @@ model VerificationToken {
 model Lecture {
   id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
-  courseId          String            
+  courseId          String
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
   qrCodes           qrcode[]
+
   @@unique([courseId, lectureDate])
 }
 
@@ -78,6 +79,7 @@ model Course {
   StartDate   DateTime?
   EndDate     DateTime?
   lectures    Lecture[]
+  qrCodes     qrcode[]
   enrollments CourseMember[]
 
   @@unique([lmsType, lmsId])
@@ -99,18 +101,20 @@ model CourseMember {
 }
 
 model qrcode {
-  id        String        @id @default(cuid())
-  lectureId  String
-  lecture    Lecture    @relation(fields: [lectureId], references: [id])
-  code      String      @unique       // More work to do to make this code truly unique
-  createdAt DateTime    @default(now())
+  id        String   @id @default(cuid())
+  lectureId String
+  lecture   Lecture  @relation(fields: [lectureId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  code      String   @unique // More work to do to make this code truly unique
+  createdAt DateTime @default(now())
   expiresAt DateTime
 }
 
 model AttendanceToken {
   id        String   @id @default(cuid())
   token     String
-  courseId  String
+  lectureId String
   createdAt DateTime @default(now())
 
   // We could implement a system where these are auto deleted after expiration (e.g 10 mins)

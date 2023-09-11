@@ -3,6 +3,7 @@ import { appRouter } from '@/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 import { decode } from 'next-auth/jwt';
+import type { JWT } from 'next-auth/jwt';
 
 //This component will need various checks for edge cases concerning missing cookies
 
@@ -14,15 +15,15 @@ export default async function markAttendance() {
   const encodedJWT: string | undefined = cookieStore.get(
     'next-auth.session-token'
   )?.value;
-  const jwt = await decode({
+  const jwt: JWT | null = await decode({
     token: encodedJWT,
-    secret: process.env.NEXTAUTH_SECRET || ''
+    secret: process.env.NEXTAUTH_SECRET ?? ''
   });
 
-  const email = jwt?.email || '';
-  const courseId: string = cookieStore.get('courseId')?.value || '';
+  const email = jwt?.email ?? '';
+  const courseId: string = cookieStore.get('courseId')?.value ?? '';
   const attendanceTokenId: string =
-    cookieStore.get('attendanceTokenId')?.value || '';
+    cookieStore.get('attendanceTokenId')?.value ?? '';
 
   /*
   If cookies are empty error out here
@@ -35,7 +36,7 @@ export default async function markAttendance() {
   //If token is found look up user
   //Then mark them attended
   /*WE STILL NEED COURSE ID BELOW SO IT WILL HAVE TO BE IN A COOKIE*/
-/*USE LECTURE ID HERE TO CHECK*/
+  /*USE LECTURE ID HERE TO CHECK*/
   /* Check attendance token is valid */
   const { success } = await caller.recordQRAttendance.FindAttendanceToken({
     courseId: courseId,

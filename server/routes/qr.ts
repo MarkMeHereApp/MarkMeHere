@@ -30,8 +30,8 @@ export const qrRouter = router({
           const returnCode = await prisma.qrcode.create({
             data: {
               code: newCode,
-              courseId: courseId,
               lectureId: lectureId,
+              courseId: courseId,
               expiresAt: newExpiry
             }
           });
