@@ -5,7 +5,7 @@ import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/user-nav';
 import { useCourseContext } from '@/app/course-context';
-import { Icons } from '@/components/ui/icons';
+import CreateChooseCourseAnimation from '@/components/general/CreateChooseCourseAnimation';
 
 export default function ManageAttendance() {
   const { selectedCourseId } = useCourseContext();
@@ -23,13 +23,7 @@ export default function ManageAttendance() {
             <DataTable columns={columns} />
           </>
         ) : (
-          <div className="pt-8 flex justify-center items-center">
-            <Icons.logo
-              className="wave-infinite primary-foreground"
-              style={{ width: '150px', height: 'auto' }}
-            />
-            <h3 className="text-3xl tracking-tight">Create/Choose a course!</h3>
-          </div>
+          <CreateChooseCourseAnimation />
         )}
       </div>
     </>

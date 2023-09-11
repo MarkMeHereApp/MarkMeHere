@@ -1,11 +1,23 @@
-import TestingPage from '../testing-playground/page';
+'use client';
 
-export default async function DashboardPage() {
+import { useCourseContext } from '@/app/course-context';
+import CreateChooseCourseAnimation from '@/components/general/CreateChooseCourseAnimation';
+import MarkMeHereClassAnimation from '@/components/general/MarkMeHereClassAnimation';
+
+export default function ManageAttendance() {
+  const { selectedCourseId } = useCourseContext();
+
   return (
-    <div className="flex flex-col md:flex-row">
-      <div className="flex-1 md:w-1/2 p-8 md:p-12">
-        <TestingPage />
+    <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
       </div>
+
+      {selectedCourseId ? (
+        <MarkMeHereClassAnimation />
+      ) : (
+        <CreateChooseCourseAnimation />
+      )}
     </div>
   );
 }
