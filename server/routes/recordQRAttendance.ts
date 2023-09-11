@@ -17,7 +17,7 @@ export const zCreateAttendanceToken = z.object({
 });
 
 export const zMarkAttendance = z.object({
-  courseId: z.string(),
+  lectureId: z.string(),
   courseMemberId: z.string(),
   status: zAttendanceStatus
 });
@@ -91,17 +91,17 @@ export const recordQRAttendanceRouter = router({
     .input(zMarkAttendance)
     .mutation(async ({ input }) => {
       try {
-        const courseId = input.courseId;
+        const lectureId = input.lectureId;
         const courseMemberId = input.courseMemberId;
         const status = input.status;
 
-        console.log('c ' + courseId);
+        console.log('c ' + lectureId);
         console.log('c ' + courseMemberId);
         console.log('c ' + status);
 
         const attendanceEntry = await prisma.attendanceEntry.create({
           data: {
-            lectureId: courseId,
+            lectureId: lectureId,
             courseMemberId: courseMemberId,
             status: status
           }
@@ -154,6 +154,10 @@ export const recordQRAttendanceRouter = router({
         const courseId = input.courseId;
         const email = input.email;
         const role = input.role;
+
+        console.log("find member courseId: " + courseId)
+        console.log("find member email: " + email)
+        console.log("find member role: " + role)
 
         const courseMember = await prisma.courseMember.findFirst({
           where: {
