@@ -61,7 +61,7 @@ export default async function RootLayout({
   });
 
   return (
-    <html lang="en" className={`${openSans.variable} font-sans`}>
+    <html lang="en" className={openSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
         <div>
