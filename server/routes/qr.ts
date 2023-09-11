@@ -4,22 +4,22 @@ import { z } from 'zod';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
-  courseId: z.string(),
-  lectureId: z.string()
+  lectureId: z.string(),
+  courseId: z.string()
 });
 
 export const qrRouter = router({
   CreateNewQRCode: publicProcedure
     .input(zCreateQRCode)
-    .mutation(async ({input}) => {
+    .mutation(async ({ input }) => {
       try {
         const newCode = Math.random()
           .toString(36)
           .substring(2, 8)
           .toUpperCase();
 
+        const lectureId = input.lectureId;
         const courseId = input.courseId;
-        const lectureId = input.courseId
 
         const newExpiry = new Date();
         newExpiry.setSeconds(
@@ -51,5 +51,5 @@ export const qrRouter = router({
       } catch (error) {
         throw new Error('Error Removing QR code');
       }
-    }),
+    })
 });

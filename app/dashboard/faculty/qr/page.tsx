@@ -121,6 +121,8 @@ export default function QR() {
   // This function will initialize BOTH the buffer and active code at the same time
   // However, the codes might need to be initialized more than once (see useEffect) to see why...
   const initCodes = async () => {
+    console.log(currentLecture.id)
+    console.log(currentLecture.courseId)
     setActiveCode('LOADING');
     try {
       const newActiveCode = await createQRMutator.mutateAsync({

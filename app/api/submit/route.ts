@@ -15,36 +15,32 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
   const qr: string = params.get('qr') ?? '';
-  const lectureId: string = params.get('lectureId') ?? '';
-  const courseId: string = params.get('courseId') ?? '';
 
   try {
     // the server-side call
     //In this call also make sure qr code we are retrieving is before expiration date
-    const qrRow = await caller.recordQRAttendance.ValidateQRCode({
-      qr: qr,
-      lectureId: lectureId,
-      courseId: courseId
+    const qrResult = await caller.recordQRAttendance.ValidateQRCode({
+      qr: qr
     });
 
     /*GET LECTURE/COURSE ID OUT OF DATABASE IN THIS ENDPOINT^^^^*/
     /*Maybe pass lectureId into attendance token instead of course*/
 
     //If QR code is valid create an attendance token
-    if (qrRow) {
+    if (!!qrResult.success) {
+      //qrRow is always defined when qrResult is successful
+      const qrRow = qrResult.qrRow!;
       const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
-        courseId: courseId
+        lectureId: qrRow.lectureId
       });
-      const expires = new Date();
       /*
       Make sure cookie expires 10 seconds after it is created
       Alternatively we can remember to delete the cookie when we are done (This may be better)
       We will have read the cookie and rendered the page before it expires
       */
-
-
       /*SEE IF WE CAN SET A COOKIE OBJECT TO STORE MULTIPLE VALUES IN ONE*/
 
+      const expires = new Date();
       cookies().set({
         name: 'attendanceTokenId',
         value: token,
@@ -56,8 +52,8 @@ export async function GET(req: NextRequest) {
       });
 
       cookies().set({
-        name: 'courseId',
-        value: courseId,
+        name: 'lectureId',
+        value: qrRow.lectureId,
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
@@ -65,7 +61,20 @@ export async function GET(req: NextRequest) {
         expires: expires.setSeconds(expires.getSeconds() + 100)
       });
 
-      return NextResponse.redirect(new URL('/dashboard/student/markAttendance', req.url));
+      cookies().set({
+        name: 'courseId',
+        value: qrRow.courseId,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/dashboard',
+        expires: expires.setSeconds(expires.getSeconds() + 100)
+      });
+
+      //Redirect user to markAttendance page with cookies
+      return NextResponse.redirect(
+        new URL('/dashboard/student/markAttendance', req.url)
+      );
     } else {
       return NextResponse.json({
         error: { message: `Invalid QR code, lectureId, or courseId` }
@@ -82,7 +91,9 @@ export async function GET(req: NextRequest) {
 
     // This is not a tRPC error, so we don't have specific information.
     return NextResponse.json({
-      error: { message: `Error while accessing post with ID` }
+      error: {
+        message: `Error while validating QR code or creating attendance token`
+      }
     });
   }
 }

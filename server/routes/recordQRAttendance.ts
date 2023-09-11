@@ -30,7 +30,7 @@ export const zFindCourseMember = z.object({
 
 export const zFindAttendanceToken = z.object({
   tokenId: z.string(),
-  courseId: z.string()
+  lectureId: z.string()
 });
 
 export const recordQRAttendanceRouter = router({
@@ -47,7 +47,11 @@ export const recordQRAttendanceRouter = router({
           }
         });
 
-        return qrRow;
+        if (qrRow) {
+          return { success: true, qrRow: qrRow }
+        } else {
+          return { success: false }
+        }
       } catch (error) {
         throw new Error('Error finding QR code');
       }
@@ -121,12 +125,12 @@ export const recordQRAttendanceRouter = router({
     .mutation(async ({ input }) => {
       try {
         const tokenId = input.tokenId;
-        const courseId = input.courseId;
+        const lectureId = input.lectureId;
 
         const tokenRow = await prisma.attendanceToken.findFirst({
           where: {
             id: tokenId,
-            courseId: courseId
+            lectureId: lectureId
           }
         });
 
@@ -138,7 +142,7 @@ export const recordQRAttendanceRouter = router({
       } catch (error) {
         throw generateTypedError(
           error as Error,
-          'Failed to create attendance token'
+          'Failed to find attendance token'
         );
       }
     }),
