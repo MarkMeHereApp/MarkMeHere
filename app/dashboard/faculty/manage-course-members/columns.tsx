@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { CourseMember } from '@prisma/client';
-import _ from 'lodash';
+import { capitalize } from 'lodash';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -58,7 +58,7 @@ export const columns: ColumnDef<CourseMember>[] = [
       <DataTableColumnHeader column={column} title="Role" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{_.capitalize(row.getValue('role'))}</div>
+      <div className="flex w-full">{capitalize(row.getValue('role'))}</div>
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));

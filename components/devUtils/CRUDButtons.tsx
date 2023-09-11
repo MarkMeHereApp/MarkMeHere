@@ -1,8 +1,11 @@
 import React, { lazy, Suspense } from 'react';
-import EnrollCourseMemberButton from './EnrollCourseMemberButton';
-import NukeDatabaseButton from './NukeDatabaseButton';
 
-const DeleteAllStudents = lazy(() => import('./DeleteAllStudentsButton'));
+const EnrollCourseMemberButton = lazy(
+  () => import('./EnrollCourseMemberButton')
+);
+const NukeDatabaseButton = lazy(() => import('./NukeDatabaseButton'));
+
+const DeleteAllStudentsButton = lazy(() => import('./DeleteAllStudentsButton'));
 const GenerateRandomCourseMember = lazy(
   () => import('./GenerateRandomCourseMember')
 );
@@ -25,7 +28,7 @@ const CRUDButtons = () => {
           <EnrollCourseMemberButton />
           <GenerateRandomCourseMember />
           <ShowCurrentCourseMembers />
-          <DeleteAllStudents />
+          <DeleteAllStudentsButton />
           <NukeDatabaseButton />
         </div>
       </div>
