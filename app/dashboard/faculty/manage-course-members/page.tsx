@@ -1,14 +1,14 @@
 'use client';
 
-import CRUDButtons from '@/components/devUtils/CRUDButtons';
+import CRUDButtons from '@/utils/devUtils/CRUDButtons';
 import DataTable from './DataTable';
 import { columns } from './columns';
 import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
-import EnrollCourseMemberButton from '@/components/devUtils/EnrollCourseMemberButton';
+import EnrollCourseMemberButton from '@/utils/devUtils/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
 import { Icons } from '@/components/ui/icons';
-import CreateChooseCourseAnimation from '@/components/general/CreateChooseCourseAnimation';
+import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 
 const ManageCourseMembers = () => {
   const { selectedCourseId } = useCourseContext();

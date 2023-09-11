@@ -1,11 +1,11 @@
 'use client';
 
-import CRUDButtons from '@/components/devUtils/CRUDButtons';
+import CRUDButtons from '@/utils/devUtils/CRUDButtons';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/user-nav';
 import { useCourseContext } from '@/app/course-context';
-import CreateChooseCourseAnimation from '@/components/general/CreateChooseCourseAnimation';
+import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 
 export default function ManageAttendance() {
   const { selectedCourseId } = useCourseContext();

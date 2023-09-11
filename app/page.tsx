@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import MarkMeHereClassAnimation from '@/components/general/MarkMeHereClassAnimation';
+import MarkMeHereClassAnimation from '@/components/mark-me-here/MarkMeHereClassAnimation';
 
 export default function HomePage() {
   const router = useRouter();
