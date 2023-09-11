@@ -15,12 +15,19 @@ export const zCreateAttendanceToken = z.object({
 
 export const zMarkAttendance = z.object({
   courseId: z.string(),
-  courseMemberId: z.string()
+  courseMemberId: z.string(),
+  status: z.string()
 });
 
 export const zFindCourseMember = z.object({
   courseId: z.string(),
-  email: z.string()
+  email: z.string(),
+  role: z.string()
+});
+
+export const zFindAttendanceToken = z.object({
+  tokenId: z.string(),
+  courseId: z.string()
 });
 
 export const recordQRAttendanceRouter = router({
@@ -79,23 +86,60 @@ export const recordQRAttendanceRouter = router({
       }
     }),
 
-    MarkAttendance: publicProcedure
+  //Create student attendance entry
+  //We need to pass lecture id to attendance entry instead of courseId
+  MarkAttendance: publicProcedure
     .input(zMarkAttendance)
     .mutation(async ({ input }) => {
       try {
         const courseId = input.courseId;
         const courseMemberId = input.courseMemberId;
-       
+        const status = input.status;
 
-        const { id } = await prisma.attendanceEntry.create({
+        console.log('c ' + courseId);
+        console.log('c ' + courseMemberId);
+        console.log('c ' + status);
+
+        const attendanceEntry = await prisma.attendanceEntry.create({
           data: {
             courseId: courseId,
             courseMemberId: courseMemberId,
+            status: status
           }
         });
 
-        //Return the id of the token instead of the token itself
-        return { token: id };
+        if (!!attendanceEntry) {
+          return { success: true };
+        } else {
+          return { success: false };
+        }
+      } catch (error) {
+        throw generateTypedError(
+          error as Error,
+          'Failed to create attendance entry'
+        );
+      }
+    }),
+
+  FindAttendanceToken: publicProcedure
+    .input(zFindAttendanceToken)
+    .mutation(async ({ input }) => {
+      try {
+        const tokenId = input.tokenId;
+        const courseId = input.courseId;
+
+        const tokenRow = await prisma.attendanceToken.findFirst({
+          where: {
+            id: tokenId,
+            courseId: courseId
+          }
+        });
+
+        if (!!tokenRow) {
+          return { success: true };
+        } else {
+          return { success: false };
+        }
       } catch (error) {
         throw generateTypedError(
           error as Error,
@@ -104,21 +148,23 @@ export const recordQRAttendanceRouter = router({
       }
     }),
 
-    FindCourseMember: publicProcedure
+  FindCourseMember: publicProcedure
     .input(zFindCourseMember)
     .mutation(async ({ input }) => {
       try {
         const courseId = input.courseId;
         const email = input.email;
-       
+        const role = input.role;
+
         const courseMember = await prisma.courseMember.findFirst({
           where: {
             courseId: courseId,
             email: email,
+            role: role
           }
         });
 
-        //Return the id of the token instead of the token itself
+        //Return the course member attempting to mark attendance
         return { courseMember: courseMember };
       } catch (error) {
         throw generateTypedError(

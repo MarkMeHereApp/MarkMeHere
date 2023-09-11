@@ -1,5 +1,9 @@
 'use client';
 
+//We need to pass the lectureid of the qr code into the database with qrcode. Then when
+//we validate the qr code we can grab these values and use them when marking students
+
+
 import React from 'react';
 import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
@@ -10,6 +14,7 @@ import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
+import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -19,7 +24,23 @@ export default function QR() {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { selectedCourseId } = useCourseContext();
+  const {
+    selectedAttendanceDate,
+    courseMembersOfSelectedCourse,
+    selectedCourseId
+  } = useCourseContext();
+
+  const { setLectures, lectures } = useLecturesContext();
+
+  const getCurrentLecture = () => {
+    if (lectures) {
+      return lectures.find((lecture) => {
+        return (
+          lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+        );
+      });
+    }
+  };
 
   //Convert string | null type to string
   const courseId: string = selectedCourseId ?? '';

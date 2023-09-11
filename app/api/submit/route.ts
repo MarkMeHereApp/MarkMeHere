@@ -29,8 +29,8 @@ export async function GET(req: NextRequest) {
       courseId: courseId
     });
 
-    //Here we need to redirect to our attendance marked page
-    //and mark their attendance from there
+    /*GET LECTURE/COURSE ID OUT OF DATABASE IN THIS ENDPOINT^^^^*/
+    /*Maybe pass lectureId into attendance token instead of course*/
 
     //If QR code is valid create an attendance token
     if (success) {
@@ -43,6 +43,9 @@ export async function GET(req: NextRequest) {
       Alternatively we can remember to delete the cookie when we are done (This may be better)
       We will have read the cookie and rendered the page before it expires
       */
+
+
+      /*SEE IF WE CAN SET A COOKIE OBJECT TO STORE MULTIPLE VALUES IN ONE*/
 
       cookies().set({
         name: 'attendanceTokenId',
@@ -67,7 +70,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard/student/markAttendance', req.url));
     } else {
       return NextResponse.json({
-        error: { message: `Invalid QR code` }
+        error: { message: `Invalid QR code or courseId` }
       });
     }
   } catch (cause) {

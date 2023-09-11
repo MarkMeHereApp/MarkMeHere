@@ -54,17 +54,16 @@ model Lecture {
   courseId          String
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
-  @@unique([courseId, lectureDate])
 }
 
 model AttendanceEntry {
   id             String       @id @default(cuid())
-  course        Lecture      @relation(fields: [courseId], references: [id])
-  courseId       String
+  lecture        Lecture      @relation(fields: [lectureId], references: [id])
+  lectureId      String
   courseMemberId String
-  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
+  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
   checkInDate    DateTime     @default(now())
-  status         String       @default("here")
+  status         String       @default("present")
 }
 
 model Course {
