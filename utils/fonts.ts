@@ -11,5 +11,3 @@ export const firaSansFont = Fira_Sans({
   weight: '600',
   variable: '--font-logo'
 });
-
-export const calSans = localFont({ src: './CalSans-SemiBold.woff2' });
