@@ -29,7 +29,7 @@ export function StartScanningButton() {
   const router = useRouter();
 
   const address = 'localhost:3000';
-  const navigation = '/scan/qr';
+  const navigation = '/dashboard/faculty/qr';
 
   const [isCopied, setCopied] = useState(false);
   const [svgValue, setSvgValue] = useState(

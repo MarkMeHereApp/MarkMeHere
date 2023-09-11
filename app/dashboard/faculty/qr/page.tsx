@@ -125,6 +125,7 @@ export default function QR() {
           return 0;
         }
 
+        console.log(mode)
         // If the user is not on the page, reset the code.
         // Functionally this is not needed, the page will correct itself when they go back
         // but when the document is  hidden, the timer will run slower, so this is to prevent
@@ -170,6 +171,8 @@ export default function QR() {
     return () => clearInterval(timer);
   }, []);
 
+  
+
   if (mode === 'minimal') {
     return (
       <>
@@ -185,10 +188,24 @@ export default function QR() {
             alignItems: 'center'
           }}
         >
-          {DynamicQRCode && (
-            <DynamicQRCode
-              url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
-            />
+          {activeCode === 'LOADING' ? (
+            
+            <div> 
+              <ReloadIcon
+                className="animate-spin"
+                style={{ height: '100px', width: '100px' }}
+              />
+            </div>
+
+          ) : (
+            <div>
+              {DynamicQRCode && (
+                <DynamicQRCode
+                  url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+                />
+          )}
+            </div>  
+            
           )}
         </div>
 
@@ -200,6 +217,7 @@ export default function QR() {
       </>
     );
   }
+  
 
   return (
     <div className="relative min-h-screen">
@@ -216,7 +234,7 @@ export default function QR() {
           <CardTitle className="font-bold pr-8 text-center">
             Scan the QR code with your phone to sign in
           </CardTitle>
-          <Button onClick={() => router.push('/dashboard/take-attendance')}>
+          <Button onClick={() => router.push('/dashboard/faculty/take-attendance')}>
             <div>Finish</div>
           </Button>
         </CardHeader>
@@ -246,7 +264,15 @@ export default function QR() {
             
           )}
 
-          <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
+          {mode == 'hide-code' ? (
+            <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
+              <div className="pt-5">
+                <Progress value={progress} className="w-[100%]" />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
+            
             <span>Or go to the website and enter the code</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
               attendify.rickleincker.com/submit
@@ -256,13 +282,21 @@ export default function QR() {
             </div>
 
             <Card className="flex justify-center items-center p">
+              {mode === 'hide-code' ? (
+                <div>
+                </div>
+              ) : (
+
               <CardHeader>
                 <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
                   {activeCode}
                 </CardTitle>
               </CardHeader>
+              )}
             </Card>
           </div>
+          )}
+          
         </CardContent>
       </Card>
     </div>
