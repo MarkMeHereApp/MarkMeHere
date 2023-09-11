@@ -41,9 +41,9 @@ export default function SigninPage() {
         <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
           <CardContent>
             <div className="flex flex-col space-y-2 text-center p-3">
-              <h1 className={`text-2xl font-semibold font-logo tracking-tight`}>
-                Sign in Mark Me Here!
-              </h1>
+              <span className={firaSansFont.className}>
+                <h1 className={`text-2xl font-bold`}>Sign in Mark Me Here!</h1>
+              </span>
             </div>
             <SignInForm providers={providers} />
 
