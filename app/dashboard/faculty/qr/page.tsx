@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation'; // Import useRoute
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 export default function QR() {
   const [progress, setProgress] = React.useState(0);
@@ -54,6 +55,15 @@ export default function QR() {
     url: string;
   }> | null>(null);
 
+
+  React.useEffect(() => {
+    if (activeCode === 'LOADING') {
+      // Insert your loader animation code here
+    }
+  }, [activeCode]);
+
+  
+
   React.useEffect(() => {
     if (mode === 'minimal') {
       //Because the minimal QR code changes sizes depending on the view port we can't have it render on the server at all, if we don't do this it tries to cache the QR code on the server.
@@ -80,7 +90,7 @@ export default function QR() {
     code: 'LOADING',
     courseId: 'LOADING',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...
+    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ? 
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
@@ -234,8 +244,12 @@ export default function QR() {
       </div>
 
       <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-        <CardHeader className="flex items-center justify-between hidden lg:block">
-          <CardTitle className="font-bold pr-8">
+        <CardHeader className="flex items-center justify-between hidden lg:block" 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+            }}>
+          <CardTitle className="font-bold pr-8 text-center">
             Scan the QR code with your phone to sign in
           </CardTitle>
           <Button onClick={() => router.push('/dashboard/take-attendance')}>
@@ -245,8 +259,22 @@ export default function QR() {
 
         <CardContent className="flex-grow flex-shrink flex flex-col items-center justify-between ">
           {activeCode === 'LOADING' ? (
-            <div> </div>
+            
+            <div  
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%'
+            }}> 
+              <ReloadIcon
+                className="animate-spin"
+                style={{ height: '100px', width: '100px' }}
+              />
+            </div>
+
           ) : (
+
             <QRCode
               value={
                 process.env.NEXT_PUBLIC_BASE_URL +
@@ -257,6 +285,7 @@ export default function QR() {
               }
               className="h-full w-full"
             />
+            
           )}
 
           <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">

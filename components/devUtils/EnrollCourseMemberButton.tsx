@@ -92,7 +92,7 @@ const EnrollCourseMemberButton = () => {
     handleDialogClose();
   }
 
-  return (
+  return selectedCourseId ? (
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger asChild>
@@ -196,7 +196,7 @@ const EnrollCourseMemberButton = () => {
         </DialogContent>
       </Dialog>
     </>
-  );
+  ) : null;
 };
 
 export default EnrollCourseMemberButton;

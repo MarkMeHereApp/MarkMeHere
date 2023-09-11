@@ -15,61 +15,52 @@ export default function MainNav({
     return pathname === href;
   }
 
+  const getLinkClassName = (path: string) => {
+    const commonClasses = 'flex text-md font-mediu n pb-0';
+    const activeLinkStyles = `${commonClasses} text-primary`;
+    const inactiveLinkStyles = `${commonClasses} text-muted-foreground hover:text-primary`;
+    return isActive(path) ? activeLinkStyles : inactiveLinkStyles;
+  };
+
+  const getBorderClassName = (path: string) => {
+    const commonClasses = 'border-b-2 w-full p-3 pb-2 px-0';
+    const activeBorderStyles = `${commonClasses} border-primary`;
+    const inactiveBorderStyles = `${commonClasses} border-transparent hover:border-primary hover:border-solid`;
+    return isActive(path) ? activeBorderStyles : inactiveBorderStyles;
+  };
+
+  type MainNavBarCustomLinkProps = {
+    href: string;
+    displayText: string;
+  };
+
+  const MainNavBarCustomLink: React.FC<MainNavBarCustomLinkProps> = ({
+    href,
+    displayText
+  }) => (
+    <Link href={href} className={getLinkClassName(href)}>
+      <span className={getBorderClassName(href)}>{displayText}</span>
+    </Link>
+  );
+
   return (
-    <nav
-      className={cn('flex items-center space-x-4 lg:space-x-6', className)}
-      {...props}
-    >
-      <Link
+    <nav className={cn('flex items-end space-x-4', className)} {...props}>
+      <MainNavBarCustomLink
         href="/dashboard/faculty/overview"
-        className={
-          isActive('/dashboard/faculty/overview')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Dashboard
-      </Link>
-      <Link
+        displayText="Dashboard"
+      />
+      <MainNavBarCustomLink
         href="/dashboard/faculty/take-attendance"
-        className={
-          isActive('/dashboard/faculty/take-attendance')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Attendance Management
-      </Link>
-      <Link
+        displayText="Take Attendance"
+      />
+      <MainNavBarCustomLink
         href="/dashboard/faculty/manage-course-members"
-        className={
-          isActive('/dashboard/faculty/manage-course-members')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Manage Course Members
-      </Link>
-      {/* <Link
-        href="/dashboard/student-statistics"
-        className={
-          isActive('/dashboard/student-statistics')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Student Statistics
-      </Link> */}
-      <Link
+        displayText="Manage Course Members"
+      />
+      <MainNavBarCustomLink
         href="/dashboard/faculty/testing-playground"
-        className={
-          isActive('/dashboard/faculty/tests')
-            ? 'text-sm font-medium text-primary'
-            : 'text-sm font-medium text-muted-foreground transition-colors hover:text-primary'
-        }
-      >
-        Testing Playground
-      </Link>
+        displayText="Testing Playground"
+      />
     </nav>
   );
 }

@@ -1,6 +1,6 @@
 # Mark Me Here!
 
-Mark Me Here! is a collaborative project developed and designed by a team of 6 university student developers, for both instructors and students. It streamlines course management by simplifying the input of course details and schedules. The app efficiently records attendance, providing flexible options for marking students as here, absent, excused, or late. Moreover, it generates comprehensive attendance reports, enabling a thorough assessment of student participation trends. Mark Me Here! ensures accessibility across various devices and even offers a convenient QR code feature for in-person attendance tracking.
+Mark Me Here! is an open-source attendance tracking web-app developed and designed by a team of 6 university student developers, for both instructors and students.
 
 ## Key Features
 

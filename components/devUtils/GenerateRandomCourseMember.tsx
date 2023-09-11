@@ -52,9 +52,7 @@ const GenerateRandomCourseMember = () => {
     <Button variant="default" onClick={handleClick}>
       Generate Random Course Member
     </Button>
-  ) : (
-    <Loading />
-  );
+  ) : null;
 };
 
 export default GenerateRandomCourseMember;

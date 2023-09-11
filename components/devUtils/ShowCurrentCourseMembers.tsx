@@ -4,17 +4,18 @@ import { useCourseContext } from '@/app/course-context';
 import { Button } from 'components/ui/button';
 
 const ShowCurrentCourseMembers = () => {
-  const { userCourseMembers } = useCourseContext();
-  return (
+  const { selectedCourseId, courseMembersOfSelectedCourse } =
+    useCourseContext();
+  return selectedCourseId ? (
     <Button
       variant="default"
       onClick={() => {
-        console.log(userCourseMembers);
+        console.log(courseMembersOfSelectedCourse);
       }}
     >
-      Show Current Course Members
+      Console Log Current Course Members
     </Button>
-  );
+  ) : null;
 };
 
 export default ShowCurrentCourseMembers;
