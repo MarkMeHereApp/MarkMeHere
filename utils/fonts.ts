@@ -1,4 +1,5 @@
 import { Open_Sans, Fira_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 
 export const openSans = Open_Sans({
   subsets: ['latin'],
@@ -10,3 +11,5 @@ export const firaSansFont = Fira_Sans({
   weight: '600',
   variable: '--font-logo'
 });
+
+export const calSans = localFont({ src: './CalSans-SemiBold.woff2' });
