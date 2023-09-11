@@ -5,6 +5,7 @@
       "@/*": ["./*"],
       "@/components/*": ["components/*"]
     },
+    "types": ["bun-types"],
     "target": "es2015",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
