@@ -7,13 +7,13 @@
     "start": "next start",
     "lint": "next lint && eslint app --fix && prettier app --write",
     "postinstall": "prisma generate",
-    "prod": "next build && next start"
+    "prod": "next build && next start",
+    "analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.0.2",
     "@hookform/resolvers": "^3.2.0",
     "@planetscale/database": "^1.5.0",
-    "@prisma/client": "^5.2.0",
     "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
@@ -43,7 +43,6 @@
     "@react-three/fiber": "^8.13.6",
     "@tanstack/react-query": "^4.33.0",
     "@tanstack/react-table": "^8.9.3",
-    "@tremor/react": "^2.0.1",
     "@trpc/client": "^10.38.1",
     "@trpc/react-query": "^10.38.1",
     "@types/js-cookie": "^3.0.3",
@@ -96,6 +95,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
+    "@next/bundle-analyzer": "^13.4.19",
     "@next/eslint-plugin-next": "^13.4.19",
     "@types/bcrypt": "^5.0.0",
     "@types/lodash": "^4.14.197",
@@ -103,6 +103,8 @@
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.0.0",
     "bcryptjs-react": "^2.4.6",
+    "bun-types": "^1.0.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -113,5 +115,8 @@
     "prettier": "^3.0.2",
     "prisma": "^5.2.0",
     "typescript": "^4.9.5"
-  }
+  },
+  "name": "ucfattendweb",
+  "module": "next.config.js",
+  "type": "commonjs"
 }
