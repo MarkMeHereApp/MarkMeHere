@@ -4,24 +4,26 @@ import { z } from 'zod';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
-  courseId: z.string()
+  courseId: z.string(),
+  lectureId: z.string()
 });
 
 export const qrRouter = router({
   CreateNewQRCode: publicProcedure
     .input(zCreateQRCode)
-    .mutation(async (requestData) => {
+    .mutation(async ({input}) => {
       try {
         const newCode = Math.random()
           .toString(36)
           .substring(2, 8)
           .toUpperCase();
 
-        const courseId = requestData.input.courseId;
+        const courseId = input.courseId;
+        const lectureId = input.courseId
 
         const newExpiry = new Date();
         newExpiry.setSeconds(
-          newExpiry.getSeconds() + requestData.input.secondsToExpireNewCode
+          newExpiry.getSeconds() + input.secondsToExpireNewCode
         );
 
         try {
@@ -29,6 +31,7 @@ export const qrRouter = router({
             data: {
               code: newCode,
               courseId: courseId,
+              lectureId: lectureId,
               expiresAt: newExpiry
             }
           });

@@ -3,7 +3,6 @@
 //We need to pass the lectureid of the qr code into the database with qrcode. Then when
 //we validate the qr code we can grab these values and use them when marking students
 
-
 import React from 'react';
 import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
@@ -32,6 +31,7 @@ export default function QR() {
 
   const { setLectures, lectures } = useLecturesContext();
 
+  //Get the lecture currently active in the QR code(selected in the calendar)
   const getCurrentLecture = () => {
     if (lectures) {
       return lectures.find((lecture) => {

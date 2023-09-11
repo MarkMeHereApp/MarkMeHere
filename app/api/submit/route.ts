@@ -14,12 +14,8 @@ export async function GET(req: NextRequest) {
   const caller = appRouter.createCaller({});
   const params = req.nextUrl.searchParams;
 
-  const queryQR: string | null = params.get('qr');
-  const queryCourseId: string | null = params.get('courseId');
-
-  //Convert string | null type to string
-  const qr: string = queryQR ?? '';
-  const courseId: string = queryCourseId ?? '';
+  const qr: string = params.get('qr') || '';
+  const courseId: string = params.get('courseId') || '';
 
   try {
     // the server-side call

@@ -102,7 +102,7 @@ export const recordQRAttendanceRouter = router({
 
         const attendanceEntry = await prisma.attendanceEntry.create({
           data: {
-            courseId: courseId,
+            lectureId: courseId,
             courseMemberId: courseMemberId,
             status: status
           }

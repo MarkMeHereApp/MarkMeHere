@@ -51,9 +51,11 @@ model VerificationToken {
 model Lecture {
   id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
-  courseId          String
+  courseId          String            
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
+  qrCodes           qrcode[]
+  @@unique([courseId, lectureDate])
 }
 
 model AttendanceEntry {
@@ -97,11 +99,11 @@ model CourseMember {
 }
 
 model qrcode {
-  id        String   @id @default(cuid())
-  courseId  String
-  //lecture    Lecture          @relation(fields: [lectureId], references: [id])
-  code      String
-  createdAt DateTime @default(now())
+  id        String        @id @default(cuid())
+  lectureId  String
+  lecture    Lecture    @relation(fields: [lectureId], references: [id])
+  code      String      @unique       // More work to do to make this code truly unique
+  createdAt DateTime    @default(now())
   expiresAt DateTime
 }
 
