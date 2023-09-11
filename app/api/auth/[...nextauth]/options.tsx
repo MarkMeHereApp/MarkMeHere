@@ -19,11 +19,12 @@ function customPrismaAdapter(prisma: PrismaClient) {
 export const authOptions: NextAuthOptions = {
   adapter: customPrismaAdapter(prisma) as Adapter,
   providers: [
+    /*
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string
     }),
-
+    */
     ZoomProvider({
       clientId: process.env.ZOOM_CLIENT_ID as string,
       clientSecret: process.env.ZOOM_CLIENT_SECRET as string
