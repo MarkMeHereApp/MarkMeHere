@@ -1,18 +1,36 @@
+'use client';
+
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
+
 import SignInForm from '@/app/signin/components/signInForm';
 import { Card, CardContent } from '@/components/ui/card';
-
+import { useEffect, useState } from 'react';
 import { firaSansFont } from '@/utils/fonts';
 
-export default async function SigninPage() {
+export default function SigninPage() {
+  const [providers, setProviders] = useState(null);
+
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
   });
 
-  const response = await fetch(
-    process.env.NEXTAUTH_URL + '/api/auth/providers'
-  );
-  const providersData = await response.json();
+  useEffect(() => {
+    async function fetchProviders() {
+      try {
+        const response = await fetch('/api/auth/providers', {
+          cache: 'no-store'
+        });
+        const providersData = await response.json();
+        setProviders(providersData);
+      } catch (error) {
+        console.error('Failed to fetch providers:', error);
+        // Handle or throw the error as appropriate for your application
+      }
+    }
+
+    fetchProviders();
+  }, []);
 
   return (
     <>
@@ -23,15 +41,11 @@ export default async function SigninPage() {
         <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
           <CardContent>
             <div className="flex flex-col space-y-2 text-center p-3">
-              <span className={firaSansFont.className}>
-                <h1
-                  className={`text-2xl font-semibold font-logo tracking-tight`}
-                >
-                  Sign in Mark Me Here!
-                </h1>
-              </span>
+              <h1 className={`text-2xl font-semibold font-logo tracking-tight`}>
+                Sign in Mark Me Here!
+              </h1>
             </div>
-            <SignInForm providers={providersData} />
+            <SignInForm providers={providers} />
 
             {/* Enabled again for now so a single professsor IE Leinecker
             can sign up (mostly for testing) 
