@@ -51,7 +51,7 @@ export default function MainNav({
       />
       <MainNavBarCustomLink
         href="/dashboard/faculty/take-attendance"
-        displayText="Attendance Management"
+        displayText="Take Attendance"
       />
       <MainNavBarCustomLink
         href="/dashboard/faculty/manage-course-members"
