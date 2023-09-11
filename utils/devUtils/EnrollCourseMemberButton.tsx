@@ -1,5 +1,5 @@
 import { AiOutlineUserAdd } from 'react-icons/ai';
-import { Button } from '../ui/button';
+import { Button } from '../../components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '../ui/dialog';
+} from '../../components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Input } from '../ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
+import { Input } from '../../components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel
+} from '../../components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '../ui/select';
+} from '../../components/ui/select';
 import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
 

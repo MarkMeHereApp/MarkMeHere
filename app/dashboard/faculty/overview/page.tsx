@@ -1,8 +1,8 @@
 'use client';
 
 import { useCourseContext } from '@/app/course-context';
-import CreateChooseCourseAnimation from '@/components/general/CreateChooseCourseAnimation';
-import MarkMeHereClassAnimation from '@/components/general/MarkMeHereClassAnimation';
+import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
+import MarkMeHereClassAnimation from '@/components/mark-me-here/MarkMeHereClassAnimation';
 
 export default function ManageAttendance() {
   const { selectedCourseId } = useCourseContext();

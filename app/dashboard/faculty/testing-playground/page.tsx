@@ -10,7 +10,7 @@ import AldrichTest from './components/AldrichTest';
 import ErrorTest from './components/ErrorTest';
 import GetCanvasCourses from './components/getCanvasCoursesTest';
 import IconsTest from './components/IconsTest';
-import CRUDButtons from '@/components/devUtils/CRUDButtons';
+import CRUDButtons from '@/utils/devUtils/CRUDButtons';
 
 const tabComponents = [
   { value: 'Aldrich Test', component: <AldrichTest /> },
