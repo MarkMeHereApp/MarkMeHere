@@ -2,7 +2,6 @@ import '@/styles/globals.css';
 import '@/styles/styles.scss';
 
 import { Suspense } from 'react';
-import { Open_Sans } from 'next/font/google';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
@@ -11,7 +10,7 @@ import CoursesContext from '@/app/course-context';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
-const OpenSans = Open_Sans({ subsets: ['latin'] });
+import { openSans } from '@/utils/fonts';
 
 export const metadata = {
   title: 'Mark Me Here!',
@@ -62,7 +61,7 @@ export default async function RootLayout({
   });
 
   return (
-    <html lang="en" className={OpenSans.className}>
+    <html lang="en" className={`${openSans.variable} font-sans`}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
         <div>

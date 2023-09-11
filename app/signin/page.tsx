@@ -6,9 +6,11 @@ import dynamic from 'next/dynamic';
 import SignInForm from '@/app/signin/components/signInForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
+import { firaSansFont } from '@/utils/fonts';
 
 export default function SigninPage() {
   const [providers, setProviders] = useState(null);
+
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
   });
@@ -39,14 +41,14 @@ export default function SigninPage() {
         <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
           <CardContent>
             <div className="flex flex-col space-y-2 text-center p-3">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Sign into Attendify
+              <h1 className={`text-2xl font-semibold font-logo tracking-tight`}>
+                Sign in Mark Me Here!
               </h1>
             </div>
             <SignInForm providers={providers} />
 
             {/* Enabled again for now so a single professsor IE Leinecker
-            can sign up (mostly for testing) */}
+            can sign up (mostly for testing) 
             <p className="px-8 text-center text-sm">
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="underline underline-offset-4">
@@ -54,6 +56,7 @@ export default function SigninPage() {
               </Link>{' '}
               today!
             </p>
+            */}
           </CardContent>
         </Card>
       </div>
