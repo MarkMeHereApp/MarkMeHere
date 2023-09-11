@@ -3,7 +3,7 @@
 import { Icons } from '@/components/ui/icons';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { firaSansFont } from '@/utils/fonts';
 const LoadingState = () => {
   return (
     <div className="pt-8 flex flex-col items-center justify-center">
@@ -41,9 +41,11 @@ const LoadingState = () => {
           style={{ width: '25px', height: 'auto' }}
         />
       </div>
-      <h2 className="text-3xl italic font-bold tracking-tight">
-        "Mark Me Here!"
-      </h2>
+      <span className={firaSansFont.className}>
+        <h2 className="text-3xl font-logo tracking-tight font-bold">
+          Mark Me Here!
+        </h2>
+      </span>
     </div>
   );
 };

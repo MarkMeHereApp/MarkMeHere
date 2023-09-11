@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic';
 import SignInForm from '@/app/signin/components/signInForm';
 import { Card, CardContent } from '@/components/ui/card';
 
+import { firaSansFont } from '@/utils/fonts';
+
 export default async function SigninPage() {
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
@@ -21,9 +23,13 @@ export default async function SigninPage() {
         <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
           <CardContent>
             <div className="flex flex-col space-y-2 text-center p-3">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Sign into Attendify
-              </h1>
+              <span className={firaSansFont.className}>
+                <h1
+                  className={`text-2xl font-semibold font-logo tracking-tight`}
+                >
+                  Sign in Mark Me Here!
+                </h1>
+              </span>
             </div>
             <SignInForm providers={providersData} />
 
