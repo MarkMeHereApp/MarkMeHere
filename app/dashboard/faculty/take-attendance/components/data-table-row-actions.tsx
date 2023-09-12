@@ -23,82 +23,100 @@ export function DataTableRowActions<TData>({
   row
 }: DataTableRowActionsProps<TData>) {
   const { lectures, setLectures } = useLecturesContext();
-  const { courseMembersOfSelectedCourse, selectedCourseId, selectedAttendanceDate } = useCourseContext();
+  const { selectedAttendanceDate } = useCourseContext();
 
   // Get the course member data of a selected row for one student
   const courseMemberData = row.original as CourseMember;
 
   const getCurrentLecture = () => {
     if (lectures) {
-    return lectures.find((lecture) => {
-        return (
-        lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
-        );
-    });
+        return lectures.find((lecture) => {
+            return (
+            lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+            );
+        });
     }
   };
 
-  const [selectedLecture, setSelectedLecture] = React.useState(getCurrentLecture() || undefined);
   const [attendanceEntries, setAttendanceEntries] = React.useState<AttendanceEntry[]>(getCurrentLecture()?.attendanceEntries || []);
 
   const createNewAttendanceEntryMutation = trpc.attendance.createManyAttendanceRecords.useMutation();
   async function handleCreateNewAttendanceEntry(status: string) {
-    // const lecture = getCurrentLecture();
-    if (selectedLecture) {
-        await createNewAttendanceEntryMutation.mutateAsync({
-            lectureId: selectedLecture.id,
-            attendanceStatus: status,
-            courseMemberIds: [courseMemberData.id]
-          });
-          if (createNewAttendanceEntryMutation.data) {
-            setAttendanceEntries(createNewAttendanceEntryMutation.data.updatedAttendanceEntries);
-          }
-          toast({
-            title: 'Created New Attendance Entry!',
-            description: `Successfully marked ${courseMemberData.name} ${status} for ${selectedAttendanceDate.toDateString()}`,
-            icon: 'success'
-          });
+    const lecture = getCurrentLecture();
+    if (lectures && lecture) {
+      try {
+        const updatedEntries = await createNewAttendanceEntryMutation.mutateAsync({
+          lectureId: lecture.id,
+          attendanceStatus: status,
+          courseMemberIds: [courseMemberData.id]
+        });
+        if (updatedEntries.updatedAttendanceEntries) {
+            setAttendanceEntries(() => updatedEntries.updatedAttendanceEntries);
+        
+            // Update only the lecture that corresponds to the created entry
+            const updatedLectures = lectures.map((curLecture) =>
+                curLecture.id === lecture.id
+                    ? { ...curLecture, attendanceEntries: updatedEntries.updatedAttendanceEntries }
+                    : curLecture
+            );
+            setLectures(updatedLectures);
+        
+            toast({
+              title: 'Created New Attendance Entry!',
+              description: `Successfully marked ${courseMemberData.name} ${status} for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
+              icon: 'success'
+            });
+        }
+      } catch (error) {
+        throw error;
+      }
     }
-  }
+  };
+  
 
   // Only for absent students -> absent == no attendance entry
   const deleteAttendanceEntryMutation = trpc.attendance.deleteLectureAttendanceEntries.useMutation();
   async function handleDeleteAttendanceEntry() {
-    // const lecture = getCurrentLecture();
-    if (selectedLecture) {
+    const lecture = getCurrentLecture();
+    if (lectures && lecture) {
+      try {
         await deleteAttendanceEntryMutation.mutateAsync({
-            lectureId: selectedLecture.id,
-            courseMemberIds: [courseMemberData.id]
-          });
-        const updatedAttendanceEntries = attendanceEntries.filter(
-            (entry) => entry.courseMemberId !== courseMemberData.id
-          );
-          setAttendanceEntries(updatedAttendanceEntries);
-           toast({
-            title: 'Created New Attendance Entry!',
-            description: `Successfully marked ${courseMemberData.name} absent for ${selectedAttendanceDate.toDateString()}`,
-            icon: 'success'
-          });
+          lectureId: lecture.id,
+          courseMemberIds: [courseMemberData.id]
+        });
+       
+        // Get the updated attendance entries that exclude the absent student entries 
+        const updatedLecture = {
+            ...lecture,
+            attendanceEntries: lecture.attendanceEntries.filter(
+              (entry) => entry.courseMemberId !== courseMemberData.id
+            )
+        };
+        setAttendanceEntries(updatedLecture.attendanceEntries);
+
+        // Update only the lecture that corresponds to the deleted entry
+        const updatedLectures = lectures.map((curLecture) =>
+          curLecture.id === lecture.id
+            ? updatedLecture 
+            : curLecture
+        );
+        setLectures(updatedLectures);
+
+        toast({
+          title: 'Deleted Attendance Entry!',
+          description: `Successfully marked ${courseMemberData.name} absent for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
+          icon: 'success'
+        });
+      } catch (error) {
+        throw error;
+      }
     }
   };
 
-//     useEffect(() => {
-//         if (lectures) {
-//             // We need this to refetch the attendance entries when a new attendance entry for a lecture is created
-//             // const currentLecture = getCurrentLecture();
-//             if (!selectedLecture) return;
-
-//             const updatedLectures = lectures.map((lecture) => {
-//                 // Check if the lecture matches the lectureId you want to update
-//                 if (lecture.id === selectedLecture.id) {
-//                     const updatedLecture = { ...selectedLecture, attendanceEntries: attendanceEntries };
-//                     return updatedLecture;
-//                 }
-//                 return lecture; // Return unchanged lectures
-//             });
-//             setLectures(updatedLectures);
-//         }
-//   }, []);
+  useEffect(() => {
+    const lecture = getCurrentLecture();
+    console.log("current entries are", attendanceEntries, " for ", lecture?.lectureDate);
+  }, [attendanceEntries]);
     
   return (
     <div className='flex space-x-4'>    
