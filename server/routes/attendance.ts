@@ -22,6 +22,11 @@ export const zCreateNewManyAttendanceRequest = z.object({
   courseMemberIds: z.array(z.string())
 });
 
+export const zDeleteAttendanceEntries = z.object({
+    lectureId: z.string(),
+    courseMemberIds: z.array(z.string())
+});
+
 export const attendanceRouter = router({
   getAttendanceDataOfCourse: publicProcedure
     .input(zGetCourseMembersOfLecture)
@@ -184,7 +189,31 @@ export const attendanceRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    })
+    }),
+    deleteLectureAttendanceEntries: publicProcedure
+    .input(zDeleteAttendanceEntries)
+    .mutation(async (requestData) => {
+      try {
+        await prisma.attendanceEntry.deleteMany({
+            where: {
+              courseMemberId: {
+                in: requestData.input.courseMemberIds
+              }
+            }
+        });
+
+        const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
+            where: {
+              lectureId: requestData.input.lectureId
+            }
+          });
+
+        return { success: true, updatedAttendanceEntries };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
 });
 
 export type AttendaceRouter = typeof attendanceRouter;

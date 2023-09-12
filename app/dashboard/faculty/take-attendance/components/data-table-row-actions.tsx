@@ -62,9 +62,14 @@ export function DataTableRowActions<TData>({
   }
 
   // Only for absent students -> absent == no attendance entry
+  const deleteAttendanceEntryMutation = trpc.attendance.deleteLectureAttendanceEntries.useMutation();
   async function handleDeleteAttendanceEntry() {
     // const lecture = getCurrentLecture();
     if (selectedLecture) {
+        await deleteAttendanceEntryMutation.mutateAsync({
+            lectureId: selectedLecture.id,
+            courseMemberIds: [courseMemberData.id]
+          });
         const updatedAttendanceEntries = attendanceEntries.filter(
             (entry) => entry.courseMemberId !== courseMemberData.id
           );
