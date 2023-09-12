@@ -226,7 +226,7 @@ const QR = () => {
                 <DynamicQRCode
                   url={
                     process.env.NEXT_PUBLIC_BASE_URL +
-                    `/api/submit?qr=${encodeURIComponent(JSON.stringify(activeCode))}`
+                    `/api/submit?qr=${encodeURIComponent(activeCode)}`
                   }
                 />
               )}
@@ -296,7 +296,7 @@ const QR = () => {
           <QRCodeComponent
             url={
               process.env.NEXT_PUBLIC_BASE_URL +
-              `/api/submit?qr=${encodeURIComponent(JSON.stringify(activeCode))}`
+              `/api/submit?qr=${encodeURIComponent(activeCode)}`
             }
           />
         )}
