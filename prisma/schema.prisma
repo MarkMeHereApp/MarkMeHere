@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id               String    @id @default(cuid())
-  role             String  @db.VarChar(10)
+  role             String    @db.VarChar(10)
   name             String?
   email            String?   @unique
   emailVerified    DateTime?
@@ -51,9 +51,11 @@ model VerificationToken {
 model Lecture {
   id                String            @id @default(cuid())
   course            Course            @relation(fields: [courseId], references: [id])
-  courseId          String            
+  courseId          String
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
+  qrCodes           qrcode[]
+
   @@unique([courseId, lectureDate])
 }
 
@@ -62,9 +64,9 @@ model AttendanceEntry {
   lecture        Lecture      @relation(fields: [lectureId], references: [id])
   lectureId      String
   courseMemberId String
-  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
+  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
   checkInDate    DateTime     @default(now())
-  status         String       @default("here")
+  status         String       @default("present")
 }
 
 model Course {
@@ -72,12 +74,14 @@ model Course {
   courseCode  String         @unique @db.VarChar(255)
   name        String         @db.VarChar(255)
   lmsType     String
-  lmsId       String?        
+  lmsId       String?
   dateCreated DateTime       @default(now())
   StartDate   DateTime?
   EndDate     DateTime?
   lectures    Lecture[]
+  qrCodes     qrcode[]
   enrollments CourseMember[]
+
   @@unique([lmsType, lmsId])
 }
 
@@ -89,17 +93,30 @@ model CourseMember {
   courseId          String
   course            Course            @relation(fields: [courseId], references: [id])
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
-  dateEnrolled    DateTime           @default(now())
+  dateEnrolled      DateTime          @default(now())
   role              String            @default("student")
   attendanceEntries AttendanceEntry[]
+
   @@unique([email, courseId])
 }
 
 model qrcode {
   id        String   @id @default(cuid())
-  //lectureId  String
-  //lecture    Lecture          @relation(fields: [lectureId], references: [id])
-  code      String
+  lectureId String
+  lecture   Lecture  @relation(fields: [lectureId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  code      String   @unique // More work to do to make this code truly unique
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+model AttendanceToken {
+  id        String   @id @default(cuid())
+  token     String
+  lectureId String
+  createdAt DateTime @default(now())
+
+  // We could implement a system where these are auto deleted after expiration (e.g 10 mins)
+  // expiresAt DateTime 
 }

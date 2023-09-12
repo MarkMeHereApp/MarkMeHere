@@ -3,7 +3,7 @@ import superjson from 'superjson';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 
-export const t = initTRPC.create({
+export const trpc = initTRPC.create({
   transformer: superjson,
   errorFormatter(opts) {
     const { shape, error } = opts;
@@ -23,5 +23,5 @@ export const t = initTRPC.create({
   }
 });
 
-export const router = t.router;
-export const publicProcedure = t.procedure;
+export const router = trpc.router;
+export const publicProcedure = trpc.procedure;

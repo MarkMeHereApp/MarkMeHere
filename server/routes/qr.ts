@@ -1,31 +1,37 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-import { generateTypedError } from '@/server/errorTypes';
 
 export const zCreateQRCode = z.object({
-  secondsToExpireNewCode: z.number()
+  secondsToExpireNewCode: z.number(),
+  lectureId: z.string(),
+  courseId: z.string()
 });
 
 export const qrRouter = router({
   CreateNewQRCode: publicProcedure
     .input(zCreateQRCode)
-    .mutation(async (requestData) => {
+    .mutation(async ({ input }) => {
       try {
         const newCode = Math.random()
           .toString(36)
           .substring(2, 8)
           .toUpperCase();
 
+        const lectureId = input.lectureId;
+        const courseId = input.courseId;
+
         const newExpiry = new Date();
         newExpiry.setSeconds(
-          newExpiry.getSeconds() + requestData.input.secondsToExpireNewCode
+          newExpiry.getSeconds() + input.secondsToExpireNewCode
         );
 
         try {
           const returnCode = await prisma.qrcode.create({
             data: {
               code: newCode,
+              lectureId: lectureId,
+              courseId: courseId,
               expiresAt: newExpiry
             }
           });
@@ -40,10 +46,10 @@ export const qrRouter = router({
 
           return { success: true, qrCode: returnCode };
         } catch (error) {
-          throw generateTypedError(error as Error);
+          throw new Error('Error creating QR code');
         }
       } catch (error) {
-        throw generateTypedError(error as Error);
+        throw new Error('Error Removing QR code');
       }
     })
 });
