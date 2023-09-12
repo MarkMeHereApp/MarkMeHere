@@ -1,6 +1,6 @@
 'use client';
 
-import CRUDButtons from '@/utils/devUtils/CRUDButtons';
+import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/user-nav';
