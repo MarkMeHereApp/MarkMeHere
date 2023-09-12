@@ -3,10 +3,7 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  zAttendanceStatus,
-  zAttendanceStatusType
-} from '@/types/sharedZodTypes';
+import { zAttendanceStatus } from '@/types/sharedZodTypes';
 
 export const zValidateCode = z.object({
   qr: z.string()
@@ -22,19 +19,27 @@ export const zMarkAttendance = z.object({
   status: zAttendanceStatus
 });
 
+export const zFindAttendanceToken = z.object({
+  tokenId: z.string(),
+  lectureId: z.string()
+});
+
+export const zDeleteAttendanceToken = z.object({
+  tokenId: z.string(),
+  lectureId: z.string()
+});
+
 export const zFindCourseMember = z.object({
   courseId: z.string(),
   email: z.string(),
   role: z.string()
 });
 
-export const zFindAttendanceToken = z.object({
-  tokenId: z.string(),
-  lectureId: z.string()
-});
-
 export const recordQRAttendanceRouter = router({
-  //Search qrcode table for QRCode
+  /* 
+  Search qrcode table for nonexpired QRCode 
+  (still need to implement expiration functionality)
+  */
   ValidateQRCode: publicProcedure
     .input(zValidateCode)
     .query(async ({ input }) => {
@@ -48,19 +53,19 @@ export const recordQRAttendanceRouter = router({
         });
 
         if (qrRow) {
-          return { success: true, qrRow: qrRow }
+          return { success: true, qrRow: qrRow };
         } else {
-          return { success: false }
+          return { success: false };
         }
       } catch (error) {
         throw new Error('Error finding QR code');
       }
     }),
 
-  //Create a token that can be used to validate users who take too long to sign in
-  //before the QR code expires
-  //The user will be given the token in the process so if their token exists
-  //In the database they can be marked as attended
+  /* 
+  Create attendance token used to authenticate user attendance even 
+  after QR code expires
+  */
   CreateAttendanceToken: publicProcedure
     .input(zCreateAttendanceToken)
     .mutation(async ({ input }) => {
@@ -85,8 +90,7 @@ export const recordQRAttendanceRouter = router({
       }
     }),
 
-  //Create student attendance entry
-  //We need to pass lecture id to attendance entry instead of courseId
+  /* Create student attendance entry */
   MarkAttendance: publicProcedure
     .input(zMarkAttendance)
     .mutation(async ({ input }) => {
@@ -116,7 +120,7 @@ export const recordQRAttendanceRouter = router({
       }
     }),
 
-    /* Check if attendance token is valid */
+  /* Check if attendance token is valid */
   FindAttendanceToken: publicProcedure
     .input(zFindAttendanceToken)
     .mutation(async ({ input }) => {
@@ -144,6 +148,31 @@ export const recordQRAttendanceRouter = router({
       }
     }),
 
+  /* Delete used attendance token */
+  DeleteAttendanceToken: publicProcedure
+    .input(zDeleteAttendanceToken)
+    .mutation(async ({ input }) => {
+      try {
+        const tokenId = input.tokenId;
+        const lectureId = input.lectureId;
+
+        await prisma.attendanceToken.delete({
+          where: {
+            id: tokenId,
+            lectureId: lectureId
+          }
+        });
+
+        return;
+      } catch (error) {
+        throw generateTypedError(
+          error as Error,
+          'Failed to find attendance token'
+        );
+      }
+    }),
+
+  /* Find course member */
   FindCourseMember: publicProcedure
     .input(zFindCourseMember)
     .mutation(async ({ input }) => {

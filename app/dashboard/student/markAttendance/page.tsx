@@ -6,17 +6,26 @@ import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
 
 /*  
-NOTES
+***NOTES***
 
 In nextjs13 server components do not have access to the request object
 so we have to get the JWT from the cookies and decode it ourself
 if we had request object we could do const token = await getToken({ req })
 
-My first approach was to pass the data we need as cookies so we can grab them on the
-markAttendance page. This however is tricker than I thought because I need to persist 
-these cookies across NextAuth. Currently I do not know how to do this.
+My first approach was to pass the data we need as cookies so we can grab them 
+on this page. This however is tricker than I thought because I need to persist 
+these cookies across NextAuth. Currently I do not know of a way to do this.
 
-Using this method this page will need various checks for edge cases concerning missing cookies
+Using this method this page will need various checks for edge cases concerning 
+missing cookies
+
+IMPLEMENTATION
+
+
+const attendanceTokenId: string =
+cookieStore.get('attendanceTokenId')?.value ?? '';
+const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
+const courseId: string = cookieStore.get('courseId')?.value ?? '';
 */
 
 export default async function markAttendance({
@@ -63,11 +72,12 @@ export default async function markAttendance({
      1. Check if attendance token is valid
      2. If valid, lookup user course member row
      3. If courseMember exists, use courseMember ID to mark student here
+     4. Delete used attendance token
      */
 
     const { success } = await caller.recordQRAttendance.FindAttendanceToken({
-      lectureId: lectureId,
-      tokenId: attendanceTokenId
+      tokenId: attendanceTokenId,
+      lectureId: lectureId
     });
 
     if (success) {
@@ -86,6 +96,11 @@ export default async function markAttendance({
           courseMemberId: courseMemberId,
           status: 'here'
         });
+
+        await caller.recordQRAttendance.DeleteAttendanceToken({
+          tokenId: attendanceTokenId,
+          lectureId: lectureId
+        });
       } else {
         console.log({ error: 'course member not found' });
       }
@@ -93,7 +108,7 @@ export default async function markAttendance({
       console.log({ error: 'Invalid attendance token' });
     }
   } catch (error) {
-    console.error('An error occured while marking attendance', error);
+    console.log({ error: error });
   }
 
   return (

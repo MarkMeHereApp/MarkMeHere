@@ -5,82 +5,78 @@ import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 import { cookies } from 'next/headers';
 
 /*
+***NOTES*** 
+
 Here we need to figure out why the redirect does not work when we make this route
 a post request
+
+My first approach was to pass the data we need as cookies so we can grab them on the
+markAttendance page. This however is tricker than I thought because I need to persist 
+these cookies across NextAuth. Currently I do not know how to do this.
+
+Passing cookies through nextAuth is a grey area. So we will pass what we need
+in the url we are redirecting to instead of cookies
+
+IMPLEMENTATION
+
+const expires = new Date();
+cookies().set({
+  name: 'attendanceTokenId',
+  value: token,
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict',
+  path: '/dashboard',
+  expires: expires.setSeconds(expires.getSeconds() + 100)
+});
+
+cookies().set({
+  name: 'lectureId',
+  value: qrRow.lectureId,
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict',
+  path: '/dashboard',
+  expires: expires.setSeconds(expires.getSeconds() + 100)
+});
+
+cookies().set({
+  name: 'courseId',
+  value: qrRow.courseId,
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict',
+  path: '/dashboard',
+  expires: expires.setSeconds(expires.getSeconds() + 100)
+});
+
 */
 
 export async function GET(req: NextRequest) {
-  //Needed to call TRPC routes from serverside
+  /*
+  Initialize TRPC caller (needed to call TRPC routes serverside).
+  Grab QR from URL parameters.
+  1. Validate QR code sent as URL parameter
+  2. If QR code is valid create an attendance token
+  (Attendance token used to authenticate user attendance even after QR code expires)
+  3. Redirect to markAttendance page with URL parameters
+  */
   const caller = appRouter.createCaller({});
   const params = req.nextUrl.searchParams;
 
   const qr: string = params.get('qr') ?? '';
 
   try {
-    // the server-side call
-    //In this call also make sure qr code we are retrieving is before expiration date
+    //In the future make sure qr code we are retrieving is before expiration date
     const qrResult = await caller.recordQRAttendance.ValidateQRCode({
       qr: qr
     });
 
-    /*Maybe pass lectureId into attendance token instead of course*/
-
-    //If QR code is valid create an attendance token
     if (!!qrResult.success) {
-      //qrRow is always defined when qrResult is successful
       const qrRow = qrResult.qrRow!;
       const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
         lectureId: qrRow.lectureId
       });
-      /*
-      Make sure cookie expires 10 seconds after it is created
-      Alternatively we can remember to delete the cookie when we are done (This may be better)
-      We will have read the cookie and rendered the page before it expires
-      */
-      /*SEE IF WE CAN SET A COOKIE OBJECT TO STORE MULTIPLE VALUES IN ONE*/
-
-      // const expires = new Date();
-      // cookies().set({
-      //   name: 'attendanceTokenId',
-      //   value: token,
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'strict',
-      //   path: '/dashboard',
-      //   expires: expires.setSeconds(expires.getSeconds() + 100)
-      // });
-
-      // cookies().set({
-      //   name: 'lectureId',
-      //   value: qrRow.lectureId,
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'strict',
-      //   path: '/dashboard',
-      //   expires: expires.setSeconds(expires.getSeconds() + 100)
-      // });
-
-      // cookies().set({
-      //   name: 'courseId',
-      //   value: qrRow.courseId,
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'strict',
-      //   path: '/dashboard',
-      //   expires: expires.setSeconds(expires.getSeconds() + 100)
-      // });
-
-      //Redirect user to markAttendance page with query params
-      /*Passing cookies through nextAuth is a grey area. So we will pass what we need
-      in the url we are redirecting to instead of cookies*/
-
-      // url={
-      //   process.env.NEXT_PUBLIC_BASE_URL +
-      //   `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
-      //     JSON.stringify(selectedCourseId)
-      //   )}
-      //   &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
-      // }
 
       const queryParams = new URLSearchParams();
       queryParams.append('attendanceTokenId', token);
