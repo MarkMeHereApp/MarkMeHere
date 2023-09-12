@@ -64,19 +64,17 @@ export default async function RootLayout({
     <html lang="en" className={openSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
-        <div>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Providers>
-              <CoursesContext
-                userCourses={courses}
-                userCourseMembers={courseMemberships}
-                userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
-              >
-                {children}
-              </CoursesContext>
-            </Providers>
-          </ThemeProvider>
-        </div>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Providers>
+            <CoursesContext
+              userCourses={courses}
+              userCourseMembers={courseMemberships}
+              userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
+            >
+              {children}
+            </CoursesContext>
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
