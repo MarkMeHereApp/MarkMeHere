@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   providers: Record<
@@ -39,14 +40,11 @@ export default function SignInForm({
     {}
   );
   const { data: session } = useSession();
-  const _callbackUrl = searchParams
-    ? searchParams.get('callbackUrl') || '/'
-    : '/';
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
   const errorType = searchParams ? searchParams.get('error') : null;
-  let error = null;
+  let error: string | null = null;
   if (errorType) {
     switch (errorType) {
       case 'CredentialsSignin':
@@ -57,14 +55,29 @@ export default function SignInForm({
         error = 'OAuth Redirect Error Mismatch.';
         break;
 
-      // case 'email':
-      //   error = 'Email not found';
-      //   break;
+      case 'OAuthCallback':
+        error = `Third-Party Callback Error.`;
+        break;
+
+      case 'email':
+        error = 'Email not found';
+        break;
 
       default:
         error = 'Unknown Error';
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: `Error Logging In`,
+        description: error,
+        icon: 'error_for_destructive_toasts',
+        variant: 'destructive'
+      });
+    }
+  }, [error]);
 
   const Stars = dynamic(() => import('@/components/background/stars'), {
     ssr: false
@@ -76,7 +89,7 @@ export default function SignInForm({
     }
   }, [session, router]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading((prevState) => ({ ...prevState, credentials: true })); // Set loading to true at the start of the function
     try {
@@ -92,6 +105,24 @@ export default function SignInForm({
     }
   };
 
+  const onOAuthSubmit = async (providerId: string) => {
+    setIsLoading((prevState) => ({
+      ...prevState,
+      [providerId]: true
+    }));
+    try {
+      await signIn(providerId, {
+        callbackUrl: '/dashboard/faculty/overview'
+      });
+      setIsLoading((prevState) => ({
+        ...prevState,
+        [providerId]: false
+      }));
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <div className={cn('relative h-screen', className)} {...props}>
       <div className="absolute top-0 right-0 h-full w-full">
@@ -99,30 +130,29 @@ export default function SignInForm({
       </div>
       <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
         <CardContent>
-          <div className="flex flex-col space-y-2 text-center p-3">
+          <div className="flex flex-col space-y-2 text-center p-3 pb-6">
             <span className={firaSansFont.className}>
               <h1 className={`text-2xl font-bold`}>Sign in Mark Me Here!</h1>
             </span>
           </div>
           <div className="grid gap-4">
+            {error && (
+              <Alert className="text-center text-red-500">
+                <AlertDescription>Log In Error: {error}</AlertDescription>
+              </Alert>
+            )}
+
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.type === 'credentials'
               ) && (
-                <form onSubmit={onSubmit}>
+                <form onSubmit={onCredentialsSubmit}>
                   <div className="grid gap-2">
                     <div className="text-center">
                       <p className="text-sm text-muted-foreground">
                         Enter your email & password below to login
                       </p>
                     </div>
-                    {error && (
-                      <Alert className="text-center text-red-500">
-                        <AlertDescription>
-                          Log In Error: {error}
-                        </AlertDescription>
-                      </Alert>
-                    )}
                     <div className="grid gap-1">
                       <div className="text-sm font-bold mb-0">Email</div>
                       <Label className="sr-only" htmlFor="email">
@@ -199,24 +229,7 @@ export default function SignInForm({
                     <Button
                       key={index}
                       type="button"
-                      onClick={async () => {
-                        setIsLoading((prevState) => ({
-                          ...prevState,
-                          [provider.id]: true
-                        }));
-                        try {
-                          await signIn(provider.id, {
-                            callbackUrl: '/dashboard/faculty/overview'
-                          });
-                        } catch (error) {
-                          console.error('Sign In Error: ', error);
-                        } finally {
-                          setIsLoading((prevState) => ({
-                            ...prevState,
-                            [provider.id]: false
-                          }));
-                        }
-                      }}
+                      onClick={() => onOAuthSubmit(provider.id)}
                       disabled={isLoading[provider.id]}
                     >
                       {isLoading[provider.id] ? (
