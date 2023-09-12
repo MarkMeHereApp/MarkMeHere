@@ -218,7 +218,7 @@ const QR = () => {
   // - Card Header with title and finish button
   // - QR Code (Finished with DynamicQRCodeComponent)
   // - Progress Bar (Finished with Progress Component)
-  // - ManualCodeDisplay
+  // - ManualCodeDisplay (Finished)
   // - Resize Progress Bar and ManualCodeDisplay relative to DynamicQRCodeComponent
   // - ???
   // - Profit
@@ -251,7 +251,7 @@ const QR = () => {
       <>
         <QRCodeComponent
           url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
-        />       
+        />
         <ManualCodeDisplay />
         <ProgressBarDisplay />
       </>
@@ -261,7 +261,14 @@ const QR = () => {
   if (mode === 'minimal') {
     return <MinimalQRCodeDisplay />;
   } else {
-    return <DefaultQRCodeDisplay />;
+    return (
+      <div className="relative min-h-screen">
+        <div className="absolute top-0 right-0 h-full w-full">
+          {Stars && <Stars />}
+        </div>
+        <DefaultQRCodeDisplay />;
+      </div>
+    );
   }
 
   // return (
