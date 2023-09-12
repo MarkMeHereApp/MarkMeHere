@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
       qr: qr
     });
 
-    /*GET LECTURE/COURSE ID OUT OF DATABASE IN THIS ENDPOINT^^^^*/
     /*Maybe pass lectureId into attendance token instead of course*/
 
     //If QR code is valid create an attendance token
@@ -40,40 +39,59 @@ export async function GET(req: NextRequest) {
       */
       /*SEE IF WE CAN SET A COOKIE OBJECT TO STORE MULTIPLE VALUES IN ONE*/
 
-      const expires = new Date();
-      cookies().set({
-        name: 'attendanceTokenId',
-        value: token,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/dashboard',
-        expires: expires.setSeconds(expires.getSeconds() + 100)
-      });
+      // const expires = new Date();
+      // cookies().set({
+      //   name: 'attendanceTokenId',
+      //   value: token,
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'strict',
+      //   path: '/dashboard',
+      //   expires: expires.setSeconds(expires.getSeconds() + 100)
+      // });
 
-      cookies().set({
-        name: 'lectureId',
-        value: qrRow.lectureId,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/dashboard',
-        expires: expires.setSeconds(expires.getSeconds() + 100)
-      });
+      // cookies().set({
+      //   name: 'lectureId',
+      //   value: qrRow.lectureId,
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'strict',
+      //   path: '/dashboard',
+      //   expires: expires.setSeconds(expires.getSeconds() + 100)
+      // });
 
-      cookies().set({
-        name: 'courseId',
-        value: qrRow.courseId,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/dashboard',
-        expires: expires.setSeconds(expires.getSeconds() + 100)
-      });
+      // cookies().set({
+      //   name: 'courseId',
+      //   value: qrRow.courseId,
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'strict',
+      //   path: '/dashboard',
+      //   expires: expires.setSeconds(expires.getSeconds() + 100)
+      // });
 
-      //Redirect user to markAttendance page with cookies
+      //Redirect user to markAttendance page with query params
+      /*Passing cookies through nextAuth is a grey area. So we will pass what we need
+      in the url we are redirecting to instead of cookies*/
+
+      // url={
+      //   process.env.NEXT_PUBLIC_BASE_URL +
+      //   `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
+      //     JSON.stringify(selectedCourseId)
+      //   )}
+      //   &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
+      // }
+
+      const queryParams = new URLSearchParams();
+      queryParams.append('attendanceTokenId', token);
+      queryParams.append('lectureId', qrRow.lectureId);
+      queryParams.append('courseId', qrRow.courseId);
+
       return NextResponse.redirect(
-        new URL('/dashboard/student/markAttendance', req.url)
+        new URL(
+          `/dashboard/student/markAttendance?${queryParams.toString()}`,
+          req.url
+        )
       );
     } else {
       return NextResponse.json({

@@ -5,6 +5,7 @@ import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
+import { cookies } from 'next/headers';
 
 function customPrismaAdapter(prisma: PrismaClient) {
   return {
@@ -28,6 +29,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.ZOOM_CLIENT_ID as string,
       clientSecret: process.env.ZOOM_CLIENT_SECRET as string
     })
+    
 
     // credentials are commented until normal auth is working perfectly
     // CredentialsProvider({
@@ -76,6 +78,7 @@ export const authOptions: NextAuthOptions = {
     //   }
     // })
   ],
+ 
   //When JWT is created store user role in the token
   callbacks: {
     jwt({ token, user }) {

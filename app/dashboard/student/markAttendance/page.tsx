@@ -5,54 +5,72 @@ import { NextRequest } from 'next/server';
 import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
 
-//This component will need various checks for edge cases concerning missing cookies
+/*  
+NOTES
 
-export default async function markAttendance() {
-  //In nextjs13 server components do not have access to the request object
-  //So we have to get the JWT from the cookies and decode it ourself
-  //If we had request object we could do const token = await getToken({ req })
+In nextjs13 server components do not have access to the request object
+so we have to get the JWT from the cookies and decode it ourself
+if we had request object we could do const token = await getToken({ req })
+
+My first approach was to pass the data we need as cookies so we can grab them on the
+markAttendance page. This however is tricker than I thought because I need to persist 
+these cookies across NextAuth. Currently I do not know how to do this.
+
+Using this method this page will need various checks for edge cases concerning missing cookies
+*/
+
+export default async function markAttendance({
+  searchParams
+}: {
+  searchParams: {
+    attendanceTokenId: string;
+    lectureId: string;
+    courseId: string;
+  };
+}) {
+  /* 
+  Initialize TRPC caller (needed to call TRPC routes serverside) and cookiestore
+  Grab and decode JWT from cookies.
+  Grab url parameters
+   */
+
+  let attendance = { success: false };
+  const caller = appRouter.createCaller({});
+  const cookieStore = cookies();
+
+  const encodedJWT: string | undefined = cookieStore.get(
+    'next-auth.session-token'
+  )?.value;
+
+  const jwt: JWT | null = await decode({
+    token: encodedJWT,
+    secret: process.env.NEXTAUTH_SECRET ?? ''
+  });
+
+  const email: string = jwt?.email ?? '';
+  const attendanceTokenId = searchParams.attendanceTokenId;
+  const lectureId = searchParams.lectureId;
+  const courseId = searchParams.courseId;
+
+  //COOKIE IMPLEMENTATION//
+  // const attendanceTokenId: string =
+  // cookieStore.get('attendanceTokenId')?.value ?? '';
+  // const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
+  // const courseId: string = cookieStore.get('courseId')?.value ?? '';
+
   try {
-    const cookieStore = cookies();
-    const encodedJWT: string | undefined = cookieStore.get(
-      'next-auth.session-token'
-    )?.value;
-    const jwt: JWT | null = await decode({
-      token: encodedJWT,
-      secret: process.env.NEXTAUTH_SECRET ?? ''
-    });
-
-    const email = jwt?.email ?? '';
-    const attendanceTokenId: string =
-      cookieStore.get('attendanceTokenId')?.value ?? '';
-    const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
-    const courseId: string = cookieStore.get('courseId')?.value ?? '';
-
     /*
-  If cookies are empty error out here
-  */
+     1. Check if attendance token is valid
+     2. If valid, lookup user course member row
+     3. If courseMember exists, use courseMember ID to mark student here
+     */
 
-    //Needed to call TRPC routes from serverside
-    const caller = appRouter.createCaller({});
-
-    //Find attendance token in table
-    //If token is found look up user
-    //Then mark them attended
-    /*WE STILL NEED COURSE ID BELOW SO IT WILL HAVE TO BE IN A COOKIE*/
-    /*USE LECTURE ID HERE TO CHECK*/
-    /* Check attendance token is valid */
-    console.log(cookieStore);
-    console.log("attendanceTokenId: " + attendanceTokenId)
-    console.log("lectureId: " + lectureId)
-    console.log("courseId: " + courseId)
     const { success } = await caller.recordQRAttendance.FindAttendanceToken({
       lectureId: lectureId,
       tokenId: attendanceTokenId
     });
 
-    /* If token lookup is successfull look up the user and mark them attended */
-    /* If not error out */
     if (success) {
-      /*Now look up course member using user email and course. Grab id of courseMember*/
       const { courseMember } = await caller.recordQRAttendance.FindCourseMember(
         {
           courseId: courseId,
@@ -63,18 +81,14 @@ export default async function markAttendance() {
 
       if (courseMember) {
         const courseMemberId: string = courseMember.id;
-        const { success } = await caller.recordQRAttendance.MarkAttendance({
+        attendance = await caller.recordQRAttendance.MarkAttendance({
           lectureId: lectureId,
           courseMemberId: courseMemberId,
           status: 'here'
         });
       } else {
-        console.log('ERROR course member not found');
+        console.log({ error: 'course member not found' });
       }
-      console.log('student marked attended successfully!!!');
-
-      /*Here check success value and tell student on frontend
-    If they have been marked here or not*/
     } else {
       console.log({ error: 'Invalid attendance token' });
     }
@@ -84,7 +98,18 @@ export default async function markAttendance() {
 
   return (
     <>
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex"></div>
+      {attendance.success ? (
+        // Render this content if attendance.success is truthy
+        <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
+          {/* Add your content for success case here */}
+          user successfully marked attended
+        </div>
+      ) : (
+        <div>
+          {/* Add your content for failure case here */}
+          An error occurred or attendance was not successful.
+        </div>
+      )}
     </>
   );
 }
