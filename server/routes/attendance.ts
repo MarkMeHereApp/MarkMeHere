@@ -128,20 +128,28 @@ export const attendanceRouter = router({
     .input(zCreateNewManyAttendanceRequest)
     .mutation(async (requestData) => {
       try {
-        const createdAttendanceEntries = await prisma.attendanceEntry.findMany({
+        // Get the existing attendance entries for the lecture
+        const existingAttendanceEntries = await prisma.attendanceEntry.findMany({
           where: {
             lectureId: requestData.input.lectureId
           }
         });
 
-        const existingAttendanceEntries = createdAttendanceEntries.map(
+        // Get the courseMemberIds of the existing attendance entries
+        const existingAttendanceEntriesIds = existingAttendanceEntries.map(
           (entry) => entry.courseMemberId
         );
 
+        // Get the courseMemberIds of the courseMembers that are having attendance entries updated 
+        const matchingEntries = requestData.input.courseMemberIds.filter((entry) => {
+            return existingAttendanceEntriesIds.includes(entry);
+        });
+
+        // Update the existing attendance entries to the new status 
         await prisma.attendanceEntry.updateMany({
           where: {
-            id: {
-              in: existingAttendanceEntries
+            courseMemberId: {
+              in: matchingEntries
             }
           },
           data: {
@@ -149,20 +157,23 @@ export const attendanceRouter = router({
           }
         });
 
-        const courseMembersWithEntries =
+        // Get the courseMemberIds of the courseMembers that don't have attendance entries (absent members)
+        const courseMembersWithoutEntriesIds =
           requestData.input.courseMemberIds.filter(
             (courseMemberId) =>
-              !existingAttendanceEntries.includes(courseMemberId)
+              !existingAttendanceEntriesIds.includes(courseMemberId)
           );
-
+        
+        // Create attendance entries for those absent members 
         await prisma.attendanceEntry.createMany({
-          data: courseMembersWithEntries.map((courseMemberId) => ({
+          data: courseMembersWithoutEntriesIds.map((courseMemberId) => ({
             lectureId: requestData.input.lectureId,
             courseMemberId: courseMemberId,
             status: requestData.input.attendanceStatus
           }))
         });
 
+        // Refetch the updated attendance entries to return
         const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
           where: {
             lectureId: requestData.input.lectureId
