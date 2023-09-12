@@ -14,14 +14,7 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh'
-      }}
-    >
+    <div className="flex justify-center items-center w-full h-full">
       <MarkMeHereClassAnimation />
     </div>
   );
