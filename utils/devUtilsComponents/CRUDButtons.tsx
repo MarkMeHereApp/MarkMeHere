@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
+import isDevMode from '../isDevMode';
 
 const EnrollCourseMemberButton = lazy(
   () => import('./EnrollCourseMemberButton')
@@ -12,8 +13,6 @@ const GenerateRandomCourseMember = lazy(
 const ShowCurrentCourseMembers = lazy(
   () => import('./ShowCurrentCourseMembers')
 );
-
-const isDevMode = process.env.NODE_ENV === 'development';
 
 const CRUDButtons = () => {
   return isDevMode ? (

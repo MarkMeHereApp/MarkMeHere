@@ -1,11 +1,11 @@
 'use client';
 
-import CRUDButtons from '@/utils/devUtils/CRUDButtons';
+import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
 import DataTable from './DataTable';
 import { columns } from './columns';
 import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/course-context';
-import EnrollCourseMemberButton from '@/utils/devUtils/EnrollCourseMemberButton';
+import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
 import { Icons } from '@/components/ui/icons';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
