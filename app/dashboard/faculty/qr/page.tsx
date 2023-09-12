@@ -10,8 +10,9 @@ import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import QRCodeComponent from './DynamicQRCodeComponent';
 
-export default function QR() {
+const QR = () => {
   const [progress, setProgress] = React.useState(0);
   const [activeCode, setActiveCode] = React.useState('LOADING');
   const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
@@ -29,14 +30,11 @@ export default function QR() {
     url: string;
   }> | null>(null);
 
-
   React.useEffect(() => {
     if (activeCode === 'LOADING') {
       // Insert your loader animation code here
     }
   }, [activeCode]);
-
-  
 
   React.useEffect(() => {
     if (mode === 'minimal') {
@@ -63,7 +61,7 @@ export default function QR() {
     id: 'LOADING',
     code: 'LOADING',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ? 
+    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ?
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
@@ -125,7 +123,7 @@ export default function QR() {
           return 0;
         }
 
-        console.log(mode)
+        console.log(mode);
         // If the user is not on the page, reset the code.
         // Functionally this is not needed, the page will correct itself when they go back
         // but when the document is  hidden, the timer will run slower, so this is to prevent
@@ -171,9 +169,7 @@ export default function QR() {
     return () => clearInterval(timer);
   }, []);
 
-  
-
-  if (mode === 'minimal') {
+  const MinimalQRCodeDisplay = () => {
     return (
       <>
         <div
@@ -189,23 +185,20 @@ export default function QR() {
           }}
         >
           {activeCode === 'LOADING' ? (
-            
-            <div> 
+            <div>
               <ReloadIcon
-                className="animate-spin"
+                className="animate-spin "
                 style={{ height: '100px', width: '100px' }}
               />
             </div>
-
           ) : (
             <div>
               {DynamicQRCode && (
                 <DynamicQRCode
                   url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
                 />
-          )}
-            </div>  
-            
+              )}
+            </div>
           )}
         </div>
 
@@ -216,89 +209,72 @@ export default function QR() {
         />
       </>
     );
-  }
+  };
+
+  // Default QR Code
+  // TODO:
+  // - Stars Background
+  // - Empty Card Fit to Stars
+  // - Card Header with title and finish button
+  // - QR Code (Finished with DynamicQRCodeComponent)
+  // - Progress Bar (Finished with Progress Component)
+  // - ManualCodeDisplay (Finished)
+  // - Resize Progress Bar and ManualCodeDisplay relative to DynamicQRCodeComponent
+  // - ???
+  // - Profit
+
   
 
-  return (
-    <div className="relative min-h-screen">
-      <div className="absolute top-0 right-0 h-full w-full">
-        {Stars && <Stars />}
-      </div>
+  const DefaultQRCodeDisplay = () => {
+    const ProgressBarDisplay = () => {
+      return <Progress value={progress} className="w-1/2" />;
+    };
 
-      <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-        <CardHeader className="flex items-center justify-between hidden lg:block" 
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}>
-          <CardTitle className="font-bold pr-8 text-center">
-            Scan the QR code with your phone to sign in
-          </CardTitle>
-          <Button onClick={() => router.push('/dashboard/faculty/take-attendance')}>
-            <div>Finish</div>
-          </Button>
-        </CardHeader>
-
-        <CardContent className="flex-grow flex-shrink flex flex-col items-center justify-between ">
-          {activeCode === 'LOADING' ? (
-            
-            <div  
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%'
-            }}> 
-              <ReloadIcon
-                className="animate-spin"
-                style={{ height: '100px', width: '100px' }}
-              />
-            </div>
-
-          ) : (
-
-            <QRCode
-              value={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
-              className="h-full w-full"
-            />
-            
-          )}
-
-          {mode == 'hide-code' ? (
-            <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
-              <div className="pt-5">
-                <Progress value={progress} className="w-[100%]" />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block">
-            
+    const ManualCodeDisplay = () => {
+      return (
+        <>
+          <div className="text-center">
             <span>Or go to the website and enter the code</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
               attendify.rickleincker.com/submit
             </div>
-            <div className="pt-5">
-              <Progress value={progress} className="w-[100%]" />
-            </div>
 
-            <Card className="flex justify-center items-center p">
-              {mode === 'hide-code' ? (
-                <div>
-                </div>
-              ) : (
-
-              <CardHeader>
-                <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
-                  {activeCode}
-                </CardTitle>
-              </CardHeader>
-              )}
-            </Card>
+            <CardHeader>
+              <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
+                {activeCode}
+              </CardTitle>
+            </CardHeader>
           </div>
-          )}
-          
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+        </>
+      );
+    };
+
+    return (
+      <>
+        <QRCodeComponent 
+          url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
+        />
+        {mode === "default" && <ManualCodeDisplay />}
+        <ProgressBarDisplay />
+      </>
+    );
+  };
+
+  if (mode === 'minimal') {
+    return <MinimalQRCodeDisplay />;
+  } else {
+    return (
+      <div className="relative min-h-screen">
+        <div className="absolute top-0 right-0 h-full w-full">
+          {Stars && <Stars />}
+        </div>
+        <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
+          <DefaultQRCodeDisplay />
+        </Card>
+      </div>
+    );
+  }
+
+};
+
+export default QR;
