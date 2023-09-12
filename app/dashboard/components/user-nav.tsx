@@ -27,8 +27,6 @@ export default function UserNav() {
   const userEmail = session?.data?.user?.email || '';
   const avatar = session?.data?.user?.image || undefined;
 
-  console.log(session.data);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

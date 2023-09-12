@@ -8,8 +8,12 @@ import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
 
+export type lecturesType =
+  | ({ attendanceEntries: AttendanceEntry[] } & Lecture)[]
+  | null;
+
 interface LecturesContextType {
-  lectures: ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null;
+  lectures: lecturesType;
   setLectures: React.Dispatch<
     React.SetStateAction<
       ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null
@@ -27,9 +31,7 @@ export default function LecturesContextProvider({
 }: {
   children?: React.ReactNode;
 }) {
-  const [lectures, setLectures] = useState<
-    ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null
-  >(null);
+  const [lectures, setLectures] = useState<lecturesType>(null);
 
   const { selectedCourseId } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
 
