@@ -60,10 +60,10 @@ export const qrRouter = router({
 
           return { success: true, qrCode: returnCode };
         } catch (error) {
-          throw new Error('Error creating QR code');
+          throw error;
         }
       } catch (error) {
-        throw new Error('Error Removing QR code');
+        throw error;
       }
     })
 });

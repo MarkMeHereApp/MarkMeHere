@@ -48,9 +48,14 @@ const QR = () => {
       : 'default';
 
   const [Stars, setStars] = React.useState<React.ComponentType | null>(null);
+  const [error, setError] = React.useState<Error | null>(null);
   const [DynamicQRCode, setDynamicQRCode] = React.useState<React.ComponentType<{
     url: string;
   }> | null>(null);
+
+  if (error) {
+    throw error;
+  }
 
   React.useEffect(() => {
     if (activeCode === 'LOADING') {
@@ -109,7 +114,7 @@ const QR = () => {
         bufferCodeRef.current = newBufferCode.qrCode;
       }
     } catch (error) {
-      throw error;
+      setError(error as Error);
     }
   };
 
@@ -141,7 +146,7 @@ const QR = () => {
 
       bIsFetchingInitCodes.current = false;
     } catch (error) {
-      throw error;
+      setError(error as Error);
     }
   };
 
