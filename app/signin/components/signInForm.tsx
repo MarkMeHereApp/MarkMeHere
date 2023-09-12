@@ -43,6 +43,10 @@ export default function SignInForm({
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
+  const callbackUrl = searchParams
+    ? searchParams.get('callbackUrl') || '/'
+    : '/';
+
   const errorType = searchParams ? searchParams.get('error') : null;
   let error: string | null = null;
   if (errorType) {
@@ -96,7 +100,7 @@ export default function SignInForm({
       await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/dashboard/overview'
+        callbackUrl: callbackUrl
       });
     } catch (error) {
       console.error('Unexpected Error: ', error);
@@ -112,7 +116,7 @@ export default function SignInForm({
     }));
     try {
       await signIn(providerId, {
-        callbackUrl: '/dashboard/faculty/overview'
+        callbackUrl: callbackUrl
       });
       setIsLoading((prevState) => ({
         ...prevState,
