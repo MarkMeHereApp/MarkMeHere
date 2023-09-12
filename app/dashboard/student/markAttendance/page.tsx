@@ -59,6 +59,11 @@ export default async function markAttendance({
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
 
+  console.log("course", courseId)
+  console.log("lecture", lectureId)
+  console.log("tokenId",attendanceTokenId)
+  console.log("email", email);
+
   //COOKIE IMPLEMENTATION//
   // const attendanceTokenId: string =
   // cookieStore.get('attendanceTokenId')?.value ?? '';
