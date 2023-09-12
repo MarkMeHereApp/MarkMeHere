@@ -48,9 +48,14 @@ const QR = () => {
       : 'default';
 
   const [Stars, setStars] = React.useState<React.ComponentType | null>(null);
+  const [error, setError] = React.useState<Error | null>(null);
   const [DynamicQRCode, setDynamicQRCode] = React.useState<React.ComponentType<{
     url: string;
   }> | null>(null);
+
+  if (error) {
+    throw error;
+  }
 
   React.useEffect(() => {
     if (activeCode === 'LOADING') {
@@ -109,7 +114,7 @@ const QR = () => {
         bufferCodeRef.current = newBufferCode.qrCode;
       }
     } catch (error) {
-      throw new Error('Unexpected server error.');
+      setError(error as Error);
     }
   };
 
@@ -141,7 +146,7 @@ const QR = () => {
 
       bIsFetchingInitCodes.current = false;
     } catch (error) {
-      throw new Error('Unexpected server error.');
+      setError(error as Error);
     }
   };
 
@@ -314,7 +319,7 @@ const QR = () => {
         <div className="absolute top-0 right-0 h-full w-full">
           {Stars && <Stars />}
         </div>
-        
+
         <Card className="h-full w-[55%] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
           <Button

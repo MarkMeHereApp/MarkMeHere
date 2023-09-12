@@ -13,10 +13,24 @@ export const qrRouter = router({
     .input(zCreateQRCode)
     .mutation(async ({ input }) => {
       try {
-        const newCode = Math.random()
-          .toString(36)
-          .substring(2, 8)
-          .toUpperCase();
+        let newCode: string | null = null;
+        for (let i = 0; i < 10; i++) {
+          newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+          const existingCode = await prisma.qrcode.findUnique({
+            where: {
+              code: newCode
+            }
+          });
+
+          if (existingCode === null) {
+            break;
+          }
+        }
+
+        if (newCode === null) {
+          throw new Error('Could not create a duplicate QR code.');
+        }
 
         const lectureId = input.lectureId;
         const courseId = input.courseId;
@@ -46,10 +60,10 @@ export const qrRouter = router({
 
           return { success: true, qrCode: returnCode };
         } catch (error) {
-          throw new Error('Error creating QR code');
+          throw error;
         }
       } catch (error) {
-        throw new Error('Error Removing QR code');
+        throw error;
       }
     })
 });

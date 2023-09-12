@@ -28,7 +28,7 @@ import { Card, CardDescription } from '@/components/ui/card';
 export function StartScanningButton() {
   const router = useRouter();
 
-  const address = 'localhost:3000';
+  const address = `${process.env.NEXT_PUBLIC_BASE_URL}`;
   const navigation = '/dashboard/faculty/qr';
 
   const [isCopied, setCopied] = useState(false);
