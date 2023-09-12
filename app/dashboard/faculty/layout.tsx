@@ -3,6 +3,7 @@ import CourseSwitcher from '@/app/dashboard/components/main-bar';
 import LecturesContext from '@/app/dashboard/faculty/lecture-context';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
+import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
 export default async function DashboardLayout({
   children
@@ -11,6 +12,8 @@ export default async function DashboardLayout({
 }) {
   const serverSession = await getServerSession();
   const email = serverSession?.user?.email || '';
+  // A helper function to determine if the link is active
+  const isQRCodeActive = usePathname() === '/dashboard/faculty/qr-code';
 
   // Fetch the CourseMember records
   const courseMemberships = await prisma.courseMember.findMany({
@@ -22,7 +25,7 @@ export default async function DashboardLayout({
     }
   });
 
-  // Extract the course IDs from the CourseMember records
+  // Extract the course IDs from the CourseMember recgit ords
   const courseIds = courseMemberships.map(
     (courseMember) => courseMember.courseId
   );
@@ -38,8 +41,10 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <CourseSwitcher />
+      {!isQRCodeActive && <CourseSwitcher />}
       <LecturesContext>{children}</LecturesContext>
     </>
   );
 }
+
+
