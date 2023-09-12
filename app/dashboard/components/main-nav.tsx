@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
+import { useCourseContext } from '@/app/course-context';
 
 export default function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
+  const { selectedCourseId } = useCourseContext();
   const pathname = usePathname(); // Use the hook
 
   // A helper function to determine if the link is active
@@ -49,14 +51,18 @@ export default function MainNav({
         href="/dashboard/faculty/overview"
         displayText="Dashboard"
       />
-      <MainNavBarCustomLink
-        href="/dashboard/faculty/take-attendance"
-        displayText="Take Attendance"
-      />
-      <MainNavBarCustomLink
-        href="/dashboard/faculty/manage-course-members"
-        displayText="Manage Course Members"
-      />
+      {selectedCourseId ? (
+        <>
+          <MainNavBarCustomLink
+            href="/dashboard/faculty/take-attendance"
+            displayText="Take Attendance"
+          />
+          <MainNavBarCustomLink
+            href="/dashboard/faculty/manage-course-members"
+            displayText="Manage Course Members"
+          />
+        </>
+      ) : null}
       <MainNavBarCustomLink
         href="/dashboard/faculty/testing-playground"
         displayText="Testing Playground"
