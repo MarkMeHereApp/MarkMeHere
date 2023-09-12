@@ -6,9 +6,12 @@ import MainNav from '@/app/dashboard/components/main-nav';
 import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';
 import { Icons } from '@/components/ui/icons';
+import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
 export default function MainBar() {
-  return (
+  const isNotQRCodePage = usePathname() !== '/dashboard/faculty/qr';
+
+  return isNotQRCodePage ? (
     <div className="border-b flex-col">
       <div className="flex items-center pb-2 pr-8 justify-between">
         <div className="flex flex-row items-center ml-6 space-x-2 mt-2">
@@ -30,5 +33,5 @@ export default function MainBar() {
         <MainNav />
       </div>
     </div>
-  );
+  ) : null;
 }

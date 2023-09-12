@@ -3,9 +3,9 @@
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
 import { Button } from 'components/ui/button';
-import Loading from '../general/loading';
+import Loading from '../../components/general/loading';
 
-const DeleteAllStudents = () => {
+const DeleteAllStudentsButton = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
   const deleteAllStudentsMutation =
@@ -39,4 +39,4 @@ const DeleteAllStudents = () => {
   ) : null;
 };
 
-export default DeleteAllStudents;
+export default DeleteAllStudentsButton;

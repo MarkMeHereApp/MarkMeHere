@@ -44,6 +44,9 @@ export const CourseCreationSheet: React.FC<CourseCreationSheetProps> = ({
               onOpenChange(false);
             }}
           />
+
+          {/* Add an empty space div */}
+          <div style={{ height: '200px' }}></div>
         </div>
 
         <SheetFooter>

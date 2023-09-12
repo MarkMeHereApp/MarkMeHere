@@ -1,62 +1,18 @@
-'use client';
-
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
 import SignInForm from '@/app/signin/components/signInForm';
-import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
 
-export default function SigninPage() {
-  const [providers, setProviders] = useState(null);
-  const Stars = dynamic(() => import('@/components/background/stars'), {
-    ssr: false
-  });
+export default async function SigninPage() {
+  try {
+    const response = await fetch(
+      process.env.NEXTAUTH_URL + '/api/auth/providers'
+    );
+    const providersData = await response.json();
 
-  useEffect(() => {
-    async function fetchProviders() {
-      try {
-        const response = await fetch('/api/auth/providers', {
-          cache: 'no-store'
-        });
-        const providersData = await response.json();
-        setProviders(providersData);
-      } catch (error) {
-        console.error('Failed to fetch providers:', error);
-        // Handle or throw the error as appropriate for your application
-      }
-    }
-
-    fetchProviders();
-  }, []);
-
-  return (
-    <>
-      <div className="relative h-screen">
-        <div className="absolute top-0 right-0 h-full w-full">
-          <Stars />
-        </div>
-        <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
-          <CardContent>
-            <div className="flex flex-col space-y-2 text-center p-3">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Sign into Attendify
-              </h1>
-            </div>
-            <SignInForm providers={providers} />
-
-            {/* Enabled again for now so a single professsor IE Leinecker
-            can sign up (mostly for testing) */}
-            <p className="px-8 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="underline underline-offset-4">
-                Sign up
-              </Link>{' '}
-              today!
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </>
-  );
+    return (
+      <>
+        <SignInForm providers={providersData} />
+      </>
+    );
+  } catch (error) {
+    throw error; // This should never error, but I want to log it if it somehow does
+  }
 }

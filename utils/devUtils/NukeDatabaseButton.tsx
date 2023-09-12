@@ -2,7 +2,7 @@
 
 import { trpc } from '@/app/_trpc/client';
 import { Button } from 'components/ui/button';
-import { toast } from '../ui/use-toast';
+import { toast } from '../../components/ui/use-toast';
 
 const NukeDatabaseButton = () => {
   const deleteDatabaseMutation = trpc.utils.deleteDatabase.useMutation();
