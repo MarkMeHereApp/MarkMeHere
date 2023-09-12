@@ -226,10 +226,7 @@ const QR = () => {
                 <DynamicQRCode
                   url={
                     process.env.NEXT_PUBLIC_BASE_URL +
-                    `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
-                      JSON.stringify(selectedCourseId)
-                    )}
-                  &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
+                    `/api/submit?qr=${encodeURIComponent(JSON.stringify(activeCode))}`
                   }
                 />
               )}
@@ -299,10 +296,7 @@ const QR = () => {
           <QRCodeComponent
             url={
               process.env.NEXT_PUBLIC_BASE_URL +
-              `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
-                JSON.stringify(selectedCourseId)
-              )}
-          &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
+              `/api/submit?qr=${encodeURIComponent(JSON.stringify(activeCode))}`
             }
           />
         )}
