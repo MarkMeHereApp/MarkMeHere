@@ -223,9 +223,11 @@ const QR = () => {
   // - ???
   // - Profit
 
+  
+
   const DefaultQRCodeDisplay = () => {
     const ProgressBarDisplay = () => {
-      return <Progress value={progress} className="w-full" />;
+      return <Progress value={progress} className="w-1/2" />;
     };
 
     const ManualCodeDisplay = () => {
@@ -249,10 +251,10 @@ const QR = () => {
 
     return (
       <>
-        <QRCodeComponent
+        <QRCodeComponent 
           url={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
         />
-        <ManualCodeDisplay />
+        {mode === "default" && <ManualCodeDisplay />}
         <ProgressBarDisplay />
       </>
     );
@@ -266,87 +268,13 @@ const QR = () => {
         <div className="absolute top-0 right-0 h-full w-full">
           {Stars && <Stars />}
         </div>
-        <DefaultQRCodeDisplay />;
+        <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
+          <DefaultQRCodeDisplay />
+        </Card>
       </div>
     );
   }
 
-  // return (
-  //   <div className="relative min-h-screen">
-  //     <div className="absolute top-0 right-0 h-full w-full">
-  //       {Stars && <Stars />}
-
-  //     <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
-  //       <CardHeader className="flex items-center justify-between hidden"
-  //             style={{
-  //               display: 'flex',
-  //               justifyContent: 'center',
-  //           }}>
-  //         <CardTitle className="font-bold pr-8 text-center">
-  //           Scan the QR code with your phone to sign in
-  //         </CardTitle>
-  //         <Button onClick={() => router.push('/dashboard/faculty/take-attendance')}>
-  //           <div>Finish</div>
-  //         </Button>
-  //       </CardHeader>
-
-  //       <CardContent className="flex flex-col items-center justify-between w-3/4">
-  //       <div className="flex flex-col items-center justify-between w-full h-full">
-  //         {activeCode === 'LOADING' ? (
-  //             <ReloadIcon
-  //               className="animate-spin"
-  //               style={{ height: '100px', width: '100px' }}
-  //             />
-  //         ) : (
-  //             <QRCode
-  //               value={process.env.NEXTAUTH_URL + '/submit/' + activeCode}
-  //               className="h-full w-full"
-  //             />
-  //         )}
-
-  //           <div className="flex flex-col items-center justify-center text-xl space-y-2 hidden lg:block w-1/2">
-
-  //             {mode == 'hide-code' ? (
-
-  //               <div className="pt-5">
-  //                 <Progress value={progress} className="w-full" />
-  //               </div>
-
-  //             ) : (
-
-  //                 <div className="pt-5">
-  //                   <Progress value={progress} className="w-full" />
-  //                 </div>
-  //               </div>
-
-  //             )}
-
-  //             <Card className="flex justify-center items-center">
-  //               {mode === 'hide-code' ? (
-  //                 <div>
-
-  //                 </div>
-  //                 // <div className="w-50 text-5xl font-bold font-mono tracking-widest text-center" >
-  //                 // {''}
-  //                 // </div>
-
-  //               ) : (
-
-  //               <CardHeader>
-  //                 <CardTitle className="text-5xl font-bold font-mono tracking-widest text-center">
-  //                   {activeCode}
-  //                 </CardTitle>
-  //               </CardHeader>
-
-  //               )}
-  //             </Card>
-  //           </div>
-  //           </div>
-  //       </CardContent>
-  //     </Card>
-  //     </div>
-  //   </div>
-  // );
 };
 
 export default QR;

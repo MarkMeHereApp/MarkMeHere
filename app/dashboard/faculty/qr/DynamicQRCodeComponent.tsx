@@ -3,12 +3,15 @@ import QRCode from 'react-qr-code';
 export default function QRCodeComponent({ url }: { url: string }) {
   return (
     <QRCode
+      bgColor='white' //#0B0A09
+      fgColor= 'black' //#FFC904 
       size={Math.max(window.innerWidth, window.innerHeight)}
       style={{
         height: '100vh',
         width: '100vw',
         maxWidth: '100%',
-        maxHeight: '100%'
+        maxHeight: '100%',
+    
       }}
       value={url}
       viewBox={`0 0 ${Math.max(window.innerWidth, window.innerHeight)} ${
