@@ -1,5 +1,6 @@
 import { lecturesType } from '../../../lecture-context';
 import AttendanceOverTimeLineGraphDisplay, { CoupledData } from './display';
+import { Lecture, AttendanceEntry } from '@prisma/client';
 
 // TODO: Implement AttendanceOverTimeLineGraphDisplay
 // What should the data look like?
@@ -24,13 +25,33 @@ const AttendanceOverTimeLineGraph: React.FC<
     return a.lectureDate > b.lectureDate ? 1 : -1;
   });
 
-  const graphData: CoupledData[] = sortedLectures.map((lecture) => {
-    const numAttendanceEntries = lecture.attendanceEntries.length ?? 0;
-    const attendanceRate =
-      numAttendanceEntries > 0 ? (numAttendanceEntries / numStudents) * 100 : 0; // Calculate attendance rate or set to 0 if no attendance entries
+  const calculateAttendanceRate = (
+    lecture: { attendanceEntries: AttendanceEntry[] } & Lecture,
+    numStudents: number
+  ) => {
+    return (lecture.attendanceEntries.length / numStudents) * 100 ?? 0;
+  };
+
+  const graphData: CoupledData[] = sortedLectures.map((lecture, index) => {
+    const attendanceRate = calculateAttendanceRate(lecture, numStudents);
+
+    // Calculate the moving average at the current date
+    const numLecturesConsidered = index + 1; // Include all lectures up to the current one
+    const previousLectures = sortedLectures.slice(0, numLecturesConsidered);
+    const totalAttendanceRateSum = previousLectures.reduce(
+      (sum, prevLecture) =>
+        sum + calculateAttendanceRate(prevLecture, numStudents), // Use 0 if attendanceRate is undefined
+      0
+    );
+    const movingAverage =
+      numLecturesConsidered > 0
+        ? totalAttendanceRateSum / numLecturesConsidered
+        : 0;
+
     return {
       attendanceRate,
-      currentLectureDate: lecture.lectureDate
+      currentLectureDate: lecture.lectureDate,
+      movingAverage
     };
   });
 
