@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
-import { cookies } from 'next/headers';
+//import { cookies } from 'next/headers';
 
 /*
 ***NOTES*** 
@@ -73,15 +73,15 @@ export async function GET(req: NextRequest) {
     });
 
     if (!!qrResult.success) {
-      const qrRow = qrResult.qrRow!;
+      const qrRow = qrResult.qrRow;
       const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
-        lectureId: qrRow.lectureId
+        lectureId: qrRow?.lectureId || ''
       });
 
       const queryParams = new URLSearchParams();
       queryParams.append('attendanceTokenId', token);
-      queryParams.append('lectureId', qrRow.lectureId);
-      queryParams.append('courseId', qrRow.courseId);
+      queryParams.append('lectureId', qrRow?.lectureId ?? '');
+      queryParams.append('courseId', qrRow?.courseId ?? '');
 
       return NextResponse.redirect(
         new URL(

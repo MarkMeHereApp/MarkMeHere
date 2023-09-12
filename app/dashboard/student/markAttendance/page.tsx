@@ -1,7 +1,5 @@
 import { cookies } from 'next/headers';
 import { appRouter } from '@/server';
-import { getToken } from 'next-auth/jwt';
-import { NextRequest } from 'next/server';
 import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
 

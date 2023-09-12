@@ -4,9 +4,8 @@
 //we validate the qr code we can grab these values and use them when marking students
 
 import React from 'react';
-import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { qrcode } from '@prisma/client';
@@ -25,13 +24,9 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const {
-    selectedAttendanceDate,
-    courseMembersOfSelectedCourse,
-    selectedCourseId
-  } = useCourseContext();
+  const { selectedAttendanceDate, selectedCourseId } = useCourseContext();
 
-  const { setLectures, lectures } = useLecturesContext();
+  const { lectures } = useLecturesContext();
 
   //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
@@ -45,7 +40,7 @@ const QR = () => {
   };
 
   //Get Current lecture (context will never be null)
-  const currentLecture = getCurrentLecture()!;
+  const currentLecture = getCurrentLecture();
 
   const mode =
     searchParams && searchParams.get('mode')
@@ -106,8 +101,8 @@ const QR = () => {
     try {
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        lectureId: currentLecture.id,
-        courseId: currentLecture.courseId
+        lectureId: currentLecture?.id ?? '',
+        courseId: currentLecture?.courseId ?? ''
       });
 
       if (newBufferCode.success) {
@@ -121,14 +116,12 @@ const QR = () => {
   // This function will initialize BOTH the buffer and active code at the same time
   // However, the codes might need to be initialized more than once (see useEffect) to see why...
   const initCodes = async () => {
-    console.log(currentLecture.id)
-    console.log(currentLecture.courseId)
     setActiveCode('LOADING');
     try {
       const newActiveCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime, // 5 seconds
-        lectureId: currentLecture.id,
-        courseId: currentLecture.courseId
+        lectureId: currentLecture?.id ?? '',
+        courseId: currentLecture?.courseId ?? ''
       });
 
       if (newActiveCode.success) {
@@ -138,8 +131,8 @@ const QR = () => {
 
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        lectureId: currentLecture.id,
-        courseId: currentLecture.courseId
+        lectureId: currentLecture?.id ?? '',
+        courseId: currentLecture?.courseId ?? ''
       });
 
       if (newBufferCode.success) {
@@ -231,13 +224,13 @@ const QR = () => {
             <div>
               {DynamicQRCode && (
                 <DynamicQRCode
-                url={
-                  process.env.NEXT_PUBLIC_BASE_URL +
-                  `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
-                    JSON.stringify(selectedCourseId)
-                  )}
+                  url={
+                    process.env.NEXT_PUBLIC_BASE_URL +
+                    `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
+                      JSON.stringify(selectedCourseId)
+                    )}
                   &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
-                }
+                  }
                 />
               )}
             </div>
@@ -264,8 +257,6 @@ const QR = () => {
   // - Resize Progress Bar and ManualCodeDisplay relative to DynamicQRCodeComponent
   // - ???
   // - Profit
-
-  
 
   const DefaultQRCodeDisplay = () => {
     const ProgressBarDisplay = () => {
@@ -298,27 +289,25 @@ const QR = () => {
         </div>
 
         {activeCode === 'LOADING' ? (
-            <div className='flex flex-col h-[100%] justify-center content-center'>
-              <ReloadIcon
-                className="animate-spin "
-                style={{ height: '100px', width: '100px' }}
-              />
-            </div>
-          ) : (
-
-        <QRCodeComponent 
-        url={
-          process.env.NEXT_PUBLIC_BASE_URL +
-          `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
-            JSON.stringify(selectedCourseId)
-          )}
+          <div className="flex flex-col h-[100%] justify-center content-center">
+            <ReloadIcon
+              className="animate-spin "
+              style={{ height: '100px', width: '100px' }}
+            />
+          </div>
+        ) : (
+          <QRCodeComponent
+            url={
+              process.env.NEXT_PUBLIC_BASE_URL +
+              `/api/trpc/qr.ValidateQRCode?lectureId=${encodeURIComponent(
+                JSON.stringify(selectedCourseId)
+              )}
           &qr=${encodeURIComponent(JSON.stringify(activeCode))}`
-        }
-        />
-          )}
-        {mode === "default" && <ManualCodeDisplay />}
+            }
+          />
+        )}
+        {mode === 'default' && <ManualCodeDisplay />}
         <ProgressBarDisplay />
-        
       </>
     );
   };
@@ -331,17 +320,18 @@ const QR = () => {
         <div className="absolute top-0 right-0 h-full w-full">
           {Stars && <Stars />}
         </div>
-        
+
         <Card className="h-full w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
-          <Button onClick={() => router.push('/dashboard/faculty/take-attendance')}>
+          <Button
+            onClick={() => router.push('/dashboard/faculty/take-attendance')}
+          >
             <div>Finish</div>
           </Button>
         </Card>
       </div>
     );
   }
-
 };
 
 export default QR;
