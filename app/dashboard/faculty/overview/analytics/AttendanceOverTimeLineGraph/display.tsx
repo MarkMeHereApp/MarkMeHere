@@ -6,6 +6,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import {
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -17,6 +18,7 @@ import {
 export interface CoupledData {
   attendanceRate: number;
   currentLectureDate: Date;
+  movingAverage: number;
 }
 
 export interface AttendanceOverTimeLineGraphDisplayProps {
@@ -67,6 +69,7 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
                 padding={{ left: 50, right: 50 }}
               />
               <YAxis domain={[0, 100]} tickFormatter={(tick) => `${tick}%`} />
+              <Legend />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
@@ -85,8 +88,18 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
                             <span className="text-[0.70rem] uppercase text-muted-foreground">
                               Attendance Rate
                             </span>
-                            <span className="font-bold text-muted-foreground">
-                              {payload[0].payload.attendanceRate + '%'}
+                            <span className="font-bold">
+                              {payload[0].payload.attendanceRate.toFixed(2) +
+                                '%'}
+                            </span>
+                          </div>
+                          <div className="flex flex-col col-span-2">
+                            <span className="text-[0.70rem] uppercase text-muted-foreground">
+                              Moving Average
+                            </span>
+                            <span className="font-bold">
+                              {payload[0].payload.movingAverage.toFixed(2) +
+                                '%'}
                             </span>
                           </div>
                         </div>
@@ -106,6 +119,17 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
                   className: 'fill-secondary'
                 }}
                 stroke="hsl(var(--primary)"
+              />
+              <Line
+                type="monotone"
+                dataKey="movingAverage"
+                strokeWidth={2}
+                activeDot={{
+                  r: 4,
+                  className: 'fill-muted'
+                }}
+                stroke="hsl(var(--muted-foreground)"
+                strokeDasharray="5 5"
               />
             </LineChart>
           </ResponsiveContainer>
