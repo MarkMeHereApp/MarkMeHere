@@ -30,6 +30,7 @@ import {
 } from '../../components/ui/select';
 import { useCourseContext } from '@/app/course-context';
 import { trpc } from '@/app/_trpc/client';
+import { Separator } from '@/components/ui/separator';
 
 const EnrollCourseMemberButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -127,10 +128,14 @@ const EnrollCourseMemberButton = () => {
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormItem className="grid grid-cols-3 grid-flow-col-dense	items-center gap-4">
                     <FormLabel className="text-right">Name</FormLabel>
                     <FormControl className="col-span-3">
-                      <Input placeholder="Aldrich Agabin" {...field} />
+                      <Input
+                        className=""
+                        placeholder="Aldrich Agabin"
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -139,7 +144,7 @@ const EnrollCourseMemberButton = () => {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormItem className="grid grid-cols-3 grid-flow-col-dense items-center gap-4">
                     <FormLabel className="text-right">Email</FormLabel>
                     <FormControl className="col-span-3">
                       <Input
@@ -156,7 +161,7 @@ const EnrollCourseMemberButton = () => {
                 name="role"
                 defaultValue="student"
                 render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormItem className="grid-cols-3 grid-flow-col-dense items-center gap-4">
                     <FormLabel className="text-right">Role</FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -180,7 +185,7 @@ const EnrollCourseMemberButton = () => {
                 name="lmsId"
                 defaultValue=""
                 render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormItem className="grid-cols-3 grid-flow-col-dense items-center gap-4">
                     <FormLabel className="text-right">
                       LMS ID (Optional)
                     </FormLabel>
