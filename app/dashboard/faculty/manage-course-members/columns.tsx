@@ -53,6 +53,17 @@ export const columns: ColumnDef<CourseMember>[] = [
     enableGlobalFilter: true
   },
   {
+    accessorKey: 'lmsId',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Canvas ID" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex w-full">{row.getValue('lmsId')}</div>
+    ),
+    enableSorting: false,
+    enableHiding: false
+  },
+  {
     accessorKey: 'role',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Role" />
