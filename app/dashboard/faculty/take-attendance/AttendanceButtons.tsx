@@ -1,48 +1,16 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 
-// Create a new attendance entry for a selected student
-const createAttendanceEntry = () => {};
+interface AttendanceButtonsProps {
+  status: string;
+  onClick: () => Promise<void>;
+}
 
-const MarkPresentButton = () => {
+const AttendanceButtons = ({ status, onClick }: AttendanceButtonsProps) => {
   return (
-    <Button variant="outline" size="sm" className="h-8">
-      Mark Present
+    <Button variant="outline" size="sm" className="h-8" onClick={onClick}>
+      {status}
     </Button>
-  );
-};
-
-const MarkAbsentButton = () => {
-  return (
-    <Button variant="outline" size="sm" className="h-8">
-      Mark Absent
-    </Button>
-  );
-};
-
-const MarkLateButton = () => {
-  return (
-    <Button variant="outline" size="sm" className="h-8">
-      Mark Late
-    </Button>
-  );
-};
-
-const MarkExcusedButton = () => {
-  return (
-    <Button variant="outline" size="sm" className="h-8">
-      Mark Excused
-    </Button>
-  );
-};
-
-const AttendanceButtons = () => {
-  return (
-    <div className="flex flex-row flex-wrap gap-2">
-      <MarkPresentButton />
-      <MarkAbsentButton />
-      <MarkLateButton />
-      <MarkExcusedButton />
-    </div>
   );
 };
 
