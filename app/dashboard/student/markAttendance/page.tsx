@@ -113,6 +113,12 @@ export default async function markAttendance({
 
     const courseMember = await findCourseMember(courseId, email);
 
+    if (!courseMember) {
+      return (
+        <MarkAttendanceError message="You are not enrolled in this course." />
+      );
+    }
+
     if (courseMember?.role !== zCourseRoles.enum.student) {
       await deleteAttendanceToken(attendanceTokenId, lectureId);
       const role = courseMember?.role || '[ROLE_ERROR]';
