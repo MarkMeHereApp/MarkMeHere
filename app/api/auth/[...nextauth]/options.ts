@@ -24,7 +24,7 @@ const defaultProviders = [
   })
 ] as AuthOptions['providers'];
 
-if (isDevMode || true) {
+if (isDevMode) {
   defaultProviders.push(
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
