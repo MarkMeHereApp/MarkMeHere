@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
-import { appRouter } from '@/server';
 import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
+import prisma from '@/prisma';
+import { AttendanceEntry } from '@prisma/client';
 
 /*  
 ***NOTES***
@@ -41,7 +42,6 @@ export default async function markAttendance({
   Grab url parameters
    */
 
-  const caller = appRouter.createCaller({});
   const cookieStore = cookies();
 
   const encodedJWT: string | undefined = cookieStore.get(
@@ -72,34 +72,61 @@ export default async function markAttendance({
      4. Delete used attendance token
      */
 
-    const { success } = await caller.recordQRAttendance.FindAttendanceToken({
-      tokenId: attendanceTokenId,
-      lectureId: lectureId
+    const tokenRow = await prisma.attendanceToken.findFirst({
+      where: {
+        id: attendanceTokenId,
+        lectureId: lectureId
+      }
     });
 
-    if (success) {
-      const { courseMember } = await caller.recordQRAttendance.FindCourseMember(
-        {
+    if (tokenRow) {
+      const courseMember = await prisma.courseMember.findFirst({
+        where: {
           courseId: courseId,
           email: email,
           role: 'student'
         }
-      );
+      });
 
       if (courseMember) {
         const courseMemberId: string = courseMember.id;
-        const success = await caller.attendance.createManyAttendanceRecords({
-          lectureId: lectureId,
-          attendanceStatus: 'here',
-          courseMemberIds: [courseMemberId]
+
+        let attendanceEntry: AttendanceEntry | null = null;
+
+        const existingAttendanceEntry = await prisma.attendanceEntry.findFirst({
+          where: {
+            lectureId: lectureId,
+            courseMemberId: courseMemberId
+          }
         });
 
-        await caller.recordQRAttendance.DeleteAttendanceToken({
-          tokenId: attendanceTokenId,
-          lectureId: lectureId
+        if (existingAttendanceEntry) {
+          attendanceEntry = await prisma.attendanceEntry.update({
+            where: {
+              id: existingAttendanceEntry.id
+            },
+            data: {
+              status: 'here'
+            }
+          });
+        } else {
+          attendanceEntry = await prisma.attendanceEntry.create({
+            data: {
+              lectureId: lectureId,
+              courseMemberId: courseMemberId,
+              status: 'here'
+            }
+          });
+        }
+
+        await prisma.attendanceToken.delete({
+          where: {
+            id: attendanceTokenId,
+            lectureId: lectureId
+          }
         });
 
-        if (!success) {
+        if (!attendanceEntry) {
           throw new Error('Failed to mark attendance');
         }
       } else {
