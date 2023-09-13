@@ -7,10 +7,19 @@ import { StartScanningButton } from './components/user-nav';
 import { useCourseContext } from '@/app/course-context';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 export default function ManageAttendance() {
   const { selectedCourseId, selectedAttendanceDate } = useCourseContext();
   const { lectures } = useLecturesContext();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ['getAllLecturesAndAttendance']
+    });
+  }, []);
 
   const getCurrentLecture = () => {
     if (lectures && selectedAttendanceDate) {

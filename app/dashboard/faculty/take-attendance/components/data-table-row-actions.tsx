@@ -80,7 +80,13 @@ export function DataTableRowActions<TData>({
           lectureId: lecture.id,
           checkInDate: new Date()
         };
-        UpdateAttendanceState(newEntry);
+
+        //We should update the state here for responsiveness
+        // But if the lecture context useQuery is not yet finished during a refetch,
+        // the state will be overwritten by the fetched data
+        // Which will cause the wrong entry to be displayed
+
+        //UpdateAttendanceState(newEntry);
 
         const response = await createNewAttendanceEntryMutation.mutateAsync({
           lectureId: lecture.id,
@@ -89,7 +95,7 @@ export function DataTableRowActions<TData>({
         });
 
         if (response.attendanceEntry) {
-          //AddOrUpdateAttendanceEntry(response.attendanceEntry);  Uncomment this to remove prediction
+          UpdateAttendanceState(response.attendanceEntry);
         }
       } catch (error) {
         setError(error as Error);
