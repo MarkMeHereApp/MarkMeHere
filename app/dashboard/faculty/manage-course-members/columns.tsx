@@ -60,8 +60,9 @@ export const columns: ColumnDef<CourseMember>[] = [
     cell: ({ row }) => (
       <div className="flex w-full">{row.getValue('lmsId')}</div>
     ),
-    enableSorting: false,
-    enableHiding: false
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
   },
   {
     accessorKey: 'role',
