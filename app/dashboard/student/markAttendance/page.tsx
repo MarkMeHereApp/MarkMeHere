@@ -57,6 +57,7 @@ export default async function markAttendance({
   const attendanceTokenId = searchParams.attendanceTokenId;
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
+  let errorMessage: string | null = null;
 
   //COOKIE IMPLEMENTATION//
   // const attendanceTokenId: string =
@@ -127,23 +128,28 @@ export default async function markAttendance({
         });
 
         if (!attendanceEntry) {
-          throw new Error('Failed to mark attendance');
+          errorMessage = 'invalid attendance token';
         }
       } else {
-        throw new Error('Course member not found');
+        errorMessage = 'course member not found';
       }
     } else {
-      throw new Error('Invalid attendance token');
+      errorMessage = 'invalid attendance token';
     }
   } catch (error) {
-    throw error;
+    const ErrorType = error as Error;
+    errorMessage = ErrorType.message;
   }
 
   return (
     <>
       <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
         {/* Add your content for success case here */}
-        user successfully marked attended
+        {errorMessage ? (
+          <div className="text-red-500">{errorMessage}</div>
+        ) : (
+          <div className="text-green-500">Attendance marked</div>
+        )}
       </div>
     </>
   );
