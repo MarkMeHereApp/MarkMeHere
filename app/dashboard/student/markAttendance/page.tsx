@@ -41,7 +41,6 @@ export default async function markAttendance({
   Grab url parameters
    */
 
-  let attendance = { success: false };
   const caller = appRouter.createCaller({});
   const cookieStore = cookies();
 
@@ -89,7 +88,7 @@ export default async function markAttendance({
 
       if (courseMember) {
         const courseMemberId: string = courseMember.id;
-        await caller.attendance.createManyAttendanceRecords({
+        const success = await caller.attendance.createManyAttendanceRecords({
           lectureId: lectureId,
           attendanceStatus: 'here',
           courseMemberIds: [courseMemberId]
@@ -100,7 +99,9 @@ export default async function markAttendance({
           lectureId: lectureId
         });
 
-        attendance.success = true;
+        if (!success) {
+          throw new Error('Failed to mark attendance');
+        }
       } else {
         throw new Error('Course member not found');
       }
@@ -113,18 +114,10 @@ export default async function markAttendance({
 
   return (
     <>
-      {attendance.success ? (
-        // Render this content if attendance.success is truthy
-        <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
-          {/* Add your content for success case here */}
-          user successfully marked attended
-        </div>
-      ) : (
-        <div>
-          {/* Add your content for failure case here */}
-          An error occurred or attendance was not successful.
-        </div>
-      )}
+      <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
+        {/* Add your content for success case here */}
+        user successfully marked attended
+      </div>
     </>
   );
 }
