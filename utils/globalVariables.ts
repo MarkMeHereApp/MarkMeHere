@@ -6,3 +6,5 @@ export const qrCodeExpirationTime = 5 * 1000; // 5 seconds
 // the server may not have enough time to process the request
 // so we add a leeway to the QR code expiration time.
 export const qrCodeLeeWay = 2 * 1000; // 2
+
+export const dataTablePaginationSizes = [10, 25, 50, 100];
