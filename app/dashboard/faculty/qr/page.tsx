@@ -15,12 +15,13 @@ import { useCourseContext } from '@/app/course-context';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import QRCodeComponent from './DynamicQRCodeComponent';
+import { qrCodeExpirationTime } from '@/utils/globalVariables';
 
 const QR = () => {
   const [progress, setProgress] = React.useState(0);
   const [activeCode, setActiveCode] = React.useState('LOADING');
   const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
-  const expirationTime = 5; // This is how long the QR code will last in seconds
+  const expirationTime = qrCodeExpirationTime / 1000; // This is how long the QR code will last in seconds
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
