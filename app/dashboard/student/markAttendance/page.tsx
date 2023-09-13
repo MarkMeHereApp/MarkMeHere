@@ -99,6 +99,8 @@ export default async function markAttendance({
           tokenId: attendanceTokenId,
           lectureId: lectureId
         });
+
+        attendance.success = true;
       } else {
         throw new Error('Course member not found');
       }
