@@ -7,13 +7,16 @@ import Stars from '@/components/background/stars';
 import { firaSansFont } from '@/utils/fonts';
 import { Icons } from '@/components/ui/icons';
 import { useLecturesContext } from '../lecture-context';
+import { NoCourse } from './components/no-course';
+import { NoLecture } from './components/no-lecture';
 import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
 import isDevMode from '@/utils/isDevMode';
 
 const OverviewAnalytics = dynamic(() => import('./analytics'));
 
 export default function Overview() {
-  const { selectedCourseId, userCourses } = useCourseContext();
+  const { selectedCourseId, userCourses, courseMembersOfSelectedCourse } =
+    useCourseContext();
   const { lectures } = useLecturesContext();
   const selectedCourseName = userCourses?.find((courses) => {
     return courses.id === selectedCourseId;
@@ -21,53 +24,6 @@ export default function Overview() {
 
   const session = useSession();
   const userName = session?.data?.user?.name || '';
-
-  const WelcomePage = () => {
-    return (
-      <div className="relative h-full w-full">
-        <Stars />
-        <div className="h-1/2 w-1/2 mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="p-6 flex justify-center items-center space-y-4 pt-8 animate-in fade-in ease-in duration-1000 ">
-            <Icons.logo
-              className="wave-infinite primary-foreground"
-              style={{ width: '150px', height: 'auto' }}
-            />
-            <span className={firaSansFont.className}>
-              <div className="flex-col">
-                <h2 className="text-4xl font-bold">Welcome to Mark Me Here!</h2>
-                <h2 className="text-2xl font-bold">
-                  Create a course to get started.
-                </h2>
-              </div>
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const NoLecturesDataPage = () => {
-    return (
-      <div className="h-1/2 w-1/2 mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <div className="p-6 flex justify-center items-center space-y-4 pt-8 animate-in fade-in ease-in duration-1000 ">
-          <Icons.logo
-            className="wave-infinite primary-foreground"
-            style={{ width: '150px', height: 'auto' }}
-          />
-          <span className={firaSansFont.className}>
-            <div className="flex-col">
-              <h2 className="text-4xl font-bold">
-                Add course members to get started!
-              </h2>
-              <h2 className="text-2xl font-bold">
-                Analytics will appear here once you have attendance data.
-              </h2>
-            </div>
-          </span>
-        </div>
-      </div>
-    );
-  };
 
   const OverviewAnalyticsPage = () => {
     return (
@@ -85,7 +41,7 @@ export default function Overview() {
                 {selectedCourseId && lectures && lectures.length > 0 ? (
                   <OverviewAnalytics />
                 ) : (
-                  <NoLecturesDataPage />
+                  <NoLecture />
                 )}
               </div>
             </div>
@@ -95,5 +51,8 @@ export default function Overview() {
     );
   };
 
-  return selectedCourseId ? <OverviewAnalyticsPage /> : <WelcomePage />;
+  if (!selectedCourseId) return <NoCourse />;
+  if (!courseMembersOfSelectedCourse) return <></>;
+  if (!lectures) return <></>; //@TODO Maybe add a skeleton here?
+  return <OverviewAnalyticsPage />;
 }
