@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { zAttendanceStatus } from '@/types/sharedZodTypes';
+import { AttendanceEntry } from '@prisma/client';
 
 export const zValidateCode = z.object({
   qr: z.string()
@@ -35,11 +36,93 @@ export const zFindCourseMember = z.object({
   role: z.string()
 });
 
+const zUseTokenToMarkAttendance = z.object({
+  attendanceTokenId: z.string(),
+  lectureId: z.string(),
+  courseId: z.string(),
+  email: z.string()
+});
+
 export const recordQRAttendanceRouter = router({
   /* 
   Search qrcode table for nonexpired QRCode 
   (still need to implement expiration functionality)
   */
+  useTokenToMarkAttendance: publicProcedure
+    .input(zUseTokenToMarkAttendance)
+    .mutation(async ({ input }) => {
+      try {
+        const tokenRow = await prisma.attendanceToken.findFirst({
+          where: {
+            id: input.attendanceTokenId,
+            lectureId: input.lectureId
+          }
+        });
+
+        if (tokenRow) {
+          const courseMember = await prisma.courseMember.findFirst({
+            where: {
+              courseId: input.courseId,
+              email: input.email,
+              role: 'student'
+            }
+          });
+
+          if (courseMember) {
+            const courseMemberId: string = courseMember.id;
+
+            let attendanceEntry: AttendanceEntry | null = null;
+
+            const existingAttendanceEntry =
+              await prisma.attendanceEntry.findFirst({
+                where: {
+                  lectureId: input.lectureId,
+                  courseMemberId: courseMemberId
+                }
+              });
+
+            if (existingAttendanceEntry) {
+              attendanceEntry = await prisma.attendanceEntry.update({
+                where: {
+                  id: existingAttendanceEntry.id
+                },
+                data: {
+                  status: 'here'
+                }
+              });
+            } else {
+              attendanceEntry = await prisma.attendanceEntry.create({
+                data: {
+                  lectureId: input.lectureId,
+                  courseMemberId: courseMemberId,
+                  status: 'here'
+                }
+              });
+            }
+
+            await prisma.attendanceToken.delete({
+              where: {
+                id: input.attendanceTokenId,
+                lectureId: input.lectureId
+              }
+            });
+
+            if (!attendanceEntry) {
+              throw new Error('could not create/update attendance entry');
+            }
+
+            return { success: true };
+          } else {
+            throw new Error('course member not found');
+          }
+        } else {
+          throw new Error('invalid attendance token');
+        }
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
   ValidateQRCode: publicProcedure
     .input(zValidateCode)
     .query(async ({ input }) => {

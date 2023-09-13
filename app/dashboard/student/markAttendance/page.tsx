@@ -1,31 +1,8 @@
-import { cookies } from 'next/headers';
-import { decode } from 'next-auth/jwt';
-import type { JWT } from 'next-auth/jwt';
-import prisma from '@/prisma';
-import { AttendanceEntry } from '@prisma/client';
+'use client';
 
-/*  
-***NOTES***
-
-In nextjs13 server components do not have access to the request object
-so we have to get the JWT from the cookies and decode it ourself
-if we had request object we could do const token = await getToken({ req })
-
-My first approach was to pass the data we need as cookies so we can grab them 
-on this page. This however is tricker than I thought because I need to persist 
-these cookies across NextAuth. Currently I do not know of a way to do this.
-
-Using this method this page will need various checks for edge cases concerning 
-missing cookies
-
-IMPLEMENTATION
-
-
-const attendanceTokenId: string =
-cookieStore.get('attendanceTokenId')?.value ?? '';
-const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
-const courseId: string = cookieStore.get('courseId')?.value ?? '';
-*/
+import { trpc } from '@/app/_trpc/client';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 export default async function markAttendance({
   searchParams
@@ -36,119 +13,53 @@ export default async function markAttendance({
     courseId: string;
   };
 }) {
-  /* 
-  Initialize TRPC caller (needed to call TRPC routes serverside) and cookiestore
-  Grab and decode JWT from cookies.
-  Grab url parameters
-   */
+  const markPresent =
+    trpc.recordQRAttendance.useTokenToMarkAttendance.useMutation();
 
-  const cookieStore = cookies();
-
-  const encodedJWT: string | undefined = cookieStore.get(
-    'next-auth.session-token'
-  )?.value;
-
-  const jwt: JWT | null = await decode({
-    token: encodedJWT,
-    secret: process.env.NEXTAUTH_SECRET ?? ''
-  });
-
-  const email: string = jwt?.email ?? '';
+  const [finishedMarking, setFinishedMarking] = useState(false);
+  const session = useSession();
+  const email: string | null = session?.data?.user?.email || null;
   const attendanceTokenId = searchParams.attendanceTokenId;
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
-  let errorMessage: string | null = null;
 
-  //COOKIE IMPLEMENTATION//
-  // const attendanceTokenId: string =
-  // cookieStore.get('attendanceTokenId')?.value ?? '';
-  // const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
-  // const courseId: string = cookieStore.get('courseId')?.value ?? '';
+  useEffect(() => {
+    const markAttendance = async () => {
+      if (!email) throw new Error('No email found');
+      if (!attendanceTokenId) throw new Error('No attendanceTokenId found');
+      if (!lectureId) throw new Error('No lectureId found');
+      if (!courseId) throw new Error('No courseId found');
 
-  try {
-    /*
-     1. Check if attendance token is valid
-     2. If valid, lookup user course member row
-     3. If courseMember exists, use courseMember ID to mark student here
-     4. Delete used attendance token
-     */
-
-    const tokenRow = await prisma.attendanceToken.findFirst({
-      where: {
-        id: attendanceTokenId,
-        lectureId: lectureId
-      }
-    });
-
-    if (tokenRow) {
-      const courseMember = await prisma.courseMember.findFirst({
-        where: {
-          courseId: courseId,
-          email: email,
-          role: 'student'
-        }
+      const response = await markPresent.mutateAsync({
+        email,
+        attendanceTokenId,
+        lectureId,
+        courseId
       });
 
-      if (courseMember) {
-        const courseMemberId: string = courseMember.id;
+      if (!response.success) throw new Error('Failed to mark attendance');
 
-        let attendanceEntry: AttendanceEntry | null = null;
+      setFinishedMarking(true);
+    };
 
-        const existingAttendanceEntry = await prisma.attendanceEntry.findFirst({
-          where: {
-            lectureId: lectureId,
-            courseMemberId: courseMemberId
-          }
-        });
-
-        if (existingAttendanceEntry) {
-          attendanceEntry = await prisma.attendanceEntry.update({
-            where: {
-              id: existingAttendanceEntry.id
-            },
-            data: {
-              status: 'here'
-            }
-          });
-        } else {
-          attendanceEntry = await prisma.attendanceEntry.create({
-            data: {
-              lectureId: lectureId,
-              courseMemberId: courseMemberId,
-              status: 'here'
-            }
-          });
-        }
-
-        await prisma.attendanceToken.delete({
-          where: {
-            id: attendanceTokenId,
-            lectureId: lectureId
-          }
-        });
-
-        if (!attendanceEntry) {
-          errorMessage = 'invalid attendance token';
-        }
-      } else {
-        errorMessage = 'course member not found';
-      }
-    } else {
-      errorMessage = 'invalid attendance token';
-    }
-  } catch (error) {
-    const ErrorType = error as Error;
-    errorMessage = ErrorType.message;
-  }
+    markAttendance();
+  }, []);
 
   return (
     <>
       <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        {/* Add your content for success case here */}
-        {errorMessage ? (
-          <div className="text-red-500">{errorMessage}</div>
+        {finishedMarking ? (
+          <div className="flex flex-col items-center justify-center">
+            <h1 className="text-3xl font-bold text-center">
+              You have successfully marked your attendance!
+            </h1>
+          </div>
         ) : (
-          <div className="text-green-500">Attendance marked</div>
+          <div className="flex flex-col items-center justify-center">
+            <h1 className="text-3xl font-bold text-center">
+              Marking your attendance...
+            </h1>
+          </div>
         )}
       </div>
     </>
