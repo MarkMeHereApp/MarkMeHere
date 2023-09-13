@@ -14,7 +14,7 @@ import { DataTableRowActions } from './data-table-row-actions';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
-    id: 'select',
+    id: 'id',
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
@@ -31,15 +31,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         className="translate-y-[2px]"
       />
     ),
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Canvas ID" />
-    ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false
   },
@@ -62,6 +53,18 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex w-full">{row.getValue('email')}</div>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
+    accessorKey: 'lmsId',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Canvas ID" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex w-full">{row.getValue('lmsId')}</div>
     ),
     enableSorting: true,
     enableHiding: true,
