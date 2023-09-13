@@ -53,5 +53,6 @@ export default function Overview() {
 
   if (!selectedCourseId) return <NoCourse />;
   if (!courseMembersOfSelectedCourse) return <></>;
+  if (!lectures) return <></>; //@TODO Maybe add a skeleton here?
   return <OverviewAnalyticsPage />;
 }
