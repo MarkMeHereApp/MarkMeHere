@@ -1,4 +1,3 @@
-import { toast } from '@/components/ui/use-toast';
 import { Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { CourseMember } from '@prisma/client';
@@ -60,12 +59,6 @@ export function DataTableRowActions<TData>({
                     : curLecture
             );
             setLectures(updatedLectures);
-        
-            toast({
-              title: 'Created New Attendance Entry!',
-              description: `Successfully marked ${courseMemberData.name} ${status} for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
-              icon: 'success'
-            });
         }
       } catch (error) {
         throw error;
@@ -101,12 +94,6 @@ export function DataTableRowActions<TData>({
             : curLecture
         );
         setLectures(updatedLectures);
-
-        toast({
-          title: 'Deleted Attendance Entry!',
-          description: `Successfully marked ${courseMemberData.name} absent for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
-          icon: 'success'
-        });
       } catch (error) {
         throw error;
       }
