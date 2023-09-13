@@ -3,7 +3,6 @@ import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
 import prisma from '@/prisma';
 import { AttendanceEntry } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
 
 /*  
 ***NOTES***
@@ -85,7 +84,7 @@ export default async function markAttendance({
       const courseMember = await prisma.courseMember.findFirst({
         where: {
           courseId: courseId,
-          email: 'bewerner23@gmail.com',
+          email: email,
           role: 'student'
         }
       });
