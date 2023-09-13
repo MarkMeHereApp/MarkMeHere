@@ -2,6 +2,8 @@ import { cookies } from 'next/headers';
 import { appRouter } from '@/server';
 import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
+import { trpc } from '@/app/_trpc/client';
+import { errorUtil } from 'zod/lib/helpers/errorUtil';
 
 /*  
 ***NOTES***
@@ -59,16 +61,13 @@ export default async function markAttendance({
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
 
-  console.log("course", courseId)
-  console.log("lecture", lectureId)
-  console.log("tokenId",attendanceTokenId)
-  console.log("email", email);
-
   //COOKIE IMPLEMENTATION//
   // const attendanceTokenId: string =
   // cookieStore.get('attendanceTokenId')?.value ?? '';
   // const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
   // const courseId: string = cookieStore.get('courseId')?.value ?? '';
+  const createManyAttendanceRecords =
+    trpc.attendance.createManyAttendanceRecords.useMutation();
 
   try {
     /*
@@ -94,10 +93,10 @@ export default async function markAttendance({
 
       if (courseMember) {
         const courseMemberId: string = courseMember.id;
-        attendance = await caller.recordQRAttendance.MarkAttendance({
+        await createManyAttendanceRecords.mutate({
           lectureId: lectureId,
-          courseMemberId: courseMemberId,
-          status: 'here'
+          attendanceStatus: 'here',
+          courseMemberIds: [courseMemberId]
         });
 
         await caller.recordQRAttendance.DeleteAttendanceToken({
@@ -105,13 +104,13 @@ export default async function markAttendance({
           lectureId: lectureId
         });
       } else {
-        console.log({ error: 'course member not found' });
+        throw new Error('Course member not found');
       }
     } else {
-      console.log({ error: 'Invalid attendance token' });
+      throw new Error('Invalid attendance token');
     }
   } catch (error) {
-    console.log({ error: error });
+    throw error;
   }
 
   return (
