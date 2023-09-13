@@ -7,6 +7,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { AttendanceEntry } from '@prisma/client';
 
 export const zGetCourseMembersOfLecture = z.object({
   lectureId: z.string()
@@ -22,9 +23,15 @@ export const zCreateNewManyAttendanceRequest = z.object({
   courseMemberIds: z.array(z.string())
 });
 
+export const zCreateOrUpdateSingleAttendanceRequest = z.object({
+  lectureId: z.string(),
+  attendanceStatus: z.string(),
+  courseMemberId: z.string()
+});
+
 export const zDeleteAttendanceEntries = z.object({
-    lectureId: z.string(),
-    courseMemberIds: z.array(z.string())
+  lectureId: z.string(),
+  courseMemberIds: z.array(z.string())
 });
 
 export const attendanceRouter = router({
@@ -129,28 +136,73 @@ export const attendanceRouter = router({
       }
     }),
 
+  createOrUpdateSingleAttendanceEntry: publicProcedure
+    .input(zCreateOrUpdateSingleAttendanceRequest)
+    .mutation(async (requestData) => {
+      try {
+        const existingAttendanceEntry = await prisma.attendanceEntry.findFirst({
+          where: {
+            lectureId: requestData.input.lectureId,
+            courseMemberId: requestData.input.courseMemberId
+          }
+        });
+
+        let attendanceEntry: AttendanceEntry | null = null;
+
+        if (existingAttendanceEntry) {
+          attendanceEntry = await prisma.attendanceEntry.update({
+            where: {
+              id: existingAttendanceEntry.id
+            },
+            data: {
+              status: requestData.input.attendanceStatus,
+              checkInDate: new Date(Date.now())
+            }
+          });
+        } else {
+          attendanceEntry = await prisma.attendanceEntry.create({
+            data: {
+              lectureId: requestData.input.lectureId,
+              courseMemberId: requestData.input.courseMemberId,
+              status: requestData.input.attendanceStatus
+            }
+          });
+        }
+        if (!attendanceEntry) {
+          throw new Error('could not create/update attendance entry');
+        }
+        return { success: true, attendanceEntry };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
   createManyAttendanceRecords: publicProcedure
     .input(zCreateNewManyAttendanceRequest)
     .mutation(async (requestData) => {
       try {
         // Get the existing attendance entries for the lecture
-        const existingAttendanceEntries = await prisma.attendanceEntry.findMany({
-          where: {
-            lectureId: requestData.input.lectureId
+        const existingAttendanceEntries = await prisma.attendanceEntry.findMany(
+          {
+            where: {
+              lectureId: requestData.input.lectureId
+            }
           }
-        });
+        );
 
         // Get the courseMemberIds of the existing attendance entries
         const existingAttendanceEntriesIds = existingAttendanceEntries.map(
           (entry) => entry.courseMemberId
         );
 
-        // Get the courseMemberIds of the courseMembers that are having attendance entries updated 
-        const matchingEntries = requestData.input.courseMemberIds.filter((entry) => {
+        // Get the courseMemberIds of the courseMembers that are having attendance entries updated
+        const matchingEntries = requestData.input.courseMemberIds.filter(
+          (entry) => {
             return existingAttendanceEntriesIds.includes(entry);
-        });
+          }
+        );
 
-        // Update the existing attendance entries to the new status 
+        // Update the existing attendance entries to the new status
         await prisma.attendanceEntry.updateMany({
           where: {
             courseMemberId: {
@@ -168,8 +220,8 @@ export const attendanceRouter = router({
             (courseMemberId) =>
               !existingAttendanceEntriesIds.includes(courseMemberId)
           );
-        
-        // Create attendance entries for those absent members 
+
+        // Create attendance entries for those absent members
         await prisma.attendanceEntry.createMany({
           data: courseMembersWithoutEntriesIds.map((courseMemberId) => ({
             lectureId: requestData.input.lectureId,
@@ -190,30 +242,29 @@ export const attendanceRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-    deleteLectureAttendanceEntries: publicProcedure
+  deleteLectureAttendanceEntries: publicProcedure
     .input(zDeleteAttendanceEntries)
     .mutation(async (requestData) => {
       try {
         await prisma.attendanceEntry.deleteMany({
-            where: {
-              courseMemberId: {
-                in: requestData.input.courseMemberIds
-              }
+          where: {
+            courseMemberId: {
+              in: requestData.input.courseMemberIds
             }
+          }
         });
 
         const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
-            where: {
-              lectureId: requestData.input.lectureId
-            }
-          });
+          where: {
+            lectureId: requestData.input.lectureId
+          }
+        });
 
         return { success: true, updatedAttendanceEntries };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
-
+    })
 });
 
 export type AttendaceRouter = typeof attendanceRouter;
