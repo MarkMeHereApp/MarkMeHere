@@ -2,8 +2,6 @@ import { cookies } from 'next/headers';
 import { appRouter } from '@/server';
 import { decode } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
-import { trpc } from '@/app/_trpc/client';
-import { errorUtil } from 'zod/lib/helpers/errorUtil';
 
 /*  
 ***NOTES***
@@ -66,8 +64,6 @@ export default async function markAttendance({
   // cookieStore.get('attendanceTokenId')?.value ?? '';
   // const lectureId: string = cookieStore.get('lectureId')?.value ?? '';
   // const courseId: string = cookieStore.get('courseId')?.value ?? '';
-  const createManyAttendanceRecords =
-    trpc.attendance.createManyAttendanceRecords.useMutation();
 
   try {
     /*
@@ -93,7 +89,7 @@ export default async function markAttendance({
 
       if (courseMember) {
         const courseMemberId: string = courseMember.id;
-        await createManyAttendanceRecords.mutate({
+        await caller.attendance.createManyAttendanceRecords({
           lectureId: lectureId,
           attendanceStatus: 'here',
           courseMemberIds: [courseMemberId]
