@@ -24,14 +24,14 @@ const defaultProviders = [
   })
 ] as AuthOptions['providers'];
 
-if (isDevMode) {
-  defaultProviders.push(
-    GithubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string
-    })
-  );
-}
+// if (isDevMode) {
+//   defaultProviders.push(
+//     GithubProvider({
+//       clientId: process.env.GITHUB_ID as string,
+//       clientSecret: process.env.GITHUB_SECRET as string
+//     })
+//   );
+// }
 
 export const authOptions: NextAuthOptions = {
   adapter: customPrismaAdapter(prisma) as Adapter,
