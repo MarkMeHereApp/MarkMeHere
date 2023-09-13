@@ -270,9 +270,9 @@ const QR = () => {
       return (
         <>
           <div className="text-center">
-            <span>Or go to the website and enter the code</span>
+            <span>Or enter the code at:</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
-              attendify.rickleincker.com/submit
+              {`${process.env.NEXT_PUBLIC_BASE_URL}/submit`}
             </div>
 
             <CardHeader>
