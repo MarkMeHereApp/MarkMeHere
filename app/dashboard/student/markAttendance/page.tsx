@@ -1,10 +1,80 @@
-'use client';
+import prisma from '@/prisma';
+import { AttendanceEntry } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { zAttendanceStatus, zCourseRoles } from '@/types/sharedZodTypes';
+import MarkAttendanceError from './components/mark-attendance-error';
+import MarkAttendanceSuccess from './components/mark-attendance-success';
+import { formatString } from '@/utils/globalFunctions';
+import { attendanceTokenExpirationTime } from '@/utils/globalVariables';
 
-import { trpc } from '@/app/_trpc/client';
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+async function findAttendanceToken(
+  attendanceTokenId: string,
+  lectureId: string
+) {
+  return await prisma.attendanceToken.findFirst({
+    where: {
+      id: attendanceTokenId,
+      lectureId: lectureId
+    }
+  });
+}
 
-export default function markAttendance({
+async function findCourseMember(courseId: string, email: string) {
+  return await prisma.courseMember.findFirst({
+    where: {
+      courseId: courseId,
+      email: email
+    }
+  });
+}
+
+async function deleteAttendanceToken(
+  attendanceTokenId: string,
+  lectureId: string
+) {
+  return await prisma.attendanceToken.delete({
+    where: {
+      id: attendanceTokenId,
+      lectureId: lectureId
+    }
+  });
+}
+
+async function findAttendanceEntry(lectureId: string, courseMemberId: string) {
+  return await prisma.attendanceEntry.findFirst({
+    where: {
+      lectureId: lectureId,
+      courseMemberId: courseMemberId
+    }
+  });
+}
+
+async function updateAttendanceEntry(id: string) {
+  return await prisma.attendanceEntry.update({
+    where: {
+      id: id
+    },
+    data: {
+      status: zAttendanceStatus.enum.here,
+      checkInDate: new Date(Date.now())
+    }
+  });
+}
+
+async function createAttendanceEntry(
+  lectureId: string,
+  courseMemberId: string
+) {
+  return await prisma.attendanceEntry.create({
+    data: {
+      lectureId: lectureId,
+      courseMemberId: courseMemberId,
+      status: zAttendanceStatus.enum.here
+    }
+  });
+}
+
+export default async function markAttendance({
   searchParams
 }: {
   searchParams: {
@@ -13,55 +83,84 @@ export default function markAttendance({
     courseId: string;
   };
 }) {
-  const markPresent =
-    trpc.recordQRAttendance.useTokenToMarkAttendance.useMutation();
+  const serverSession = await getServerSession();
 
-  const [message, setMessage] = useState('Marking your attendance...');
-  const { data: session, status } = useSession();
-  const email = session?.user?.email || '';
+  const email: string | null = serverSession?.user?.email || null;
   const attendanceTokenId = searchParams.attendanceTokenId;
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
+  let errorMessage: string | null = null;
 
-  useEffect(() => {
-    const markAttendance = async () => {
-      if (status === 'authenticated') {
-        if (!email) throw new Error('No email found');
-        if (!attendanceTokenId) throw new Error('No attendanceTokenId found');
-        if (!lectureId) throw new Error('No lectureId found');
-        if (!courseId) throw new Error('No courseId found');
+  try {
+    if (!email) {
+      return <MarkAttendanceError message="No Valid Email" />;
+    }
 
-        const response = await markPresent.mutateAsync({
-          email,
-          attendanceTokenId,
-          lectureId,
-          courseId
-        });
+    const tokenRow = await findAttendanceToken(attendanceTokenId, lectureId);
 
-        if (response.success) {
-          setMessage('You have successfully marked your attendance!');
-          return;
-        } else {
-          setMessage(response.message || 'unknown error');
-          return;
-        }
-      }
+    if (!tokenRow) {
+      return <MarkAttendanceError message="Invalid Attendance Token" />;
+    }
 
-      if (status === 'unauthenticated') {
-        throw new Error('You are not logged in');
-      }
-    };
+    if (
+      tokenRow?.createdAt < new Date(Date.now() - attendanceTokenExpirationTime)
+    ) {
+      return <MarkAttendanceError message="Attendance Token Expired" />;
+    }
 
-    markAttendance();
-  }, [status]);
+    if (!tokenRow) {
+      return <MarkAttendanceError message="Invalid Attendance Token" />;
+    }
 
-  return (
-    <>
-      <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold text-center">{message}</h1>
-        </div>
-      </div>
-    </>
-  );
+    const courseMember = await findCourseMember(courseId, email);
+
+    if (courseMember?.role !== zCourseRoles.enum.student) {
+      await deleteAttendanceToken(attendanceTokenId, lectureId);
+      const role = courseMember?.role || '[ROLE_ERROR]';
+      return (
+        <MarkAttendanceError
+          message={`You are a ${formatString(
+            role
+          )}, not a Student of this Course.`}
+        />
+      );
+    }
+
+    if (!courseMember) {
+      return (
+        <MarkAttendanceError message="Course Enrollment could not be found for this course." />
+      );
+    }
+    const courseMemberId: string = courseMember.id;
+
+    let attendanceEntry: AttendanceEntry | null = null;
+
+    const existingAttendanceEntry = await findAttendanceEntry(
+      lectureId,
+      courseMemberId
+    );
+
+    if (existingAttendanceEntry) {
+      attendanceEntry = await updateAttendanceEntry(existingAttendanceEntry.id);
+    } else {
+      attendanceEntry = await createAttendanceEntry(lectureId, courseMemberId);
+    }
+
+    await deleteAttendanceToken(attendanceTokenId, lectureId);
+
+    if (!attendanceEntry) {
+      return (
+        <MarkAttendanceError message="Unexpected Error: No Attendance was created for this submission." />
+      );
+    }
+
+    return (
+      <>
+        <MarkAttendanceSuccess checkInDate={attendanceEntry.checkInDate} />
+      </>
+    );
+  } catch (error) {
+    const ErrorType = error as Error;
+    return <MarkAttendanceError message={ErrorType.message} />;
+  }
 }
