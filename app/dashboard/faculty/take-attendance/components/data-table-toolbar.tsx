@@ -66,7 +66,7 @@ export function DataTableToolbar<TData>({
   statuses.push({
     label: 'Absent',
     value: 'absent',
-    icon: () => <CrossCircledIcon className="mr-1 text-primary " />
+    icon: () => <CrossCircledIcon className="mr-1 text-destructive " />
   });
 
   const createNewAttendanceEntryMutation = trpc.attendance.createManyAttendanceRecords.useMutation();

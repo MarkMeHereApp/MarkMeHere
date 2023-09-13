@@ -81,7 +81,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <CrossCircledIcon className="text-primary" />
+            <CrossCircledIcon className="text-destructive" />
             <span className="ml-1">Absent</span>
           </div>
         );

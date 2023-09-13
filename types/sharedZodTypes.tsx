@@ -1,9 +1,6 @@
 import z from 'zod';
 import { CourseMember, AttendanceEntry } from '@prisma/client';
-import {
-  CircleIcon,
-  ClockIcon
-} from '@radix-ui/react-icons';
+import { CircleIcon, ClockIcon } from '@radix-ui/react-icons';
 import { Icons } from '@/components/ui/icons';
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -55,8 +52,8 @@ export const zAttendanceStatusIcons: Record<
   React.ComponentType
 > = {
   here: () => <Icons.logo className="text-primary wave" />,
-  late: () => <ClockIcon className="text-primary mr-1" />,
-  excused: () => <CircleIcon className="text-primary mr-1" />
+  late: () => <ClockIcon className="mr-1" />,
+  excused: () => <CircleIcon className="mr-1" />
 };
 
 /////////////////////////////////////////////////////////////////////////////////
