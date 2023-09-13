@@ -16,7 +16,7 @@ export default function TRPC_Provider({
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/trpc`
+          url: `https://www.markmehere.com/api/trpc`
         })
       ],
       transformer: superjson
