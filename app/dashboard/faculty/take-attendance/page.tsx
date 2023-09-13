@@ -3,7 +3,7 @@
 import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
-import { StartScanningButton } from './components/user-nav';
+import { StartScanningButton } from './components/generate-qr-code';
 import { useCourseContext } from '@/app/course-context';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
