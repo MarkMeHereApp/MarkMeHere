@@ -51,7 +51,7 @@ export const zAttendanceStatusIcons: Record<
   zAttendanceStatusType,
   React.ComponentType
 > = {
-  here: () => <Icons.logo className="text-primary wave" />,
+  here: () => <Icons.logo className="text-primary wave w-5 h-5" />,
   late: () => <ClockIcon className="mr-1" />,
   excused: () => <CircleIcon className="mr-1" />
 };
