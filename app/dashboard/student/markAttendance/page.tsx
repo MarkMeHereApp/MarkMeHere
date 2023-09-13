@@ -16,6 +16,7 @@ export default function markAttendance({
   const markPresent =
     trpc.recordQRAttendance.useTokenToMarkAttendance.useMutation();
 
+  const [message, setMessage] = useState('Marking your attendance...');
   const { data: session, status } = useSession();
   const email = session?.user?.email || '';
   const attendanceTokenId = searchParams.attendanceTokenId;
@@ -37,7 +38,13 @@ export default function markAttendance({
           courseId
         });
 
-        if (!response.success) throw new Error('Failed to mark attendance');
+        if (response.success) {
+          setMessage('You have successfully marked your attendance!');
+          return;
+        } else {
+          setMessage(response.message || 'unknown error');
+          return;
+        }
       }
 
       if (status === 'unauthenticated') {
@@ -51,19 +58,9 @@ export default function markAttendance({
   return (
     <>
       <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        {status === 'loading' ? (
-          <div className="flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold text-center">
-              Marking your attendance...
-            </h1>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold text-center">
-              You have successfully marked your attendance!
-            </h1>
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-3xl font-bold text-center">{message}</h1>
+        </div>
       </div>
     </>
   );

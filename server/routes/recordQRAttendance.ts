@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { v4 as uuidv4 } from 'uuid';
-import { zAttendanceStatus } from '@/types/sharedZodTypes';
+import { zAttendanceStatus, zCourseRoles } from '@/types/sharedZodTypes';
 import { AttendanceEntry } from '@prisma/client';
 
 export const zValidateCode = z.object({
@@ -63,10 +63,19 @@ export const recordQRAttendanceRouter = router({
           const courseMember = await prisma.courseMember.findFirst({
             where: {
               courseId: input.courseId,
-              email: input.email,
-              role: 'student'
+              email: input.email
             }
           });
+
+          if (courseMember?.role !== zCourseRoles.enum.student) {
+            await prisma.attendanceToken.delete({
+              where: {
+                id: input.attendanceTokenId,
+                lectureId: input.lectureId
+              }
+            });
+            return { success: false, message: 'You are not a Student!' };
+          }
 
           if (courseMember) {
             const courseMemberId: string = courseMember.id;
