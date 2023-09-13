@@ -89,7 +89,6 @@ export default async function markAttendance({
   const attendanceTokenId = searchParams.attendanceTokenId;
   const lectureId = searchParams.lectureId;
   const courseId = searchParams.courseId;
-  let errorMessage: string | null = null;
 
   try {
     if (!email) {
