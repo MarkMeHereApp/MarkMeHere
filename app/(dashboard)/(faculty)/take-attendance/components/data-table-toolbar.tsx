@@ -6,12 +6,12 @@ import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTableViewOptions } from '@/app/dashboard/faculty/take-attendance/components/data-table-view-options';
+import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/take-attendance/components/data-table-view-options';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
-import { CalendarDateRangePicker } from '@/app/dashboard/faculty/components/date-picker';
+import { CalendarDateRangePicker } from '@/app/(dashboard)/(faculty)/components/date-picker';
 import {
   zAttendanceStatus,
   zAttendanceStatusIcons,

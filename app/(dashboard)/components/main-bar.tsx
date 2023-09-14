@@ -1,8 +1,8 @@
 'use client';
 
-import { ModeToggle } from '@/app/dashboard/components/theme-toggle';
-import UserNav from '@/app/dashboard/components/user-nav';
-import MainNav from '@/app/dashboard/components/main-nav';
+import { ModeToggle } from './theme-toggle';
+import UserNav from './user-nav';
+import MainNav from './main-nav';
 import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';
 import { Icons } from '@/components/ui/icons';

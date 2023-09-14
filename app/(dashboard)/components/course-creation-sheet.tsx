@@ -8,7 +8,7 @@ import {
   SheetClose,
   SheetFooter
 } from '@/components/ui/sheet';
-import ClassCreationForm from '@/app/dashboard/components/course-creation/class-creation-form';
+import ClassCreationForm from './course-creation/class-creation-form';
 
 type CourseCreationSheetProps = {
   showNewCourseSheet: boolean;

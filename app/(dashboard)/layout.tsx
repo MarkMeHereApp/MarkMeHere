@@ -1,4 +1,4 @@
-import CourseSwitcher from '@/app/dashboard/components/main-bar';
+import CourseSwitcher from '@/app/(dashboard)/components/main-bar';
 
 export default async function DashboardLayout({
   children
