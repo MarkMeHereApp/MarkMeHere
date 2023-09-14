@@ -16,6 +16,7 @@ import { useLecturesContext } from '@/app/context-lecture';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';
+import { Lecture, AttendanceEntry } from '@prisma/client';
 
 const QR = () => {
   const [progress, setProgress] = React.useState(0);
@@ -25,7 +26,7 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { selectedAttendanceDate, selectedCourseId } = useCourseContext();
+  const { selectedAttendanceDate, userCourses } = useCourseContext();
 
   const { lectures } = useLecturesContext();
 
@@ -40,8 +41,50 @@ const QR = () => {
     }
   };
 
-  //Get Current lecture (context will never be null)
-  const currentLecture = getCurrentLecture();
+  const getCurrentCourseName = () => {
+    if (userCourses) {
+      const course = userCourses.find((course) => {
+        return course.id === getCurrentLecture()?.courseId;
+      });
+
+      if (course) {
+        return course.name;
+      }
+      return undefined;
+    }
+  };
+
+  const [currentCourseName, setCurrentCourseName] = React.useState<
+    string | undefined
+  >(getCurrentCourseName());
+  const [currentLecture, setCurrentLecture] = React.useState<
+    ({ attendanceEntries: AttendanceEntry[] } & Lecture) | undefined
+  >(getCurrentLecture());
+
+  const currentLectureRef = React.useRef(currentLecture); //Reference to the current lecture
+
+  // This useEffect will run when the lectures change.
+  React.useEffect(() => {
+    if (!lectures) {
+      setCurrentCourseName(undefined);
+      setCurrentLecture(undefined);
+      currentLectureRef.current = undefined;
+      return;
+    }
+
+    const newLecture = getCurrentLecture();
+    if (!newLecture) {
+      const message = 'There is no lecture for selected date';
+      const encodedMessage = encodeURIComponent(message);
+      router.push(`/take-attendance?qr-warning=${encodedMessage}`);
+      return;
+    }
+
+    setCurrentCourseName(getCurrentCourseName());
+    setCurrentLecture(newLecture);
+    currentLectureRef.current = newLecture;
+    initCodes();
+  }, [lectures]);
 
   const mode =
     searchParams && searchParams.get('mode')
@@ -105,12 +148,18 @@ const QR = () => {
     setActiveCode(bufferCodeRef.current.code);
     activeCodeRef.current = bufferCodeRef.current;
     try {
+      if (!currentLectureRef.current || !currentLectureRef.current.id) {
+        setError(new Error('No lecture selected'));
+        return;
+      }
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        lectureId: currentLecture?.id ?? '',
-        courseId: currentLecture?.courseId ?? ''
+        lectureId: currentLectureRef.current.id,
+        courseId: currentLectureRef.current.courseId
       });
-
+      if (!currentLectureRef.current) {
+        return;
+      }
       if (newBufferCode.success) {
         bufferCodeRef.current = newBufferCode.qrCode;
       }
@@ -122,30 +171,45 @@ const QR = () => {
   // This function will initialize BOTH the buffer and active code at the same time
   // However, the codes might need to be initialized more than once (see useEffect) to see why...
   const initCodes = async () => {
-    setActiveCode('LOADING');
     try {
+      setActiveCode('LOADING');
+      bIsFetchingInitCodes.current = true;
+      // If the lecture isn't valid, we must be loading the lecture
+      if (!currentLectureRef.current) {
+        return;
+      }
+      const lectureAtStartOfFunction = currentLectureRef.current;
       const newActiveCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime, // 5 seconds
-        lectureId: currentLecture?.id ?? '',
-        courseId: currentLecture?.courseId ?? ''
+        secondsToExpireNewCode: expirationTime * 1.25, // * 1.25 to account for the initial fetch time
+        lectureId: currentLectureRef.current.id,
+        courseId: currentLectureRef.current.courseId
       });
 
-      if (newActiveCode.success) {
-        activeCodeRef.current = newActiveCode.qrCode;
+      // This happens if between the codes being initialized, the lecture was changed.
+      if (lectureAtStartOfFunction !== currentLectureRef.current) {
+        return;
       }
-      setActiveCode(activeCodeRef.current.code);
 
       const newBufferCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
-        lectureId: currentLecture?.id ?? '',
-        courseId: currentLecture?.courseId ?? ''
+        secondsToExpireNewCode: expirationTime * 2.5, //* 2.5 (to account for the buffer and the initial fetch time)
+        lectureId: currentLectureRef.current.id,
+        courseId: currentLectureRef.current.courseId
       });
 
-      if (newBufferCode.success) {
-        bufferCodeRef.current = newBufferCode.qrCode;
+      // This happens if between the codes being initialized, the lecture was changed.
+      if (lectureAtStartOfFunction !== currentLectureRef.current) {
+        return;
       }
 
-      bIsFetchingInitCodes.current = false;
+      if (newActiveCode.success && newBufferCode.success) {
+        activeCodeRef.current = newActiveCode.qrCode;
+        setActiveCode(activeCodeRef.current.code);
+        bufferCodeRef.current = newBufferCode.qrCode;
+        bIsFetchingInitCodes.current = false;
+        return;
+      }
+
+      setError(new Error('Failed to initialize codes'));
     } catch (error) {
       setError(error as Error);
     }
@@ -159,28 +223,14 @@ const QR = () => {
           return 0;
         }
 
-        // If the user is not on the page, reset the code.
-        // Functionally this is not needed, the page will correct itself when they go back
-        // but when the document is  hidden, the timer will run slower, so this is to prevent
-        // UI weirdness.
+        // If the user is not on the page, reset the code
         if (document.hidden) {
-          bufferCodeRef.current = initialCode;
-          activeCodeRef.current = initialCode;
+          initCodes();
           return 0;
         }
 
         // If the code is expired, reset the code
         if (activeCodeRef.current.expiresAt.getTime() <= Date.now()) {
-          bufferCodeRef.current = initialCode;
-          activeCodeRef.current = initialCode;
-        }
-
-        // This handles if the buffer code hasn't been initialized yet
-        if (
-          bufferCodeRef.current === initialCode &&
-          !bIsFetchingInitCodes.current
-        ) {
-          bIsFetchingInitCodes.current = true;
           initCodes();
           return 0;
         }
@@ -270,7 +320,7 @@ const QR = () => {
       return (
         <>
           <div className="text-center">
-            <span>Or enter the code at:</span>
+            <span>Scan or enter the code at:</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
               {`${process.env.NEXT_PUBLIC_BASE_URL}/submit`}
             </div>
@@ -287,10 +337,11 @@ const QR = () => {
 
     return (
       <>
-        <div className="flex flex-col items-center justify-center text-xl break-all">
-          Scan the QR Code
-        </div>
-
+        <CardHeader>
+          <CardTitle className="whitespace-nowrap overflow-ellipsis overflow-hidden max-w-lg text-3xl font-bold tracking-widest text-center ">
+            {currentCourseName || '\u200B'}
+          </CardTitle>
+        </CardHeader>
         {activeCode === 'LOADING' ? (
           <div className="flex flex-col h-[100%] justify-center content-center">
             <ReloadIcon
