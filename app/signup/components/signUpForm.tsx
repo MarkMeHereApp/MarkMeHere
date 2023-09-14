@@ -30,7 +30,7 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
 
       // Handle success response
 
-      router.push('/dashboard/overview');
+      router.push('/overview');
     } catch (error) {
       console.error('error signing up:', error);
     } finally {
