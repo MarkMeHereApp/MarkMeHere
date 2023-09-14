@@ -65,7 +65,7 @@ model AttendanceEntry {
   lectureId      String
   courseMemberId String
   courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
-  checkInDate    DateTime     @default(now())
+  dateMarked    DateTime     @default(now())
   status         String       @default("present")
 }
 

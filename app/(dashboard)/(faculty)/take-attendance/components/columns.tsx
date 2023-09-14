@@ -11,6 +11,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -84,8 +85,8 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <CrossCircledIcon className="text-destructive" />
-            <span className="ml-1">Absent</span>
+            <QuestionMarkCircledIcon />
+            <span className="ml-1">Unmarked</span>
           </div>
         );
       }
@@ -98,7 +99,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
           <div className="flex w-[100px] items-center">
             <>
               <IconComponent />
-
               <span>{formatString(statusAsZod)}</span>
             </>
           </div>
@@ -121,22 +121,22 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     }
   },
   {
-    accessorKey: 'checkInDate',
+    accessorKey: 'dateMarked',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date Marked" />
     ),
     cell: ({ row }) => {
       const originalValue = row.original as ExtendedCourseMember;
-      const checkInDate = originalValue.AttendanceEntry
-        ? originalValue.AttendanceEntry.checkInDate
+      const dateMarked = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.dateMarked
         : undefined;
 
-      if (!checkInDate) {
+      if (!dateMarked) {
         return (
             <div className="flex w-full">No Data</div>
         );
       }
-      const formattedDate = checkInDate.toLocaleDateString();
+      const formattedDate = dateMarked.toLocaleDateString();
       return <div className="flex w-full">{formattedDate}</div>;
     },
     enableSorting: true,

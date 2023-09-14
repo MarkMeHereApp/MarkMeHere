@@ -78,7 +78,7 @@ export function DataTableRowActions<TData>({
           status: status,
           courseMemberId: courseMemberData.id,
           lectureId: lecture.id,
-          checkInDate: new Date()
+          dateMarked: new Date()
         };
 
         //We should update the state here for responsiveness
@@ -99,38 +99,6 @@ export function DataTableRowActions<TData>({
         }
       } catch (error) {
         setError(error as Error);
-      }
-    }
-  }
-
-  // Only for absent students -> absent == no attendance entry
-  const deleteAttendanceEntryMutation =
-    trpc.attendance.deleteLectureAttendanceEntries.useMutation();
-  async function handleDeleteAttendanceEntry() {
-    const lecture = getCurrentLecture();
-    if (lectures && lecture) {
-      try {
-        // Get the updated attendance entries that exclude the absent student entries
-        const updatedLecture = {
-          ...lecture,
-          attendanceEntries: lecture.attendanceEntries.filter(
-            (entry) => entry.courseMemberId !== courseMemberData.id
-          )
-        };
-        setAttendanceEntries(updatedLecture.attendanceEntries);
-
-        // Update only the lecture that corresponds to the deleted entry
-        const updatedLectures = lectures.map((curLecture) =>
-          curLecture.id === lecture.id ? updatedLecture : curLecture
-        );
-        setLectures(updatedLectures);
-
-        await deleteAttendanceEntryMutation.mutateAsync({
-          lectureId: lecture.id,
-          courseMemberIds: [courseMemberData.id]
-        });
-      } catch (error) {
-        throw error;
       }
     }
   }
@@ -160,7 +128,7 @@ export function DataTableRowActions<TData>({
       </div>
       <div
         onClick={() => {
-          handleDeleteAttendanceEntry();
+            handleCreateNewAttendanceEntry('absent');
         }}
       >
         <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />

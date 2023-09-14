@@ -5,7 +5,6 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/take-attendance/components/data-table-view-options';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 
@@ -125,69 +124,31 @@ export function DataTableToolbar<TData>({
     }
   };
 
-  const deleteAttendanceEntryMutation =
-    trpc.attendance.deleteLectureAttendanceEntries.useMutation();
-
-  const handleDeleteEntriesMutation = async () => {
-    const lecture = getCurrentLecture();
-    const selectedRows = table.getSelectedRowModel().rows;
-    const selectedCourseMembers: CourseMember[] = selectedRows.map(
-      (row) => row.original
-    ) as CourseMember[];
-    const courseMemberIds = selectedCourseMembers.map((member) => member.id);
-    if (lectures && lecture) {
-      try {
-        await deleteAttendanceEntryMutation.mutateAsync({
-          lectureId: lecture.id,
-          courseMemberIds: courseMemberIds
-        });
-
-        const updatedLecture = {
-          ...lecture,
-          attendanceEntries: lecture.attendanceEntries.filter(
-            (entry) => !courseMemberIds.includes(entry.courseMemberId)
-          )
-        };
-        table.resetRowSelection();
-        setAttendanceEntries(updatedLecture.attendanceEntries);
-
-        const updatedLectures = lectures.map((curLecture) =>
-          curLecture.id === lecture.id ? updatedLecture : curLecture
-        );
-        setLectures(updatedLectures);
-
-        const selectedNames = selectedCourseMembers.map(
-          (member) => member.name
-        );
-
-        toast({
-          title: `Deleted ${selectedCourseMembers.length} Attendance Entries!`,
-          description: `Successfully marked ${selectedNames} absent for ${
-            selectedAttendanceDate.toISOString().split('T')[0]
-          }`,
-          icon: 'success'
-        });
-      } catch (error) {
-        throw error;
-      }
-    }
-  };
-
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex items-center space-x-2">
         {getCurrentLecture() && (
           <>
-            <Input
-              placeholder="Search for a student..."
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
-              }
-              onChange={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
-              }
-              className="h-8 w-[150px] lg:w-[250px]"
-            />
+            {isSelected && (
+              <>
+                <AttendanceButtons
+                  status="Mark Present"
+                  onClick={() => handleCreateNewAttendanceEntries('here')}
+                />
+                <AttendanceButtons
+                  status="Mark Late"
+                  onClick={() => handleCreateNewAttendanceEntries('late')}
+                />
+                <AttendanceButtons
+                  status="Mark Excused"
+                  onClick={() => handleCreateNewAttendanceEntries('excused')}
+                />
+                <AttendanceButtons
+                  status="Mark Absent"
+                  onClick={() => handleCreateNewAttendanceEntries('absent')}
+                />
+              </>
+            )}
             <DataTableViewOptions table={table} />
             {table.getColumn('status') && (
               <DataTableFacetedFilter
@@ -205,26 +166,6 @@ export function DataTableToolbar<TData>({
                 Reset
                 <Cross2Icon className="ml-2 h-4 w-4" />
               </Button>
-            )}
-            {isSelected && (
-              <>
-                <AttendanceButtons
-                  status="Mark Present"
-                  onClick={() => handleCreateNewAttendanceEntries('here')}
-                />
-                <AttendanceButtons
-                  status="Mark Late"
-                  onClick={() => handleCreateNewAttendanceEntries('late')}
-                />
-                <AttendanceButtons
-                  status="Mark Excused"
-                  onClick={() => handleCreateNewAttendanceEntries('excused')}
-                />
-                <AttendanceButtons
-                  status="Mark Absent"
-                  onClick={() => handleDeleteEntriesMutation()}
-                />
-              </>
             )}
           </>
         )}
