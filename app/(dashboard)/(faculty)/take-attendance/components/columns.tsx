@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
-import { CrossCircledIcon } from '@radix-ui/react-icons';
 import {
   zAttendanceStatus,
   ExtendedCourseMember,
@@ -11,6 +10,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -71,6 +71,29 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
+    accessorKey: 'date marked',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date Marked" />
+    ),
+    cell: ({ row }) => {
+      const originalValue = row.original as ExtendedCourseMember;
+      const dateMarked = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.dateMarked
+        : undefined;
+
+      if (!dateMarked) {
+        return (
+            <div className="flex w-full">No Data</div>
+        );
+      }
+      const formattedDate = dateMarked.toLocaleDateString();
+      return <div className="flex w-full">{formattedDate}</div>;
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
     accessorKey: 'status',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
@@ -84,8 +107,8 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       if (!status) {
         return (
           <div className="flex w-[100px] items-center">
-            <CrossCircledIcon className="text-destructive" />
-            <span className="ml-1">Absent</span>
+            <QuestionMarkCircledIcon />
+            <span className="ml-1">Unmarked</span>
           </div>
         );
       }
@@ -98,7 +121,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
           <div className="flex w-[100px] items-center">
             <>
               <IconComponent />
-
               <span>{formatString(statusAsZod)}</span>
             </>
           </div>
@@ -113,15 +135,24 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         ? originalValue.AttendanceEntry.status
         : undefined;
 
-      if (value.includes('absent')) {
+      if (value.includes('unmarked')) {
         return status === undefined;
       }
 
       return value.includes(status);
-    }
+    },
+    enableSorting: false,
+    enableHiding: true
   },
   {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />
+    accessorKey: 'mark Status',
+    header: ({ column }) => (
+      <DataTableColumnHeader className="" column={column} title="Mark Status" />
+    ),
+    cell: ({ row }) => ( 
+      <DataTableRowActions row={row} /> 
+    ),
+    enableSorting: false,
+    enableHiding: true,
   }
 ];

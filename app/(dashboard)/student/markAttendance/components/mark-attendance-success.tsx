@@ -5,11 +5,11 @@ import { firaSansFont } from '@/utils/fonts';
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 
 interface ErrorMessageProps {
-  checkInDate: Date;
+  dateMarked: Date;
 }
 
 const MarkAttendanceSuccess: React.FC<ErrorMessageProps> = ({
-  checkInDate
+  dateMarked
 }) => {
   return (
     <Card className="w-[450px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
@@ -24,7 +24,7 @@ const MarkAttendanceSuccess: React.FC<ErrorMessageProps> = ({
             <AlertDescription>
               <CheckCircledIcon className="inline-block w-6 h-6 mr-2 text-primary" />
               Checked in{' '}
-              {checkInDate.toLocaleDateString('en-US', {
+              {dateMarked.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

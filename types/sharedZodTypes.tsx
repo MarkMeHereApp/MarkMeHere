@@ -1,6 +1,6 @@
 import z from 'zod';
 import { CourseMember, AttendanceEntry } from '@prisma/client';
-import { CircleIcon, ClockIcon } from '@radix-ui/react-icons';
+import { CircleIcon, ClockIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import { Icons } from '@/components/ui/icons';
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ export type ExtendedCourseMember = CourseMember & {
   AttendanceEntry?: AttendanceEntry;
 };
 
-export const zAttendanceStatus = z.enum(['here', 'excused', 'late']);
+export const zAttendanceStatus = z.enum(['here', 'excused', 'late', 'absent']);
 export type zAttendanceStatusType = z.infer<typeof zAttendanceStatus>;
 
 export const zAttendanceStatusIcons: Record<
@@ -45,7 +45,8 @@ export const zAttendanceStatusIcons: Record<
 > = {
   here: () => <Icons.logo className="text-primary wave w-5 h-5" />,
   late: () => <ClockIcon className="mr-1" />,
-  excused: () => <CircleIcon className="mr-1" />
+  excused: () => <CircleIcon className="mr-1" />,
+  absent: () => <CrossCircledIcon className="mr-1 text-destructive" />
 };
 
 /////////////////////////////////////////////////////////////////////////////////

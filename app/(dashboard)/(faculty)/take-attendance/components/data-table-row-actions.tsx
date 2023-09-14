@@ -1,5 +1,4 @@
 import { Row } from '@tanstack/react-table';
-import { useEffect } from 'react';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
@@ -78,7 +77,7 @@ export function DataTableRowActions<TData>({
           status: status,
           courseMemberId: courseMemberData.id,
           lectureId: lecture.id,
-          checkInDate: new Date()
+          dateMarked: new Date()
         };
 
         //We should update the state here for responsiveness
@@ -103,41 +102,10 @@ export function DataTableRowActions<TData>({
     }
   }
 
-  // Only for absent students -> absent == no attendance entry
-  const deleteAttendanceEntryMutation =
-    trpc.attendance.deleteLectureAttendanceEntries.useMutation();
-  async function handleDeleteAttendanceEntry() {
-    const lecture = getCurrentLecture();
-    if (lectures && lecture) {
-      try {
-        // Get the updated attendance entries that exclude the absent student entries
-        const updatedLecture = {
-          ...lecture,
-          attendanceEntries: lecture.attendanceEntries.filter(
-            (entry) => entry.courseMemberId !== courseMemberData.id
-          )
-        };
-        setAttendanceEntries(updatedLecture.attendanceEntries);
-
-        // Update only the lecture that corresponds to the deleted entry
-        const updatedLectures = lectures.map((curLecture) =>
-          curLecture.id === lecture.id ? updatedLecture : curLecture
-        );
-        setLectures(updatedLectures);
-
-        await deleteAttendanceEntryMutation.mutateAsync({
-          lectureId: lecture.id,
-          courseMemberIds: [courseMemberData.id]
-        });
-      } catch (error) {
-        throw error;
-      }
-    }
-  }
-
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-6">
       <div
+        title="Mark Here"
         onClick={() => {
           handleCreateNewAttendanceEntry('here');
         }}
@@ -145,6 +113,7 @@ export function DataTableRowActions<TData>({
         <CheckCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
       </div>
       <div
+        title="Mark Late"
         onClick={() => {
           handleCreateNewAttendanceEntry('late');
         }}
@@ -152,6 +121,7 @@ export function DataTableRowActions<TData>({
         <ClockIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
       </div>
       <div
+        title="Mark Excused"
         onClick={() => {
           handleCreateNewAttendanceEntry('excused');
         }}
@@ -159,8 +129,9 @@ export function DataTableRowActions<TData>({
         <CircleIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
       </div>
       <div
+        title="Mark Absent"
         onClick={() => {
-          handleDeleteAttendanceEntry();
+            handleCreateNewAttendanceEntry('absent');
         }}
       >
         <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />

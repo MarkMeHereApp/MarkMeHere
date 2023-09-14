@@ -56,7 +56,7 @@ async function updateAttendanceEntry(id: string) {
     },
     data: {
       status: zAttendanceStatus.enum.here,
-      checkInDate: new Date(Date.now())
+      dateMarked: new Date(Date.now())
     }
   });
 }
@@ -161,7 +161,7 @@ export default async function markAttendance({
 
     return (
       <>
-        <MarkAttendanceSuccess checkInDate={attendanceEntry.checkInDate} />
+        <MarkAttendanceSuccess dateMarked={attendanceEntry.dateMarked} />
       </>
     );
   } catch (error) {

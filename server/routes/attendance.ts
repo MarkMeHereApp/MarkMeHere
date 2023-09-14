@@ -103,7 +103,7 @@ export const attendanceRouter = router({
 
         interface AttendanceEntryMapped {
           courseMemberId: string;
-          checkInDate: Date | null;
+          dateMarked: Date | null;
           status: zAttendanceStatusType;
         }
 
@@ -119,13 +119,13 @@ export const attendanceRouter = router({
             if (attendanceEntry) {
               return {
                 courseMemberId: courseMember.id,
-                checkInDate: attendanceEntry.checkInDate || null,
+                dateMarked: attendanceEntry.dateMarked || null,
                 status: zAttendanceStatus.parse(attendanceEntry.status)
               };
             } else {
               return {
                 courseMemberId: courseMember.id,
-                checkInDate: null,
+                dateMarked: null,
                 status: zAttendanceStatus.parse('absent')
               };
             }
@@ -156,7 +156,7 @@ export const attendanceRouter = router({
             },
             data: {
               status: requestData.input.attendanceStatus,
-              checkInDate: new Date(Date.now())
+              dateMarked: new Date(Date.now())
             }
           });
         } else {
@@ -231,29 +231,6 @@ export const attendanceRouter = router({
         });
 
         // Refetch the updated attendance entries to return
-        const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
-          where: {
-            lectureId: requestData.input.lectureId
-          }
-        });
-
-        return { success: true, updatedAttendanceEntries };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
-  deleteLectureAttendanceEntries: publicProcedure
-    .input(zDeleteAttendanceEntries)
-    .mutation(async (requestData) => {
-      try {
-        await prisma.attendanceEntry.deleteMany({
-          where: {
-            courseMemberId: {
-              in: requestData.input.courseMemberIds
-            }
-          }
-        });
-
         const updatedAttendanceEntries = await prisma.attendanceEntry.findMany({
           where: {
             lectureId: requestData.input.lectureId
