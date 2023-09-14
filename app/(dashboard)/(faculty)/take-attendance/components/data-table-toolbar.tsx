@@ -176,50 +176,56 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Search for a student..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        />
-        <DataTableViewOptions table={table} />
-        {table.getColumn('status') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('status')}
-            title="Status"
-            options={statuses}
-          />
-        )}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
-        )}
-        {isSelected && (
+        {getCurrentLecture() && (
           <>
-            <AttendanceButtons
-              status="Mark Present"
-              onClick={() => handleCreateNewAttendanceEntries('here')}
+            <Input
+              placeholder="Search for a student..."
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
+              className="h-8 w-[150px] lg:w-[250px]"
             />
-            <AttendanceButtons
-              status="Mark Late"
-              onClick={() => handleCreateNewAttendanceEntries('late')}
-            />
-            <AttendanceButtons
-              status="Mark Excused"
-              onClick={() => handleCreateNewAttendanceEntries('excused')}
-            />
-            <AttendanceButtons
-              status="Mark Absent"
-              onClick={() => handleDeleteEntriesMutation()}
-            />
+            <DataTableViewOptions table={table} />
+            {table.getColumn('status') && (
+              <DataTableFacetedFilter
+                column={table.getColumn('status')}
+                title="Status"
+                options={statuses}
+              />
+            )}
+            {isFiltered && (
+              <Button
+                variant="ghost"
+                onClick={() => table.resetColumnFilters()}
+                className="h-8 px-2 lg:px-3"
+              >
+                Reset
+                <Cross2Icon className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+            {isSelected && (
+              <>
+                <AttendanceButtons
+                  status="Mark Present"
+                  onClick={() => handleCreateNewAttendanceEntries('here')}
+                />
+                <AttendanceButtons
+                  status="Mark Late"
+                  onClick={() => handleCreateNewAttendanceEntries('late')}
+                />
+                <AttendanceButtons
+                  status="Mark Excused"
+                  onClick={() => handleCreateNewAttendanceEntries('excused')}
+                />
+                <AttendanceButtons
+                  status="Mark Absent"
+                  onClick={() => handleDeleteEntriesMutation()}
+                />
+              </>
+            )}
           </>
         )}
       </div>
