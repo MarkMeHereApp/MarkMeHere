@@ -1,5 +1,5 @@
 'use client';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';

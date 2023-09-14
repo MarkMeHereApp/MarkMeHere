@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 
 export function CalendarDateRangePicker({
   className

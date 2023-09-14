@@ -1,5 +1,5 @@
 'use client';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 
 const AldrichTestPage = () => {
   const data = useCourseContext();

@@ -32,8 +32,8 @@ import { DataTableToolbar } from '../components/data-table-toolbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { useCourseContext } from '@/app/course-context';
-import { useLecturesContext } from '@/app/lecture-context';
+import { useCourseContext } from '@/app/context-course';
+import { useLecturesContext } from '@/app/context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { ExtendedCourseMember } from '@/types/sharedZodTypes';

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 
 export default function MainNav({
   className,

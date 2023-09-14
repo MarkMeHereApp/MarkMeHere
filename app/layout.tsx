@@ -5,8 +5,8 @@ import { Suspense } from 'react';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
-import CoursesContext from '@/app/course-context';
-import LecturesContext from '@/app/lecture-context';
+import CoursesContext from '@/app/context-course';
+import LecturesContext from '@/app/context-lecture';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';

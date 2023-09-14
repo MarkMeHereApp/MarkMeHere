@@ -26,7 +26,7 @@ import {
 import { DataTablePagination } from './table-accessories/DataTablePagination';
 import { DataTableToolbar } from './table-accessories/DataTableToolbar';
 import { useState } from 'react';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import Loading from '@/components/general/loading';
 
 interface DataTableProps<TData, TValue> {

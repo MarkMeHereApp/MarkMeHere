@@ -4,9 +4,9 @@ import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/generate-qr-code';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
-import { useLecturesContext } from '@/app/lecture-context';
+import { useLecturesContext } from '@/app/context-lecture';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 

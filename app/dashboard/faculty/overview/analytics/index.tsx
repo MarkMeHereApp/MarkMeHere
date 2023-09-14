@@ -1,5 +1,5 @@
-import { useCourseContext } from '@/app/course-context';
-import { useLecturesContext } from '../../../../lecture-context';
+import { useCourseContext } from '@/app/context-course';
+import { useLecturesContext } from '../../../../context-lecture';
 import AttendanceOverTimeLineGraph from './AttendanceOverTimeLineGraph';
 
 const OverviewAnalytics = () => {

@@ -1,7 +1,7 @@
 import { Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { CourseMember } from '@prisma/client';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import {
   ClockIcon,
@@ -9,7 +9,7 @@ import {
   CrossCircledIcon,
   CircleIcon
 } from '@radix-ui/react-icons';
-import { useLecturesContext } from '@/app/lecture-context';
+import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
 

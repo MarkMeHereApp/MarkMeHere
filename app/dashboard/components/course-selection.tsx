@@ -24,7 +24,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import { CourseCreationSheet } from './course-creation-sheet';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { formatString } from '@/utils/globalFunctions';
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger

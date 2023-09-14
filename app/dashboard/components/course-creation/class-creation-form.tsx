@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { LMSCourseSelector } from './lms-course-selector';
 import {
   zLMSCourseSchemeType,

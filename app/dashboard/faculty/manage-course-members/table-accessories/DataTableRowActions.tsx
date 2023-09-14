@@ -14,7 +14,7 @@ import { TrashIcon } from '@radix-ui/react-icons';
 import { Row } from '@tanstack/react-table';
 import { useState } from 'react';
 import { CourseMember } from '@prisma/client';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { useSession } from 'next-auth/react';
 
