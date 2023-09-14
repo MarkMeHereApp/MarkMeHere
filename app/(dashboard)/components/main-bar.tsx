@@ -9,10 +9,14 @@ import { Icons } from '@/components/ui/icons';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
 export default function MainBar() {
-  const isNotQRCodePage = usePathname() !== '/dashboard/faculty/qr';
+  const isQRCodePage = usePathname() === '/qr';
 
-  return isNotQRCodePage ? (
-    <div className="border-b flex-col">
+  const divClassName = !isQRCodePage
+    ? 'border-b flex-col'
+    : 'border-b flex-col hover:opacity-100 opacity-0 transition-opacity duration-200 absolute w-full z-10 bg-background';
+
+  return (
+    <div className={divClassName}>
       <div className="flex items-center pb-2 pr-8 justify-between">
         <div className="flex flex-row items-center ml-6 space-x-2 mt-2">
           <Link href="/dashboard/faculty/overview" className="-mr-2">
@@ -33,5 +37,5 @@ export default function MainBar() {
         <MainNav />
       </div>
     </div>
-  ) : null;
+  );
 }
