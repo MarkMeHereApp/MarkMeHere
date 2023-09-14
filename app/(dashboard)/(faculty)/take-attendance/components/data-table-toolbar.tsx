@@ -6,7 +6,7 @@ import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/take-attendance/components/data-table-view-options';
-import { CrossCircledIcon } from '@radix-ui/react-icons';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
@@ -33,7 +33,7 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   type StatusType = {
     label: string;
-    value: zAttendanceStatusType | 'absent';
+    value: zAttendanceStatusType | 'unmarked';
     icon: React.ComponentType;
   };
   const { selectedAttendanceDate } = useCourseContext();
@@ -66,9 +66,9 @@ export function DataTableToolbar<TData>({
   const statuses: StatusType[] = attendanceTypes;
 
   statuses.push({
-    label: 'Absent',
-    value: 'absent',
-    icon: () => <CrossCircledIcon className="mr-1 text-destructive " />
+    label: 'Unmarked',
+    value: 'unmarked',
+    icon: () => <QuestionMarkCircledIcon className="mr-1" />
   });
 
   const createNewAttendanceEntryMutation =
