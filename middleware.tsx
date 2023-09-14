@@ -69,9 +69,6 @@ export default withAuth(
 //Our middleware needs to run over all routes besides signin/signup
 // export const config = { matcher: ['/dashboard/:path*'] };
 export const config = {
-  matcher: [
-    '/dashboard/admin/:path*',
-    '/dashboard/faculty/:path*',
-    '/dashboard/student/:path*'
-  ]
+  // Matches the entire project except for the routes between the | characters.
+  matcher: '/((?!api/submit|signin|_next/static|_next/image|favicon.ico).*)'
 };

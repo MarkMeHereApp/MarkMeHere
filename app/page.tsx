@@ -10,7 +10,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (router) {
-      router.push('/signin');
+      router.push('/overview');
     }
   }, [router]);
 
