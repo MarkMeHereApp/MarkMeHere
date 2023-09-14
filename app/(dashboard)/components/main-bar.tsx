@@ -19,7 +19,7 @@ export default function MainBar() {
     <div className={divClassName}>
       <div className="flex items-center pb-2 pr-8 justify-between">
         <div className="flex flex-row items-center ml-6 space-x-2 mt-2">
-          <Link href="/dashboard/faculty/overview" className="-mr-2">
+          <Link href="/overview" className="-mr-2">
             <Icons.logo
               className="hover:wave-infinite"
               style={{ flex: 1, width: '50px', height: '50px' }}
