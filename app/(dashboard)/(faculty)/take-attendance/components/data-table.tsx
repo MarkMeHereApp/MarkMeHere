@@ -52,6 +52,7 @@ export function DataTable<TData, TValue>({
     selectedCourseId
   } = useCourseContext();
 
+  const [lectureLoading, setLectureLoading] = React.useState<boolean>(false);
   const { setLectures, lectures } = useLecturesContext();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -137,6 +138,7 @@ export function DataTable<TData, TValue>({
 
     const handleClick = async () => {
       if (selectedCourseId && selectedAttendanceDate) {
+        setLectureLoading(true);
         try {
           // You shouldn't be able to create a new lecture if we are loading lecture data.
           if (!lectures) throw new Error('Unexpected server error.');
@@ -160,12 +162,22 @@ export function DataTable<TData, TValue>({
             }`,
             icon: 'success'
           });
+          setLectureLoading(false);
         } catch (error) {
+          setLectureLoading(false);
           setError(error as Error);
         }
       }
     };
-    return <Button onClick={() => handleClick()}>Create a new lecture</Button>;
+    return (
+      <Button disabled={lectureLoading} onClick={() => handleClick()}>
+        {lectureLoading ? (
+          <span>Creating...</span>
+        ) : (
+          <span>Create a new lecture</span>
+        )}
+      </Button>
+    );
   };
 
   return selectedCourseId ? (
