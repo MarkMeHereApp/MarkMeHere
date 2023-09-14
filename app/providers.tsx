@@ -11,10 +11,12 @@ type Props = {
 export const Providers = ({ children }: Props) => {
   return (
     <>
-      <TRPC_Provider>
-        <Toaster />
-        <SessionProvider>{children}</SessionProvider>
-      </TRPC_Provider>
+      <SessionProvider>
+        <TRPC_Provider>
+          <Toaster />
+          {children}
+        </TRPC_Provider>
+      </SessionProvider>
     </>
   );
 };

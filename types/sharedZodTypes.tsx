@@ -28,14 +28,6 @@ export type zSiteRolesType = z.infer<typeof zSiteRoles>;
 export const zCourseRoles = z.enum(['teacher', 'ta', 'student']);
 export type zCourseRolesType = z.infer<typeof zCourseRoles>;
 
-export const zCreateCourseErrorStatus = z.enum([
-  'available',
-  'alreadyEnrolled',
-  'duplicate',
-  'noEmailAccess',
-  'noEnrollmentAccess'
-]);
-
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 // ATTENDANCE TYPES
@@ -59,6 +51,14 @@ export const zAttendanceStatusIcons: Record<
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 // CREATE COURSE ERROR TYPES
+
+export const zCreateCourseErrorStatus = z.enum([
+  'available',
+  'alreadyEnrolled',
+  'duplicate',
+  'noEmailAccess',
+  'noEnrollmentAccess'
+]);
 
 export const zCreateCourseErrorDescriptions: Record<
   z.infer<typeof zCreateCourseErrorStatus>,

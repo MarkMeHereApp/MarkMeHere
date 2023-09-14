@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../components/ui/select';
-import { useCourseContext } from '@/app/course-context';
+import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { Separator } from '@/components/ui/separator';
 
