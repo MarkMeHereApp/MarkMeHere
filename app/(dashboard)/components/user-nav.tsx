@@ -49,7 +49,7 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           {' '}
-          <Link href="/dashboard/faculty/user-settings">User Settings</Link>
+          <Link href="/user-settings">User Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

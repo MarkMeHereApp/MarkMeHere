@@ -6,23 +6,23 @@ import { SidebarNav } from '@/components/general/sidebar-nav';
 const sidebarNavItems = [
   {
     title: 'Profile',
-    href: '/dashboard/faculty/user-settings'
+    href: '/user-settings'
   },
   {
     title: 'Account',
-    href: '/dashboard/faculty/user-settings/account'
+    href: '/user-settings/account'
   },
   {
     title: 'Appearance',
-    href: '/dashboard/faculty/user-settings/appearance'
+    href: '/user-settings/appearance'
   },
   {
     title: 'Notifications',
-    href: '/dashboard/faculty/user-settings/notifications'
+    href: '/user-settings/notifications'
   },
   {
     title: 'Display',
-    href: '/dashboard/faculty/user-settings/display'
+    href: '/user-settings/display'
   }
 ];
 

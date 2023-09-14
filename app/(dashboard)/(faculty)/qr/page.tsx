@@ -323,9 +323,7 @@ const QR = () => {
 
         <Card className="h-full w-[55%] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
-          <Button
-            onClick={() => router.push('/dashboard/faculty/take-attendance')}
-          >
+          <Button onClick={() => router.push('/take-attendance')}>
             <div>Finish</div>
           </Button>
         </Card>
