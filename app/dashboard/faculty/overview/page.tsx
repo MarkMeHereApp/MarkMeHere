@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import Stars from '@/components/background/stars';
 import { firaSansFont } from '@/utils/fonts';
 import { Icons } from '@/components/ui/icons';
-import { useLecturesContext } from '../lecture-context';
+import { useLecturesContext } from '../../../lecture-context';
 import { NoCourse } from './components/no-course';
 import { NoLecture } from './components/no-lecture';
 import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';

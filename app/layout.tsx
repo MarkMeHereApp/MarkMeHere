@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
 import CoursesContext from '@/app/course-context';
+import LecturesContext from '@/app/lecture-context';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
@@ -30,10 +31,7 @@ export default async function RootLayout({
   // it will be immediately available when the user navigates to the website.
   const courseMemberships = await prisma.courseMember.findMany({
     where: {
-      email: email,
-      role: {
-        in: ['professor', 'assistant']
-      }
+      email: email
     }
   });
 
@@ -71,7 +69,7 @@ export default async function RootLayout({
               userCourseMembers={courseMemberships}
               userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
             >
-              {children}
+              <LecturesContext>{children}</LecturesContext>
             </CoursesContext>
           </Providers>
         </ThemeProvider>

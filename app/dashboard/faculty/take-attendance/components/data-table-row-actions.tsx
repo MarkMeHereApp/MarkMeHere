@@ -9,7 +9,7 @@ import {
   CrossCircledIcon,
   CircleIcon
 } from '@radix-ui/react-icons';
-import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
+import { useLecturesContext } from '@/app/lecture-context';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
 

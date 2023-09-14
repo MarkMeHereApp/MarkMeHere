@@ -12,7 +12,7 @@ import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/course-context';
-import { useLecturesContext } from '@/app/dashboard/faculty/lecture-context';
+import { useLecturesContext } from '@/app/lecture-context';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';

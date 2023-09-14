@@ -20,7 +20,7 @@ import {
 import { formatString } from '@/utils/globalFunctions';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/course-context';
-import { useLecturesContext } from '../../lecture-context';
+import { useLecturesContext } from '../../../../lecture-context';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';
 import { AttendanceEntry } from '@prisma/client';
@@ -41,7 +41,8 @@ export function DataTableToolbar<TData>({
   const { lectures, setLectures } = useLecturesContext();
 
   const isFiltered = table.getState().columnFilters.length > 0;
-  const isSelected = table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
+  const isSelected =
+    table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
   const attendanceTypes = zAttendanceStatus.options.map((status) => ({
     label: ` ${formatString(status)}`,
@@ -51,15 +52,17 @@ export function DataTableToolbar<TData>({
 
   const getCurrentLecture = () => {
     if (lectures) {
-        return lectures.find((lecture) => {
-            return (
-            lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
-            );
-        });
+      return lectures.find((lecture) => {
+        return (
+          lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+        );
+      });
     }
   };
 
-  const [attendanceEntries, setAttendanceEntries] = React.useState<AttendanceEntry[]>(getCurrentLecture()?.attendanceEntries || []);
+  const [attendanceEntries, setAttendanceEntries] = React.useState<
+    AttendanceEntry[]
+  >(getCurrentLecture()?.attendanceEntries || []);
 
   const statuses: StatusType[] = attendanceTypes;
 
@@ -69,7 +72,8 @@ export function DataTableToolbar<TData>({
     icon: () => <CrossCircledIcon className="mr-1 text-destructive " />
   });
 
-  const createNewAttendanceEntryMutation = trpc.attendance.createManyAttendanceRecords.useMutation();
+  const createNewAttendanceEntryMutation =
+    trpc.attendance.createManyAttendanceRecords.useMutation();
 
   const handleCreateNewAttendanceEntries = async (status: string) => {
     const lecture = getCurrentLecture();
@@ -79,42 +83,50 @@ export function DataTableToolbar<TData>({
     ) as CourseMember[];
     const courseMemberIds = selectedCourseMembers.map((member) => member.id);
     if (lectures && lecture) {
-        try {
-            const updatedEntries = await createNewAttendanceEntryMutation.mutateAsync({
-                lectureId: lecture.id,
-                attendanceStatus: status,
-                courseMemberIds: courseMemberIds
-            });
-            
-            if (updatedEntries.updatedAttendanceEntries) {
-                setAttendanceEntries(() => updatedEntries.updatedAttendanceEntries);
-            
-                table.resetRowSelection();
-            
-            
-                // Update only the lecture that corresponds to the created entry
-                const updatedLectures = lectures.map((curLecture) =>
-                curLecture.id === lecture.id
-                    ? { ...curLecture, attendanceEntries: updatedEntries.updatedAttendanceEntries }
-                    : curLecture
-                );
-                setLectures(updatedLectures);
+      try {
+        const updatedEntries =
+          await createNewAttendanceEntryMutation.mutateAsync({
+            lectureId: lecture.id,
+            attendanceStatus: status,
+            courseMemberIds: courseMemberIds
+          });
 
-                const selectedNames = selectedCourseMembers.map((member) => member.name);
+        if (updatedEntries.updatedAttendanceEntries) {
+          setAttendanceEntries(() => updatedEntries.updatedAttendanceEntries);
 
-                toast({
-                    title: `Created ${selectedCourseMembers.length} New Attendance Entries!`,
-                    description: `Successfully marked ${selectedNames} ${status} for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
-                    icon: 'success'
-                });
-        };
-        } catch (error) {
-            throw error;
+          table.resetRowSelection();
+
+          // Update only the lecture that corresponds to the created entry
+          const updatedLectures = lectures.map((curLecture) =>
+            curLecture.id === lecture.id
+              ? {
+                  ...curLecture,
+                  attendanceEntries: updatedEntries.updatedAttendanceEntries
+                }
+              : curLecture
+          );
+          setLectures(updatedLectures);
+
+          const selectedNames = selectedCourseMembers.map(
+            (member) => member.name
+          );
+
+          toast({
+            title: `Created ${selectedCourseMembers.length} New Attendance Entries!`,
+            description: `Successfully marked ${selectedNames} ${status} for ${
+              selectedAttendanceDate.toISOString().split('T')[0]
+            }`,
+            icon: 'success'
+          });
         }
+      } catch (error) {
+        throw error;
+      }
     }
   };
 
-  const deleteAttendanceEntryMutation = trpc.attendance.deleteLectureAttendanceEntries.useMutation();
+  const deleteAttendanceEntryMutation =
+    trpc.attendance.deleteLectureAttendanceEntries.useMutation();
 
   const handleDeleteEntriesMutation = async () => {
     const lecture = getCurrentLecture();
@@ -124,38 +136,40 @@ export function DataTableToolbar<TData>({
     ) as CourseMember[];
     const courseMemberIds = selectedCourseMembers.map((member) => member.id);
     if (lectures && lecture) {
-        try {
-            await deleteAttendanceEntryMutation.mutateAsync({
-                lectureId: lecture.id,
-                courseMemberIds: courseMemberIds
-            });
-            
-            const updatedLecture = {
-                ...lecture,
-                attendanceEntries: lecture.attendanceEntries.filter(
-                  (entry) => !courseMemberIds.includes(entry.courseMemberId)
-                ),
-            };
-            table.resetRowSelection();
-            setAttendanceEntries(updatedLecture.attendanceEntries);
+      try {
+        await deleteAttendanceEntryMutation.mutateAsync({
+          lectureId: lecture.id,
+          courseMemberIds: courseMemberIds
+        });
 
-            const updatedLectures = lectures.map((curLecture) =>
-                curLecture.id === lecture.id
-                    ? updatedLecture 
-                    : curLecture
-            );
-            setLectures(updatedLectures);
-            
-            const selectedNames = selectedCourseMembers.map((member) => member.name);
+        const updatedLecture = {
+          ...lecture,
+          attendanceEntries: lecture.attendanceEntries.filter(
+            (entry) => !courseMemberIds.includes(entry.courseMemberId)
+          )
+        };
+        table.resetRowSelection();
+        setAttendanceEntries(updatedLecture.attendanceEntries);
 
-            toast({
-                title: `Deleted ${selectedCourseMembers.length} Attendance Entries!`,
-                description: `Successfully marked ${selectedNames} absent for ${selectedAttendanceDate.toISOString().split('T')[0]}`,
-                icon: 'success'
-             });
-        } catch (error) {
-            throw error;
-        }
+        const updatedLectures = lectures.map((curLecture) =>
+          curLecture.id === lecture.id ? updatedLecture : curLecture
+        );
+        setLectures(updatedLectures);
+
+        const selectedNames = selectedCourseMembers.map(
+          (member) => member.name
+        );
+
+        toast({
+          title: `Deleted ${selectedCourseMembers.length} Attendance Entries!`,
+          description: `Successfully marked ${selectedNames} absent for ${
+            selectedAttendanceDate.toISOString().split('T')[0]
+          }`,
+          icon: 'success'
+        });
+      } catch (error) {
+        throw error;
+      }
     }
   };
 
@@ -189,12 +203,24 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
         {isSelected && (
-            <>
-                <AttendanceButtons status="Mark Present" onClick={() => handleCreateNewAttendanceEntries('here')} />
-                <AttendanceButtons status="Mark Late" onClick={() => handleCreateNewAttendanceEntries('late')} />
-                <AttendanceButtons status="Mark Excused" onClick={() => handleCreateNewAttendanceEntries('excused')} />
-                <AttendanceButtons status="Mark Absent" onClick={() => handleDeleteEntriesMutation()} />
-            </>
+          <>
+            <AttendanceButtons
+              status="Mark Present"
+              onClick={() => handleCreateNewAttendanceEntries('here')}
+            />
+            <AttendanceButtons
+              status="Mark Late"
+              onClick={() => handleCreateNewAttendanceEntries('late')}
+            />
+            <AttendanceButtons
+              status="Mark Excused"
+              onClick={() => handleCreateNewAttendanceEntries('excused')}
+            />
+            <AttendanceButtons
+              status="Mark Absent"
+              onClick={() => handleDeleteEntriesMutation()}
+            />
+          </>
         )}
       </div>
       <CalendarDateRangePicker />
