@@ -47,9 +47,9 @@ type CourseFormSchema = z.infer<typeof CreateCourseFormSchema>;
 
 const GenerateCourseForm = () => {
   const courseForm: CourseFormSchema = {
-    courseCode:
+    courseCode: faker.string.uuid(),
+    name:
       'RandomlyGeneratedCourse:' + faker.string.sample({ min: 5, max: 100 }),
-    name: faker.string.sample({ min: 5, max: 20 }),
     lmsType: 'none',
     autoEnroll: true
   };
