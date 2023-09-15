@@ -47,7 +47,8 @@ type CourseFormSchema = z.infer<typeof CreateCourseFormSchema>;
 
 const GenerateCourseForm = () => {
   const courseForm: CourseFormSchema = {
-    courseCode: faker.string.uuid(),
+    courseCode:
+      'RandomlyGeneratedCourse:' + faker.string.sample({ min: 5, max: 100 }),
     name: faker.string.sample({ min: 5, max: 20 }),
     lmsType: 'none',
     autoEnroll: true
@@ -71,8 +72,7 @@ export default function GenerateCourseAsProfessor() {
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const {
-    userCourses,
-    selectedCourseId,
+    courseMembersOfSelectedCourse,
     setUserCourses,
     setUserCourseMembers,
     setSelectedCourseId,
@@ -83,8 +83,13 @@ export default function GenerateCourseAsProfessor() {
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
   const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
-
+  const createNewAttendanceEntryMutation =
+    trpc.attendance.createManyAttendanceRecords.useMutation();
   async function handleClick() {
+    toast({
+      title: 'Generating Populated Course, wait until success toast!',
+      icon: 'success'
+    });
     setLoading(true);
     const sessionData = session.data;
     if (!sessionData) {
@@ -128,25 +133,7 @@ export default function GenerateCourseAsProfessor() {
 
       setUserCourses((userCourses) => [...(userCourses || []), newCourse]);
       setSelectedCourseId(newCourse.id);
-
-      if (newEnrollment === null) {
-        toast({
-          title: `${newCourse.name} Added Successfully!`,
-          description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
-          icon: 'success'
-        });
-      } else {
-        setUserCourseMembers((prevMembers) => [
-          ...(prevMembers || []),
-          newEnrollment
-        ]);
-        toast({
-          title: `${newCourse.name} Added Successfully!`,
-          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
-          icon: 'success'
-        });
-      }
-
+      setLectures([]);
       // Populated with students
       const generateCourseMembers = async (listStudents: any) => {
         const newMembers = await createManyCourseMembers.mutateAsync({
@@ -163,6 +150,7 @@ export default function GenerateCourseAsProfessor() {
       }
       const resStudents = await generateCourseMembers(listStudents);
       setCourseMembersOfSelectedCourse(resStudents.allCourseMembersOfClass);
+      toast({ title: 'Created ' + numStudents + ' New Students!' });
 
       // Populate with random lecture data
       function generateUniqueRandomDate(
@@ -195,18 +183,58 @@ export default function GenerateCourseAsProfessor() {
         randomDate.setHours(0, 0, 0, 0);
         uniqueDates.push(randomDate);
       }
+      toast({ title: 'Creating ' + uniqueDates.length + ' New Lectures!' });
+
       for (const currentLectureDate of uniqueDates) {
         const newLecture = await createNewLectureMutation.mutateAsync({
           courseId: newCourse.id,
           lectureDate: currentLectureDate
         });
         if (!lectures) throw new Error('Unexpected server error.');
+
+        // populate with random attendance data
+        const numUpdatedStudents = faker.number.int({
+          min: 100,
+          max: numStudents
+        });
+
+        // Shuffle the array
+        const shuffledMembers = [...resStudents.allCourseMembersOfClass];
+        for (let i = shuffledMembers.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffledMembers[i], shuffledMembers[j]] = [
+            shuffledMembers[j],
+            shuffledMembers[i]
+          ];
+        }
+
+        // Take the first numUpdatedStudents members
+        const courseMemberIds = shuffledMembers
+          .slice(0, numUpdatedStudents)
+          .map((member) => member.id);
+        const newAttendanceEntries =
+          await createNewAttendanceEntryMutation.mutateAsync({
+            lectureId: newLecture.newLecture.id,
+            attendanceStatus: 'here',
+            courseMemberIds: courseMemberIds
+          });
         const newLectures = [
           ...lectures,
-          { attendanceEntries: [], ...newLecture.newLecture }
+          {
+            attendanceEntries: newAttendanceEntries.updatedAttendanceEntries,
+            ...newLecture.newLecture
+          }
         ];
         setLectures(newLectures);
+        toast({
+          title: `Created ${numUpdatedStudents} New Attendance Entries for lecutre ${currentLectureDate}!`
+        });
       }
+      toast({
+        title: 'Successfully Generated New Course!',
+        icon: 'success'
+      });
+      window.location.reload();
       setLoading(false);
       return;
     } catch (error) {
