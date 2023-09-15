@@ -1,6 +1,6 @@
 // pages/hello.tsx
 
-const AdminPage: React.FC = () => {
+const ManageCourses: React.FC = () => {
   return (
     <div>
       <h1>This is the admin page!</h1>
@@ -8,4 +8,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default ManageCourses;

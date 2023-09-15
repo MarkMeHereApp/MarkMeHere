@@ -47,19 +47,31 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
-      <MainNavBarCustomLink href="/overview" displayText="Dashboard" />
+      <MainNavBarCustomLink href="/overview" displayText="Overview" />
       {selectedCourseId ? (
         <>
           <MainNavBarCustomLink
             href="/take-attendance"
-            displayText="Mark Attendance Status"
+            displayText="Mark Attendance"
           />
           <MainNavBarCustomLink
             href="/manage-course-members"
-            displayText="Manage Course Members"
+            displayText="Course Members"
           />
         </>
       ) : null}
+      <MainNavBarCustomLink
+        href="/manage-site-users"
+        displayText="Site Users"
+      />
+
+      <MainNavBarCustomLink href="/manage-courses" displayText="Courses" />
+
+      <MainNavBarCustomLink
+        href="/admin-settings"
+        displayText="Admin Settings"
+      />
+
       <MainNavBarCustomLink
         href="/testing-playground"
         displayText="Testing Playground"
