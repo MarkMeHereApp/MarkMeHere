@@ -8,9 +8,7 @@ interface ErrorMessageProps {
   dateMarked: Date;
 }
 
-const MarkAttendanceSuccess: React.FC<ErrorMessageProps> = ({
-  dateMarked
-}) => {
+const MarkAttendanceSuccess: React.FC<ErrorMessageProps> = ({ dateMarked }) => {
   return (
     <Card className="w-[450px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
       <CardContent>

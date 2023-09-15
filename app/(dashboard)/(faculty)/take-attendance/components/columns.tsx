@@ -82,9 +82,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         : undefined;
 
       if (!dateMarked) {
-        return (
-            <div className="flex w-full">No Data</div>
-        );
+        return <div className="flex w-full">No Data</div>;
       }
       const formattedDate = dateMarked.toLocaleDateString();
       return <div className="flex w-full">{formattedDate}</div>;
@@ -149,10 +147,8 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader className="" column={column} title="Mark Status" />
     ),
-    cell: ({ row }) => ( 
-      <DataTableRowActions row={row} /> 
-    ),
+    cell: ({ row }) => <DataTableRowActions row={row} />,
     enableSorting: false,
-    enableHiding: true,
+    enableHiding: true
   }
 ];

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/context-course';
 import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
-import { Icons } from '@/components/ui/icons';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 
 const ManageCourseMembers = () => {

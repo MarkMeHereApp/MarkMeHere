@@ -30,7 +30,6 @@ import {
 } from '../../components/ui/select';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
-import { Separator } from '@/components/ui/separator';
 
 const EnrollCourseMemberButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -75,7 +74,7 @@ const EnrollCourseMemberButton = () => {
 
   async function onSubmit(data: CourseMemberFormProps) {
     const enrollCourseMember = async () => {
-      let errorMessage = 'Failed to enroll course member';
+      const errorMessage = 'Failed to enroll course member';
 
       try {
         if (!selectedCourseId) throw new Error('No selected course');

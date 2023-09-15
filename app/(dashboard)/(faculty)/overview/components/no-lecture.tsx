@@ -1,4 +1,3 @@
-import React from 'react';
 import { firaSansFont } from '@/utils/fonts';
 import { Icons } from '@/components/ui/icons';
 

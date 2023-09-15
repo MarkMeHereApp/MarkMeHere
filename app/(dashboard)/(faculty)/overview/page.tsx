@@ -3,14 +3,9 @@
 import { useCourseContext } from '@/app/context-course';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import Stars from '@/components/background/stars';
-import { firaSansFont } from '@/utils/fonts';
-import { Icons } from '@/components/ui/icons';
 import { useLecturesContext } from '../../../context-lecture';
 import { NoCourse } from './components/no-course';
 import { NoLecture } from './components/no-lecture';
-import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
-import isDevMode from '@/utils/isDevMode';
 
 const OverviewAnalytics = dynamic(() => import('./analytics'));
 

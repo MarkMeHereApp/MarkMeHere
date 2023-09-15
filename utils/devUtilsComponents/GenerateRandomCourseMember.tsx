@@ -5,8 +5,6 @@ import { Button } from 'components/ui/button';
 import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { trpc } from '@/app/_trpc/client';
-import Loading from '../../components/general/loading';
-import { zCourseMember } from '@/server/routes/courseMember';
 
 const createRandomCourseMember = (selectedCourseId: string) =>
   ({

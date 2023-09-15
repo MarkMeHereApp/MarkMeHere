@@ -1,11 +1,9 @@
-import GithubProvider from 'next-auth/providers/github';
 import ZoomProvider from 'next-auth/providers/zoom';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
-import isDevMode from '@/utils/isDevMode';
 
 function customPrismaAdapter(prisma: PrismaClient) {
   return {

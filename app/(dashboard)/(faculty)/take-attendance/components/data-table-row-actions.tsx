@@ -131,7 +131,7 @@ export function DataTableRowActions<TData>({
       <div
         title="Mark Absent"
         onClick={() => {
-            handleCreateNewAttendanceEntry('absent');
+          handleCreateNewAttendanceEntry('absent');
         }}
       >
         <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
