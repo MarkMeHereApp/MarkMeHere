@@ -7,7 +7,7 @@ import { StartScanningButton } from './components/generate-qr-code';
 import { useCourseContext } from '@/app/context-course';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 import { useLecturesContext } from '@/app/context-lecture';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { toast } from 'components/ui/use-toast';

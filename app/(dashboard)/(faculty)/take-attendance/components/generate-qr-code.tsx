@@ -23,8 +23,6 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip';
 
-import { Card, CardDescription } from '@/components/ui/card';
-
 export function StartScanningButton() {
   const router = useRouter();
 
