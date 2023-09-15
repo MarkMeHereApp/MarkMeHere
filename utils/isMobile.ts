@@ -6,7 +6,7 @@ const isMobile = () => {
       return window.innerWidth;
     }
     // Return a default value if window is not defined (for SSR)
-    return 0;
+    return 769;
   });
 
   useEffect(() => {

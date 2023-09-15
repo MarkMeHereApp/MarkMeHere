@@ -10,7 +10,8 @@ import { TRPCClientError } from '@trpc/client';
 import { Button } from '@/components/ui/button';
 import { faker } from '@faker-js/faker';
 import { CourseMember } from '@prisma/client';
-
+import { useLecturesContext } from '@/app/context-lecture';
+import { Lecture, AttendanceEntry } from '@prisma/client';
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -76,33 +77,11 @@ export default function GenerateCourseAsProfessor() {
     setSelectedCourseId,
     setCourseMembersOfSelectedCourse
   } = useCourseContext();
+  const { setLectures, lectures } = useLecturesContext();
   const [error, setError] = useState<Error | null>(null);
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
-  if (error) {
-    setLoading(false);
-    if (
-      error instanceof TRPCClientError &&
-      error.shape?.data?.isUniqueConstraintError
-    ) {
-      toastError(error.message);
-      setError(null);
-    } else {
-      throw error;
-    }
-  }
+  const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
 
   async function handleClick() {
     setLoading(true);
@@ -184,8 +163,47 @@ export default function GenerateCourseAsProfessor() {
       const resStudents = await generateCourseMembers(listStudents);
       setCourseMembersOfSelectedCourse(resStudents.allCourseMembersOfClass);
 
-      // Populate with ranadom lecture data
+      // Populate with random lecture data
+      function generateUniqueRandomDate(
+        existingDates: Date[],
+        minDate: Date,
+        maxDate: Date
+      ) {
+        let randomDate;
+        do {
+          randomDate = faker.date.between({ from: minDate, to: maxDate });
+        } while (existingDates.includes(randomDate));
 
+        return randomDate;
+      }
+      const currentDate = new Date();
+      const pastMonth = new Date(currentDate);
+      pastMonth.setMonth(currentDate.getMonth() - 1);
+      const nextMonth = new Date(currentDate);
+      nextMonth.setMonth(currentDate.getMonth() + 1);
+      const numberOfDatesToGenerate = faker.number.int({ min: 5, max: 10 });
+      const uniqueDates = [];
+      uniqueDates.push(currentDate);
+      while (uniqueDates.length < numberOfDatesToGenerate) {
+        const randomDate = generateUniqueRandomDate(
+          uniqueDates,
+          pastMonth,
+          nextMonth
+        );
+        uniqueDates.push(randomDate);
+      }
+      const newLectures: ({
+        attendanceEntries: AttendanceEntry[];
+      } & Lecture)[] = [];
+      for (const currentLectureDate of uniqueDates) {
+        const newLecture = await createNewLectureMutation.mutateAsync({
+          courseId: newCourse.id,
+          lectureDate: currentLectureDate
+        });
+        newLectures.push({ attendanceEntries: [], ...newLecture.newLecture });
+      }
+      setLectures(newLectures);
+      console.log(lectures);
       setLoading(false);
       return;
     } catch (error) {
