@@ -12,6 +12,7 @@ import { faker } from '@faker-js/faker';
 import { CourseMember } from '@prisma/client';
 import { useLecturesContext } from '@/app/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
+import { setHours } from 'date-fns';
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -177,6 +178,7 @@ export default function GenerateCourseAsProfessor() {
         return randomDate;
       }
       const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
       const pastMonth = new Date(currentDate);
       pastMonth.setMonth(currentDate.getMonth() - 1);
       const nextMonth = new Date(currentDate);
@@ -190,20 +192,21 @@ export default function GenerateCourseAsProfessor() {
           pastMonth,
           nextMonth
         );
+        randomDate.setHours(0, 0, 0, 0);
         uniqueDates.push(randomDate);
       }
-      const newLectures: ({
-        attendanceEntries: AttendanceEntry[];
-      } & Lecture)[] = [];
       for (const currentLectureDate of uniqueDates) {
         const newLecture = await createNewLectureMutation.mutateAsync({
           courseId: newCourse.id,
           lectureDate: currentLectureDate
         });
-        newLectures.push({ attendanceEntries: [], ...newLecture.newLecture });
+        if (!lectures) throw new Error('Unexpected server error.');
+        const newLectures = [
+          ...lectures,
+          { attendanceEntries: [], ...newLecture.newLecture }
+        ];
+        setLectures(newLectures);
       }
-      setLectures(newLectures);
-      console.log(lectures);
       setLoading(false);
       return;
     } catch (error) {
