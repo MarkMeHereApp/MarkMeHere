@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import isDevMode from '../isDevMode';
+import GenerateCourseAsProfessor from './GeneratePopulatedComponents/GenerateCourseAsProfessor';
 
 const EnrollCourseMemberButton = lazy(
   () => import('./EnrollCourseMemberButton')
@@ -28,6 +29,7 @@ const CRUDButtons = () => {
           <GenerateRandomCourseMember />
           <ShowCurrentCourseMembers />
           <DeleteAllStudentsButton />
+          <GenerateCourseAsProfessor />
           <NukeDatabaseButton />
         </div>
       </div>

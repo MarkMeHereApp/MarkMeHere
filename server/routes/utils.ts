@@ -6,6 +6,7 @@ export const utilsRouter = router({
     // Delete data from tables with foreign key relationships first
     await prisma.$executeRaw`DELETE FROM "AttendanceEntry"`;
     await prisma.$executeRaw`DELETE FROM "CourseMember"`;
+    await prisma.$executeRaw`DELETE FROM "qrcode"`;
     await prisma.$executeRaw`DELETE FROM "Lecture"`;
 
     // Now you can delete data from other tables
@@ -13,7 +14,6 @@ export const utilsRouter = router({
     await prisma.$executeRaw`DELETE FROM "Account"`;
     await prisma.$executeRaw`DELETE FROM "VerificationToken"`;
     await prisma.$executeRaw`DELETE FROM "Course"`;
-    await prisma.$executeRaw`DELETE FROM "qrcode"`;
 
     return; // Return void when the database is deleted
   })

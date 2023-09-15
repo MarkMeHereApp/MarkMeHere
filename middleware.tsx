@@ -2,7 +2,6 @@
 
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
 
 // Applies next-auth only to matches routes, this can be regex
 // Currently there are no pages that shouldn't be protected by next-auth so we match all pages.
