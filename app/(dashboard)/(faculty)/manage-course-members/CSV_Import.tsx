@@ -17,6 +17,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { CSV_Preview } from './CSV_Preview';
+import { z, ZodError } from 'zod';
 const CSV_Import = () => {
   const data = useCourseContext();
   const createManyCourseMembers =
@@ -39,6 +40,12 @@ const CSV_Import = () => {
     }
   };
 
+  const CSVSchema = z.object({
+    ID: z.string(),
+    name: z.string().optional(),
+    email: z.string()
+  });
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
 
@@ -49,10 +56,19 @@ const CSV_Import = () => {
         complete: (results) => {
           const columnsArray: string[][] = [];
           const valuesArray: string[][] = [];
-
           results.data.forEach((d) => {
             columnsArray.push(Object.keys(d));
             valuesArray.push(Object.values(d));
+
+            const rowValidation = CSVSchema.safeParse(d);
+
+            if (rowValidation.success) {
+              // proceed
+              console.log('valid');
+            } else {
+              // handle error
+              console.error('Invalid row:', rowValidation.error);
+            }
           });
 
           setTableColumns(columnsArray[0]);
