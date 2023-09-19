@@ -1,4 +1,4 @@
-import MainBar from '@/app/(dashboard)/(student)/components/main-bar';
+import MainBar from '@/app/(dashboard)/components/main-bar';
 
 export default async function DashboardLayout({
   children
