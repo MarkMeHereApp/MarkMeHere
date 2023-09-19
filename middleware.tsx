@@ -1,73 +1,68 @@
-// Without a defined matcher, this one line applies next-auth to the entire project.
-
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
-// Applies next-auth only to matches routes, this can be regex
-// Currently there are no pages that shouldn't be protected by next-auth so we match all pages.
-// Here is the Next.Js documentation. https://nextjs.org/docs/app/building-your-application/routing/middleware
+const roleToRoutes: Record<string, string[]> = {
+  ADMIN: ['/admin'],
+  FACULTY: [
+    '/overview',
+    '/qr',
+    '/take-attendance',
+    '/manage-course-members',
+    '/testing-playground',
+    '/user-settings',
+    '/api/trpc/course.createCourse',
+    '/api/trpc/lecture.CreateLecture',
+    '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
+    '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
+    '/api/trpc/courseMember.getCourseMembersOfCourse',
+    '/api/trpc/courseMember.createCourseMember',
+    '/api/trpc/courseMember.deleteAllStudents',
+    '/api/trpc/canvas.getCanvasCourses',
+    '/api/trpc/qr.CreateNewQRCode'
+  ],
+  STUDENT: ['/student', '/markAttendance']
+};
 
 //Redirect to these routes based on role if unauthorized
-
-// const roleToRoute: Record<string, string> = {
-//   ADMIN: '/dashboard/admin',
-//   FACULTY: '/dashboard/faculty/overview',
-//   STUDENT: '/dashboard/student'
-// };
+const defaultRoutes: Record<string, string> = {
+  ADMIN: '/admin',
+  FACULTY: '/overview',
+  STUDENT: '/student'
+};
 
 export default withAuth(
-  // `withAuth` augments your `Request` with the user's token.
-  //If this returns true the user is allowed to access the admin dahsboard
-  //function middleware(req) {
-  // console.log(req.nextauth.token);
-  // console.log(req.nextUrl);
-  // const role = req.nextauth.token?.role as string;
-  // const path = req.nextUrl.pathname;
+  /* 
+  Grab all allowed routes based on user role
+  check if request route matches an allowed route
+  If the route is not allowed redirect
+  */
+  // function middleware(req) {
+  //   const role = req.nextauth.token?.role as string;
+  //   const route = req.nextUrl.pathname;
+  //   const allowedRoutes = roleToRoutes[role];
 
-  //If user is not an admin redirect them
-  // if (path.startsWith('/dashboard/admin') && role !== 'ADMIN') {
-  //   //Redirect user back to the home path specified by their role
-  //   const url = req.nextUrl.clone();
-  //   url.pathname = roleToRoute[role];
-  //   return NextResponse.redirect(url);
-  // }
-
-  //If user is not a faculty member redirect them
-  // if (path.startsWith('/dashboard/faculty') && role !== 'FACULTY') {
-  //   const url = req.nextUrl.clone();
-  //   url.pathname = roleToRoute[role];
-  //   return NextResponse.redirect(url);
-  // }
-
-  //If user is not a student redirect them
-  // if (path.startsWith('/dashboard/student') && role !== 'STUDENT') {
-  //   const url = req.nextUrl.clone();
-  //   url.pathname = roleToRoute[role];
-  //   return NextResponse.redirect(url);
-  // }
-
-  //return NextResponse.redirect(req.nextUrl);
-
-  // return NextResponse.json(
-  //   {
-  //     message: 'User granted access through middleware'
-  //   },
-  //   {
-  //     status: 200
+  //   if (!allowedRoutes.includes(route)) {
+  //     const redirectPath = defaultRoutes[role];
+  //     return NextResponse.redirect(new URL(redirectPath, req.url));
   //   }
-  // );
   // },
   {
-    //This runs first. If the user has a valid JWT this returns true
+    /*
+    This runs first. 
+    If the user has a valid JWT and role then go to middleware
+    */
     callbacks: {
-      authorized: ({ token }) => !!token
+      authorized: ({ token }) =>
+        !!token &&
+        (token.role === 'STUDENT' ||
+          token.role === 'FACULTY' ||
+          token.role === 'ADMIN')
     }
   }
 );
 
 //Our middleware needs to run over all routes besides signin/signup
-// export const config = { matcher: ['/dashboard/:path*'] };
 export const config = {
   // Matches the entire project except for the routes between the | characters.
   matcher: '/((?!api/submit|signin|_next/static|_next/image|favicon.ico).*)'
