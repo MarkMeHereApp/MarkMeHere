@@ -2,8 +2,17 @@ import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
+import { Context } from './context';
 
-export const trpc = initTRPC.create({
+//Lets make middleware functions as such:
+
+//hasCourseAccess ,these routes use courseIds to change the database so we will
+//authenticate the user against the courseId
+
+//hasLectureAccess these routes use lectureIds to change the database so we will
+//authenticate the user against the lectureId
+
+export const trpc = initTRPC.context<Context>().create({
   transformer: superjson,
   errorFormatter(opts) {
     const { shape, error } = opts;
@@ -22,6 +31,20 @@ export const trpc = initTRPC.create({
     };
   }
 });
+
+// const middleware = trpc.middleware;
+
+// const isProfessor = middleware(async (opts) => {
+//   const { ctx } = opts;
+//   if (!ctx.user?.isAdmin) {
+//     throw new TRPCError({ code: 'UNAUTHORIZED' });
+//   }
+//   return opts.next({
+//     ctx: {
+//       user: ctx.user,
+//     },
+//   });
+// });
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
