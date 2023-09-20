@@ -106,7 +106,7 @@ const CSV_Import = () => {
         return [header, ...filteredLines].join('\n');
       },
       complete: async (results) => {
-        const columnsToKeep = ['Student', 'ID', 'SIS Login ID']; // Replace with the column names you want to keep
+        const columnsToKeep = ['Student', 'ID', 'SIS Login ID'];
 
         const filteredData = results.data.map((row) => {
           const filteredRow: CSVData = {};
@@ -117,7 +117,6 @@ const CSV_Import = () => {
           }
           return filteredRow;
         });
-        console.log(filteredData);
 
         setIsValidating(true);
         await validateCSV(columnsToKeep, filteredData);
@@ -234,7 +233,7 @@ const CSV_Import = () => {
       <Dialog open={isValidating}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">
-            <p style={{ color: 'green' }}>{validationMessage}</p>
+            <p>{validationMessage}</p>
             <Progress value={validationProgress} />{' '}
           </div>
         </DialogContent>
