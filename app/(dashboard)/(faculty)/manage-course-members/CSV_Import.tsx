@@ -66,7 +66,6 @@ const CSV_Import = () => {
 
       for (const column of requiredColumns) {
         // Check if any row in the values array is missing the required column
-
         await delay(1000);
         setValidationMessage('Checking for required columns...');
         if (!values.every((row) => column in row)) {
@@ -99,7 +98,7 @@ const CSV_Import = () => {
 
       await delay(1000);
       setValidationProgress(75);
-      await delay(3000);
+
       setValidationProgress(100);
       setVlidationColor('green');
       setValidationMessage('Validation completed!');
@@ -146,7 +145,6 @@ const CSV_Import = () => {
           }
           return filteredRow;
         });
-        console.log(filteredData);
 
         setIsValidating(true);
         await validateCSV(columnsToKeep, filteredData);
@@ -263,11 +261,33 @@ const CSV_Import = () => {
       <Dialog open={isValidating}>
         <DialogContent className="sm:max-w-[425px]" onClose={closeDialog}>
           <div className="text-center">
-            <p style={{ color: validationColor }}>{validationMessage}</p>
-            <Progress
-              style={{ color: validationColor }}
-              value={validationProgress}
-            />{' '}
+            <p
+              style={{
+                color: validationColor,
+                fontSize: '15px',
+                fontWeight: 'bold'
+              }}
+            >
+              {validationMessage}
+            </p>
+            <div style={{ width: '80%', margin: '0 auto' }}>
+              <Progress
+                style={{
+                  backgroundColor: '#ddd',
+                  height: '20px',
+                  borderRadius: '10px'
+                }}
+                value={validationProgress}
+              />
+              <div
+                style={{
+                  width: `${validationProgress}%`,
+                  backgroundColor: validationColor,
+                  height: '100%',
+                  borderRadius: '10px'
+                }}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
