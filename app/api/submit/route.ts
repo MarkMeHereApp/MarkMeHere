@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
+import { createContext } from '@/server/context';
+import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
+import { getToken } from 'next-auth/jwt';
 //import { cookies } from 'next/headers';
 
 /*
@@ -52,6 +55,13 @@ cookies().set({
 
 */
 
+/* Since we cant use NextRequest object in our context method we should
+just use prisma directly in this api route. We dont need the context here
+anyways because anyone should be able to access this route
+
+Or we can put these routes in a different router that dont use context
+*/
+
 export async function GET(req: NextRequest) {
   /*
   Initialize TRPC caller (needed to call TRPC routes serverside).
@@ -61,53 +71,60 @@ export async function GET(req: NextRequest) {
   (Attendance token used to authenticate user attendance even after QR code expires)
   3. Redirect to markAttendance page with URL parameters
   */
-  const caller = appRouter.createCaller({});
+
+  //const caller = appRouter.createCaller();
   const params = req.nextUrl.searchParams;
 
   const qr: string = params.get('qr') ?? '';
 
-  try {
-    //In the future make sure qr code we are retrieving is before expiration date
-    const qrResult = await caller.recordQRAttendance.ValidateQRCode({
-      qr: qr
-    });
+  // try {
+  //   //In the future make sure qr code we are retrieving is before expiration date
+  //   const qrResult = await caller.recordQRAttendance.ValidateQRCode({
+  //     qr: qr
+  //   });
 
-    if (!!qrResult.success) {
-      const qrRow = qrResult.qrRow;
-      const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
-        lectureId: qrRow?.lectureId || ''
+  //   if (!!qrResult.success) {
+  //     const qrRow = qrResult.qrRow;
+  //     const { token } = await caller.recordQRAttendance.CreateAttendanceToken({
+  //       lectureId: qrRow?.lectureId || ''
+  //     });
+
+  //     const queryParams = new URLSearchParams();
+  //     queryParams.append('attendanceTokenId', token);
+  //     queryParams.append('lectureId', qrRow?.lectureId ?? '');
+  //     queryParams.append('courseId', qrRow?.courseId ?? '');
+
+  //     return NextResponse.redirect(
+  //       new URL(
+  //         `/dashboard/student/markAttendance?${queryParams.toString()}`,
+  //         req.url
+  //       )
+  //     );
+  //   } else {
+  //     return NextResponse.json({
+  //       error: { message: `Invalid QR code, lectureId, or courseId` }
+  //     });
+  //   }
+  // } catch (cause) {
+  //   // If this a tRPC error, we can extract additional information.
+  //   if (cause instanceof TRPCError) {
+  //     // We can get the specific HTTP status code coming from tRPC (e.g. 404 for `NOT_FOUND`).
+  //     const httpStatusCode = getHTTPStatusCodeFromError(cause);
+
+  //     return NextResponse.json({ error: { message: cause.message } });
+  //   }
+
+  //   // This is not a tRPC error, so we don't have specific information.
+  //   return NextResponse.json({
+  //     error: {
+  //       message: `Error while validating QR code or creating attendance token`
+  //     }
+  //   });
+  // }
+
+  return NextResponse.json({
+        error: {
+          message: `Error while validating QR code or creating attendance token`
+        }
       });
-
-      const queryParams = new URLSearchParams();
-      queryParams.append('attendanceTokenId', token);
-      queryParams.append('lectureId', qrRow?.lectureId ?? '');
-      queryParams.append('courseId', qrRow?.courseId ?? '');
-
-      return NextResponse.redirect(
-        new URL(
-          `/dashboard/student/markAttendance?${queryParams.toString()}`,
-          req.url
-        )
-      );
-    } else {
-      return NextResponse.json({
-        error: { message: `Invalid QR code, lectureId, or courseId` }
-      });
-    }
-  } catch (cause) {
-    // If this a tRPC error, we can extract additional information.
-    if (cause instanceof TRPCError) {
-      // We can get the specific HTTP status code coming from tRPC (e.g. 404 for `NOT_FOUND`).
-      const httpStatusCode = getHTTPStatusCodeFromError(cause);
-
-      return NextResponse.json({ error: { message: cause.message } });
-    }
-
-    // This is not a tRPC error, so we don't have specific information.
-    return NextResponse.json({
-      error: {
-        message: `Error while validating QR code or creating attendance token`
-      }
-    });
-  }
 }
