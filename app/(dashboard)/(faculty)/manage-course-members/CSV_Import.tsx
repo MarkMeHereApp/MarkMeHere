@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -18,7 +18,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { CSV_Preview } from './CSV_Preview';
-import { z, ZodError } from 'zod';
 
 const CSV_Import = () => {
   const data = useCourseContext();
@@ -29,6 +28,7 @@ const CSV_Import = () => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
+  const [validationColor, setVlidationColor] = useState('');
   const { toast } = useToast();
 
   const [validationProgress, setValidationProgress] = useState(0);
@@ -43,37 +43,65 @@ const CSV_Import = () => {
   const closeDialog = () => {
     if (fileInputRef.current) {
       setIsFileUploaded(false);
+      setIsValidating(false);
       fileInputRef.current.value = '';
     }
   };
 
-  const CSVSchema = z.object({
-    ID: z.string(),
-    Student: z.string().optional(),
-    email: z.string().optional()
-  });
-
   const validateCSV = async (headers: string[], values: CSVData[]) => {
     try {
+      setVlidationColor('');
+      setValidationProgress(0);
       setValidationMessage('Validating CSV structure...');
-      setValidationProgress(25);
       await delay(1000);
-      setValidationMessage('Checking for required columns...');
+      setValidationProgress(25);
+      const firstObjectKeys = Object.keys(values[0]);
+      if (JSON.stringify(firstObjectKeys) !== JSON.stringify(headers)) {
+        throw new Error(`CSV file is invalid, keys do not match headers.`);
+      }
+
       const requiredColumns = ['Student', 'ID'];
+      const missingColumns: string[] = [];
+      const missingValues: string[] = [];
+
       for (const column of requiredColumns) {
-        if (!headers.includes(column)) {
-          throw Error(
-            'CSV file is invalid, make sure Student and ID are included in the header.'
-          );
+        // Check if any row in the values array is missing the required column
+
+        await delay(1000);
+        setValidationMessage('Checking for required columns...');
+        if (!values.every((row) => column in row)) {
+          missingColumns.push(column);
+        }
+        await delay(1000);
+        setValidationProgress(50);
+        setValidationMessage('Checking for required fields...');
+        // Check if any row in the values array has a null or empty value for the required column
+        if (
+          !values.every((row) => row[column] !== null && row[column] !== '')
+        ) {
+          missingValues.push(column);
         }
       }
-      await delay(1000);
-      setValidationProgress(50);
-      setValidationMessage('Checking for required fields...');
+
+      if (missingColumns.length > 0) {
+        throw new Error(
+          `CSV file is invalid, missing columns: ${missingColumns.join(', ')}`
+        );
+      }
+
+      if (missingValues.length > 0) {
+        throw new Error(
+          `CSV file is invalid, missing values for columns: ${missingValues.join(
+            ', '
+          )}`
+        );
+      }
+
       await delay(1000);
       setValidationProgress(75);
       await delay(3000);
       setValidationProgress(100);
+      setVlidationColor('green');
       setValidationMessage('Validation completed!');
       await delay(3000);
     } catch (error) {
@@ -81,10 +109,11 @@ const CSV_Import = () => {
         variant: 'destructive',
         title: 'Validation failed. Try Again. '
       });
+      setVlidationColor('red');
       setValidationProgress(0);
-      setValidationMessage('CSV is not valid, please try again!');
-      await delay(3000);
-      setIsValidating(false);
+      setValidationMessage('' + error);
+      await delay(10000);
+      closeDialog();
     }
   };
   const delay = (ms: number) =>
@@ -100,7 +129,7 @@ const CSV_Import = () => {
         const header = lines.shift();
         const filteredLines = lines.filter((line) => {
           const columns = line.split(',');
-          const idColumn = columns[2];
+          const idColumn = columns[3];
           return idColumn !== '';
         });
         return [header, ...filteredLines].join('\n');
@@ -117,6 +146,7 @@ const CSV_Import = () => {
           }
           return filteredRow;
         });
+        console.log(filteredData);
 
         setIsValidating(true);
         await validateCSV(columnsToKeep, filteredData);
@@ -231,10 +261,13 @@ const CSV_Import = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isValidating}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]" onClose={closeDialog}>
           <div className="text-center">
-            <p>{validationMessage}</p>
-            <Progress value={validationProgress} />{' '}
+            <p style={{ color: validationColor }}>{validationMessage}</p>
+            <Progress
+              style={{ color: validationColor }}
+              value={validationProgress}
+            />{' '}
           </div>
         </DialogContent>
       </Dialog>
