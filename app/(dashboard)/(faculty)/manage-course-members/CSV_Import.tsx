@@ -66,14 +66,17 @@ const CSV_Import = () => {
 
       for (const column of requiredColumns) {
         // Check if any row in the values array is missing the required column
-        await delay(1000);
+
         setValidationMessage('Checking for required columns...');
+        await delay(1000);
+
         if (!values.every((row) => column in row)) {
           missingColumns.push(column);
         }
-        await delay(1000);
+
         setValidationProgress(50);
         setValidationMessage('Checking for required fields...');
+        await delay(1000);
         // Check if any row in the values array has a null or empty value for the required column
         if (
           !values.every((row) => row[column] !== null && row[column] !== '')
@@ -96,13 +99,12 @@ const CSV_Import = () => {
         );
       }
 
-      await delay(1000);
       setValidationProgress(75);
 
       setValidationProgress(100);
       setVlidationColor('green');
       setValidationMessage('Validation completed!');
-      await delay(3000);
+      await delay(1000);
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -173,7 +175,7 @@ const CSV_Import = () => {
     const transformedTableValues = tableValues.map((row) => ({
       role: 'student',
       name: row[0],
-      email: row[3] + '@ucf.edu',
+      email: row[3] + '@ucf.edu', // needs to be changed
       lmsId: row[1]
     }));
     try {
