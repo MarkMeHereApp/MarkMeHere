@@ -42,6 +42,8 @@ export default withAuth(
   //   const route = req.nextUrl.pathname;
   //   const allowedRoutes = roleToRoutes[role];
 
+  //   console.log(route)
+
   //   if (!allowedRoutes.includes(route)) {
   //     const redirectPath = defaultRoutes[role];
   //     return NextResponse.redirect(new URL(redirectPath, req.url));

@@ -1,4 +1,4 @@
-import { publicProcedure, router } from '../trpc';
+import { publicProcedure, professorProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import {
@@ -136,7 +136,7 @@ export const attendanceRouter = router({
       }
     }),
 
-  createOrUpdateSingleAttendanceEntry: publicProcedure
+  createOrUpdateSingleAttendanceEntry: professorProcedure
     .input(zCreateOrUpdateSingleAttendanceRequest)
     .mutation(async (requestData) => {
       try {

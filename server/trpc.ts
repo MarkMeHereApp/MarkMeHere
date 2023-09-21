@@ -3,6 +3,9 @@ import superjson from 'superjson';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import { Context } from './context';
+import z from 'zod';
+import { TRPCError } from '@trpc/server';
+import { generateTypedError } from './errorTypes';
 
 //Lets make middleware functions as such:
 
@@ -32,19 +35,44 @@ export const trpc = initTRPC.context<Context>().create({
   }
 });
 
-// const middleware = trpc.middleware;
+/*
+So im thinking we will need a couple of middleware functions to handle certain routes
+isProfessorLecture, isProfessorCourse, isProfessor&TALecture, isProfessor&TACourse
 
-// const isProfessor = middleware(async (opts) => {
-//   const { ctx } = opts;
-//   if (!ctx.user?.isAdmin) {
-//     throw new TRPCError({ code: 'UNAUTHORIZED' });
-//   }
-//   return opts.next({
-//     ctx: {
-//       user: ctx.user,
-//     },
-//   });
-// });
+I can use one middleware function to handle both course and lecture input however
+this introduces the case of having undefined values in the data object returned form parsing
+The middleware function will also be extremely large. For now they will be separated
+*/
+
+const professorLectureInput = z.object({
+  lectureId: z.string().optional(),
+  courseId: z.string().optional()
+});
+
+const isProfessorLecture = trpc.middleware(({ next, rawInput, ctx }) => {
+  const result = professorLectureInput.safeParse(rawInput);
+  if (!result)
+    throw generateTypedError(
+      new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid URL parameters'
+      })
+    );
+  //We have context
+  //Now we need to grab the courseId and/or lectureID from endpoint somehow
+  console.log('INPUT HERE');
+  console.log(result);
+  //console.log("CONTEXT HERE")
+  //console.log(ctx)
+
+  return next({
+    ctx: {
+      // Infers the `session` as non-nullable
+      ctx: ctx
+    }
+  });
+});
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
+export const professorProcedure = trpc.procedure.use(isProfessorLecture);

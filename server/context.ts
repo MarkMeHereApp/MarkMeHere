@@ -21,7 +21,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
     */
   const session = await getToken({ req: opts.req as NextRequest });
 
-  console.log('SESSION: ', session);
+  // console.log('SESSION: ', session);
 
   return {
     req: opts.req

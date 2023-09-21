@@ -59,7 +59,8 @@ cookies().set({
 just use prisma directly in this api route. We dont need the context here
 anyways because anyone should be able to access this route
 
-Or we can put these routes in a different router that dont use context
+Or we can use request object for this endpoint but we have to grab the URL params
+differently
 */
 
 export async function GET(req: NextRequest) {
