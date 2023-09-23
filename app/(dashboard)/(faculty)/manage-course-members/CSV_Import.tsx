@@ -213,7 +213,7 @@ const CSV_Import = () => {
       });
       closeDialog();
 
-      throw new Error('Error importing CSV: ' + error.message);
+      throw new Error('Error importing CSV: ' + error);
     }
     setIsImporting(false);
   };
