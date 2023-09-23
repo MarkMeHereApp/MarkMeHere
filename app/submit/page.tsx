@@ -28,7 +28,6 @@ const SubmitPage = () => {
 
  //take the params and send it as a token. 
  //Maybe check if the params are 6 char just to make sure there is not random numeber, but the valiadtion will be done in backend I believe. 
-  
  
  if(searchParams.toString()){
     return(
