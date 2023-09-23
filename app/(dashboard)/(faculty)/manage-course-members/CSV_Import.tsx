@@ -175,7 +175,7 @@ const CSV_Import = () => {
     const transformedTableValues = tableValues.map((row) => ({
       role: 'student',
       name: row[0],
-      email: row[3] + '@ucf.edu', // needs to be changed
+      email: row[2] + '@ucf.edu',
       lmsId: row[1]
     }));
     try {
@@ -202,6 +202,7 @@ const CSV_Import = () => {
           variant: 'destructive',
           title: 'Importing CSV failed. Try Again. '
         });
+
         throw new Error('Unable to add new members');
       }
     } catch (error: unknown) {
@@ -211,7 +212,8 @@ const CSV_Import = () => {
         title: 'Importing CSV failed. Try Again. ' + error
       });
       closeDialog();
-      throw new Error('error unable to import' + error);
+
+      throw new Error('Error importing CSV: ' + error.message);
     }
     setIsImporting(false);
   };
