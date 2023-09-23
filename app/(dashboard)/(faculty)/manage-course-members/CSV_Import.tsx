@@ -23,7 +23,6 @@ const CSV_Import = () => {
   const data = useCourseContext();
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
-  const [tableColumns, setTableColumns] = useState<string[]>([]);
   const [tableValues, setTableValues] = useState<string[][]>([]);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -152,7 +151,6 @@ const CSV_Import = () => {
         await validateCSV(columnsToKeep, filteredData);
         setIsValidating(false);
 
-        setTableColumns(columnsToKeep);
         setTableValues(filteredData.map((row) => Object.values(row)));
       }
     });
@@ -223,12 +221,21 @@ const CSV_Import = () => {
       {' '}
       <div className="grid max-w-sm items-center gap-1.5">
         <Input
-          ref={fileInputRef}
-          id="csv"
           type="file"
           accept=".csv"
           onChange={handleFileChange}
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          id="csv"
         />
+        <label
+          htmlFor="csv"
+          className={
+            'bg-primary cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium '
+          }
+        >
+          Import CSV
+        </label>
       </div>
       <Dialog open={isFileUploaded}>
         <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
