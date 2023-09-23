@@ -212,7 +212,7 @@ const CSV_Import = () => {
         title: 'Importing CSV failed. Try Again. ' + error
       });
       closeDialog();
-      console.error('Error importing CSV:', error);
+
       throw new Error('Error importing CSV: ' + error.message);
     }
     setIsImporting(false);
