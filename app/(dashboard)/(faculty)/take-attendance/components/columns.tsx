@@ -39,9 +39,14 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('name')}</div>
-    ),
+    cell: ({ row }) => {
+      const curName: string = row.getValue('name');
+      if (curName.length > 13) {
+        const truncatedName = `${curName.substring(0, 13)}...`;
+        return <div className="flex w-full">{truncatedName}</div>
+      }
+      return <div className="flex w-full">{curName}</div>
+    },
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
