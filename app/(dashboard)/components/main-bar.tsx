@@ -7,7 +7,6 @@ import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';
 import { Icons } from '@/components/ui/icons';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
-import isMobile from '@/utils/isMobile';
 
 export default function MainBar() {
   const isQRCodePage = usePathname() === '/qr';
@@ -16,7 +15,7 @@ export default function MainBar() {
     ? 'border-b flex-col'
     : 'border-b flex-col hover:opacity-100 opacity-0 transition-opacity duration-200 absolute w-full z-10 bg-background';
 
-  return isMobile() ? null : (
+  return (
     <div className={divClassName}>
       <div className="flex items-center pb-2 pr-8 justify-between">
         <div className="flex flex-row items-center ml-6 space-x-2 mt-2">
