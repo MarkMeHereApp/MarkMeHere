@@ -74,8 +74,11 @@ export default function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const shouldHideColumn = ['email', 'lmsId'];
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={shouldHideColumn.includes(header.id)
+                        ? 'hidden md:table-cell lg:table-cell'
+                        : 'table-cell md:table-cell lg:table-cell'}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -95,14 +98,19 @@ export default function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    const shouldHideColumn = ['email', 'lmsId'];
+                    return (
+                    <TableCell key={cell.id} className={shouldHideColumn.includes(cell.column.id)
+                        ? 'hidden md:table-cell lg:table-cell'
+                        : 'table-cell md:table-cell lg:table-cell'}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
                     </TableCell>
-                  ))}
+                    )
+                    })}
                 </TableRow>
               ))
             ) : (
