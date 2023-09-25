@@ -1,6 +1,7 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { professorOrTaCourseProcedure } from '../trpc';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -9,7 +10,7 @@ export const zCreateQRCode = z.object({
 });
 
 export const qrRouter = router({
-  CreateNewQRCode: publicProcedure
+  CreateNewQRCode: professorOrTaCourseProcedure
     .input(zCreateQRCode)
     .mutation(async ({ input }) => {
       try {
