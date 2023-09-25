@@ -8,14 +8,6 @@ import { TRPCError } from '@trpc/server';
 import { generateTypedError } from './errorTypes';
 import prisma from '@/prisma';
 
-//Lets make middleware functions as such:
-
-//hasCourseAccess ,these routes use courseIds to change the database so we will
-//authenticate the user against the courseId
-
-//hasLectureAccess these routes use lectureIds to change the database so we will
-//authenticate the user against the lectureId
-
 export const trpc = initTRPC.context<Context>().create({
   transformer: superjson,
   errorFormatter(opts) {
@@ -41,7 +33,7 @@ So im thinking we will need a couple of middleware functions to handle certain r
 isProfessorLecture, isProfessorCourse, isProfessor&TALecture, isProfessor&TACourse
 
 I can use one middleware function to handle both course and lecture input however
-this introduces the case of having undefined values in the data object returned form parsing
+this introduces the case of having undefined values in the data object returned from parsing
 The middleware function will also be extremely large. For now they will be separated
 */
 
@@ -116,6 +108,6 @@ const isProfessorOrTaLecture = trpc.middleware(
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
-export const professorOrTaProcedure = trpc.procedure.use(
+export const professorOrTaLectureProcedure = trpc.procedure.use(
   isProfessorOrTaLecture
 );

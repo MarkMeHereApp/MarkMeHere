@@ -1,4 +1,4 @@
-import { publicProcedure, professorOrTaProcedure, router } from '../trpc';
+import { publicProcedure, professorOrTaLectureProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
@@ -17,8 +17,8 @@ export const zCreateOrUpdateSingleAttendanceRequest = z.object({
 });
 
 export const attendanceRouter = router({
-  //professorOrTaProcedure
-  createOrUpdateSingleAttendanceEntry: professorOrTaProcedure
+  //professorOrTaLectureProcedure
+  createOrUpdateSingleAttendanceEntry: professorOrTaLectureProcedure
     .input(zCreateOrUpdateSingleAttendanceRequest)
     .mutation(async (requestData) => {
       try {
@@ -58,7 +58,8 @@ export const attendanceRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-  createManyAttendanceRecords: publicProcedure
+    //professorOrTaLectureProcedure
+  createManyAttendanceRecords: professorOrTaLectureProcedure
     .input(zCreateNewManyAttendanceRequest)
     .mutation(async (requestData) => {
       try {
