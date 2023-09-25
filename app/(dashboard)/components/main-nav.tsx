@@ -51,7 +51,7 @@ export default function MainNav({
       {selectedCourseId ? (
         <>
           <MainNavBarCustomLink
-            href="/take-attendance"
+            href="/mark-attendance-status"
             displayText="Mark Attendance Status"
           />
           <MainNavBarCustomLink
