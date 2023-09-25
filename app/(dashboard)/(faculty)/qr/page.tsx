@@ -76,7 +76,7 @@ const QR = () => {
     if (!newLecture) {
       const message = 'There is no lecture for selected date';
       const encodedMessage = encodeURIComponent(message);
-      router.push(`/take-attendance?qr-warning=${encodedMessage}`);
+      router.push(`/mark-attendance-status?qr-warning=${encodedMessage}`);
       return;
     }
 
@@ -374,7 +374,7 @@ const QR = () => {
 
         <Card className="h-full w-[55%] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
-          <Button onClick={() => router.push('/take-attendance')}>
+          <Button onClick={() => router.push('/mark-attendance-status')}>
             <div>Finish</div>
           </Button>
         </Card>

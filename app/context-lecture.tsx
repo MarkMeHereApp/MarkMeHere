@@ -19,11 +19,15 @@ interface LecturesContextType {
       ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null
     >
   >;
+  pageSize: number;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const LecturesContext = createContext<LecturesContextType>({
   lectures: null,
-  setLectures: () => {}
+  setLectures: () => {}, 
+  pageSize: 10,
+  setPageSize: () => {},
 });
 
 export default function LecturesContextProvider({
@@ -32,6 +36,7 @@ export default function LecturesContextProvider({
   children?: React.ReactNode;
 }) {
   const [lectures, setLectures] = useState<lecturesType>(null);
+  const [pageSize, setPageSize] = useState<number>(10); // Default page size is 10; will never be null
 
   const { selectedCourseId } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
 
@@ -55,6 +60,7 @@ export default function LecturesContextProvider({
   useEffect(() => {
     if (selectedCourseId) {
       setLectures(null);
+      setPageSize(10);
       newLectureData.refetch();
     }
   }, [selectedCourseId]);
@@ -66,7 +72,9 @@ export default function LecturesContextProvider({
     <LecturesContext.Provider
       value={{
         lectures,
-        setLectures
+        setLectures,
+        pageSize,
+        setPageSize
       }}
     >
       {children}

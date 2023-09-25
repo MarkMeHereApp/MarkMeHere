@@ -7,7 +7,7 @@ const roleToRoutes: Record<string, string[]> = {
   FACULTY: [
     '/overview',
     '/qr',
-    '/take-attendance',
+    '/mark-attendance-status',
     '/manage-course-members',
     '/testing-playground',
     '/user-settings',

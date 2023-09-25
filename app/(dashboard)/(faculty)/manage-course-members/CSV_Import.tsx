@@ -23,7 +23,6 @@ const CSV_Import = () => {
   const data = useCourseContext();
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
-  const [tableColumns, setTableColumns] = useState<string[]>([]);
   const [tableValues, setTableValues] = useState<string[][]>([]);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -152,7 +151,6 @@ const CSV_Import = () => {
         await validateCSV(columnsToKeep, filteredData);
         setIsValidating(false);
 
-        setTableColumns(columnsToKeep);
         setTableValues(filteredData.map((row) => Object.values(row)));
       }
     });
@@ -175,7 +173,7 @@ const CSV_Import = () => {
     const transformedTableValues = tableValues.map((row) => ({
       role: 'student',
       name: row[0],
-      email: row[3] + '@ucf.edu', // needs to be changed
+      email: row[2] + '@ucf.edu',
       lmsId: row[1]
     }));
     try {
@@ -202,6 +200,7 @@ const CSV_Import = () => {
           variant: 'destructive',
           title: 'Importing CSV failed. Try Again. '
         });
+
         throw new Error('Unable to add new members');
       }
     } catch (error: unknown) {
@@ -211,7 +210,8 @@ const CSV_Import = () => {
         title: 'Importing CSV failed. Try Again. ' + error
       });
       closeDialog();
-      throw new Error('error unable to import' + error);
+
+      throw new Error('Error importing CSV: ' + error);
     }
     setIsImporting(false);
   };
@@ -221,12 +221,21 @@ const CSV_Import = () => {
       {' '}
       <div className="grid max-w-sm items-center gap-1.5">
         <Input
-          ref={fileInputRef}
-          id="csv"
           type="file"
           accept=".csv"
           onChange={handleFileChange}
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          id="csv"
         />
+        <label
+          htmlFor="csv"
+          className={
+            'bg-primary cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium '
+          }
+        >
+          Import CSV
+        </label>
       </div>
       <Dialog open={isFileUploaded}>
         <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
