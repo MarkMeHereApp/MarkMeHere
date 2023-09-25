@@ -21,6 +21,7 @@ import { CSV_Preview } from './CSV_Preview';
 
 const CSV_Import = () => {
   const data = useCourseContext();
+  const currentMembers = useCourseContext().courseMembersOfSelectedCourse;
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
   const [tableValues, setTableValues] = useState<string[][]>([]);
@@ -60,6 +61,7 @@ const CSV_Import = () => {
       }
 
       const requiredColumns = ['Student', 'ID'];
+
       const missingColumns: string[] = [];
       const missingValues: string[] = [];
 
@@ -98,12 +100,45 @@ const CSV_Import = () => {
         );
       }
 
+      // check if the members already exist in the database
+      setValidationMessage('Checking the members of the course...');
+      await delay(1000);
+
+      if (currentMembers) {
+        const existingMembers = currentMembers.filter(
+          (member) =>
+            member.lmsId && values.some((row) => row.ID === member.lmsId)
+        );
+
+        if (existingMembers.length > 0) {
+          values = values.filter((row) => {
+            return !existingMembers.some((existingMember) => {
+              return existingMember.lmsId === row.ID;
+            });
+          });
+          setValidationMessage('Removed the existed memebrs from CSV');
+          await delay(1000);
+          if (values.length === 0) {
+            setVlidationColor('green');
+            setValidationMessage(
+              'All the memebers from CSV have been imported already!'
+            );
+            setValidationProgress(100);
+            await delay(5000);
+            closeDialog();
+            return null;
+          }
+        }
+      }
+
       setValidationProgress(75);
 
       setValidationProgress(100);
       setVlidationColor('green');
       setValidationMessage('Validation completed!');
       await delay(1000);
+
+      return values;
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -148,10 +183,11 @@ const CSV_Import = () => {
         });
 
         setIsValidating(true);
-        await validateCSV(columnsToKeep, filteredData);
+
+        const data = await validateCSV(columnsToKeep, filteredData);
         setIsValidating(false);
 
-        setTableValues(filteredData.map((row) => Object.values(row)));
+        setTableValues(data?.map((row) => Object.values(row)) ?? []);
       }
     });
   };

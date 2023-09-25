@@ -16,7 +16,6 @@ export function CSV_Preview(props: { data: string[][] }) {
   let data = [];
   data = props.data;
   const courseID = useCourseContext().selectedCourseId;
-  //   const role = useCourseContext().
 
   return (
     <ScrollArea className="h-[600px] w-full">
