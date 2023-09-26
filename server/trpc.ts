@@ -152,55 +152,14 @@ const isElevatedCourseMemberCourse = trpc.middleware(
   }
 );
 
-const isCourseMemberCourse = trpc.middleware(
-  async ({ next, ctx, rawInput }) => {
-    const email = ctx.session?.email;
-    const result = courseInput.safeParse(rawInput);
-
-    if (!email)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User does not have a valid JWT'
-        })
-      );
-
-    if (!result.success)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Invalid URL parameters'
-        })
-      );
-
-    //Find the first courseMember who is either a professor or TA
-    const courseMember = await prisma.courseMember.findFirst({
-      where: {
-        courseId: result.data.courseId,
-        email: email,
-        OR: [{ role: 'professor' }, { role: 'TA' }]
-      }
-    });
-
-    if (!courseMember)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message:
-            'User either does not exist in course or does not have elevated priveleges'
-        })
-      );
-
-    return next();
-  }
-);
-
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
 
+/* -------- Checks privileges using lectureId -------- */
 export const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
   isElevatedCourseMemberLecture
 );
+/* -------- Checks privileges using courseId -------- */
 export const elevatedCourseMemberCourseProcedure = trpc.procedure.use(
   isElevatedCourseMemberCourse
 );

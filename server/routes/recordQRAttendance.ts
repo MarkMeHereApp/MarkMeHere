@@ -1,3 +1,6 @@
+/* -------- These routes do not need to exist. They can exist as Prisma calls
+directly to the backend from the submit endpoint  -------- */
+
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';

@@ -1,8 +1,6 @@
+/* -------- Only Professors or TA's can access these routes -------- */
 
-/* -------- Only Professors or TA's can access most of these routes -------- */
-/* -------- Students can access the getCourseMembersOfCourse route -------- */
-
-import { publicProcedure, router } from '../trpc';
+import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 
@@ -34,7 +32,7 @@ export const zCreateMultipleCourseMembers = z.object({
 });
 
 export const courseMemberRouter = router({
-  createCourseMember: publicProcedure
+  createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
@@ -50,7 +48,7 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteCourseMembers: publicProcedure
+  deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(z.array(zCourseMember))
     .mutation(async (requestData) => {
       try {
@@ -77,7 +75,7 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteAllStudents: publicProcedure.mutation(async (requestData) => {
+  deleteAllStudents: elevatedCourseMemberCourseProcedure.mutation(async (requestData) => {
     try {
       await prisma.courseMember.deleteMany({
         where: {
@@ -90,8 +88,7 @@ export const courseMemberRouter = router({
     }
   }),
 
-  //This route should be able to be accessed by students as well
-  getCourseMembersOfCourse: publicProcedure
+  getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
@@ -110,7 +107,7 @@ export const courseMemberRouter = router({
     }),
 
   // TODO: If there is duplicate data, overwrite the existing data.
-  createMultipleCourseMembers: publicProcedure
+  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {

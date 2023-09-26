@@ -1,4 +1,3 @@
-
 /* -------- Only Professors or TA's can access these routes -------- */
 
 import { elevatedCourseMemberLectureProcedure, router } from '../trpc';
