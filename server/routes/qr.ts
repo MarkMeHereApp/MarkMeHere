@@ -1,7 +1,8 @@
-import { publicProcedure, router } from '../trpc';
+/* -------- Only Professors or TA's can access these routes -------- */
+
+import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-import { professorOrTaCourseProcedure } from '../trpc';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -10,7 +11,7 @@ export const zCreateQRCode = z.object({
 });
 
 export const qrRouter = router({
-  CreateNewQRCode: professorOrTaCourseProcedure
+  CreateNewQRCode: elevatedCourseMemberCourseProcedure
     .input(zCreateQRCode)
     .mutation(async ({ input }) => {
       try {

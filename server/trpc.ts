@@ -52,7 +52,7 @@ This middleware is meant for routes that use a lectureId
 a professor or TA.
 3. If the courseMember is found the user has access.
 */
-const isProfessorOrTaLecture = trpc.middleware(
+const isElevatedCourseMemberLecture = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
     const result = lectureInput.safeParse(rawInput);
@@ -109,7 +109,50 @@ const isProfessorOrTaLecture = trpc.middleware(
   }
 );
 
-const isProfessorOrTaCourse = trpc.middleware(
+const isElevatedCourseMemberCourse = trpc.middleware(
+  async ({ next, ctx, rawInput }) => {
+    const email = ctx.session?.email;
+    const result = courseInput.safeParse(rawInput);
+
+    if (!email)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User does not have a valid JWT'
+        })
+      );
+
+    if (!result.success)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid URL parameters'
+        })
+      );
+
+    //Find the first courseMember who is either a professor or TA
+    const courseMember = await prisma.courseMember.findFirst({
+      where: {
+        courseId: result.data.courseId,
+        email: email,
+        OR: [{ role: 'professor' }, { role: 'TA' }]
+      }
+    });
+
+    if (!courseMember)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'UNAUTHORIZED',
+          message:
+            'User either does not exist in course or does not have elevated priveleges'
+        })
+      );
+
+    return next();
+  }
+);
+
+const isCourseMemberCourse = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
     const result = courseInput.safeParse(rawInput);
@@ -154,9 +197,10 @@ const isProfessorOrTaCourse = trpc.middleware(
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
-export const professorOrTaLectureProcedure = trpc.procedure.use(
-  isProfessorOrTaLecture
+
+export const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
+  isElevatedCourseMemberLecture
 );
-export const professorOrTaCourseProcedure = trpc.procedure.use(
-  isProfessorOrTaCourse
+export const elevatedCourseMemberCourseProcedure = trpc.procedure.use(
+  isElevatedCourseMemberCourse
 );

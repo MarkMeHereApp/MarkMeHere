@@ -1,3 +1,7 @@
+
+/* -------- Only Professors or TA's can access most of these routes -------- */
+/* -------- Students can access the getCourseMembersOfCourse route -------- */
+
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
@@ -86,6 +90,7 @@ export const courseMemberRouter = router({
     }
   }),
 
+  //This route should be able to be accessed by students as well
   getCourseMembersOfCourse: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {

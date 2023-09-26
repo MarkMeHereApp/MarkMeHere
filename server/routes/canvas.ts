@@ -1,3 +1,6 @@
+
+/* -------- Only users with an Admin or Moderator site role can access these routes -------- */
+
 import { publicProcedure, router } from '../trpc';
 import z from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
