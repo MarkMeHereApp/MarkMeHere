@@ -25,9 +25,9 @@ interface LecturesContextType {
 
 const LecturesContext = createContext<LecturesContextType>({
   lectures: null,
-  setLectures: () => {}, 
+  setLectures: () => {},
   pageSize: 10,
-  setPageSize: () => {},
+  setPageSize: () => {}
 });
 
 export default function LecturesContextProvider({
@@ -38,14 +38,20 @@ export default function LecturesContextProvider({
   const [lectures, setLectures] = useState<lecturesType>(null);
   const [pageSize, setPageSize] = useState<number>(10); // Default page size is 10; will never be null
 
-  const { selectedCourseId } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
+  const { selectedCourseId, selectedCourseRole } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
+
+  const elevatedPrivileges =
+    selectedCourseRole === 'professor' || selectedCourseRole === 'TA';
 
   const newLectureData = trpc.lecture.getAllLecturesAndAttendance.useQuery(
     {
       courseId: selectedCourseId || ''
     },
     {
-      enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
+      /* 
+        The query will only run if selectedCourseId is not null and the users course role is professor or TA
+      */
+      enabled: !!selectedCourseId && elevatedPrivileges,
       onSuccess: (data) => {
         if (!data) return;
         setLectures(data.lectures);
@@ -58,7 +64,7 @@ export default function LecturesContextProvider({
   }
 
   useEffect(() => {
-    if (selectedCourseId) {
+    if (selectedCourseId && elevatedPrivileges) {
       setLectures(null);
       setPageSize(10);
       newLectureData.refetch();

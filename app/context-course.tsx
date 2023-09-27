@@ -69,8 +69,6 @@ export default function CoursesContext({
   const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
     null
   );
-    //Here we need to throw our TRPC function in to updated courseMember role in context
-   ////////////////////// function is getCourseMemberRole
 
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
@@ -78,6 +76,9 @@ export default function CoursesContext({
   const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<Date>(
     new Date(new Date().setHours(0, 0, 0, 0))
   );
+
+  const elevatedPrivileges =
+    selectedCourseRole === 'professor' || selectedCourseRole === 'TA';
 
   const role = trpc.courseMember.getCourseMemberRole.useQuery(
     {
@@ -87,7 +88,7 @@ export default function CoursesContext({
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
       onSuccess: (data) => {
         if (!data) return;
-       setSelectedCourseRole(data?.role ?? null)
+        setSelectedCourseRole(data?.role ?? null);
       }
     }
   );
@@ -96,12 +97,16 @@ export default function CoursesContext({
     throw role.error;
   }
 
+  //This should only be called when we know the user is a professor or TA
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
       courseId: selectedCourseId || ''
     },
     {
-      enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
+      /* 
+        The query will only run if selectedCourseId is not null and the users course role is professor or TA
+      */
+      enabled: !!selectedCourseId && elevatedPrivileges,
       onSuccess: (data) => {
         if (!data) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
@@ -116,7 +121,8 @@ export default function CoursesContext({
   useEffect(() => {
     if (
       selectedCourseId &&
-      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId)
+      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId) &&
+      elevatedPrivileges
     ) {
       setCourseMembersOfSelectedCourse(null);
       courseMembers.refetch();

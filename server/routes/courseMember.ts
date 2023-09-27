@@ -1,6 +1,10 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { elevatedCourseMemberCourseProcedure, publicProcedure, router } from '../trpc';
+import {
+  elevatedCourseMemberCourseProcedure,
+  publicProcedure,
+  router
+} from '../trpc';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
@@ -79,18 +83,20 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteAllStudents: elevatedCourseMemberCourseProcedure.mutation(async (requestData) => {
-    try {
-      await prisma.courseMember.deleteMany({
-        where: {
-          role: 'student'
-        }
-      });
-      return { success: true };
-    } catch (error) {
-      throw generateTypedError(error as Error);
+  deleteAllStudents: elevatedCourseMemberCourseProcedure.mutation(
+    async (requestData) => {
+      try {
+        await prisma.courseMember.deleteMany({
+          where: {
+            role: 'student'
+          }
+        });
+        return { success: true };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
     }
-  }),
+  ),
 
   getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
     .input(zGetCourseMembersOfCourse)
@@ -110,28 +116,28 @@ export const courseMemberRouter = router({
       }
     }),
 
-    getCourseMemberRole: publicProcedure
+  getCourseMemberRole: publicProcedure
     .input(zGetCourseMemberRole)
     .query(async (requestData) => {
       try {
         const email = requestData.ctx?.session?.email;
-        if(!email) throw generateTypedError(
-          new TRPCError({
-            code: 'UNAUTHORIZED',
-            message:
-              'user does not have a session'
-          })
-        );
-       //Find the role of the current course member
-      const role = await prisma.courseMember.findFirst({
-        where: {
-          courseId: requestData.input.courseId,
-          email: email,
-        },
-        select: {
-          role: true
-        }
-      });
+        if (!email)
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'user does not have a session'
+            })
+          );
+        //Find the role of the current course member
+        const role = await prisma.courseMember.findFirst({
+          where: {
+            courseId: requestData.input.courseId,
+            email: email
+          },
+          select: {
+            role: true
+          }
+        });
         return { success: true, role: role?.role };
       } catch (error) {
         throw generateTypedError(error as Error);
