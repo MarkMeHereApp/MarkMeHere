@@ -1,8 +1,9 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
+import { elevatedCourseMemberCourseProcedure, publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
+import { TRPCError } from '@trpc/server';
 
 import { z } from 'zod';
 
@@ -17,6 +18,9 @@ export const zCourseMember = z.object({
 });
 
 export const zGetCourseMembersOfCourse = z.object({
+  courseId: z.string()
+});
+export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
 export const zCreateMultipleCourseMembers = z.object({
@@ -101,6 +105,34 @@ export const courseMemberRouter = router({
           }
         });
         return { success: true, courseMembers };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
+    getCourseMemberRole: publicProcedure
+    .input(zGetCourseMemberRole)
+    .query(async (requestData) => {
+      try {
+        const email = requestData.ctx?.session?.email;
+        if(!email) throw generateTypedError(
+          new TRPCError({
+            code: 'UNAUTHORIZED',
+            message:
+              'user does not have a session'
+          })
+        );
+       //Find the role of the current course member
+      const role = await prisma.courseMember.findFirst({
+        where: {
+          courseId: requestData.input.courseId,
+          email: email,
+        },
+        select: {
+          role: true
+        }
+      });
+        return { success: true, role: role?.role };
       } catch (error) {
         throw generateTypedError(error as Error);
       }

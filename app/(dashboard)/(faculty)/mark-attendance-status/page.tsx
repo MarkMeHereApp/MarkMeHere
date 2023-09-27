@@ -13,7 +13,7 @@ import { useSearchParams } from 'next/navigation'; // Import useRouter from next
 import { toast } from 'components/ui/use-toast';
 
 export default function ManageAttendance() {
-  const { selectedCourseId, selectedAttendanceDate } = useCourseContext();
+  const { selectedCourseId, selectedAttendanceDate, selectedCourseRole } = useCourseContext();
   const { lectures } = useLecturesContext();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams(); // Initialize useSearchParams

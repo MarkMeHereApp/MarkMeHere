@@ -5,6 +5,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -26,9 +27,14 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { selectedAttendanceDate, userCourses } = useCourseContext();
+  const { selectedAttendanceDate, userCourses, selectedCourseRole } =
+    useCourseContext();
 
   const { lectures } = useLecturesContext();
+
+  console.log(selectedCourseRole)
+  //Only Professors or TA's can access this page
+  if (selectedCourseRole === 'student') redirect('/');
 
   //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
@@ -65,6 +71,7 @@ const QR = () => {
 
   // This useEffect will run when the lectures change.
   React.useEffect(() => {
+
     if (!lectures) {
       setCurrentCourseName(undefined);
       setCurrentLecture(undefined);

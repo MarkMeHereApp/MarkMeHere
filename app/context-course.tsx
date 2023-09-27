@@ -16,6 +16,9 @@ interface CourseContextType {
   >;
   selectedCourseId: string | null;
   setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
+
+  selectedCourseRole: string | null;
+  setSelectedCourseRole: React.Dispatch<React.SetStateAction<string | null>>;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
@@ -31,6 +34,8 @@ const CourseContext = createContext<CourseContextType>({
   setUserCourseMembers: () => {},
   selectedCourseId: null,
   setSelectedCourseId: () => {},
+  selectedCourseRole: null,
+  setSelectedCourseRole: () => {},
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {},
   selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -61,12 +66,35 @@ export default function CoursesContext({
     courseId
   );
 
+  const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
+    null
+  );
+    //Here we need to throw our TRPC function in to updated courseMember role in context
+   ////////////////////// function is getCourseMemberRole
+
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
 
   const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<Date>(
     new Date(new Date().setHours(0, 0, 0, 0))
   );
+
+  const role = trpc.courseMember.getCourseMemberRole.useQuery(
+    {
+      courseId: selectedCourseId || ''
+    },
+    {
+      enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
+      onSuccess: (data) => {
+        if (!data) return;
+       setSelectedCourseRole(data?.role ?? null)
+      }
+    }
+  );
+
+  if (role.error) {
+    throw role.error;
+  }
 
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
@@ -104,6 +132,8 @@ export default function CoursesContext({
         setUserCourseMembers,
         selectedCourseId,
         setSelectedCourseId,
+        selectedCourseRole,
+        setSelectedCourseRole,
         courseMembersOfSelectedCourse,
         setCourseMembersOfSelectedCourse,
         selectedAttendanceDate,

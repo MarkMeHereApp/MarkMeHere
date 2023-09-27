@@ -28,15 +28,6 @@ export const trpc = initTRPC.context<Context>().create({
   }
 });
 
-/*
-So im thinking we will need a couple of middleware functions to handle certain routes
-isProfessorLecture, isProfessorCourse, isProfessor&TALecture, isProfessor&TACourse
-
-I can use one middleware function to handle both course and lecture input however
-this introduces the case of having undefined values in the data object returned from parsing
-The middleware function will also be extremely large. For now they will be separated
-*/
-
 const lectureInput = z.object({
   lectureId: z.string()
 });

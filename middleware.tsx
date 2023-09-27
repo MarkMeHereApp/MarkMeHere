@@ -40,7 +40,9 @@ const roleToRoutes: Record<string, string[]> = {
     '/api/trpc/lecture.CreateLecture',
     '/api/trpc/attendance.createOrUpdateSingleAttendanceEntry',
     '/api/trpc/attendance.createManyAttendanceRecords',
+    '/api/trpc/courseMember.getCourseMemberRole,courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
+    '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMemberRole,courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
     '/api/trpc/courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.createCourseMember',
@@ -81,7 +83,7 @@ export default withAuth(
     const route = req.nextUrl.pathname;
     const allowedRoutes = roleToRoutes[role];
 
-    console.log(route);
+    //console.log(route);
 
     if (!allowedRoutes.includes(route)) {
       const redirectPath = defaultRoutes[role];
