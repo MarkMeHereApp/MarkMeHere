@@ -29,12 +29,16 @@ const QR = () => {
   const searchParams = useSearchParams(); // Initialize useSearchParams
   const { selectedAttendanceDate, userCourses, selectedCourseRole } =
     useCourseContext();
-
   const { lectures } = useLecturesContext();
 
-  console.log(selectedCourseRole)
   //Only Professors or TA's can access this page
-  if (selectedCourseRole === 'student') redirect('/');
+  if (selectedCourseRole === 'student') {
+    router.push(
+      `/?qr-warning=${encodeURIComponent(
+        'You must be a Professor or TA to generate QR codes for this course'
+      )}`
+    );
+  }
 
   //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
@@ -71,7 +75,6 @@ const QR = () => {
 
   // This useEffect will run when the lectures change.
   React.useEffect(() => {
-
     if (!lectures) {
       setCurrentCourseName(undefined);
       setCurrentLecture(undefined);

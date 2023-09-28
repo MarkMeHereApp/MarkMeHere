@@ -28,7 +28,6 @@ They will be able to access /qr
 const roleToRoutes: Record<string, string[]> = {
   ADMIN: ['/admin', '/api/trpc/utils.deleteDatabase'],
   FACULTY: [
-    '/student',
     '/overview',
     '/qr',
     '/mark-attendance-status',
@@ -45,6 +44,7 @@ const roleToRoutes: Record<string, string[]> = {
     '/api/trpc/courseMember.getCourseMembersOfCourse',
     '/api/trpc/lecture.getAllLecturesAndAttendance',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMemberRole',
+    '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance,courseMember.getCourseMemberRole',
     '/api/trpc/courseMember.getCourseMemberRole,courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMemberRole,courseMember.getCourseMembersOfCourse',
@@ -83,15 +83,19 @@ export default withAuth(
   check if request route matches an allowed route
   If the route is not allowed redirect
   */
+
+  //In here we may need to ferry error parameters through to clientside pages
+  //If qr code page fails the url param will be returned here and we can add it to
+  //The route we redirect to
   function middleware(req) {
     const role = req.nextauth.token?.role as string;
     const route = req.nextUrl.pathname;
     const allowedRoutes = roleToRoutes[role];
-
-    console.log(route);
+    const errorParams = req.nextUrl.searchParams.get('qr-warning');
 
     if (!allowedRoutes.includes(route)) {
-      const redirectPath = defaultRoutes[role];
+      const redirectPath =
+        defaultRoutes[role] + (errorParams ? `?qr-warning=${errorParams}` : '');
       return NextResponse.redirect(new URL(redirectPath, req.url));
     }
   },
