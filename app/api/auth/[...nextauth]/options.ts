@@ -85,7 +85,7 @@ export const authOptions: NextAuthOptions = {
     jwt({ token, user }) {
       if (user) token.role = user.role;
       return token;
-    }
+    },
   },
   session: {
     strategy: 'jwt'

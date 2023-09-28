@@ -1,3 +1,5 @@
+/* -------- Only users with an Admin or Faculty site role can access these routes -------- */
+
 import { publicProcedure, router } from '../trpc';
 import z from 'zod';
 import { generateTypedError } from '@/server/errorTypes';

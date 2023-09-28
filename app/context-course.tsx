@@ -16,6 +16,9 @@ interface CourseContextType {
   >;
   selectedCourseId: string | null;
   setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
+
+  selectedCourseRole: string | null;
+  setSelectedCourseRole: React.Dispatch<React.SetStateAction<string | null>>;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
@@ -31,6 +34,8 @@ const CourseContext = createContext<CourseContextType>({
   setUserCourseMembers: () => {},
   selectedCourseId: null,
   setSelectedCourseId: () => {},
+  selectedCourseRole: null,
+  setSelectedCourseRole: () => {},
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {},
   selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -61,6 +66,10 @@ export default function CoursesContext({
     courseId
   );
 
+  const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
+    null
+  );
+
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
 
@@ -68,12 +77,36 @@ export default function CoursesContext({
     new Date(new Date().setHours(0, 0, 0, 0))
   );
 
-  const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
+  const elevatedPrivileges =
+    selectedCourseRole === 'professor' || selectedCourseRole === 'TA';
+
+  const role = trpc.courseMember.getCourseMemberRole.useQuery(
     {
       courseId: selectedCourseId || ''
     },
     {
       enabled: !!selectedCourseId, // The query will only run if selectedCourseId is not null
+      onSuccess: (data) => {
+        if (!data) return;
+        setSelectedCourseRole(data?.role ?? null);
+      }
+    }
+  );
+
+  if (role.error) {
+    throw role.error;
+  }
+
+  //This should only be called when we know the user is a professor or TA
+  const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
+    {
+      courseId: selectedCourseId || ''
+    },
+    {
+      /* 
+        The query will only run if selectedCourseId is not null and the users course role is professor or TA
+      */
+      enabled: !!selectedCourseId && elevatedPrivileges,
       onSuccess: (data) => {
         if (!data) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
@@ -88,7 +121,8 @@ export default function CoursesContext({
   useEffect(() => {
     if (
       selectedCourseId &&
-      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId)
+      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId) &&
+      elevatedPrivileges
     ) {
       setCourseMembersOfSelectedCourse(null);
       courseMembers.refetch();
@@ -104,6 +138,8 @@ export default function CoursesContext({
         setUserCourseMembers,
         selectedCourseId,
         setSelectedCourseId,
+        selectedCourseRole,
+        setSelectedCourseRole,
         courseMembersOfSelectedCourse,
         setCourseMembersOfSelectedCourse,
         selectedAttendanceDate,

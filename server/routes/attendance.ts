@@ -1,4 +1,6 @@
-import { publicProcedure, router } from '../trpc';
+/* -------- Only Professors or TA's can access these routes -------- */
+
+import { elevatedCourseMemberLectureProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
@@ -17,7 +19,7 @@ export const zCreateOrUpdateSingleAttendanceRequest = z.object({
 });
 
 export const attendanceRouter = router({
-  createOrUpdateSingleAttendanceEntry: publicProcedure
+  createOrUpdateSingleAttendanceEntry: elevatedCourseMemberLectureProcedure
     .input(zCreateOrUpdateSingleAttendanceRequest)
     .mutation(async (requestData) => {
       try {
@@ -57,7 +59,7 @@ export const attendanceRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-  createManyAttendanceRecords: publicProcedure
+  createManyAttendanceRecords: elevatedCourseMemberLectureProcedure
     .input(zCreateNewManyAttendanceRequest)
     .mutation(async (requestData) => {
       try {

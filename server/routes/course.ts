@@ -1,3 +1,5 @@
+/* -------- Only users with an Admin or Moderator site role can access these routes -------- */
+
 import { publicProcedure, router } from '../trpc';
 import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
@@ -27,6 +29,10 @@ export const zCreateCourseRequest = z.object({
 });
 
 export const courseRouter = router({
+  /*
+  We will protect this using nextMiddleware (Only faculty and admin users
+  have permission to create courses)
+  */
   createCourse: publicProcedure
     .input(zCreateCourseRequest)
 

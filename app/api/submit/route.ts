@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appRouter } from '@/server';
 import { TRPCError } from '@trpc/server';
 import { getHTTPStatusCodeFromError } from '@trpc/server/http';
+import { createContext } from '@/server/context';
+import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
+import { getToken } from 'next-auth/jwt';
 //import { cookies } from 'next/headers';
 
 /*
@@ -52,7 +55,7 @@ cookies().set({
 
 */
 
-export async function GET(req: NextRequest) {
+export async function GET(nextReq: NextRequest, req: Request, resHeaders: Headers) {
   /*
   Initialize TRPC caller (needed to call TRPC routes serverside).
   Grab QR from URL parameters.
@@ -61,8 +64,9 @@ export async function GET(req: NextRequest) {
   (Attendance token used to authenticate user attendance even after QR code expires)
   3. Redirect to markAttendance page with URL parameters
   */
-  const caller = appRouter.createCaller({});
-  const params = req.nextUrl.searchParams;
+
+  const caller = appRouter.createCaller(await createContext({req, resHeaders}));
+  const params = nextReq.nextUrl.searchParams;
 
   const qr: string = params.get('qr') ?? '';
 

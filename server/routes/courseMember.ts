@@ -1,6 +1,13 @@
-import { publicProcedure, router } from '../trpc';
+/* -------- Only Professors or TA's can access these routes -------- */
+
+import {
+  elevatedCourseMemberCourseProcedure,
+  publicProcedure,
+  router
+} from '../trpc';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
+import { TRPCError } from '@trpc/server';
 
 import { z } from 'zod';
 
@@ -17,6 +24,9 @@ export const zCourseMember = z.object({
 export const zGetCourseMembersOfCourse = z.object({
   courseId: z.string()
 });
+export const zGetCourseMemberRole = z.object({
+  courseId: z.string()
+});
 export const zCreateMultipleCourseMembers = z.object({
   courseId: z.string(),
   courseMembers: z.array(
@@ -30,7 +40,7 @@ export const zCreateMultipleCourseMembers = z.object({
 });
 
 export const courseMemberRouter = router({
-  createCourseMember: publicProcedure
+  createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
@@ -46,7 +56,7 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteCourseMembers: publicProcedure
+  deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(z.array(zCourseMember))
     .mutation(async (requestData) => {
       try {
@@ -73,20 +83,22 @@ export const courseMemberRouter = router({
       }
     }),
 
-  deleteAllStudents: publicProcedure.mutation(async (requestData) => {
-    try {
-      await prisma.courseMember.deleteMany({
-        where: {
-          role: 'student'
-        }
-      });
-      return { success: true };
-    } catch (error) {
-      throw generateTypedError(error as Error);
+  deleteAllStudents: elevatedCourseMemberCourseProcedure.mutation(
+    async (requestData) => {
+      try {
+        await prisma.courseMember.deleteMany({
+          where: {
+            role: 'student'
+          }
+        });
+        return { success: true };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
     }
-  }),
+  ),
 
-  getCourseMembersOfCourse: publicProcedure
+  getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
@@ -104,8 +116,36 @@ export const courseMemberRouter = router({
       }
     }),
 
+  getCourseMemberRole: publicProcedure
+    .input(zGetCourseMemberRole)
+    .query(async (requestData) => {
+      try {
+        const email = requestData.ctx?.session?.email;
+        if (!email)
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'user does not have a session'
+            })
+          );
+        //Find the role of the current course member
+        const role = await prisma.courseMember.findFirst({
+          where: {
+            courseId: requestData.input.courseId,
+            email: email
+          },
+          select: {
+            role: true
+          }
+        });
+        return { success: true, role: role?.role };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
   // TODO: If there is duplicate data, overwrite the existing data.
-  createMultipleCourseMembers: publicProcedure
+  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
