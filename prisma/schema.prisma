@@ -50,7 +50,7 @@ model VerificationToken {
 
 model Lecture {
   id                String            @id @default(cuid())
-  course            Course            @relation(fields: [courseId], references: [id])
+  course            Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId          String
   lectureDate       DateTime
   attendanceEntries AttendanceEntry[]
@@ -61,10 +61,10 @@ model Lecture {
 
 model AttendanceEntry {
   id             String       @id @default(cuid())
-  lecture        Lecture      @relation(fields: [lectureId], references: [id])
+  lecture        Lecture      @relation(fields: [lectureId], references: [id], onDelete: Cascade)
   lectureId      String
   courseMemberId String
-  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id])
+  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
   dateMarked     DateTime     @default(now())
   status         String       
 }
@@ -91,7 +91,7 @@ model CourseMember {
   email             String
   name              String            @db.VarChar(255) // Right now optional
   courseId          String
-  course            Course            @relation(fields: [courseId], references: [id])
+  course            Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
   dateEnrolled      DateTime          @default(now())
   role              String            @default("student")
@@ -103,9 +103,9 @@ model CourseMember {
 model qrcode {
   id        String   @id @default(cuid())
   lectureId String
-  lecture   Lecture  @relation(fields: [lectureId], references: [id])
+  lecture   Lecture  @relation(fields: [lectureId], references: [id], onDelete: Cascade)
   courseId  String
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   code      String   @unique // More work to do to make this code truly unique
   createdAt DateTime @default(now())
   expiresAt DateTime
