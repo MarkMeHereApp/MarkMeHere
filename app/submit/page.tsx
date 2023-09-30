@@ -1,54 +1,105 @@
-'use client';
-import InputPage from "./components/inputPage";
-import React, { useEffect, useState } from "react";
-import dynamic from 'next/dynamic';
-import { useRouter,useSearchParams, usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import InputPage from "./components/inputPage"
+import { GetServerSidePropsContext } from "next";
+import prisma from "@/prisma";
+import { v4 as uuidv4 } from 'uuid';
+import { redirect } from "next/navigation";
+import { replace } from "lodash";
+import { NextRequest, NextResponse } from "next/server";
+import { ur } from "@faker-js/faker";
+import { url } from "inspector";
+import { appRouter } from "@/server";
+import dynamic from "next/dynamic";
 
-const SubmitPage = () => {
-   
 
-  const router = useRouter(); //init Router
-  const [code,setCode] = useState('');
 
-  const pathname = usePathname() //storing the path name. Not used
-  const searchParams = useSearchParams() //storing if there is QR passed or not
-  
-  
-  // Just testing what is being returned 
-  const test = () => {
-    console.log("router " + router)
-    console.log("pathname " + pathname )
-    console.log("searchPrams " + searchParams)
+async function validateAndCreateToken(
+  qrCode: string,
+) {
+  try {
+    const qrResult = await prisma.qrcode.findUnique({
+      where: {
+        code: qrCode
+      }
+    });
 
-    if(!searchParams.toString()){
-      console.log("No Params!!")
+    if (qrResult === null) {
+      return { success: false };
     }
-  }
 
- //take the params and send it as a token. 
- //Maybe check if the params are 6 char just to make sure there is not random numeber, but the valiadtion will be done in backend I believe. 
- 
- if(searchParams.toString()){
-    return(
-      <>
-        <h1>You Should not be here but redirected !!!</h1>
-      </>
-      
-    )
+    const { id } = await prisma.attendanceToken.create({
+      data: {
+        lectureId: qrResult.lectureId,
+        token:  uuidv4()
+      }
+    });
+        
+    return { success: true, token: id };
+
+    
+    
+  } catch (error) {
+    throw error;
   }
   
-  else{
-    return(   
-      <>
-        <InputPage></InputPage>
-        <Button onClick={()=>test()} className="absolute"></Button>
-      </>
-    )
-  }
 
-
-  
 }
 
-export default SubmitPage;
+export default async function SubmitPage({searchParams}: {searchParams: any}) {
+  
+  const nextParamsCaller = appRouter.createCaller({});
+
+  const handleToken = async () => {
+    
+    const res = await validateAndCreateToken(qrCode)
+  
+    if(res){
+      console.log(res)
+      return res.token;
+    }
+    else{
+
+    }
+    
+  }
+  
+  console.log(searchParams)
+  let qrCode = ''
+  let error = ''
+
+  if(searchParams.hasOwnProperty('qr')){
+    console.log("QR Param included")
+    qrCode = searchParams.qr;
+    
+    let receivedToken = await handleToken();
+    console.log('token out: ' + receivedToken)
+
+    if(receivedToken){
+      redirect(`/markAttendance?attendanceTokenId=${receivedToken}`)
+    }
+
+    else{
+      redirect(`/submit`)//add error to the url and then retrieve it 
+    }
+    
+  }
+
+  if(searchParams.hasOwnProperty('error')){
+    console.log("Error Param included")
+    error = searchParams.error
+  }
+
+
+  
+
+  return (
+    <>
+      <div className="relative min-h-screen">
+       
+
+        <div className='flex flex-col top-0 right-0 bottom-0 h-full w-full align-middle'>
+          <InputPage></InputPage>
+        </div>
+      </div>
+    </>
+  )
+}

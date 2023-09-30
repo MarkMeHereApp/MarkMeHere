@@ -5,6 +5,7 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { request } from 'http';
 
 export const zGetLecturesOfCourse = z.object({
   courseId: z.string()
@@ -34,6 +35,8 @@ export const lectureRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
+   
+  
 
   CreateLecture: elevatedCourseMemberCourseProcedure
     .input(zCreateLecture)
