@@ -9,14 +9,23 @@ import { attendanceTokenExpirationTime } from '@/utils/globalVariables';
 
 async function findAttendanceToken(
   attendanceTokenId: string,
-  lectureId: string
 ) {
   return await prisma.attendanceToken.findFirst({
     where: {
       id: attendanceTokenId,
-      lectureId: lectureId
     }
   });
+}
+
+async function findCourseId(
+  lectureId: string
+) {
+  const lecture =  await prisma.lecture.findFirst({
+    where: {
+      id: lectureId
+    }
+  });
+  return lecture?.courseId;
 }
 
 async function findCourseMember(courseId: string, email: string) {
@@ -30,12 +39,12 @@ async function findCourseMember(courseId: string, email: string) {
 
 async function deleteAttendanceToken(
   attendanceTokenId: string,
-  lectureId: string
+  
 ) {
   return await prisma.attendanceToken.delete({
     where: {
       id: attendanceTokenId,
-      lectureId: lectureId
+      
     }
   });
 }
@@ -79,26 +88,37 @@ export default async function markAttendance({
 }: {
   searchParams: {
     attendanceTokenId: string;
-    lectureId: string;
-    courseId: string;
+    // lectureId: string;
+    // courseId: string;
   };
 }) {
   const serverSession = await getServerSession();
 
+
+
   const email: string | null = serverSession?.user?.email || null;
   const attendanceTokenId = searchParams.attendanceTokenId;
-  const lectureId = searchParams.lectureId;
-  const courseId = searchParams.courseId;
+  
 
   try {
+    
     if (!email) {
       return <MarkAttendanceError message="No Valid Email" />;
     }
 
-    const tokenRow = await findAttendanceToken(attendanceTokenId, lectureId);
+    const tokenRow = await findAttendanceToken(attendanceTokenId);
+
 
     if (!tokenRow) {
       return <MarkAttendanceError message="Invalid Attendance Token" />;
+    }
+
+    const lectureId = tokenRow.lectureId
+    
+    const courseId = await findCourseId(tokenRow.lectureId)
+
+    if(!courseId) {
+      return <MarkAttendanceError message="Missing Course ID"/>
     }
 
     if (
@@ -120,7 +140,6 @@ export default async function markAttendance({
     }
 
     if (courseMember?.role !== zCourseRoles.enum.student) {
-      await deleteAttendanceToken(attendanceTokenId, lectureId);
       const role = courseMember?.role || '[ROLE_ERROR]';
       return (
         <MarkAttendanceError
@@ -151,7 +170,8 @@ export default async function markAttendance({
       attendanceEntry = await createAttendanceEntry(lectureId, courseMemberId);
     }
 
-    await deleteAttendanceToken(attendanceTokenId, lectureId);
+    console.log("TOKEN-ID: ", attendanceTokenId)
+    await deleteAttendanceToken(attendanceTokenId);
 
     if (!attendanceEntry) {
       return (

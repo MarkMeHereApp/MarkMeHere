@@ -9,6 +9,7 @@ import { recordQRAttendanceRouter } from './routes/recordQRAttendance';
 import { lectureRouter } from './routes/lecture';
 import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
+import { attendanceTokenRouter } from './routes/attendanceToken';
 
 export const appRouter = router({
   course: courseRouter,
@@ -19,7 +20,8 @@ export const appRouter = router({
   lecture: lectureRouter,
   attendance: attendanceRouter,
   canvas: canvasRouter,
-  utils: utilsRouter
+  utils: utilsRouter,
+  attendanceToken: attendanceTokenRouter
 });
 
 export type AppRouter = typeof appRouter;
