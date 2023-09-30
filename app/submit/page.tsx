@@ -46,7 +46,6 @@ async function validateAndCreateToken(
 
 export default async function SubmitPage({searchParams}: {searchParams: any}) {
   
-  const nextParamsCaller = appRouter.createCaller({});
 
   const handleToken = async () => {
     
