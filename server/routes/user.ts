@@ -18,6 +18,10 @@ export const zCreateStudentUser = z.object({
   email: z.string()
 });
 
+export const zCreateMultipleStudentUsers = z.array(
+  z.object({ name: z.string(), email: z.string() })
+);
+
 export const courseRouter = router({
   /*
   Admins have permssion to create any type of user account
@@ -71,17 +75,23 @@ export const courseRouter = router({
   (Will be used for the CSV upload)
   */
   createMultipleStudentUsers: publicProcedure
-    .input(zCreateUser)
+    .input(zCreateMultipleStudentUsers)
     .mutation(async (requestData) => {
       try {
-        const { name, email, role } = requestData.input;
-        const resCourse = await prisma.user.create({
-          data: {
-            name,
-            email,
-            role
-          }
+        const students = requestData.input;
+        // Use map to create an array of promises for creating user accounts
+        const createUserPromises = students.map(async (student) => {
+          await prisma.user.create({
+            data: {
+              name: student.name,
+              email: student.email,
+              role: 'student'
+            }
+          });
         });
+
+        // Wait for all user creation promises to resolve
+        await Promise.all(createUserPromises);
 
         return { success: true };
       } catch (error) {
