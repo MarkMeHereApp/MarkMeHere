@@ -13,6 +13,11 @@ export const zCreateUser = z.object({
   role: z.string()
 });
 
+export const zCreateStudentUser = z.object({
+  name: z.string(),
+  email: z.string()
+});
+
 export const courseRouter = router({
   /*
   Admins have permssion to create any type of user account
@@ -22,7 +27,8 @@ export const courseRouter = router({
     .mutation(async (requestData) => {
       try {
         const { name, email, role } = requestData.input;
-        const resCourse = await prisma.user.create({
+
+        await prisma.user.create({
           data: {
             name,
             email,
@@ -41,6 +47,30 @@ export const courseRouter = router({
   (This allows the professor to manually create students)
   */
   createStudentUser: publicProcedure
+    .input(zCreateStudentUser)
+    .mutation(async (requestData) => {
+      try {
+        const { name, email } = requestData.input;
+        await prisma.user.create({
+          data: {
+            name,
+            email,
+            role: 'student'
+          }
+        });
+
+        return { success: true };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
+  /*
+  Faculty have permission to create student user accounts
+  (This allows the professor to create accounts for course members that do not have one)
+  (Will be used for the CSV upload)
+  */
+  createMultipleStudentUsers: publicProcedure
     .input(zCreateUser)
     .mutation(async (requestData) => {
       try {
@@ -57,31 +87,7 @@ export const courseRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
-
-    /*
-  Faculty have permission to create student user accounts
-  (This allows the professor to create accounts for course members that do not have one)
-  (Will be used for the CSV upload)
-  */
-  createMultipleStudentUsers: publicProcedure
-  .input(zCreateUser)
-  .mutation(async (requestData) => {
-    try {
-      const { name, email, role } = requestData.input;
-      const resCourse = await prisma.user.create({
-        data: {
-          name,
-          email,
-          role
-        }
-      });
-
-      return { success: true };
-    } catch (error) {
-      throw generateTypedError(error as Error);
-    }
-  })
+    })
 });
 
 export type CourseRouter = typeof courseRouter;
