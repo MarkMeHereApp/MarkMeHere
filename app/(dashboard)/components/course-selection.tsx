@@ -90,8 +90,8 @@ export default function CourseSelection({ className }: { className?: string }) {
           </PopoverTrigger>
         ) : (
           <Button variant="outline" onClick={() => setShowNewCourseSheet(true)}>
-            <PlusCircledIcon className="mr-2 h-5 w-5" />
-            Create Course
+            <PlusCircledIcon className="h-[1.2rem] w-[1.2rem]" />
+            <span className="hidden ml-2 sm:inline-block">Create Course</span>
           </Button>
         )}
         {selectedCourse &&

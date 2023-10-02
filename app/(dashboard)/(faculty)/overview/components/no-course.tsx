@@ -7,12 +7,12 @@ export const NoCourse = () => {
       <div className="p-6 flex justify-center items-center space-y-4 pt-8 animate-in fade-in ease-in duration-1000 ">
         <Icons.logo
           className="wave-infinite primary-foreground"
-          style={{ width: '150px', height: 'auto' }}
+          style={{ minWidth: '120px', height: 'auto' }}
         />
         <span className={firaSansFont.className}>
           <div className="flex-col">
             <h2 className="text-4xl font-bold">Welcome to Mark Me Here!</h2>
-            <h2 className="text-2xl font-bold">
+            <h2 className="mt-1 text-2xl font-bold">
               Create a course to get started.
             </h2>
           </div>

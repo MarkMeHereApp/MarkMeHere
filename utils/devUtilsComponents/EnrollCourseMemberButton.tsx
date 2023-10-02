@@ -102,10 +102,15 @@ const EnrollCourseMemberButton = () => {
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" onClick={() => handleDialogOpen()}>
-            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-            Enroll New Course Member
-          </Button>
+        <Button
+          variant="default"
+          onClick={() => handleDialogOpen()}
+          className="flex items-center"
+          style={{ maxWidth: '100%' }}
+        >
+          <AiOutlineUserAdd className="h-4 w-4 mr-2" />
+          <span className="whitespace-nowrap">Enroll</span>
+        </Button>
         </DialogTrigger>
         <DialogContent
           className="sm:max-w-[425px]"
