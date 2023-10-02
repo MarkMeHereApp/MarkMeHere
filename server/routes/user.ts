@@ -1,7 +1,6 @@
 /* -------- Only users with an Admin or Moderator site role can access these routes -------- */
 
 import { publicProcedure, router } from '../trpc';
-import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
@@ -13,16 +12,7 @@ export const zCreateUser = z.object({
   role: z.string()
 });
 
-export const zCreateStudentUser = z.object({
-  name: z.string(),
-  email: z.string()
-});
-
-export const zCreateMultipleStudentUsers = z.array(
-  z.object({ name: z.string(), email: z.string() })
-);
-
-export const courseRouter = router({
+export const userRouter = router({
   /*
   Admins have permssion to create any type of user account
   */
@@ -44,60 +34,7 @@ export const courseRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
-
-  /*
-  Faculty have permission to create student user accounts
-  (This allows the professor to manually create students)
-  */
-  createStudentUser: publicProcedure
-    .input(zCreateStudentUser)
-    .mutation(async (requestData) => {
-      try {
-        const { name, email } = requestData.input;
-        await prisma.user.create({
-          data: {
-            name,
-            email,
-            role: 'student'
-          }
-        });
-
-        return { success: true };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
-
-  /*
-  Faculty have permission to create student user accounts
-  (This allows the professor to create accounts for course members that do not have one)
-  (Will be used for the CSV upload)
-  */
-  createMultipleStudentUsers: publicProcedure
-    .input(zCreateMultipleStudentUsers)
-    .mutation(async (requestData) => {
-      try {
-        const students = requestData.input;
-        // Use map to create an array of promises for creating user accounts
-        const createUserPromises = students.map(async (student) => {
-          await prisma.user.create({
-            data: {
-              name: student.name,
-              email: student.email,
-              role: 'student'
-            }
-          });
-        });
-
-        // Wait for all user creation promises to resolve
-        await Promise.all(createUserPromises);
-
-        return { success: true };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
     })
 });
 
-export type CourseRouter = typeof courseRouter;
+export type UserRouter = typeof userRouter;
