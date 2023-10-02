@@ -31,9 +31,9 @@ export default function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-9 w-9">
             <AvatarImage src={avatar} />
-            <AvatarFallback>{name.charAt(0) || 'M'}</AvatarFallback>
+            <AvatarFallback>{name.charAt(0) || ''}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
