@@ -255,22 +255,24 @@ const CSV_Import = () => {
   return (
     <>
       {' '}
-      <Input
-        type="file"
-        accept=".csv"
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-        ref={fileInputRef}
-        id="csv"
-      />
-      <label
-        htmlFor="csv"
-        className={
-          'bg-primary cursor-pointer text-black text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
-        }
-      >
-        Import CSV
-      </label>
+      <div className="grid max-w-sm items-center gap-1.5">
+        <Input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            id="csv"
+        />
+        <label
+            htmlFor="csv"
+            className={
+            'bg-primary cursor-pointer text-black text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
+            }
+        >
+            Import CSV
+        </label>
+      </div>
       <Dialog open={isFileUploaded}>
         <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
           <DialogHeader>
