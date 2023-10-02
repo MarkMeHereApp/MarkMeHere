@@ -170,7 +170,9 @@ export function DataTableToolbar<TData>({
           </>
         )}
       </div>
-      <CalendarDateRangePicker />
+      <div className='ml-2'>
+        <CalendarDateRangePicker />
+      </div>
     </div>
   );
 }
