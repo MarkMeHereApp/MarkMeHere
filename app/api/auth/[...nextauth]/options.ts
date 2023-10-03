@@ -4,6 +4,8 @@ import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
+import isDevMode from '@/utils/isDevMode';
+import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
 
 function customPrismaAdapter(prisma: PrismaClient) {
   return {
@@ -21,6 +23,11 @@ const defaultProviders = [
     clientSecret: process.env.ZOOM_CLIENT_SECRET as string
   })
 ] as AuthOptions['providers'];
+
+(async () => {
+  const dbProviders = await getBuiltInNextAuthProviders();
+  defaultProviders.push(...dbProviders);
+})();
 
 // if (isDevMode) {
 //   defaultProviders.push(

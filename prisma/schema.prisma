@@ -120,3 +120,20 @@ model AttendanceToken {
   // We could implement a system where these are auto deleted after expiration (e.g 10 mins)
   // expiresAt DateTime 
 }
+
+
+model AuthProviderCredentials{
+
+  id        String   @id @default(cuid())
+  enabled  Boolean  @default(true)
+  provider  String    @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clientId  String
+  clientSecret String
+  issuer  String?
+  authorizationUrl String?
+  
+
+
+}
