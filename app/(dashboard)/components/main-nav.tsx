@@ -14,6 +14,14 @@ export default function MainNav({
 
   // A helper function to determine if the link is active
   function isActive(href: string) {
+    // Since the Admin Dashboard has a bunch of pages inside of it, we have to be a big janky with it, and highlight the admin dashboard for all of its pages.
+    if (href === '/manage-courses') {
+      return (
+        pathname === '/manage-courses' ||
+        pathname === '/manage-site-users' ||
+        pathname === '/admin-settings'
+      );
+    }
     return pathname === href;
   }
 
@@ -60,16 +68,10 @@ export default function MainNav({
           />
         </>
       ) : null}
-      <MainNavBarCustomLink
-        href="/manage-site-users"
-        displayText="Site Users"
-      />
-
-      <MainNavBarCustomLink href="/manage-courses" displayText="Courses" />
 
       <MainNavBarCustomLink
-        href="/admin-settings"
-        displayText="Admin Settings"
+        href="/manage-courses"
+        displayText="Admin Dashboard"
       />
 
       <MainNavBarCustomLink

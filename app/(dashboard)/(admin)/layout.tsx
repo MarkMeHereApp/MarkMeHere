@@ -5,16 +5,16 @@ import { SidebarNav } from '@/components/general/sidebar-nav';
 
 const sidebarNavItems = [
   {
-    title: 'Profile',
+    title: 'Manage Courses',
+    href: '/manage-courses'
+  },
+  {
+    title: 'Manage Users',
+    href: '/manage-site-users'
+  },
+  {
+    title: 'Admin Settings',
     href: '/admin-settings'
-  },
-  {
-    title: 'Provider Setup',
-    href: '/admin-settings/auth-provider-setup'
-  },
-  {
-    title: 'Notifications',
-    href: '/admin-settings/notifications'
   }
 ];
 

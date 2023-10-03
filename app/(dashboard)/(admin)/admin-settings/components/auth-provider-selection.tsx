@@ -21,7 +21,7 @@ import {
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
 
-export default function AuthProviderForm() {
+export default function AuthProviderSelector() {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   type ProviderData =
