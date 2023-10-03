@@ -34,6 +34,8 @@ const CSV_Import = () => {
   const [isImporting, setIsImporting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [validationColor, setVlidationColor] = useState('');
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState(false);
   const { toast } = useToast();
 
   const [validationProgress, setValidationProgress] = useState(0);
@@ -52,7 +54,9 @@ const CSV_Import = () => {
       fileInputRef.current.value = '';
     }
   };
-
+  const openConfirmationDialog = () => {
+    setIsConfirmationDialogOpen(true);
+  };
   const validateCSV = async (headers: string[], values: CSVData[]) => {
     try {
       setVlidationColor('');
@@ -225,10 +229,7 @@ const CSV_Import = () => {
         toast({
           title: 'Imported CSV successfully',
           icon: 'success',
-          description:
-            'Added ' +
-            newMembers.allCourseMembersOfClass.length +
-            ' new members'
+          description: 'Added ' + tableValues.length + ' new members'
         });
         data.setCourseMembersOfSelectedCourse(
           newMembers.allCourseMembersOfClass
@@ -271,6 +272,7 @@ const CSV_Import = () => {
         );
 
         setTableValues(newTableValues);
+        setExistedMembers([]);
       }
     }
   };
@@ -329,7 +331,7 @@ const CSV_Import = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={isFileUploaded}>
-        <DialogContent className="sm:max-w-[1000px]" onClose={closeDialog}>
+        <DialogContent className="sm:max-w-[1000px] " onClose={closeDialog}>
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
@@ -352,7 +354,7 @@ const CSV_Import = () => {
                 <Button
                   variant={'destructive'}
                   style={{ marginRight: '10px' }}
-                  onClick={removeAlreadyExistedMembers}
+                  onClick={openConfirmationDialog}
                 >
                   <svg
                     width="20"
@@ -393,6 +395,37 @@ const CSV_Import = () => {
                 )}
                 {!isImporting && <BsUpload className="h-5 w-4 mr-2" />}
                 Import
+              </Button>
+            </DialogTrigger>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isConfirmationDialogOpen}>
+        <DialogContent onClose={() => setIsConfirmationDialogOpen(false)}>
+          <DialogHeader>
+            <DialogTitle>Confirmation</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            Are you sure you want to remove existing members from CSV?
+          </DialogDescription>
+          <DialogFooter>
+            <DialogTrigger asChild>
+              <Button
+                variant="secondary"
+                onClick={() => setIsConfirmationDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+            </DialogTrigger>
+            <DialogTrigger asChild>
+              <Button
+                variant="default"
+                onClick={() => {
+                  removeAlreadyExistedMembers();
+                  setIsConfirmationDialogOpen(false);
+                }}
+              >
+                Confirm
               </Button>
             </DialogTrigger>
           </DialogFooter>
