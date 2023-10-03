@@ -1,5 +1,6 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
+import crypto from 'crypto';
 
 export function formatString(str: string): string {
   return str

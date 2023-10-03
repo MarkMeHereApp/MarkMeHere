@@ -1,10 +1,8 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarIcon, CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
-import { format } from 'date-fns';
-import * as z from 'zod';
-import { ProviderSubmissionDialog } from './provider-submission-dialog';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+
+import { ProviderSubmissionDialog } from './auth-provider-popover/auth-provider-dialog';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -20,18 +18,19 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { toast } from '@/components/ui/use-toast';
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
 
-export default function AccountForm() {
+export default function AuthProviderForm() {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   type ProviderData =
     (typeof providerFunctions)[keyof typeof providerFunctions];
+
   const [providerData, setProviderData] = useState<ProviderData | undefined>(
     undefined
   );
+
   const [showProviderSubmissionDialog, setShowProviderSubmissionDialog] =
     useState(false);
 
