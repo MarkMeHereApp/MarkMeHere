@@ -1,9 +1,7 @@
 import GithubProvider from 'next-auth/providers/github';
 import ZoomProvider from 'next-auth/providers/zoom';
 import AzureADProvider from 'next-auth/providers/azure-ad';
-import type { AuthOptions, NextAuthOptions } from 'next-auth';
-import prisma from '@/prisma';
-import { decrypt } from '@/utils/globalFunctions';
+
 interface ProviderFunctionParams {
   clientId: string;
   clientSecret: string;
@@ -27,7 +25,7 @@ export const providerFunctions = {
       })
   },
   azuread: {
-    key: 'azure-ad',
+    key: 'azuread',
     tested: false,
     displayName: 'Azure AD',
     nextAuthDocs: 'https://next-auth.js.org/providers/azure-ad',
@@ -41,34 +39,3 @@ export const providerFunctions = {
       })
   }
 };
-
-export async function getBuiltInNextAuthProviders(): Promise<
-  AuthOptions['providers']
-> {
-  const builtInAuthProviders = [] as AuthOptions['providers'];
-
-  const providers = await prisma.authProviderCredentials.findMany({
-    where: {
-      enabled: true
-    }
-  });
-
-  providers.forEach((provider) => {
-    const providerFunction =
-      providerFunctions[provider.provider as keyof typeof providerFunctions];
-    if (!providerFunction) {
-      throw new Error(`Provider ${provider.provider} not found`);
-    }
-
-    builtInAuthProviders.push(
-      providerFunction.config({
-        clientId: decrypt(provider.clientId) as string,
-        clientSecret: decrypt(provider.clientSecret) as string,
-        issuer: provider.issuer
-          ? (decrypt(provider.issuer) as string)
-          : undefined
-      })
-    );
-  });
-  return builtInAuthProviders;
-}

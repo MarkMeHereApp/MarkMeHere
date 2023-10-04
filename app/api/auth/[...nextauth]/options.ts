@@ -69,7 +69,6 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
 
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);
-  console.log(defaultProviders.length);
 
   return {
     adapter: customPrismaAdapter(prisma) as Adapter,

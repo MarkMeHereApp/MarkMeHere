@@ -21,7 +21,11 @@ import {
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
 
-export default function AuthProviderSelector() {
+export default function AuthProviderSelector({
+  activeAuthProviders
+}: {
+  activeAuthProviders: string[];
+}) {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   type ProviderData =
@@ -65,18 +69,23 @@ export default function AuthProviderSelector() {
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search language..." />
+            <CommandInput placeholder="Search Provider..." />
             <CommandEmpty>No Auth Providers Found</CommandEmpty>
             <CommandGroup>
-              {Object.values(providerFunctions).map((provider) => (
-                <CommandItem
-                  value={provider.displayName}
-                  key={provider.key}
-                  onSelect={() => setSelectedProvider(provider.key)}
-                >
-                  {provider.displayName}
-                </CommandItem>
-              ))}
+              {Object.values(providerFunctions)
+                .filter(
+                  (provider) =>
+                    !activeAuthProviders.includes(provider.displayName)
+                )
+                .map((provider) => (
+                  <CommandItem
+                    value={provider.displayName}
+                    key={provider.key}
+                    onSelect={() => setSelectedProvider(provider.key)}
+                  >
+                    {provider.displayName}
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </Command>
         </PopoverContent>
