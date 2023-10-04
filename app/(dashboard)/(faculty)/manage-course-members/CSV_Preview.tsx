@@ -40,7 +40,7 @@ export function CSV_Preview(props: {
                 (existingMember) => existingMember.lmsId === d.lmsId
               );
 
-            const textColor = isExistingMember ? 'IndianRed' : 'black';
+            const textColor = isExistingMember ? 'IndianRed' : '';
 
             return (
               <TableRow key={d.id}>
