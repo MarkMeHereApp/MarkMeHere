@@ -33,6 +33,19 @@ export function toastWarning(
   });
 }
 
+// TThis is the generic success message
+export function toastSuccess(
+  successMessage: string,
+  action?: ToastActionElement | undefined
+) {
+  toast({
+    title: 'Success!',
+    icon: 'success',
+    description: successMessage,
+    action: action
+  });
+}
+
 export function encrypt(text: string) {
   if (!process.env.ENCRYPTION_KEY) {
     throw new Error('ENCRYPTION_KEY not set');

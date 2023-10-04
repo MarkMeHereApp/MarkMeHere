@@ -5,7 +5,40 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
 import isDevMode from '@/utils/isDevMode';
-import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
+import { decrypt } from '@/utils/globalFunctions';
+import { providerFunctions } from './built-in-next-auth-providers';
+
+const getBuiltInNextAuthProviders = async (): Promise<
+  AuthOptions['providers']
+> => {
+  const builtInAuthProviders = [] as AuthOptions['providers'];
+
+  const providers = await prisma.authProviderCredentials.findMany({
+    where: {
+      enabled: true
+    }
+  });
+
+  providers.forEach((provider) => {
+    const providerFunction =
+      providerFunctions[provider.provider as keyof typeof providerFunctions];
+
+    if (!providerFunction) {
+      throw new Error(`Provider ${provider.provider} not found`);
+    }
+
+    builtInAuthProviders.push(
+      providerFunction.config({
+        clientId: decrypt(provider.clientId) as string,
+        clientSecret: decrypt(provider.clientSecret) as string,
+        issuer: provider.issuer
+          ? (decrypt(provider.issuer) as string)
+          : undefined
+      })
+    );
+  });
+  return builtInAuthProviders;
+};
 
 function customPrismaAdapter(prisma: PrismaClient) {
   return {
@@ -17,18 +50,6 @@ function customPrismaAdapter(prisma: PrismaClient) {
   };
 }
 
-const defaultProviders = [
-  ZoomProvider({
-    clientId: process.env.ZOOM_CLIENT_ID as string,
-    clientSecret: process.env.ZOOM_CLIENT_SECRET as string
-  })
-] as AuthOptions['providers'];
-
-(async () => {
-  const dbProviders = await getBuiltInNextAuthProviders();
-  defaultProviders.push(...dbProviders);
-})();
-
 // if (isDevMode) {
 //   defaultProviders.push(
 //     GithubProvider({
@@ -38,69 +59,81 @@ const defaultProviders = [
 //   );
 // }
 
-export const authOptions: NextAuthOptions = {
-  adapter: customPrismaAdapter(prisma) as Adapter,
-  providers: defaultProviders,
-  // credentials are commented until normal auth is working perfectly
-  // CredentialsProvider({
-  //   // The name to display on the sign in form (e.g. "Sign in with...")
-  //   name: 'Credentials',
-  //   // `credentials` is used to generate a form on the sign in page.
-  //   // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-  //   // e.g. domain, username, password, 2FA token, etc.
-  //   // You can pass any HTML attribute to the <input> tag through the object.
-  //   credentials: {
-  //     email: { label: 'Email', type: 'text' },
-  //     password: { label: 'Password', type: 'password' }
-  //   },
-  //   async authorize(credentials) {
-  //     const email: string = credentials?.email ?? '';
-  //     const password: string = credentials?.password ?? '';
+export const getAuthOptions = async (): Promise<NextAuthOptions> => {
+  const defaultProviders = [
+    ZoomProvider({
+      clientId: process.env.ZOOM_CLIENT_ID as string,
+      clientSecret: process.env.ZOOM_CLIENT_SECRET as string
+    })
+  ] as AuthOptions['providers'];
 
-  //     // Find the user with the provided email
-  //     const user = await prisma.user.findUnique({
-  //       where: { email }
-  //     });
-  //     //Throw email not found if user uis not found here
+  const dbProviders = await getBuiltInNextAuthProviders();
+  defaultProviders.push(...dbProviders);
+  console.log(defaultProviders.length);
 
-  //     //const user = { id: "1", name: "J Smith", email: "test@test" }
+  return {
+    adapter: customPrismaAdapter(prisma) as Adapter,
+    providers: defaultProviders,
+    // credentials are commented until normal auth is working perfectly
+    // CredentialsProvider({
+    //   // The name to display on the sign in form (e.g. "Sign in with...")
+    //   name: 'Credentials',
+    //   // `credentials` is used to generate a form on the sign in page.
+    //   // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+    //   // e.g. domain, username, password, 2FA token, etc.
+    //   // You can pass any HTML attribute to the <input> tag through the object.
+    //   credentials: {
+    //     email: { label: 'Email', type: 'text' },
+    //     password: { label: 'Password', type: 'password' }
+    //   },
+    //   async authorize(credentials) {
+    //     const email: string = credentials?.email ?? '';
+    //     const password: string = credentials?.password ?? '';
 
-  //     //If user does not exist say "Cant find user associated with this email"
-  //     // if (!user) {
-  //     //   throw new Error(( 'email' ));
-  //     // }
+    //     // Find the user with the provided email
+    //     const user = await prisma.user.findUnique({
+    //       where: { email }
+    //     });
+    //     //Throw email not found if user uis not found here
 
-  //     //If email is found check if password is correct
-  //     //If user exists and entered password matches hashed password
-  //     if (
-  //       user &&
-  //       user.password &&
-  //       (await bcrypt.compare(password, user.password))
-  //     ) {
-  //       // Any object returned will be saved in `user` property of the JWT
-  //       return user;
-  //     } else {
-  //       // If you return null then an error will be displayed advising the user to check their details.
-  //       return null;
+    //     //const user = { id: "1", name: "J Smith", email: "test@test" }
 
-  //       // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-  //     }
-  //   }
-  // })
-  //When JWT is created store user role in the token
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) token.role = user.role;
-      return token;
+    //     //If user does not exist say "Cant find user associated with this email"
+    //     // if (!user) {
+    //     //   throw new Error(( 'email' ));
+    //     // }
+
+    //     //If email is found check if password is correct
+    //     //If user exists and entered password matches hashed password
+    //     if (
+    //       user &&
+    //       user.password &&
+    //       (await bcrypt.compare(password, user.password))
+    //     ) {
+    //       // Any object returned will be saved in `user` property of the JWT
+    //       return user;
+    //     } else {
+    //       // If you return null then an error will be displayed advising the user to check their details.
+    //       return null;
+
+    //       // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+    //     }
+    //   }
+    // })
+    //When JWT is created store user role in the token
+    callbacks: {
+      jwt({ token, user }) {
+        if (user) token.role = user.role;
+        return token;
+      }
     },
-  },
-  session: {
-    strategy: 'jwt'
-  },
-
-  pages: {
-    signIn: '/signin',
-    newUser: '/',
-    error: '/'
-  }
+    session: {
+      strategy: 'jwt'
+    },
+    pages: {
+      signIn: '/signin',
+      newUser: '/',
+      error: '/'
+    }
+  };
 };

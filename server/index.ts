@@ -9,6 +9,7 @@ import { lectureRouter } from './routes/lecture';
 import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
 import { attendanceTokenRouter } from './routes/attendanceToken';
+import { providerRouter } from './routes/provider';
 
 export const appRouter = router({
   course: courseRouter,
@@ -19,7 +20,8 @@ export const appRouter = router({
   attendance: attendanceRouter,
   canvas: canvasRouter,
   utils: utilsRouter,
-  attendanceToken: attendanceTokenRouter
+  attendanceToken: attendanceTokenRouter,
+  provider: providerRouter
 });
 
 export type AppRouter = typeof appRouter;

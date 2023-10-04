@@ -62,9 +62,11 @@ export async function getBuiltInNextAuthProviders(): Promise<
 
     builtInAuthProviders.push(
       providerFunction.config({
-        clientId: decrypt(provider.clientId),
-        clientSecret: decrypt(provider.clientSecret),
-        issuer: provider.issuer ? decrypt(provider.issuer) : undefined
+        clientId: decrypt(provider.clientId) as string,
+        clientSecret: decrypt(provider.clientSecret) as string,
+        issuer: provider.issuer
+          ? (decrypt(provider.issuer) as string)
+          : undefined
       })
     );
   });
