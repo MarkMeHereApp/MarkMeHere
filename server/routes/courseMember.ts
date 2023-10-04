@@ -145,21 +145,45 @@ export const courseMemberRouter = router({
     }),
 
   // TODO: If there is duplicate data, overwrite the existing data.
-  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
+  createMultipleCourseMembers: publicProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
-        await prisma.courseMember.createMany({
-          data: requestData.input.courseMembers.map((member) => ({
-            ...member,
-            courseId: requestData.input.courseId
-          }))
-        });
+        const upsertedCourseMembers = [];
+        for (const memberData of requestData.input.courseMembers) {
+          const existingMember = await prisma.courseMember.findFirst({
+            where: {
+              courseId: requestData.input.courseId,
+              lmsId: memberData.lmsId
+            }
+          });
+
+          if (existingMember) {
+            // If the member exists, update it
+            const updatedMember = await prisma.courseMember.update({
+              where: { id: existingMember.id },
+              data: memberData
+            });
+            upsertedCourseMembers.push(updatedMember);
+          } else {
+            // If the member doesn't exist, create it
+            const createdMember = await prisma.courseMember.create({
+              data: {
+                ...memberData,
+                courseId: requestData.input.courseId
+              }
+            });
+            upsertedCourseMembers.push(createdMember);
+          }
+        }
+
+        // Fetch all course members after the upsert operation
         const allCourseMembersOfClass = await prisma.courseMember.findMany({
           where: {
             courseId: requestData.input.courseId
           }
         });
+
         return { success: true, allCourseMembersOfClass };
       } catch (error) {
         throw generateTypedError(error as Error);
