@@ -6,8 +6,19 @@ import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
 import isDevMode from '@/utils/isDevMode';
 import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
+import bcrypt from 'bcrypt'
 
-function customPrismaAdapter(prisma: PrismaClient) {
+function customPrismaAdapterDefault(prisma: PrismaClient) {
+  return {
+    ...PrismaAdapter(prisma),
+    createUser: (data: any) => {
+      const role = 'FACULTY';
+      return prisma.user.create({ data: { ...data, role: role } });
+    }
+  };
+}
+
+function customPrismaAdapterHashed(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
@@ -39,7 +50,7 @@ const defaultProviders = [
 // }
 
 export const authOptions: NextAuthOptions = {
-  adapter: customPrismaAdapter(prisma) as Adapter,
+  adapter: customPrismaAdapterHashed(prisma) as Adapter,
   providers: defaultProviders,
   // credentials are commented until normal auth is working perfectly
   // CredentialsProvider({
