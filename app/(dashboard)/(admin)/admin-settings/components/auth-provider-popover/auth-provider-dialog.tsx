@@ -1,5 +1,7 @@
 'use client';
 
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,11 +15,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
-import { formatString } from '@/utils/globalFunctions';
+import { formatString, toastSuccess } from '@/utils/globalFunctions';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { AuthProviderWarning } from './auth-provider-warning';
 import { AuthProviderDescription } from './auth-provider-description';
+import { trpc } from '@/app/_trpc/client';
 
 type ProviderSubmissionDialogProps = {
   isDisplaying: boolean;
@@ -54,10 +56,12 @@ export function ProviderSubmissionDialog({
   };
 
   let keys: string[] = [];
-  let initialValues: { [key: string]: string } = {};
+  const initialValues: { [key: string]: string } = {};
   if (typeof data?.config === 'function') {
     keys = getDestructuredKeys(data.config);
-    initialValues = keys.reduce((acc, key) => ({ ...acc, [key]: '' }), {});
+    for (const key of keys) {
+      initialValues[key] = '';
+    }
   }
 
   if (!keys || (keys.length === 0 && isDisplaying)) {
@@ -65,6 +69,14 @@ export function ProviderSubmissionDialog({
   }
 
   const [values, setValues] = useState(initialValues);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  if (error) {
+    throw error;
+  }
+  const createOrUpdateProvider =
+    trpc.provider.createOrUpdateProvider.useMutation();
 
   const handleInputChange = (key: string, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -74,16 +86,35 @@ export function ProviderSubmissionDialog({
     return Object.values(values).every((value) => value !== '');
   };
 
-  const submitProvider = () => {
-    console.log(values);
-    setValues((prev) => {
-      const newValues = { ...prev };
-      for (const key in newValues) {
-        newValues[key] = '';
+  const submitProvider = async () => {
+    setLoading(true);
+
+    try {
+      if (!data?.displayName || !data?.key) {
+        setError(new Error('No name for key.'));
+        return;
       }
-      return newValues;
-    });
-    setIsDisplaying(false);
+      await createOrUpdateProvider.mutateAsync({
+        provider: data.key,
+        displayName: data.displayName,
+        clientId: values['clientId'],
+        clientSecret: values['clientSecret'],
+        issuer: values['issuer']
+      });
+
+      setValues((prev) => {
+        const newValues = { ...prev };
+        for (const key in newValues) {
+          newValues[key] = '';
+        }
+        return newValues;
+      });
+      setLoading(false);
+      setIsDisplaying(false);
+      toastSuccess('Successfully added new provider!');
+    } catch (error) {
+      setError(error as Error);
+    }
   };
 
   if (data?.key) {
@@ -133,9 +164,11 @@ export function ProviderSubmissionDialog({
                 onClick={() => {
                   submitProvider();
                 }}
-                disabled={!allKeysHaveValues()}
+                disabled={!allKeysHaveValues() || loading}
               >
-                Add {data?.displayName} Provider
+                {loading
+                  ? 'Submitting...'
+                  : `Add ${data?.displayName} Provider`}
               </Button>
             </DialogFooter>
           </DialogContent>
