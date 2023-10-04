@@ -8,6 +8,8 @@ import isDevMode from '@/utils/isDevMode';
 import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
 import bcrypt from 'bcrypt'
 
+
+
 function customPrismaAdapterDefault(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
@@ -23,6 +25,7 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
     ...PrismaAdapter(prisma),
     createUser: (data: any) => {
       const role = 'FACULTY';
+      console.log(data)
       return prisma.user.create({ data: { ...data, role: role } });
     }
   };
