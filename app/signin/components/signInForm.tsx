@@ -67,6 +67,10 @@ export default function SignInForm({
         error = 'Email not found';
         break;
 
+      case 'OAuthSignin':
+        error = 'OAuth Sign In Error.';
+        break;
+
       default:
         error = 'Unknown Error';
     }
