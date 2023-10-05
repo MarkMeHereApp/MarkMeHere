@@ -128,11 +128,9 @@ export function ProviderSubmissionDialog({
         issuer: inputForm.keys['issuer']
       });
 
-      /*
       keys.forEach((key) => {
-        form.resetField(key);
+        form.resetField(`keys.${key}`);
       });
-      */
 
       if (!result?.success) {
         setError(new Error('Could not create Provider.'));
