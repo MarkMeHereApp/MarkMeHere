@@ -35,7 +35,7 @@ export default function AuthProviderSelector() {
   const [showProviderSubmissionDialog, setShowProviderSubmissionDialog] =
     useState(false);
 
-  const { activeProviders, setActiveProviders } = useProviderContext();
+  const { activeProviders } = useProviderContext();
 
   useEffect(() => {
     if (selectedProvider) {
