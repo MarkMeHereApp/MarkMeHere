@@ -3,7 +3,7 @@
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
-import { ConfirmDeleteDialog } from './are-you-sure-alert-dialog';
+import { ConfirmDeleteDialog } from '@/components/general/are-you-sure-alert-dialog';
 import { toastSuccess } from '@/utils/globalFunctions';
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
