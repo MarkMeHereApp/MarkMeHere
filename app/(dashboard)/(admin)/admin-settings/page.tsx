@@ -3,11 +3,6 @@ import AuthProviderSelector from './components/auth-provider-selection';
 import prisma from '@/prisma';
 
 export default async function SettingsAccountPage() {
-  const authProviders = await prisma.authProviderCredentials.findMany({});
-  const providerDisplayNames = authProviders.map(
-    (provider) => provider.displayName
-  );
-
   return (
     <div className="space-y-6">
       <div>
@@ -18,7 +13,7 @@ export default async function SettingsAccountPage() {
         </p>
       </div>
       <Separator />
-      <AuthProviderSelector activeAuthProviders={providerDisplayNames} />
+      <AuthProviderSelector />
     </div>
   );
 }
