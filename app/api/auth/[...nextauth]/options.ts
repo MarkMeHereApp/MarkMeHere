@@ -6,7 +6,7 @@ import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
 import isDevMode from '@/utils/isDevMode';
 import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 
 function customPrismaAdapterDefault(prisma: PrismaClient) {
   return {
@@ -23,10 +23,33 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
     ...PrismaAdapter(prisma),
     createUser: async (data: any) => {
       const role = 'FACULTY';
-      console.log(data)
-      const hashedEmail = await bcrypt.hash(data.email, 10)
-      console.log('hashedEmail: ', hashedEmail)
-      return prisma.user.create({ data: { name: data.name, email: data.email, role: role, image: data.image} });
+      const hashedEmail = await bcrypt.hash(data.email, 10);
+      return prisma.user.create({
+        data: {
+          name: data.name,
+          email: hashedEmail,
+          role: role,
+          image: data.image
+        }
+      });
+    },
+
+    getUserByEmail: async (email: string) => {
+      // Find all users from the database
+      const allUsers = await prisma.user.findMany();
+
+      // Iterate through all users and check if the provided email matches any user's hashed email
+      for (const user of allUsers) {
+        const isEmailMatch = await bcrypt.compare(email, user.email);
+        if (isEmailMatch) {
+          // Return the user if there's a match
+          console.log('USER FOUND');
+          return user;
+        }
+      }
+
+      // Return null if no matching user is found
+      return null;
     }
   };
 }
@@ -54,7 +77,6 @@ const defaultProviders = [
 // }
 
 export const authOptions: NextAuthOptions = {
-  
   adapter: customPrismaAdapterHashed(prisma) as Adapter,
   providers: defaultProviders,
   // credentials are commented until normal auth is working perfectly
@@ -107,9 +129,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user }) {
       if (user) token.role = user.role;
-      console.log(token);
       return token;
-    },
+    }
   },
   session: {
     strategy: 'jwt'
