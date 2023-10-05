@@ -13,7 +13,6 @@ model User {
   role             String    @db.VarChar(10)
   name             String?
   email            String?   @unique
-  emailVerified    DateTime?
   image            String?
   dateCreated      DateTime? @default(now())
   selectedCourseId String?   @db.VarChar(255)

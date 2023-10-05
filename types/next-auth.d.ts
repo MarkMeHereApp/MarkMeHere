@@ -7,7 +7,6 @@ declare module 'next-auth' {
     role: string;
     name?: string | null;
     email?: string | null;
-    emailVerified?: Date | null;
     image?: string | null;
     dateCreated?: Date | null;
     selectedCourseId?: string | null;

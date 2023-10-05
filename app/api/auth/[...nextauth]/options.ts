@@ -8,8 +8,6 @@ import isDevMode from '@/utils/isDevMode';
 import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
 import bcrypt from 'bcrypt'
 
-
-
 function customPrismaAdapterDefault(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
@@ -23,10 +21,12 @@ function customPrismaAdapterDefault(prisma: PrismaClient) {
 function customPrismaAdapterHashed(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
-    createUser: (data: any) => {
+    createUser: async (data: any) => {
       const role = 'FACULTY';
       console.log(data)
-      return prisma.user.create({ data: { ...data, role: role } });
+      const hashedEmail = await bcrypt.hash(data.email, 10)
+      console.log('hashedEmail: ', hashedEmail)
+      return prisma.user.create({ data: { name: data.name, email: data.email, role: role, image: data.image} });
     }
   };
 }
@@ -34,7 +34,8 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
 const defaultProviders = [
   ZoomProvider({
     clientId: process.env.ZOOM_CLIENT_ID as string,
-    clientSecret: process.env.ZOOM_CLIENT_SECRET as string
+    clientSecret: process.env.ZOOM_CLIENT_SECRET as string,
+    allowDangerousEmailAccountLinking: true
   })
 ] as AuthOptions['providers'];
 
@@ -53,6 +54,7 @@ const defaultProviders = [
 // }
 
 export const authOptions: NextAuthOptions = {
+  
   adapter: customPrismaAdapterHashed(prisma) as Adapter,
   providers: defaultProviders,
   // credentials are commented until normal auth is working perfectly
@@ -105,6 +107,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user }) {
       if (user) token.role = user.role;
+      console.log(token);
       return token;
     },
   },
