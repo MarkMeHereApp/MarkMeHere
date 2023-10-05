@@ -3,8 +3,7 @@
 import { CaretSortIcon } from '@radix-ui/react-icons';
 
 import { ProviderSubmissionDialog } from './auth-provider-popover/auth-provider-dialog';
-
-import { cn } from '@/lib/utils';
+import { useProviderContext } from '../provider-context';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -21,11 +20,9 @@ import {
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
 
-export default function AuthProviderSelector({
-  activeAuthProviders
-}: {
-  activeAuthProviders: string[];
-}) {
+import { ActiveAuthProvider } from './active-auth-providers/active-auth-provider';
+
+export default function AuthProviderSelector() {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   type ProviderData =
@@ -37,6 +34,8 @@ export default function AuthProviderSelector({
 
   const [showProviderSubmissionDialog, setShowProviderSubmissionDialog] =
     useState(false);
+
+  const { activeProviders, setActiveProviders } = useProviderContext();
 
   useEffect(() => {
     if (selectedProvider) {
@@ -58,11 +57,7 @@ export default function AuthProviderSelector({
       />
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className={cn('w-[350px] justify-between')}
-          >
+          <Button variant="outline" role="combobox" className="justify-between">
             Add New Auth Provider
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -74,8 +69,7 @@ export default function AuthProviderSelector({
             <CommandGroup>
               {Object.values(providerFunctions)
                 .filter(
-                  (provider) =>
-                    !activeAuthProviders.includes(provider.displayName)
+                  (provider) => !activeProviders.includes(provider.displayName)
                 )
                 .map((provider) => (
                   <CommandItem
@@ -90,6 +84,11 @@ export default function AuthProviderSelector({
           </Command>
         </PopoverContent>
       </Popover>
+      {Object.values(providerFunctions)
+        .filter((provider) => activeProviders.includes(provider.displayName))
+        .map((provider) => (
+          <ActiveAuthProvider displayName={provider.displayName} className="" />
+        ))}
     </>
   );
 }

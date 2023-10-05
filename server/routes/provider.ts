@@ -6,6 +6,7 @@ import { TRPCError } from '@trpc/server';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import crypto from 'crypto';
 import { signIn, getCsrfToken } from 'next-auth/react';
+import { data } from 'autoprefixer';
 
 export const zCreateOrUpdateProvider = z.object({
   displayName: z.string(),
@@ -52,7 +53,29 @@ export const providerRouter = router({
     } catch (error) {
       throw generateTypedError(error as Error);
     }
-  })
+  }),
+  deleteActiveProvider: publicProcedure
+    .input(z.object({ displayName: z.string() }))
+    .mutation(async (requestData) => {
+      try {
+        const deletedProvider = await prisma.authProviderCredentials.delete({
+          where: { displayName: requestData.input.displayName }
+        });
+
+        if (deletedProvider) {
+          return { success: true };
+        }
+
+        throw generateTypedError(
+          new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Could not delete Provider'
+          })
+        );
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    })
 });
 
 export type ProviderRouter = typeof providerRouter;

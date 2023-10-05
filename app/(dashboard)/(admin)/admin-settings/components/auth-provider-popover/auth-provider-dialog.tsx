@@ -19,8 +19,7 @@ import { AuthProviderWarning } from './auth-provider-warning';
 import { AuthProviderDescription } from './auth-provider-description';
 import { trpc } from '@/app/_trpc/client';
 import { SuccessProviderContent } from './auth-provider-successfully-added-content';
-
-import { encrypt, decrypt } from '@/utils/globalFunctions';
+import { useProviderContext } from '../../provider-context';
 
 type ProviderSubmissionDialogProps = {
   isDisplaying: boolean;
@@ -73,6 +72,7 @@ export function ProviderSubmissionDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isShowingTestContent, setShowingTestContent] = useState(false);
+  const { setActiveProviders } = useProviderContext();
 
   if (error) {
     throw error;
@@ -118,6 +118,7 @@ export function ProviderSubmissionDialog({
       setLoading(false);
       setShowingTestContent(true);
       toastSuccess('Successfully added new provider!');
+      setActiveProviders((prev) => [...prev, data.displayName]);
     } catch (error) {
       setError(error as Error);
     }
