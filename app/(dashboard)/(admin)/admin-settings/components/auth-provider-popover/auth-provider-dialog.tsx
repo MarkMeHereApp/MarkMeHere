@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import { formatString, toastSuccess } from '@/utils/globalFunctions';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -76,20 +76,30 @@ export function ProviderSubmissionDialog({
     }
   }
 
+  if (!keys || (keys.length === 0 && isDisplaying)) {
+    throw new Error('No keys found');
+  }
+
   const formSchema = z.object({
-    ...keys.reduce((acc: { [key: string]: z.ZodString }, key) => {
-      acc[key] = z.string().min(1);
-      return acc;
-    }, {})
+    keys: z.object({
+      ...keys.reduce((acc: { [key: string]: z.ZodString }, key) => {
+        acc[key] = z.string().min(1);
+        return acc;
+      }, {})
+    }),
+    displayName: z.string().min(1).max(30)
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   });
 
-  if (!keys || (keys.length === 0 && isDisplaying)) {
-    throw new Error('No keys found');
-  }
+  // Update form values when `data` changes, this is setting the default display name
+  useEffect(() => {
+    form.reset({
+      displayName: data?.displayName || ''
+    });
+  }, [data]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -112,15 +122,17 @@ export function ProviderSubmissionDialog({
       }
       const result = await createOrUpdateProvider.mutateAsync({
         provider: data.key,
-        displayName: data.displayName,
-        clientId: inputForm['clientId'],
-        clientSecret: inputForm['clientSecret'],
-        issuer: inputForm['issuer']
+        displayName: inputForm.displayName,
+        clientId: inputForm.keys['clientId'],
+        clientSecret: inputForm.keys['clientSecret'],
+        issuer: inputForm.keys['issuer']
       });
 
+      /*
       keys.forEach((key) => {
         form.resetField(key);
       });
+      */
 
       if (!result?.success) {
         setError(new Error('Could not create Provider.'));
@@ -129,7 +141,7 @@ export function ProviderSubmissionDialog({
       setLoading(false);
       setShowingTestContent(true);
       toastSuccess('Successfully added new provider!');
-      setActiveProviders((prev) => [...prev, data.displayName]);
+      setActiveProviders((prev) => [...prev, inputForm.displayName]);
     } catch (error) {
       setError(error as Error);
     }
@@ -171,10 +183,29 @@ export function ProviderSubmissionDialog({
                       onSubmit={form.handleSubmit(submitProvider)}
                       className="space-y-8"
                     >
+                      <FormField
+                        control={form.control}
+                        name="displayName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Display Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter Display Name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Enter the display name for the provider.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       {keys.map((key, index) => (
                         <FormField
                           control={form.control}
-                          name={key}
+                          name={`keys.${key}`}
                           key={index}
                           render={({ field }) => (
                             <FormItem>
