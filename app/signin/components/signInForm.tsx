@@ -122,7 +122,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
   };
 
   return (
-    <div className={cn('relative h-screen')}>
+    <div className="relative h-screen">
       <div className="absolute top-0 right-0 h-full w-full">
         <Stars />
       </div>
