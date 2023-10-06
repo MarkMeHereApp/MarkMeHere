@@ -1,7 +1,8 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-selection';
+import prisma from '@/prisma';
 
-export default function SettingsAccountPage() {
+export default async function SettingsAccountPage() {
   return (
     <div className="space-y-6">
       <div>
