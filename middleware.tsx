@@ -30,10 +30,13 @@ const roleToRoutes: Record<string, string[]> = {
   FACULTY: [
     '/overview',
     '/qr',
+    '/submit',
     '/mark-attendance-status',
     '/manage-course-members',
     '/testing-playground',
     '/user-settings',
+    '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
+    '/api/trpc/courseMember.getCourseMemberRole',                 //j
     '/api/trpc/canvas.getCanvasCourses',
     '/api/trpc/course.createCourse',
     '/api/trpc/qr.CreateNewQRCode',
@@ -57,6 +60,9 @@ const roleToRoutes: Record<string, string[]> = {
   STUDENT: [
     '/student',
     '/markAttendance',
+    '/submit',
+    '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
+    '/api/trpc/courseMember.getCourseMemberRole',                 //j
     '/api/trpc/qr.CreateNewQRCode',
     '/api/trpc/lecture.CreateLecture',
     '/api/trpc/attendance.createOrUpdateSingleAttendanceEntry',
@@ -92,6 +98,8 @@ export default withAuth(
     const route = req.nextUrl.pathname;
     const errorParams = req.nextUrl.searchParams.get('qr-warning');
     const allowedRoutes = roleToRoutes[role];
+
+    //console.log(route)
 
     if (!allowedRoutes.includes(route)) {
       const redirectPath =
