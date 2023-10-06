@@ -66,7 +66,12 @@ export function StartScanningButton() {
     <div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button>Generate QR Code</Button>
+          <Button 
+            variant="default" 
+            size="default" 
+            className='whitespace-nowrap'>
+            Generate QR Code
+          </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -1,9 +1,11 @@
-import ZoomProvider from 'next-auth/providers/zoom';
+import GithubProvider from 'next-auth/providers/github';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
+import isDevMode from '@/utils/isDevMode';
+import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
 
 function customPrismaAdapter(prisma: PrismaClient) {
   return {
@@ -16,11 +18,16 @@ function customPrismaAdapter(prisma: PrismaClient) {
 }
 
 const defaultProviders = [
-  ZoomProvider({
-    clientId: process.env.ZOOM_CLIENT_ID as string,
-    clientSecret: process.env.ZOOM_CLIENT_SECRET as string
+  GithubProvider({
+    clientId: process.env.GITHUB_ID as string,
+    clientSecret: process.env.GITHUB_SECRET as string
   })
 ] as AuthOptions['providers'];
+
+(async () => {
+  const dbProviders = await getBuiltInNextAuthProviders();
+  defaultProviders.push(...dbProviders);
+})();
 
 // if (isDevMode) {
 //   defaultProviders.push(
@@ -85,7 +92,7 @@ export const authOptions: NextAuthOptions = {
     jwt({ token, user }) {
       if (user) token.role = user.role;
       return token;
-    },
+    }
   },
   session: {
     strategy: 'jwt'

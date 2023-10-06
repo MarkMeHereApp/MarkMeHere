@@ -1,6 +1,5 @@
 'use client';
 
-import { useCourseContext } from '@/app/context-course';
 import {
   Table,
   TableBody,
@@ -11,11 +10,13 @@ import {
 } from '@/components/ui/table';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { CourseMember } from '@prisma/client';
 
-export function CSV_Preview(props: { data: string[][] }) {
-  let data = [];
-  data = props.data;
-  const courseID = useCourseContext().selectedCourseId;
+export function CSV_Preview(props: {
+  data: CourseMember[];
+  existingMembers: CourseMember[];
+}) {
+  const { data, existingMembers } = props;
 
   return (
     <ScrollArea className="h-[600px] w-full">
@@ -31,15 +32,37 @@ export function CSV_Preview(props: { data: string[][] }) {
         </TableHeader>
 
         <TableBody>
-          {data.map((d) => (
-            <TableRow key={d[0]}>
-              <TableCell className="font-medium">{d[0]}</TableCell>
-              <TableCell className="font-medium">{d[1]}</TableCell>
-              <TableCell className="font-medium">{d[2] + '@ucf.edu'}</TableCell>
-              <TableCell className="font-medium">{courseID}</TableCell>
-              <TableCell className="font-medium">Student</TableCell>
-            </TableRow>
-          ))}
+          {data.map((d) => {
+            const isExistingMember =
+              existingMembers &&
+              existingMembers.length > 0 &&
+              existingMembers.some(
+                (existingMember) => existingMember.lmsId === d.lmsId
+              );
+
+            const textColor = isExistingMember ? 'IndianRed' : '';
+
+            return (
+              <TableRow key={d.id}>
+                <TableCell className="font-medium" style={{ color: textColor }}>
+                  {d.name}
+                </TableCell>
+                <TableCell className="font-medium" style={{ color: textColor }}>
+                  {d.lmsId}
+                </TableCell>
+                <TableCell className="font-medium" style={{ color: textColor }}>
+                  {d.email}
+                </TableCell>
+                <TableCell className="font-medium" style={{ color: textColor }}>
+                  {' '}
+                  {d.courseId}
+                </TableCell>
+                <TableCell className="font-medium" style={{ color: textColor }}>
+                  {d.role}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </ScrollArea>

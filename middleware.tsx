@@ -1,6 +1,5 @@
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
 
 /* 
 We have two layers of middleware
@@ -93,20 +92,18 @@ export default withAuth(
   //In here we may need to ferry error parameters through to clientside pages
   //If qr code page fails the url param will be returned here and we can add it to
   //The route we redirect to
-  function middleware(req) {
-    const role = req.nextauth.token?.role as string;
-    const route = req.nextUrl.pathname;
-    const errorParams = req.nextUrl.searchParams.get('qr-warning');
-    const allowedRoutes = roleToRoutes[role];
+  // function middleware(req) {
+  //   const role = req.nextauth.token?.role as string;
+  //   const route = req.nextUrl.pathname;
+  //   const errorParams = req.nextUrl.searchParams.get('qr-warning');
+  //   const allowedRoutes = roleToRoutes[role];
 
-    //console.log(route)
-
-    if (!allowedRoutes.includes(route)) {
-      const redirectPath =
-        defaultRoutes[role] + (errorParams ? `?qr-warning=${errorParams}` : '');
-      return NextResponse.redirect(new URL(redirectPath, req.url));
-    }
-  },
+  //   if (!allowedRoutes.includes(route)) {
+  //     const redirectPath =
+  //       defaultRoutes[role] + (errorParams ? `?qr-warning=${errorParams}` : '');
+  //     return NextResponse.redirect(new URL(redirectPath, req.url));
+  //   }
+  // },
   {
     /*
     This runs first. 

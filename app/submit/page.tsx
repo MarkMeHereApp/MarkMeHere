@@ -1,6 +1,6 @@
-import InputPage from "./components/inputPage"
-import { GetServerSidePropsContext } from "next";
-import prisma from "@/prisma";
+import InputPage from './components/inputPage';
+import { GetServerSidePropsContext } from 'next';
+import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { redirect } from "next/navigation";
 
@@ -22,14 +22,11 @@ async function validateAndCreateToken(
     const { id } = await prisma.attendanceToken.create({
       data: {
         lectureId: qrResult.lectureId,
-        token:  uuidv4()
+        token: uuidv4()
       }
     });
-        
-    return { success: true, token: id };
 
-    
-    
+    return { success: true, token: id };
   } catch (error) {
     throw error;
   }
@@ -41,6 +38,8 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
 
   let qrCode = ''
   let error = ''
+  
+  
 
   const handleToken = async () => {
     
@@ -48,11 +47,11 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
   
     if(res){
       return res.token;
-    }
-    else{
+    } else {
 
-    } 
-  }
+    }
+  };
+
 
   //Checking if the submit page was called via scanning a QR code or accessed by typing /submit
   //If ?qr=XXXXX is included, we call handleToken(), which calls the validation endpoint.
@@ -72,7 +71,6 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
     else{
       redirect(`/submit?error=qrerror`)//add error to the url and then retrieve it 
     }
-    
   }
 
 
@@ -81,9 +79,6 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
     console.log("Error Param included")
     error = searchParams.error
   }
-
-
-  
 
   return (
     

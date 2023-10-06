@@ -77,21 +77,21 @@ export default function CourseSelection({ className }: { className?: string }) {
             >
               <Avatar className="mr-2 h-5 w-5 ">
                 <AvatarImage
-                  src={`https://avatar.vercel.sh/${selectedCourse?.id}.png`}
-                  alt={selectedCourse?.name}
+                  src={`https://avatar.vercel.sh/${selectedCourse?.courseCode}.png`}
+                  alt={selectedCourse?.courseCode}
                 />
                 <Skeleton className="h-5 w-5 rounded-full" />
               </Avatar>
               <span className="pr-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {selectedCourse?.name}
+                {selectedCourse?.courseCode}
               </span>
               <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
         ) : (
           <Button variant="outline" onClick={() => setShowNewCourseSheet(true)}>
-            <PlusCircledIcon className="mr-2 h-5 w-5" />
-            Create Course
+            <PlusCircledIcon className="h-[1.2rem] w-[1.2rem]" />
+            <span className="hidden ml-2 sm:inline-block">Create Course</span>
           </Button>
         )}
         {selectedCourse &&
@@ -117,8 +117,8 @@ export default function CourseSelection({ className }: { className?: string }) {
                         >
                           <Avatar className="mr-2 h-5 w-5">
                             <AvatarImage
-                              src={`https://avatar.vercel.sh/${course.id}.png`}
-                              alt={course.name}
+                              src={`https://avatar.vercel.sh/${course.courseCode}.png`}
+                              alt={course.courseCode}
                               className="grayscale"
                             />
                             <Skeleton className="h-5 w-5 rounded-full" />
@@ -127,7 +127,7 @@ export default function CourseSelection({ className }: { className?: string }) {
                             className="overflow-ellipsis overflow-hidden max-w-85 whitespace-nowrap"
                             style={{ maxWidth: '85%' }}
                           >
-                            {course.name}
+                            {course.courseCode}
                           </span>
                           <CheckIcon
                             className={cn(
