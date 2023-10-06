@@ -4,7 +4,6 @@ import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
-import isDevMode from '@/utils/isDevMode';
 import { decrypt } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 
@@ -49,15 +48,6 @@ function customPrismaAdapter(prisma: PrismaClient) {
     }
   };
 }
-
-// if (isDevMode) {
-//   defaultProviders.push(
-//     GithubProvider({
-//       clientId: process.env.GITHUB_ID as string,
-//       clientSecret: process.env.GITHUB_SECRET as string
-//     })
-//   );
-// }
 
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders = [
