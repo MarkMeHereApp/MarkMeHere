@@ -1,11 +1,21 @@
-// pages/hello.tsx
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
+import ManageCoursesDisplay from './ManageCoursesDisplay';
+import { useState } from 'react';
+import { Course } from '@prisma/client';
 
 const ManageCourses: React.FC = () => {
-  return (
-    <div>
-      <h1>This is the admin page!</h1>
-    </div>
-  );
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  trpc.course.getAllCourses.useQuery(undefined, {
+    onSuccess: (data) => {
+      if (!data) return;
+      setCourses(data.courses);
+    }
+  });
+
+  return <ManageCoursesDisplay courses={courses} />;
 };
 
 export default ManageCourses;
