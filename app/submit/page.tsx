@@ -60,7 +60,7 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
     console.log("QR Param included")
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
     
-    let receivedToken = await handleToken(); 
+    const receivedToken = await handleToken(); 
 
     //If we recieve a valid token (in the end the ID) we redirect directly since the token is valid
     if(receivedToken){
