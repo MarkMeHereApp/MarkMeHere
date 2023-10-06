@@ -15,7 +15,7 @@ export const providerFunctions = {
   zoom: {
     key: 'zoom',
     tested: true,
-    displayName: 'Zoom',
+    defaultDisplayName: 'Zoom',
     creationLink: 'https://developers.zoom.us/docs/integrations/create/',
     nextAuthDocs: 'https://next-auth.js.org/providers/github',
     config: ({ clientId, clientSecret }: ProviderFunctionParams) =>

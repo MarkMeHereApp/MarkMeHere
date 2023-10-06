@@ -51,11 +51,11 @@ function customPrismaAdapter(prisma: PrismaClient) {
 
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders = [
-  GithubProvider({
-    clientId: process.env.GITHUB_ID as string,
-    clientSecret: process.env.GITHUB_SECRET as string
-  })
-] as AuthOptions['providers'];
+    GithubProvider({
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string
+    })
+  ] as AuthOptions['providers'];
 
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);
@@ -105,37 +105,38 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //       // If you return null then an error will be displayed advising the user to check their details.
     //       return null;
 
-  //     //If email is found check if password is correct
-  //     //If user exists and entered password matches hashed password
-  //     if (
-  //       user &&
-  //       user.password &&
-  //       (await bcrypt.compare(password, user.password))
-  //     ) {
-  //       // Any object returned will be saved in `user` property of the JWT
-  //       return user;
-  //     } else {
-  //       // If you return null then an error will be displayed advising the user to check their details.
-  //       return null;
+    //     //If email is found check if password is correct
+    //     //If user exists and entered password matches hashed password
+    //     if (
+    //       user &&
+    //       user.password &&
+    //       (await bcrypt.compare(password, user.password))
+    //     ) {
+    //       // Any object returned will be saved in `user` property of the JWT
+    //       return user;
+    //     } else {
+    //       // If you return null then an error will be displayed advising the user to check their details.
+    //       return null;
 
-  //       // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-  //     }
-  //   }
-  // })
-  //When JWT is created store user role in the token
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) token.role = user.role;
-      return token;
+    //       // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+    //     }
+    //   }
+    // })
+    //When JWT is created store user role in the token
+    callbacks: {
+      jwt({ token, user }) {
+        if (user) token.role = user.role;
+        return token;
+      }
     },
-  },
-  session: {
-    strategy: 'jwt'
-  },
+    session: {
+      strategy: 'jwt'
+    },
 
-  pages: {
-    signIn: '/signin',
-    newUser: '/',
-    error: '/'
-  }
+    pages: {
+      signIn: '/signin',
+      newUser: '/',
+      error: '/'
+    }
+  };
 };
