@@ -75,7 +75,16 @@ export const courseRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    })
+    }),
+
+  getAllCourses: publicProcedure.query(async () => {
+    try {
+      const courses = await prisma.course.findMany({});
+      return { success: true, courses };
+    } catch (error) {
+      throw generateTypedError(error as Error);
+    }
+  })
 });
 
 export type CourseRouter = typeof courseRouter;
