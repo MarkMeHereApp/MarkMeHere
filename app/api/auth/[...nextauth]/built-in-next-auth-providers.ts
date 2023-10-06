@@ -15,7 +15,7 @@ export const providerFunctions = {
   github: {
     key: 'github',
     tested: true,
-    displayName: 'GitHub',
+    defaultDisplayName: 'GitHub',
     creationLink: 'https://github.com/settings/applications/new',
     nextAuthDocs: 'https://next-auth.js.org/providers/github',
     config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
@@ -27,7 +27,7 @@ export const providerFunctions = {
   azuread: {
     key: 'azuread',
     tested: false,
-    displayName: 'Azure AD',
+    defaultDisplayName: 'Azure AD',
     nextAuthDocs: 'https://next-auth.js.org/providers/azure-ad',
     creationLink:
       'https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app',

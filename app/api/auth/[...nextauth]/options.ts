@@ -21,10 +21,10 @@ const getBuiltInNextAuthProviders = async (): Promise<
 
   providers.forEach((provider) => {
     const providerFunction =
-      providerFunctions[provider.provider as keyof typeof providerFunctions];
+      providerFunctions[provider.key as keyof typeof providerFunctions];
 
     if (!providerFunction) {
-      throw new Error(`Provider ${provider.provider} not found`);
+      throw new Error(`Provider ${provider.key} not found`);
     }
 
     builtInAuthProviders.push(

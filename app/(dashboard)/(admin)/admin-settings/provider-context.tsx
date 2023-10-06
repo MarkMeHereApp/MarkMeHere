@@ -6,8 +6,10 @@ import { createContext } from 'react';
 import { AuthProviderCredentials } from '@prisma/client';
 
 interface ProviderContextType {
-  activeProviders: string[];
-  setActiveProviders: React.Dispatch<React.SetStateAction<string[]>>;
+  activeProviders: { providerKey: string; providerDisplayName: string }[];
+  setActiveProviders: React.Dispatch<
+    React.SetStateAction<{ providerKey: string; providerDisplayName: string }[]>
+  >;
 }
 
 const ProviderContext = createContext<ProviderContextType>({
@@ -20,11 +22,14 @@ export default function ProviderContextProvider({
   initialActiveProviders
 }: {
   children: React.ReactNode;
-  initialActiveProviders: string[];
+  initialActiveProviders: {
+    providerKey: string;
+    providerDisplayName: string;
+  }[];
 }) {
-  const [activeProviders, setActiveProviders] = useState<string[]>(
-    initialActiveProviders || []
-  );
+  const [activeProviders, setActiveProviders] = useState<
+    { providerKey: string; providerDisplayName: string }[]
+  >(initialActiveProviders || []);
 
   return (
     <ProviderContext.Provider

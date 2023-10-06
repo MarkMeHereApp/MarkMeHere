@@ -30,7 +30,7 @@ export const providerRouter = router({
         const authprovder = await prisma.authProviderCredentials.create({
           data: {
             displayName: requestData.input.displayName,
-            provider: requestData.input.provider,
+            key: requestData.input.provider,
             clientId: encryptedClientId,
             clientSecret: encryptedClientSecret,
             issuer: encryptedIssuer

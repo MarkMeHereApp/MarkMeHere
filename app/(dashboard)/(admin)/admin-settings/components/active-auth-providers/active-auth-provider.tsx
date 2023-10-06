@@ -9,11 +9,13 @@ import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import { useProviderContext } from '../../provider-context';
 export const ActiveAuthProvider = ({
+  providerKey,
   displayName,
-  className
+  defaultDisplayName
 }: {
+  providerKey: string;
   displayName: string;
-  className: string;
+  defaultDisplayName: string;
 }) => {
   const deleteAuthProviderMutation =
     trpc.provider.deleteActiveProvider.useMutation();
@@ -30,7 +32,7 @@ export const ActiveAuthProvider = ({
       await deleteAuthProviderMutation.mutateAsync({ displayName });
       toastSuccess('Successfully Deleted Auth Provider!');
       setActiveProviders((prev) =>
-        prev.filter((provider) => provider !== displayName)
+        prev.filter((provider) => provider.providerKey !== providerKey)
       );
       return;
     } catch (error) {
@@ -40,11 +42,14 @@ export const ActiveAuthProvider = ({
   };
 
   return (
-    <Alert className={className}>
+    <Alert>
       <div className="flex items-center justify-between ">
         <div className="flex items-center ">
           <CheckCircledIcon className="h-6 w-6 text-primary mr-2" />
           <b className="mr-1">{displayName}</b>{' '}
+          {defaultDisplayName !== displayName && (
+            <i className="mr-1">{`(${defaultDisplayName})`}</i>
+          )}
           <span className="overflow-ellipsis overflow-hidden">
             Authentication is currently configured{' '}
           </span>

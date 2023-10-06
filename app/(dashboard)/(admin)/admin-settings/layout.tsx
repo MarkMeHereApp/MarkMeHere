@@ -13,12 +13,13 @@ export default async function RootLayout({
   */
 
   const authProviders = await prisma.authProviderCredentials.findMany({});
-  const providerDisplayNames = authProviders.map(
-    (provider) => provider.displayName
-  );
+  const initialActiveProviders = authProviders.map((provider) => ({
+    providerKey: provider.key,
+    providerDisplayName: provider.displayName
+  }));
 
   return (
-    <ProviderContextProvider initialActiveProviders={providerDisplayNames}>
+    <ProviderContextProvider initialActiveProviders={initialActiveProviders}>
       {children}
     </ProviderContextProvider>
   );

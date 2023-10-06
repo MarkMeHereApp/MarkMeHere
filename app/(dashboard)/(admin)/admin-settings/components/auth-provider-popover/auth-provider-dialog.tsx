@@ -80,6 +80,15 @@ export function ProviderSubmissionDialog({
     throw new Error('No keys found');
   }
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [isShowingTestContent, setShowingTestContent] = useState(false);
+  const { activeProviders, setActiveProviders } = useProviderContext();
+
+  if (error) {
+    throw error;
+  }
+
   const formSchema = z.object({
     keys: z.object({
       ...keys.reduce((acc: { [key: string]: z.ZodString }, key) => {
@@ -87,7 +96,21 @@ export function ProviderSubmissionDialog({
         return acc;
       }, {})
     }),
-    displayName: z.string().min(1).max(30)
+    displayName: z
+      .string()
+      .min(1)
+      .max(30)
+      .trim()
+      .refine(
+        (value) =>
+          !activeProviders.some(
+            (provider) =>
+              provider.providerDisplayName.toLowerCase() === value.toLowerCase()
+          ),
+        {
+          message: 'Display name already exists in active providers'
+        }
+      )
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -97,18 +120,10 @@ export function ProviderSubmissionDialog({
   // Update form values when `data` changes, this is setting the default display name
   useEffect(() => {
     form.reset({
-      displayName: data?.displayName || ''
+      displayName: data?.defaultDisplayName || ''
     });
   }, [data]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [isShowingTestContent, setShowingTestContent] = useState(false);
-  const { setActiveProviders } = useProviderContext();
-
-  if (error) {
-    throw error;
-  }
   const createOrUpdateProvider =
     trpc.provider.createOrUpdateProvider.useMutation();
 
@@ -116,7 +131,7 @@ export function ProviderSubmissionDialog({
     setLoading(true);
 
     try {
-      if (!data?.displayName || !data?.key) {
+      if (!data?.defaultDisplayName || !data?.key) {
         setError(new Error('No name for key.'));
         return;
       }
@@ -131,6 +146,7 @@ export function ProviderSubmissionDialog({
       keys.forEach((key) => {
         form.resetField(`keys.${key}`);
       });
+      form.resetField('displayName');
 
       if (!result?.success) {
         setError(new Error('Could not create Provider.'));
@@ -139,7 +155,10 @@ export function ProviderSubmissionDialog({
       setLoading(false);
       setShowingTestContent(true);
       toastSuccess('Successfully added new provider!');
-      setActiveProviders((prev) => [...prev, inputForm.displayName]);
+      setActiveProviders((prev) => [
+        ...prev,
+        { providerKey: data.key, providerDisplayName: inputForm.displayName }
+      ]);
     } catch (error) {
       setError(error as Error);
     }
@@ -165,7 +184,7 @@ export function ProviderSubmissionDialog({
                 <>
                   <DialogHeader>
                     <DialogTitle>
-                      Configure a {data?.displayName} Provider
+                      Configure a {data?.defaultDisplayName} Provider
                     </DialogTitle>
 
                     {!data?.tested && (
@@ -184,6 +203,7 @@ export function ProviderSubmissionDialog({
                       <FormField
                         control={form.control}
                         name="displayName"
+                        key="displayName"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Display Name</FormLabel>
@@ -215,7 +235,7 @@ export function ProviderSubmissionDialog({
                                 />
                               </FormControl>
                               <FormDescription>
-                                Enter your {data?.displayName}{' '}
+                                Enter your {data?.defaultDisplayName}{' '}
                                 {formatString(key)}.
                               </FormDescription>
                               <FormMessage />
