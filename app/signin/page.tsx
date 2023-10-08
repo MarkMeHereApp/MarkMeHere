@@ -3,11 +3,6 @@ import prisma from '@/prisma';
 
 export default async function SigninPage() {
   try {
-    const response = await fetch(
-      process.env.NEXTAUTH_URL + '/api/auth/providers'
-    );
-    const providersData = await response.json();
-
     const providers = await prisma.authProviderCredentials.findMany({
       select: {
         displayName: true,

@@ -88,20 +88,21 @@ export default function AuthProviderSelector() {
           </Command>
         </PopoverContent>
       </Popover>
-      {Object.values(providerFunctions)
-        .filter((provider) =>
-          activeProviders.map((ap) => ap.providerKey).includes(provider.key)
-        )
-        .map((provider) => (
+      {activeProviders.map((provider) => {
+        const providerFunction = Object.values(providerFunctions).find(
+          (pf) => pf.key === provider.providerKey
+        );
+        const defaultDisplayName = providerFunction
+          ? providerFunction.defaultDisplayName
+          : provider.providerDisplayName;
+        return (
           <ActiveAuthProvider
-            providerKey={provider.key}
-            displayName={
-              activeProviders.find((ap) => ap.providerKey === provider.key)
-                ?.providerDisplayName || ''
-            }
-            defaultDisplayName={provider.defaultDisplayName}
+            providerKey={provider.providerKey}
+            displayName={provider.providerDisplayName}
+            defaultDisplayName={defaultDisplayName}
           />
-        ))}
+        );
+      })}
     </>
   );
 }

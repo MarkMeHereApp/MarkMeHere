@@ -61,6 +61,10 @@ export default function SignInForm({ providers }: SignInFormProps) {
         error = 'OAuth Sign In Error.';
         break;
 
+      case 'OAuthAccountNotLinked':
+        error = 'There is already an account with that email address.';
+        break;
+
       default:
         error = 'Unknown Error';
     }

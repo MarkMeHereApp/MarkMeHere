@@ -1,6 +1,7 @@
 import GithubProvider from 'next-auth/providers/github';
 import ZoomProvider from 'next-auth/providers/zoom';
 import AzureADProvider from 'next-auth/providers/azure-ad';
+import GithubEduEmail from './customNextAuthProviders/github-edu-email';
 
 interface ProviderFunctionParams {
   clientId: string;
@@ -21,7 +22,21 @@ export const providerFunctions = {
     config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
       ZoomProvider({
         clientId,
-        clientSecret
+        clientSecret,
+        allowDangerousEmailAccountLinking: true
+      })
+  },
+  githubedu: {
+    key: 'githubedu',
+    tested: true,
+    defaultDisplayName: 'GitHub (using edu email)',
+    creationLink: 'https://developers.zoom.us/docs/integrations/create/',
+    nextAuthDocs: 'https://next-auth.js.org/providers/github',
+    config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
+      GithubEduEmail({
+        clientId,
+        clientSecret,
+        allowDangerousEmailAccountLinking: true
       })
   }
 };
