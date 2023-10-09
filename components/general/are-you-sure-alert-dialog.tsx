@@ -17,12 +17,12 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 export function ConfirmDeleteDialog({
   title,
-  description,
+  AlertDescription,
   onConfirm,
   children
 }: {
   title: string;
-  description?: string;
+  AlertDescription?: React.ComponentType;
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
 }) {
@@ -56,9 +56,7 @@ export function ConfirmDeleteDialog({
               {title}
             </div>
           </AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          )}
+          {AlertDescription && <AlertDescription />}
           <AlertDialogDescription>
             <b>If you want to proceed type 'I AM SURE'.</b>
           </AlertDialogDescription>
