@@ -15,83 +15,114 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 const InputTable = () => { 
 
     const [inputValue,setInputValue] = useState('')
-    const error = useRef(false)
+    const [error,setError] = useState<string | null>(null);
+    //const error = useRef(false)
+    const errorTrigger = useRef(false)
     const errorMessage = useRef('')
+
     const router = useRouter(); 
 
     const searchParams = useSearchParams();
     const errorType = searchParams ? searchParams.get('error') : null;
 
-    console.log(errorType)
-
-    if(errorType){
-        router.push(`/submit`)
-    }
-    console.log(errorType)
-
     const validateAndCreateToken = trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
-    
     const submitCode =  async () => {
         
-        console.log(inputValue)
 
         try{
             const res = await validateAndCreateToken.mutateAsync({
                 code: inputValue
             })
 
-            //console.log(res)
+            console.log(res)
 
             if(res.success){
                 router.push(`/markAttendance?attendanceTokenId=${res.token}`)
             }
 
-            else{
-                router.push(`/submit?error=code_error`)
+            if(!res.success){
+                setError('Invalid Input Code')
+                toast({
+                    title: 'The input code is not valid',
+                    description:
+                    'The code you input is not valid or has expired, enter a new code.',
+                    icon: 'error_for_destructive_toasts',
+                    variant: 'destructive',
+                });   
             }
-
-        }catch(error){
-
-            
+        }
+        catch(error){
             console.log(error)
-        }          
-        
+        }
+               
     }
 
 
+
     useEffect(() => {
-
-        console.log(error.current)
-
-        if(searchParams.has('qr-error')){
-            toast({
-                title: 'The code is not valid',
-                description:
-                'The code you used is not valid or has expired, scan again or enter a new code.',
-                icon: 'warning'
-            });
-            errorMessage.current = 'Invalid QR Code'
-            router.push(`/submit`);
-        }
-
-        if (error) {
-            toast({
-                title: 'The code is not valid',
-                description:
-                'The code you used is not valid or has expired, scan again or enter a new code.',
-                icon: 'error_for_destructive_toasts',//error_for_destructive_toasts
-                variant: 'destructive'
-            });
-                error.current = true
-                errorMessage.current = 'Invalid Code'
+        if(errorType){
+            if(errorType === 'qr-error'){
                 
-                      
-            }
+                setError('Invalid QR Code')
 
-            error.current = false
-        
-    }, [error]);
-    
+
+
+                console.log('Got here')
+                    toast({
+                        title: 'The QR code is not valid',
+                        description:
+                        'The QR code you scanned is no longer valid or has expired, scan again or enter a new code.',
+                        icon: 'error_for_destructive_toasts',
+                        variant: 'destructive',
+                    });
+               
+                
+            }
+        }
+    }, [errorType]);
+
+
+
+    // const errorDisplay =  async (type: string) => {
+    //     console.log(type)
+
+    //     if(type === 'qr-error'){
+    //         errorTrigger.current = true
+            
+    //         useEffect(() => {
+    //             toast({
+    //                 title: 'The QR code is not valid',
+    //                 description:
+    //                 'The QR code you scanned is no longer valid or has expired, scan again or enter a new code.',
+    //                 icon: 'error_for_destructive_toasts',
+    //                 variant: 'destructive',
+    //             });
+    //         }, []);
+            
+            
+    //         console.log('got to qr error display')
+            
+    //     }
+
+    //     if(type === 'input-error'){
+
+    //         useEffect(() => {
+    //             toast({
+    //                 title: 'The input code is not valid',
+    //                 description:
+    //                 'The code you input is not valid or has expired, enter a new code.',
+    //                 icon: 'error_for_destructive_toasts',
+    //                 variant: 'destructive',
+    //             });
+    //         }, []);
+            
+    //         console.log('got to input error display')
+            
+    //     }
+            
+    // }
+
+
 
     return(
         
@@ -106,7 +137,7 @@ const InputTable = () => {
             
                 <Alert className='text-center text-red-500 border-0'>
                 {error && (
-                    <AlertDescription className=''>{errorMessage.current}</AlertDescription>   
+                    <AlertDescription className=''>{error}</AlertDescription>   
                 )}
                 </Alert>
 
