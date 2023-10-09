@@ -11,9 +11,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import { formatString, toastSuccess } from '@/utils/globalFunctions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AuthProviderWarning } from './auth-provider-warning';
@@ -34,6 +32,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Provider } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
+import { AccountLinkingInfoHover } from '../account-linking-info';
 
 // We need to get the parameters of the config function to know what to ask for
 // Javascript doesn't have a pretty way of doing this, so we use a proxy to
@@ -100,7 +99,7 @@ export function ProviderSubmissionDialog({
         return acc;
       }, {})
     }),
-    allowAccountLinking: z.boolean(),
+    allowAccountLinking: z.boolean().optional(),
     displayName: z
       .string()
       .min(1)
@@ -119,15 +118,27 @@ export function ProviderSubmissionDialog({
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      allowAccountLinking: false
+    }
   });
 
-  // Update form values when `data` changes, this is setting the default display name
-  useEffect(() => {
+  const resetForm = () => {
     form.reset({
-      displayName: data?.defaultDisplayName || '',
-      allowAccountLinking: true
+      displayName: data?.defaultDisplayName || ''
     });
+    keys.forEach((key) => {
+      form.resetField(`keys.${key}`);
+    });
+    form.resetField('displayName');
+    form.resetField('allowAccountLinking');
+  };
+
+  // Update form values when `data` changes, this is setting the default display name
+  // This is because the default display name changes when accessing different providers
+  useEffect(() => {
+    resetForm();
   }, [data]);
 
   const createOrUpdateProvider =
@@ -146,15 +157,12 @@ export function ProviderSubmissionDialog({
         displayName: inputForm.displayName,
         clientId: inputForm.keys['clientId'],
         clientSecret: inputForm.keys['clientSecret'],
-        allowDangerousEmailAccountLinking: inputForm.allowAccountLinking,
+        allowDangerousEmailAccountLinking:
+          inputForm.allowAccountLinking || false,
         issuer: inputForm.keys['issuer']
       });
 
-      keys.forEach((key) => {
-        form.resetField(`keys.${key}`);
-      });
-      form.resetField('displayName');
-      form.resetField('allowAccountLinking');
+      resetForm();
 
       if (!result?.success) {
         setError(new Error('Could not create Provider.'));
@@ -175,7 +183,7 @@ export function ProviderSubmissionDialog({
   if (data?.key) {
     return (
       <>
-        <Dialog open={isDisplaying}>
+        <Dialog open={isDisplaying} onOpenChange={resetForm}>
           <DialogContent
             className="sm:max-w-[450px]"
             onClose={() => {
@@ -264,9 +272,13 @@ export function ProviderSubmissionDialog({
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel>Allow Account Linking</FormLabel>
+                              <FormLabel className="flex justify-between items-center">
+                                Allow Account Linking
+                                <div className="ml-auto">
+                                  <AccountLinkingInfoHover />
+                                </div>
+                              </FormLabel>
                               <FormDescription>
-                                {`boom: ${field.value}`}
                                 Enable this option to allow users to link their
                                 existing accounts with the same email to this
                                 provider.
