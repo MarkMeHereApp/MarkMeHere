@@ -3,11 +3,14 @@ import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
-import { Adapter } from 'next-auth/adapters';
+import { Adapter, AdapterUser } from 'next-auth/adapters';
 import isDevMode from '@/utils/isDevMode';
 import { getBuiltInNextAuthProviders } from './built-in-next-auth-providers';
 import bcrypt from 'bcrypt';
 
+/*
+Default Prisma database adapter
+*/
 function customPrismaAdapterDefault(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
@@ -17,17 +20,19 @@ function customPrismaAdapterDefault(prisma: PrismaClient) {
     }
   };
 }
-
+/*
+Prisma database adapter designed to handle email hashing
+*/
 function customPrismaAdapterHashed(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
-    createUser: async (data: any) => {
+    createUser: async (data: Omit<AdapterUser, 'id'>) => {
       const role = 'FACULTY';
       const hashedEmail = await bcrypt.hash(data.email, 10);
       return prisma.user.create({
         data: {
           name: data.name,
-          email: hashedEmail,
+          email: hashedEmail ?? '',
           role: role,
           image: data.image
         }
@@ -40,7 +45,7 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
 
       // Iterate through all users and check if the provided email matches any user's hashed email
       for (const user of allUsers) {
-        const isEmailMatch = await bcrypt.compare(email, user.email);
+        const isEmailMatch = await bcrypt.compare(email, user.email ?? '');
         if (isEmailMatch) {
           // Return the user if there's a match
           console.log('USER FOUND');
