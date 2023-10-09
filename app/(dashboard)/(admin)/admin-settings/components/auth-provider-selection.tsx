@@ -67,7 +67,7 @@ export default function AuthProviderSelector() {
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-[300px] p-0" align="start">
           <Command>
             <CommandInput placeholder="Search Provider..." />
             <CommandEmpty>No Auth Providers Found</CommandEmpty>
@@ -83,17 +83,23 @@ export default function AuthProviderSelector() {
                     onSelect={() => setSelectedProvider(provider.key)}
                     disabled={isActiveProvider}
                   >
-                    <div
-                      className={`flex justify-between items-center ${
-                        isActiveProvider ? 'opacity-20' : ''
-                      }`}
-                    >
-                      {provider.defaultDisplayName}
-                      <div className="ml-20">
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={`${isActiveProvider ? 'opacity-20' : ''}`}
+                      >
+                        {provider.defaultDisplayName}
+                      </span>
+                      <div className="ml-2">
                         {provider.CustomMessage && (
                           <HoverCard>
                             <HoverCardTrigger asChild>
-                              <InfoCircledIcon />
+                              <span
+                                className={`${
+                                  isActiveProvider ? 'opacity-20' : ''
+                                }`}
+                              >
+                                <InfoCircledIcon />
+                              </span>
                             </HoverCardTrigger>
                             <HoverCardContent className="w-96" side="right">
                               <provider.CustomMessage />

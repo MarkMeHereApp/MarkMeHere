@@ -5,8 +5,6 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import crypto from 'crypto';
-import { signIn, getCsrfToken } from 'next-auth/react';
-import { data } from 'autoprefixer';
 
 export const zCreateOrUpdateProvider = z.object({
   displayName: z.string(),
