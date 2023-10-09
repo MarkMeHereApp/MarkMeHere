@@ -7,12 +7,18 @@ import AppleProvider from 'next-auth/providers/apple';
 import DiscordProvider from 'next-auth/providers/discord';
 import AzureADB2CProvider from 'next-auth/providers/azure-ad-b2c';
 import AzureADProvider from 'next-auth/providers/azure-ad';
+import CognitoProvider from 'next-auth/providers/cognito';
+import FortyTwoProvider from 'next-auth/providers/42-school';
+import DuendeIDS6Provider from 'next-auth/providers/duende-identity-server6';
+import OneLoginProvider from 'next-auth/providers/onelogin';
+import FusionAuthProvider from 'next-auth/providers/fusionauth';
 
 export type ProviderFunctionParams = {
   clientId: string;
   clientSecret: string;
   allowDangerousEmailAccountLinking: boolean;
   issuer?: string;
+  tenantId?: string;
 };
 
 export interface Provider {
@@ -161,6 +167,60 @@ export const providerFunctions: Provider[] = [
       'https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       AzureADB2CProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'cognito',
+    defaultDisplayName: 'Amazon Cognito',
+    creationLink: 'https://console.aws.amazon.com/cognito/',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      CognitoProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: '42-school',
+    defaultDisplayName: '42 School',
+    creationLink: 'https://api.intra.42.fr/',
+    config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
+      FortyTwoProvider({
+        clientId: clientId,
+        clientSecret: clientSecret
+      })
+  },
+  {
+    key: 'duende-identity-server6',
+    defaultDisplayName: 'Duende Identity Server 6',
+    creationLink: 'https://duendesoftware.com/products/identityserver',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      DuendeIDS6Provider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'onelogin',
+    defaultDisplayName: 'OneLogin',
+    creationLink: 'https://www.onelogin.com/developer-docs',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      OneLoginProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'fusionauth',
+    defaultDisplayName: 'FusionAuth',
+    creationLink: 'https://fusionauth.io/docs/v1/tech/oauth/endpoints/',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      FusionAuthProvider({
         clientId: clientId,
         clientSecret: clientSecret,
         issuer: issuer
