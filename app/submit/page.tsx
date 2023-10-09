@@ -2,16 +2,12 @@ import InputPage from './components/inputPage';
 import { GetServerSidePropsContext } from 'next';
 import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { redirect } from 'next/navigation';
-import { replace } from 'lodash';
-import { NextRequest, NextResponse } from 'next/server';
-import { ur } from '@faker-js/faker';
-import { url } from 'inspector';
-import { appRouter } from '@/server';
-import dynamic from 'next/dynamic';
-import { createContext } from '@/server/context';
+import { redirect } from "next/navigation";
 
-async function validateAndCreateToken(qrCode: string) {
+
+async function validateAndCreateToken(
+  qrCode: string,
+) {
   try {
     const qrResult = await prisma.qrcode.findUnique({
       where: {
@@ -34,57 +30,61 @@ async function validateAndCreateToken(qrCode: string) {
   } catch (error) {
     throw error;
   }
+
 }
 
-export default async function SubmitPage(
-  req: Request,
-  resHeaders: Headers,
-  { searchParams }: { searchParams: any }
-) {
-  const nextParamsCaller = appRouter.createCaller(
-    await createContext({ req, resHeaders })
-  );
+export default async function SubmitPage({searchParams}: {searchParams: any}) {
+  
+
+  let qrCode = ''
+  let error = ''
+  
+  
 
   const handleToken = async () => {
-    const res = await validateAndCreateToken(qrCode);
-
-    if (res) {
-      console.log(res);
+    
+    const res = await validateAndCreateToken(qrCode)
+  
+    if(res){
       return res.token;
     } else {
+
     }
   };
 
-  console.log(searchParams);
-  let qrCode = '';
-  let error = '';
 
-  if (searchParams.hasOwnProperty('qr')) {
-    console.log('QR Param included');
-    qrCode = searchParams.qr;
+  //Checking if the submit page was called via scanning a QR code or accessed by typing /submit
+  //If ?qr=XXXXX is included, we call handleToken(), which calls the validation endpoint.
 
-    const receivedToken = await handleToken();
-    console.log('token out: ' + receivedToken);
+  if(searchParams.hasOwnProperty('qr')){
+    console.log("QR Param included")
+    qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
+    
+    const receivedToken = await handleToken(); 
 
-    if (receivedToken) {
-      redirect(`/markAttendance?attendanceTokenId=${receivedToken}`);
-    } else {
-      redirect(`/submit`); //add error to the url and then retrieve it
+    //If we recieve a valid token (in the end the ID) we redirect directly since the token is valid
+    if(receivedToken){
+      redirect(`/markAttendance?attendanceTokenId=${receivedToken}`)
+    }
+
+    //If the token was not found valid, we continue to /submit?qr-error, that is just to trigger the error in the input page
+    else{
+      redirect(`/submit?error=qr-error`)//add error to the url and then retrieve it 
     }
   }
 
-  if (searchParams.hasOwnProperty('error')) {
-    console.log('Error Param included');
-    error = searchParams.error;
+
+  //Not used for now
+  if(searchParams.hasOwnProperty('error')){
+    console.log("Error Param included")
+    error = searchParams.error
   }
 
   return (
-    <>
-      <div className="relative min-h-screen">
-        <div className="flex flex-col top-0 right-0 bottom-0 h-full w-full align-middle">
+    
+      <div className="relative h-screen">
           <InputPage></InputPage>
-        </div>
       </div>
-    </>
-  );
+    
+  )
 }

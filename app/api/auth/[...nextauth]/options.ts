@@ -1,3 +1,4 @@
+import GithubProvider from 'next-auth/providers/github';
 import ZoomProvider from 'next-auth/providers/zoom';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
@@ -20,6 +21,7 @@ function customPrismaAdapterDefault(prisma: PrismaClient) {
     }
   };
 }
+
 /*
 Prisma database adapter designed to handle email hashing
 */
@@ -60,9 +62,9 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
 }
 
 const defaultProviders = [
-  ZoomProvider({
-    clientId: process.env.ZOOM_CLIENT_ID as string,
-    clientSecret: process.env.ZOOM_CLIENT_SECRET as string,
+  GithubProvider({
+    clientId: process.env.GITHUB_ID as string,
+    clientSecret: process.env.GITHUB_SECRET as string,
     allowDangerousEmailAccountLinking: true
   })
 ] as AuthOptions['providers'];

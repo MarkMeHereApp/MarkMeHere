@@ -23,14 +23,14 @@ export const attendanceTokenRouter = router({
           return { success: false };
         }
 
-        const { token } = await prisma.attendanceToken.create({
+        const { id } = await prisma.attendanceToken.create({
           data: {
             lectureId: qrResult.lectureId,
             token:  uuidv4()
           }
         });
 
-        return { success: true, token: token };
+        return { success: true, token: id };
       } catch (error) {
         throw error;
       }

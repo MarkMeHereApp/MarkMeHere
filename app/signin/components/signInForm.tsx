@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { firaSansFont } from '@/utils/fonts';
 
 // These are weird imports but it's how we can pass the getProviders type to the SignInForm component
@@ -128,91 +128,104 @@ export default function SignInForm({
   };
 
   return (
-    <div className={cn('relative h-screen', className)} {...props}>
+    <div className={cn('relative h-screen', className)} {...props}> 
       <div className="absolute top-0 right-0 h-full w-full">
         <Stars />
       </div>
-      <Card className="w-[400px] mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4">
-        <CardContent>
-          <div className="flex flex-col space-y-2 text-center p-3 pb-6">
+      <Card className="min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center p-4">
+        
+        
+        <CardContent className='flex flex-col w-[100%]'>
+
+          <CardTitle className='text-2xl font-bold font-mono text-center'>
             <span className={firaSansFont.className}>
-              <h1 className={`text-2xl font-bold`}>Sign in Mark Me Here!</h1>
+                Sign in Mark Me Here!
             </span>
-          </div>
-          <div className="grid gap-4">
-            {error && (
-              <Alert className="text-center text-red-500">
-                <AlertDescription>Log In Error: {error}</AlertDescription>
-              </Alert>
-            )}
+          </CardTitle>
+
+          <div className="flex flex-col gap-4">
+              
+            <Alert className="text-center text-red-500 border-0">
+              {error && (
+                  <AlertDescription>Log In Error: {error}</AlertDescription> 
+              )}
+            </Alert>  
+            
 
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.type === 'credentials'
               ) && (
-                <form onSubmit={onCredentialsSubmit}>
-                  <div className="grid gap-2">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">
-                        Enter your email & password below to login
-                      </p>
-                    </div>
-                    <div className="grid gap-1">
-                      <div className="text-sm font-bold mb-0">Email</div>
-                      <Label className="sr-only" htmlFor="email">
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="test@test is a valid email"
-                        type="email"
-                        autoCapitalize="none"
-                        autoComplete="email"
-                        autoCorrect="off"
-                        disabled={isLoading.credentials}
-                        required
-                        className="border"
-                      />
-                    </div>
-                    <div className="grid gap-1">
-                      <div className="text-sm font-bold mb-0">Password</div>
-                      <Label className="sr-only" htmlFor="password">
-                        Password
-                      </Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="test is a valid password"
-                        type="password"
-                        autoCapitalize="none"
-                        autoComplete="password"
-                        autoCorrect="off"
-                        disabled={isLoading.credentials}
-                        required
-                        className="border"
-                      />
-                    </div>
-                    <div className="grid gap-1 mt-1">
-                      {' '}
-                      {/* Added a margin-top class to create a bigger gap */}
-                      <Button
-                        disabled={isLoading.credentials}
-                        variant="outline"
-                      >
-                        {isLoading.credentials && (
-                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Sign In
-                      </Button>
-                    </div>
+                
+              <form onSubmit={onCredentialsSubmit}>
+                <div className="gap-2 space-y-5">
+                  
+                  <CardTitle className='text-center text-sm text-muted-foreground'>
+                    Enter your email & password below to login
+                  </CardTitle>
+
+                  
+                  <div className="flex flex-col gap-1">
+                    <div className="text-sm font-bold mb-0">Email</div>
+                    
+                    <Label className="sr-only" htmlFor="email">
+                      Email
+                    </Label>
+                    
+                    <Input
+                      id="email"
+                      name="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="test@test is a valid email"
+                      type="email"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      autoCorrect="off"
+                      disabled={isLoading.credentials}
+                      required
+                      className="border flex"
+                    />
                   </div>
-                </form>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="text-sm font-bold mb-0">Password</div>
+                    <Label className="sr-only" htmlFor="password">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="test is a valid password"
+                      type="password"
+                      autoCapitalize="none"
+                      autoComplete="password"
+                      autoCorrect="off"
+                      disabled={isLoading.credentials}
+                      required
+                      className="border flex"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 mt-1">
+                    {' '}
+                    {/* Added a margin-top class to create a bigger gap */}
+                    <Button
+                      disabled={isLoading.credentials}
+                      variant="outline"
+                    >
+                      {isLoading.credentials && (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Sign In
+                    </Button>
+                  </div>
+                </div>
+              </form>
               )}
+
+              
 
             {providers &&
               Object.values(providers).length > 1 &&
@@ -225,6 +238,8 @@ export default function SignInForm({
                   </span>
                 </div>
               )}
+
+              
 
             {providers &&
               Object.values(providers).map(
@@ -249,6 +264,7 @@ export default function SignInForm({
               )}
           </div>
         </CardContent>
+        
       </Card>
     </div>
   );

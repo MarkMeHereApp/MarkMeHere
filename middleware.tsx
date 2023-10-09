@@ -29,10 +29,13 @@ const roleToRoutes: Record<string, string[]> = {
   FACULTY: [
     '/overview',
     '/qr',
+    '/submit',
     '/mark-attendance-status',
     '/manage-course-members',
     '/testing-playground',
     '/user-settings',
+    '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
+    '/api/trpc/courseMember.getCourseMemberRole',                 //j
     '/api/trpc/canvas.getCanvasCourses',
     '/api/trpc/course.createCourse',
     '/api/trpc/qr.CreateNewQRCode',
@@ -56,13 +59,18 @@ const roleToRoutes: Record<string, string[]> = {
   STUDENT: [
     '/student',
     '/markAttendance',
+    '/submit',
+    '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
+    '/api/trpc/courseMember.getCourseMemberRole',                 //j
     '/api/trpc/qr.CreateNewQRCode',
     '/api/trpc/lecture.CreateLecture',
     '/api/trpc/attendance.createOrUpdateSingleAttendanceEntry',
     '/api/trpc/attendance.createManyAttendanceRecords',
+    '/api/trpc/attendance.getCourseMemberAttendanceEntriesOfCourse',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
     '/api/trpc/courseMember.getCourseMembersOfCourse',
+    '/api/trpc/courseMember.getCourseMemberOfCourse',
     '/api/trpc/courseMember.createCourseMember',
     '/api/trpc/courseMember.deleteAllStudents',
     '/api/trpc/utils.deleteDatabase'

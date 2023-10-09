@@ -14,30 +14,16 @@ interface ProviderFunctionParams {
 // https://next-auth.js.org/configuration/providers/oauth#built-in-providers
 // The key is the file name in providers/ without the .ts extension, find that by looking at the import statement
 export const providerFunctions = {
-  github: {
-    key: 'github',
+  zoom: {
+    key: 'zoom',
     tested: true,
-    displayName: 'GitHub',
-    creationLink: 'https://github.com/settings/applications/new',
+    displayName: 'Zoom',
+    creationLink: 'https://developers.zoom.us/docs/integrations/create/',
     nextAuthDocs: 'https://next-auth.js.org/providers/github',
     config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
-      GithubProvider({
+      ZoomProvider({
         clientId,
         clientSecret
-      })
-  },
-  azuread: {
-    key: 'azure-ad',
-    tested: false,
-    displayName: 'Azure AD',
-    nextAuthDocs: 'https://next-auth.js.org/providers/azure-ad',
-    creationLink:
-      'https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app',
-    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
-      AzureADProvider({
-        clientId,
-        clientSecret,
-        issuer
       })
   }
 };
