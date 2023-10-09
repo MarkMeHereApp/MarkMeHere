@@ -23,6 +23,12 @@ import {
 } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
 import { ActiveAuthProvider } from './active-auth-providers/active-auth-provider';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function AuthProviderSelector() {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
@@ -80,7 +86,21 @@ export default function AuthProviderSelector() {
                     key={provider.key}
                     onSelect={() => setSelectedProvider(provider.key)}
                   >
-                    {provider.defaultDisplayName}
+                    <div className="flex justify-between items-center">
+                      {provider.defaultDisplayName}
+                      <div className="ml-20">
+                        {provider.CustomMessage && (
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <InfoCircledIcon />
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-96" side="right">
+                              <provider.CustomMessage />
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+                      </div>
+                    </div>
                   </CommandItem>
                 ))}
             </CommandGroup>

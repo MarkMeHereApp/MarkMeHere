@@ -1,5 +1,13 @@
 import ZoomProvider from 'next-auth/providers/zoom';
+import GithubProvider from 'next-auth/providers/github';
 import GithubEduEmail from './customNextAuthProviders/github-edu-email';
+import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from 'next-auth/providers/facebook';
+import TwitterProvider from 'next-auth/providers/twitter';
+import AppleProvider from 'next-auth/providers/apple';
+import TwitchProvider from 'next-auth/providers/twitch';
+import SpotifyProvider from 'next-auth/providers/spotify';
+import DiscordProvider from 'next-auth/providers/discord';
 
 export type ProviderFunctionParams = {
   clientId: string;
@@ -13,7 +21,6 @@ export interface Provider {
   CustomMessage?: React.ComponentType;
   defaultDisplayName: string;
   creationLink: string;
-  nextAuthDocs: string;
   config: (params: any) => any;
 }
 
@@ -25,7 +32,6 @@ export const providerFunctions: Provider[] = [
     key: 'zoom',
     defaultDisplayName: 'Zoom',
     creationLink: 'https://developers.zoom.us/docs/integrations/create/',
-    nextAuthDocs: 'https://next-auth.js.org/providers/github',
     config: ({
       clientId,
       clientSecret,
@@ -39,11 +45,26 @@ export const providerFunctions: Provider[] = [
       })
   },
   {
+    key: 'github',
+    defaultDisplayName: 'GitHub',
+    creationLink: '',
+    config: ({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking
+    }: ProviderFunctionParams) =>
+      GithubProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        allowDangerousEmailAccountLinking:
+          allowDangerousEmailAccountLinking as boolean
+      })
+  },
+  {
     key: 'githubedu',
     defaultDisplayName: 'GitHub Edu',
     CustomMessage: GitHubEduMessage,
     creationLink: 'https://developers.zoom.us/docs/integrations/create/',
-    nextAuthDocs: 'https://next-auth.js.org/providers/github',
     config: ({
       clientId,
       clientSecret,
@@ -74,8 +95,9 @@ function GitHubEduMessage() {
         </a>
         <br />
         <br />
-        When a user logs in with GitHub, this provider will search for a linked
-        email that has a .edu domain and use that email for sign in.
+        When a user attempts to log in using the GitHub Edu provider, the system
+        will scan the linked emails in the user's GitHub account. It will then
+        select an email with a .edu domain for the sign-in process.
         <br />
         <br />
         If no .edu emails are found, or if there are multiple .edu emails
