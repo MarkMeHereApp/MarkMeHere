@@ -3,11 +3,10 @@ import GithubProvider from 'next-auth/providers/github';
 import GithubEduEmail from './customNextAuthProviders/github-edu-email';
 import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
-import TwitterProvider from 'next-auth/providers/twitter';
 import AppleProvider from 'next-auth/providers/apple';
-import TwitchProvider from 'next-auth/providers/twitch';
-import SpotifyProvider from 'next-auth/providers/spotify';
 import DiscordProvider from 'next-auth/providers/discord';
+import AzureADB2CProvider from 'next-auth/providers/azure-ad-b2c';
+import AzureADProvider from 'next-auth/providers/azure-ad';
 
 export type ProviderFunctionParams = {
   clientId: string;
@@ -75,6 +74,96 @@ export const providerFunctions: Provider[] = [
         clientSecret: clientSecret,
         allowDangerousEmailAccountLinking:
           allowDangerousEmailAccountLinking as boolean
+      })
+  },
+  {
+    key: 'google',
+    defaultDisplayName: 'Google',
+    creationLink: 'https://console.developers.google.com/apis/credentials',
+    config: ({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking
+    }: ProviderFunctionParams) =>
+      GoogleProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        allowDangerousEmailAccountLinking:
+          allowDangerousEmailAccountLinking as boolean
+      })
+  },
+  {
+    key: 'facebook',
+    defaultDisplayName: 'Facebook',
+    creationLink: 'https://developers.facebook.com/apps/',
+    config: ({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking
+    }: ProviderFunctionParams) =>
+      FacebookProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        allowDangerousEmailAccountLinking:
+          allowDangerousEmailAccountLinking as boolean
+      })
+  },
+  {
+    key: 'apple',
+    defaultDisplayName: 'Apple',
+    creationLink: 'https://developer.apple.com/account/resources/',
+    config: ({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking,
+      issuer
+    }: ProviderFunctionParams) =>
+      AppleProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        allowDangerousEmailAccountLinking:
+          allowDangerousEmailAccountLinking as boolean,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'discord',
+    defaultDisplayName: 'Discord',
+    creationLink: 'https://discord.com/developers/applications',
+    config: ({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking
+    }: ProviderFunctionParams) =>
+      DiscordProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        allowDangerousEmailAccountLinking:
+          allowDangerousEmailAccountLinking as boolean
+      })
+  },
+  {
+    key: 'azure-ad',
+    defaultDisplayName: 'Azure AD',
+    creationLink:
+      'https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      AzureADProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'azure-ad-b2c',
+    defaultDisplayName: 'Azure AD B2C',
+    creationLink:
+      'https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      AzureADB2CProvider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
       })
   }
 ];

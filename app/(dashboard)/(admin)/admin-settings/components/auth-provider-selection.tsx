@@ -72,21 +72,22 @@ export default function AuthProviderSelector() {
             <CommandInput placeholder="Search Provider..." />
             <CommandEmpty>No Auth Providers Found</CommandEmpty>
             <CommandGroup>
-              {Object.values(providerFunctions)
-                .filter(
-                  (provider) =>
-                    !activeProviders
-                      .map((ap) => ap.providerKey)
-                      .includes(provider.key)
-                )
-
-                .map((provider) => (
+              {Object.values(providerFunctions).map((provider) => {
+                const isActiveProvider = activeProviders
+                  .map((ap) => ap.providerKey)
+                  .includes(provider.key);
+                return (
                   <CommandItem
                     value={provider.defaultDisplayName}
                     key={provider.key}
                     onSelect={() => setSelectedProvider(provider.key)}
+                    disabled={isActiveProvider}
                   >
-                    <div className="flex justify-between items-center">
+                    <div
+                      className={`flex justify-between items-center ${
+                        isActiveProvider ? 'opacity-20' : ''
+                      }`}
+                    >
                       {provider.defaultDisplayName}
                       <div className="ml-20">
                         {provider.CustomMessage && (
@@ -102,7 +103,8 @@ export default function AuthProviderSelector() {
                       </div>
                     </div>
                   </CommandItem>
-                ))}
+                );
+              })}
             </CommandGroup>
           </Command>
         </PopoverContent>

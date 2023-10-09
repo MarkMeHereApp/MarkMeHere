@@ -62,7 +62,8 @@ export default function SignInForm({ providers }: SignInFormProps) {
         break;
 
       case 'OAuthAccountNotLinked':
-        error = 'There is already an account with that email address.';
+        error =
+          'There is already an account with that email address and the provider you just tried to sign-in with has Account Linking disabled. ';
         break;
 
       default:
