@@ -132,6 +132,7 @@ model AuthProviderCredentials{
   updatedAt DateTime @updatedAt
   clientId  String
   clientSecret String
+  allowDangerousEmailAccountLinking Boolean
   issuer  String?
   authorizationUrl String?
   

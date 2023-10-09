@@ -56,7 +56,9 @@ export const ActiveAuthProvider = ({
         </div>
         <ConfirmDeleteDialog
           title="Are you sure you want to delete the GitHub OAuth provider?"
-          description={`This action will remove ${displayName} from your active providers list. However, you can re-add the ${displayName} provider at any time in the future. Importantly, no user data will be deleted during this process. Users who have previously signed in using this provider can still sign in using their existing email address, as long as it matches with an email address from another active provider.`}
+          description={`This action will remove ${displayName} from your active providers list. However, you can re-add the ${displayName} provider at any time in the future. Importantly, no user data 
+          will be deleted during this process. Users who have previously signed in using this provider can still sign in using their existing email address with another OAuth account, 
+          as long as that OAuth provider has 'Account Linking' enabled`}
           onConfirm={handleDelete}
         >
           <Button variant="ghost">

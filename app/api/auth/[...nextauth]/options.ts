@@ -19,8 +19,9 @@ const getBuiltInNextAuthProviders = async (): Promise<
   });
 
   providers.forEach((provider) => {
-    const providerFunction =
-      providerFunctions[provider.key as keyof typeof providerFunctions];
+    const providerFunction = providerFunctions.find(
+      (providerFunction) => providerFunction.key === provider.key
+    );
 
     if (!providerFunction) {
       throw new Error(`Provider ${provider.key} not found`);
@@ -30,9 +31,8 @@ const getBuiltInNextAuthProviders = async (): Promise<
       providerFunction.config({
         clientId: decrypt(provider.clientId) as string,
         clientSecret: decrypt(provider.clientSecret) as string,
-        issuer: provider.issuer
-          ? (decrypt(provider.issuer) as string)
-          : undefined
+        allowDangerousEmailAccountLinking:
+          provider.allowDangerousEmailAccountLinking
       })
     );
   });
@@ -63,6 +63,16 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   return {
     adapter: customPrismaAdapter(prisma) as Adapter,
     providers: defaultProviders,
+
+    logger: {
+      error(code, error) {
+        if ('error' in error) {
+          if ((error.error.message = 'MultipleEdu')) {
+          }
+        }
+      }
+    },
+
     // credentials are commented until normal auth is working perfectly
     // CredentialsProvider({
     //   // The name to display on the sign in form (e.g. "Sign in with...")

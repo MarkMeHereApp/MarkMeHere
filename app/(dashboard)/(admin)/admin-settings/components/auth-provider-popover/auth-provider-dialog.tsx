@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import { Provider } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 
 // We need to get the parameters of the config function to know what to ask for
 // Javascript doesn't have a pretty way of doing this, so we use a proxy to
@@ -40,11 +42,13 @@ import {
 // eslint-disable-next-line @typescript-eslint/ban-types
 const getDestructuredKeys = (func: Function) => {
   const keys: string[] = [];
+  // we want to manually handle this property
+  const ingoreKeys = ['allowDangerousEmailAccountLinking'];
   const proxy = new Proxy(
     {},
     {
-      get(target, prop: string | symbol) {
-        if (typeof prop === 'string') {
+      get(target, prop: string) {
+        if (!ingoreKeys.includes(prop)) {
           keys.push(prop);
         }
         return '';
@@ -59,7 +63,7 @@ const getDestructuredKeys = (func: Function) => {
 type ProviderSubmissionDialogProps = {
   isDisplaying: boolean;
   setIsDisplaying: Dispatch<SetStateAction<boolean>>;
-  data: (typeof providerFunctions)[keyof typeof providerFunctions] | undefined;
+  data: Provider | undefined;
 };
 
 export function ProviderSubmissionDialog({
@@ -96,6 +100,7 @@ export function ProviderSubmissionDialog({
         return acc;
       }, {})
     }),
+    allowAccountLinking: z.boolean(),
     displayName: z
       .string()
       .min(1)
@@ -120,7 +125,8 @@ export function ProviderSubmissionDialog({
   // Update form values when `data` changes, this is setting the default display name
   useEffect(() => {
     form.reset({
-      displayName: data?.defaultDisplayName || ''
+      displayName: data?.defaultDisplayName || '',
+      allowAccountLinking: true
     });
   }, [data]);
 
@@ -140,6 +146,7 @@ export function ProviderSubmissionDialog({
         displayName: inputForm.displayName,
         clientId: inputForm.keys['clientId'],
         clientSecret: inputForm.keys['clientSecret'],
+        allowDangerousEmailAccountLinking: inputForm.allowAccountLinking,
         issuer: inputForm.keys['issuer']
       });
 
@@ -147,6 +154,7 @@ export function ProviderSubmissionDialog({
         form.resetField(`keys.${key}`);
       });
       form.resetField('displayName');
+      form.resetField('allowAccountLinking');
 
       if (!result?.success) {
         setError(new Error('Could not create Provider.'));
@@ -243,6 +251,30 @@ export function ProviderSubmissionDialog({
                           )}
                         />
                       ))}
+                      <FormField
+                        control={form.control}
+                        name="allowAccountLinking"
+                        key="allowAccountLinking"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                            <FormControl>
+                              <Checkbox
+                                checked={Boolean(field.value)}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Allow Account Linking</FormLabel>
+                              <FormDescription>
+                                {`boom: ${field.value}`}
+                                Enable this option to allow users to link their
+                                existing accounts with the same email to this
+                                provider.
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
                       <div className="flex justify-end">
                         <Button type="submit" disabled={loading}>
                           {loading ? 'Loading...' : 'Submit'}

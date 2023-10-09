@@ -13,6 +13,7 @@ export const zCreateOrUpdateProvider = z.object({
   provider: z.string(),
   clientId: z.string(),
   clientSecret: z.string(),
+  allowDangerousEmailAccountLinking: z.boolean(),
   issuer: z.string().optional()
 });
 
@@ -33,6 +34,8 @@ export const providerRouter = router({
             key: requestData.input.provider,
             clientId: encryptedClientId,
             clientSecret: encryptedClientSecret,
+            allowDangerousEmailAccountLinking:
+              requestData.input.allowDangerousEmailAccountLinking,
             issuer: encryptedIssuer
           }
         });
