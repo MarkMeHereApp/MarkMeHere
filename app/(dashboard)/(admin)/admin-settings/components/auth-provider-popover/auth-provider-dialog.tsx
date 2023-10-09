@@ -173,7 +173,11 @@ export function ProviderSubmissionDialog({
       toastSuccess('Successfully added new provider!');
       setActiveProviders((prev) => [
         ...prev,
-        { providerKey: data.key, providerDisplayName: inputForm.displayName }
+        {
+          providerKey: data.key,
+          providerDisplayName: inputForm.displayName,
+          accountLinkingEnabled: inputForm.allowAccountLinking || false
+        }
       ]);
     } catch (error) {
       setError(error as Error);

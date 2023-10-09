@@ -3,13 +3,15 @@ import * as React from 'react';
 import { useState } from 'react';
 import { createContext } from 'react';
 
-import { AuthProviderCredentials } from '@prisma/client';
+type ActiveProvider = {
+  providerKey: string;
+  providerDisplayName: string;
+  accountLinkingEnabled: boolean;
+};
 
 interface ProviderContextType {
-  activeProviders: { providerKey: string; providerDisplayName: string }[];
-  setActiveProviders: React.Dispatch<
-    React.SetStateAction<{ providerKey: string; providerDisplayName: string }[]>
-  >;
+  activeProviders: ActiveProvider[];
+  setActiveProviders: React.Dispatch<React.SetStateAction<ActiveProvider[]>>;
 }
 
 const ProviderContext = createContext<ProviderContextType>({
@@ -22,14 +24,11 @@ export default function ProviderContextProvider({
   initialActiveProviders
 }: {
   children: React.ReactNode;
-  initialActiveProviders: {
-    providerKey: string;
-    providerDisplayName: string;
-  }[];
+  initialActiveProviders: ActiveProvider[];
 }) {
-  const [activeProviders, setActiveProviders] = useState<
-    { providerKey: string; providerDisplayName: string }[]
-  >(initialActiveProviders || []);
+  const [activeProviders, setActiveProviders] = useState<ActiveProvider[]>(
+    initialActiveProviders || []
+  );
 
   return (
     <ProviderContext.Provider

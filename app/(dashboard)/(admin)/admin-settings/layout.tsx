@@ -15,7 +15,8 @@ export default async function RootLayout({
   const authProviders = await prisma.authProviderCredentials.findMany({});
   const initialActiveProviders = authProviders.map((provider) => ({
     providerKey: provider.key,
-    providerDisplayName: provider.displayName
+    providerDisplayName: provider.displayName,
+    accountLinkingEnabled: provider.allowDangerousEmailAccountLinking
   }));
 
   return (

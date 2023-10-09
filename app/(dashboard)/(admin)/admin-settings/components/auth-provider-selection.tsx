@@ -98,6 +98,7 @@ export default function AuthProviderSelector() {
           <ActiveAuthProvider
             providerKey={provider.providerKey}
             displayName={provider.providerDisplayName}
+            accountLinkingEnabled={provider.accountLinkingEnabled}
             defaultDisplayName={defaultDisplayName}
           />
         );

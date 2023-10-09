@@ -8,14 +8,17 @@ import { toastSuccess } from '@/utils/globalFunctions';
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import { useProviderContext } from '../../provider-context';
+import { AccountLinkingInfoHover } from '../account-linking-info';
 export const ActiveAuthProvider = ({
   providerKey,
   displayName,
-  defaultDisplayName
+  defaultDisplayName,
+  accountLinkingEnabled
 }: {
   providerKey: string;
   displayName: string;
   defaultDisplayName: string;
+  accountLinkingEnabled: boolean;
 }) => {
   const deleteAuthProviderMutation =
     trpc.provider.deleteActiveProvider.useMutation();
@@ -46,13 +49,17 @@ export const ActiveAuthProvider = ({
       <div className="flex items-center justify-between ">
         <div className="flex items-center ">
           <CheckCircledIcon className="h-6 w-6 text-primary mr-2" />
-          <b className="mr-1">{displayName}</b>{' '}
+          <b className="mr-2">{displayName}</b>{' '}
           {defaultDisplayName !== displayName && (
-            <i className="mr-1">{`(${defaultDisplayName})`}</i>
+            <i className="mr-2">{`(${defaultDisplayName})`}</i>
           )}
           <span className="overflow-ellipsis overflow-hidden">
-            Authentication is currently configured{' '}
+            Configured <b>{accountLinkingEnabled ? 'With' : 'Without'}</b>{' '}
+            Account Linking
           </span>
+          <div className="ml-1">
+            <AccountLinkingInfoHover />
+          </div>
         </div>
         <ConfirmDeleteDialog
           title="Are you sure you want to delete the GitHub OAuth provider?"
