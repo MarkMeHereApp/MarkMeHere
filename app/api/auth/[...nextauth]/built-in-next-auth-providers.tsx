@@ -12,6 +12,8 @@ import FortyTwoProvider from 'next-auth/providers/42-school';
 import DuendeIDS6Provider from 'next-auth/providers/duende-identity-server6';
 import OneLoginProvider from 'next-auth/providers/onelogin';
 import FusionAuthProvider from 'next-auth/providers/fusionauth';
+import Auth0Provider from 'next-auth/providers/auth0';
+import OktaProvider from 'next-auth/providers/okta';
 
 export type ProviderFunctionParams = {
   clientId: string;
@@ -219,8 +221,38 @@ export const providerFunctions: Provider[] = [
     key: 'fusionauth',
     defaultDisplayName: 'FusionAuth',
     creationLink: 'https://fusionauth.io/docs/v1/tech/oauth/endpoints/',
-    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+    config: ({
+      clientId,
+      clientSecret,
+      issuer,
+      tenantId
+    }: ProviderFunctionParams) =>
       FusionAuthProvider({
+        id: 'fusionauth',
+        name: 'FusionAuth',
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer,
+        tenantId: tenantId
+      })
+  },
+  {
+    key: 'auth0',
+    defaultDisplayName: 'Auth0',
+    creationLink: 'https://manage.auth0.com/dashboard/',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      Auth0Provider({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        issuer: issuer
+      })
+  },
+  {
+    key: 'okta',
+    defaultDisplayName: 'Okta',
+    creationLink: 'https://developer.okta.com/',
+    config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
+      OktaProvider({
         clientId: clientId,
         clientSecret: clientSecret,
         issuer: issuer

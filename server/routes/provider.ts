@@ -12,7 +12,8 @@ export const zCreateOrUpdateProvider = z.object({
   clientId: z.string(),
   clientSecret: z.string(),
   allowDangerousEmailAccountLinking: z.boolean(),
-  issuer: z.string().optional()
+  issuer: z.string().optional(),
+  tenantId: z.string().optional()
 });
 
 export const providerRouter = router({
@@ -25,6 +26,9 @@ export const providerRouter = router({
         const encryptedIssuer = requestData.input.issuer
           ? encrypt(requestData.input.issuer)
           : undefined;
+        const encryptedTenantId = requestData.input.tenantId
+          ? encrypt(requestData.input.tenantId)
+          : undefined;
 
         const authprovder = await prisma.authProviderCredentials.create({
           data: {
@@ -32,9 +36,10 @@ export const providerRouter = router({
             key: requestData.input.provider,
             clientId: encryptedClientId,
             clientSecret: encryptedClientSecret,
+            issuer: encryptedIssuer,
+            tenantId: encryptedTenantId,
             allowDangerousEmailAccountLinking:
-              requestData.input.allowDangerousEmailAccountLinking,
-            issuer: encryptedIssuer
+              requestData.input.allowDangerousEmailAccountLinking
           }
         });
 

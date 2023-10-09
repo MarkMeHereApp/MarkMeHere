@@ -134,6 +134,7 @@ model AuthProviderCredentials{
   clientSecret String
   allowDangerousEmailAccountLinking Boolean
   issuer  String?
+  tenantId String?
   authorizationUrl String?
   
 
