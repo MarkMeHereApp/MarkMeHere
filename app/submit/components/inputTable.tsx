@@ -8,26 +8,34 @@ import { trpc } from '@/app/_trpc/client';
 import { useAspect } from '@react-three/drei';
 import { firaSansFont } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Icons } from '@/components/ui/icons';
+
 
 
 
 
 const InputTable = () => { 
 
-    const [inputValue,setInputValue] = useState('')
-    const [error,setError] = useState<string | null>(null);
-    //const error = useRef(false)
-    const errorTrigger = useRef(false)
-    const errorMessage = useRef('')
+    const [inputValue,setInputValue] = useState('') //input value in the field
+    const [error,setError] = useState<string | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
 
-    const router = useRouter(); 
+    const router = useRouter(); //initalizing the router
 
-    const searchParams = useSearchParams();
-    const errorType = searchParams ? searchParams.get('error') : null;
+    const searchParams = useSearchParams(); 
+    const errorType = searchParams ? searchParams.get('error') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
 
+    const [isLoading, setIsLoading] = React.useState<{ [key: string]: boolean }>(
+        {}
+    );
+
+    //On Submit, button, we make a server call to validate and create the attendance token
+    //the function calls, '/server/routes/attendanceToken.ts'
+    //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
+    //if fails, we display the error message specific to the invalid input
     const validateAndCreateToken = trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
     const submitCode =  async () => {
         
+        setIsLoading((prevState) => ({ ...prevState, credentials: true })); // Set loading to true at the start of the function
 
         try{
             const res = await validateAndCreateToken.mutateAsync({
@@ -54,11 +62,16 @@ const InputTable = () => {
         catch(error){
             console.log(error)
         }
+        finally {
+            setIsLoading((prevState) => ({ ...prevState, credentials: false })); // Set loading to false at the end of the function
+        }
                
     }
 
 
-
+    //checking what error type have we recieved in the server through the URL. 
+    //after the error message being displayed, we replace the URL with /submit and stay on page.
+    //if we check more things than just qr-error, it will be added as another if statement.
     useEffect(() => {
         if(errorType){
             if(errorType === 'qr-error'){
@@ -79,48 +92,10 @@ const InputTable = () => {
                 
             }
         }
+
+        router.replace('/submit')
     }, [errorType]);
 
-
-
-    // const errorDisplay =  async (type: string) => {
-    //     console.log(type)
-
-    //     if(type === 'qr-error'){
-    //         errorTrigger.current = true
-            
-    //         useEffect(() => {
-    //             toast({
-    //                 title: 'The QR code is not valid',
-    //                 description:
-    //                 'The QR code you scanned is no longer valid or has expired, scan again or enter a new code.',
-    //                 icon: 'error_for_destructive_toasts',
-    //                 variant: 'destructive',
-    //             });
-    //         }, []);
-            
-            
-    //         console.log('got to qr error display')
-            
-    //     }
-
-    //     if(type === 'input-error'){
-
-    //         useEffect(() => {
-    //             toast({
-    //                 title: 'The input code is not valid',
-    //                 description:
-    //                 'The code you input is not valid or has expired, enter a new code.',
-    //                 icon: 'error_for_destructive_toasts',
-    //                 variant: 'destructive',
-    //             });
-    //         }, []);
-            
-    //         console.log('got to input error display')
-            
-    //     }
-            
-    // }
 
 
 
@@ -147,9 +122,17 @@ const InputTable = () => {
                 type="text" 
                 value={inputValue.toUpperCase()} 
                 onChange={event => setInputValue(event.target.value)} 
+                disabled={isLoading.credentials}
                 />
                 
-                <Button onClick={() => submitCode()} className=' flex w-[100%]'>
+                <Button 
+                    onClick={() => submitCode()} 
+                    className=' flex w-[100%]' 
+                    disabled={isLoading.credentials}
+                    >
+                       {isLoading.credentials && (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                     <div className=''>Submit</div>
                 </Button>
             </div>
