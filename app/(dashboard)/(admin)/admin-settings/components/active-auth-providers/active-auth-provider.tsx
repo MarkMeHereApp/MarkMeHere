@@ -7,7 +7,7 @@ import { ConfirmDeleteDialog } from '@/components/general/are-you-sure-alert-dia
 import { toastSuccess } from '@/utils/globalFunctions';
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
-import { useProviderContext } from '../../provider-context';
+import { useProviderContext } from '@/app/context-auth-provider';
 import { AccountLinkingInfoHover } from '../account-linking-info';
 export const ActiveAuthProvider = ({
   providerKey,

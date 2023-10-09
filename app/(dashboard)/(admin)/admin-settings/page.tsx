@@ -1,6 +1,5 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-selection';
-import prisma from '@/prisma';
 
 export default async function SettingsAccountPage() {
   return (

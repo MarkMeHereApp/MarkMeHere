@@ -3,7 +3,7 @@
 import { CaretSortIcon } from '@radix-ui/react-icons';
 
 import { ProviderSubmissionDialog } from './auth-provider-popover/auth-provider-dialog';
-import { useProviderContext } from '../provider-context';
+import { useProviderContext } from '@/app/context-auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   Command,

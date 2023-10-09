@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
 import CoursesContext from '@/app/context-course';
 import LecturesContext from '@/app/context-lecture';
+import ProviderContextProvider from '@/app/context-auth-provider';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
@@ -58,19 +59,30 @@ export default async function RootLayout({
     }
   });
 
+  const authProviders = await prisma.authProviderCredentials.findMany({});
+  const initialActiveProviders = authProviders.map((provider) => ({
+    providerKey: provider.key,
+    providerDisplayName: provider.displayName,
+    accountLinkingEnabled: provider.allowDangerousEmailAccountLinking
+  }));
+
   return (
     <html lang="en" className={openSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
-            <CoursesContext
-              userCourses={courses}
-              userCourseMembers={courseMemberships}
-              userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
+            <ProviderContextProvider
+              initialActiveProviders={initialActiveProviders}
             >
-              <LecturesContext>{children}</LecturesContext>
-            </CoursesContext>
+              <CoursesContext
+                userCourses={courses}
+                userCourseMembers={courseMemberships}
+                userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
+              >
+                <LecturesContext>{children}</LecturesContext>
+              </CoursesContext>
+            </ProviderContextProvider>
           </Providers>
         </ThemeProvider>
       </body>

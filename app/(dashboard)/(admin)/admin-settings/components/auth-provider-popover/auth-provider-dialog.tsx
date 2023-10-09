@@ -18,7 +18,7 @@ import { AuthProviderWarning } from './auth-provider-warning';
 import { AuthProviderDescription } from './auth-provider-description';
 import { trpc } from '@/app/_trpc/client';
 import { SuccessProviderContent } from './auth-provider-successfully-added-content';
-import { useProviderContext } from '../../provider-context';
+import { useProviderContext } from '@/app/context-auth-provider';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
