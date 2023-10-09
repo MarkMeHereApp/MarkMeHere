@@ -207,8 +207,10 @@ export function ProviderSubmissionDialog({
                       Configure a {data?.defaultDisplayName} Provider
                     </DialogTitle>
 
-                    {!data?.tested && (
-                      <AuthProviderWarning docsLink={data?.nextAuthDocs} />
+                    {data?.CustomMessage && (
+                      <div className="py-4">
+                        <data.CustomMessage />
+                      </div>
                     )}
 
                     <DialogDescription>
