@@ -17,18 +17,17 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { providerFunctions } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
+import {
+  providerFunctions,
+  Provider
+} from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
 import React, { useState, useEffect } from 'react';
-
 import { ActiveAuthProvider } from './active-auth-providers/active-auth-provider';
 
 export default function AuthProviderSelector() {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
-  type ProviderData =
-    (typeof providerFunctions)[keyof typeof providerFunctions];
-
-  const [providerData, setProviderData] = useState<ProviderData | undefined>(
+  const [providerData, setProviderData] = useState<Provider | undefined>(
     undefined
   );
 
