@@ -190,7 +190,7 @@ export function ProviderSubmissionDialog({
       <>
         <Dialog open={isDisplaying} onOpenChange={resetForm}>
           <DialogContent
-            className="sm:max-w-[450px]"
+            className="sm:max-w-[550px] lg:max-w-[750px]"
             onClose={() => {
               setIsDisplaying(false);
               setTimeout(() => {
@@ -198,11 +198,11 @@ export function ProviderSubmissionDialog({
               }, 300);
             }}
           >
-            <ScrollArea className="w-full rounded-md">
+            <ScrollArea className="w-full rounded-md max-h-[90vh] ">
               {isShowingTestContent ? (
                 <SuccessProviderContent />
               ) : (
-                <>
+                <div className="px-4">
                   <DialogHeader>
                     <DialogTitle>
                       Configure a {data?.defaultDisplayName} Provider
@@ -301,7 +301,7 @@ export function ProviderSubmissionDialog({
                       </div>
                     </form>
                   </Form>
-                </>
+                </div>
               )}
             </ScrollArea>
           </DialogContent>
