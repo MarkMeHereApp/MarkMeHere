@@ -24,12 +24,6 @@ export const zCourseMember = z.object({
 export const zGetCourseMembersOfCourse = z.object({
   courseId: z.string()
 });
-
-export const zGetCourseMemberOfCourse = z.object({
-    courseId: z.string(),
-    email: z.string()
-});
-
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
@@ -103,21 +97,7 @@ export const courseMemberRouter = router({
       }
     }
   ),
-  getCourseMemberOfCourse: elevatedCourseMemberCourseProcedure
-    .input(zGetCourseMemberOfCourse)
-    .query(async (requestData) => {
-      try {
-        const courseMember = await prisma.courseMember.findFirst({
-          where: {
-            courseId: requestData.input.courseId,
-            email: requestData.input.email
-          },
-        });
-        return { success: true, courseMember };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-  }),
+
   getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
