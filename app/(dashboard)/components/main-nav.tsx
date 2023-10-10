@@ -9,7 +9,7 @@ export default function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { selectedCourseId, selectedCourseRole } = useCourseContext();
+  const { selectedCourseId } = useCourseContext();
   const pathname = usePathname(); // Use the hook
 
   // A helper function to determine if the link is active
@@ -66,15 +66,6 @@ export default function MainNav({
             href="/manage-course-members"
             displayText="Course Members"
           />
-          {selectedCourseRole == 'student' ? (
-              <MainNavBarCustomLink
-                href="/student"
-                displayText="Student Dashboard"
-              />
-            ) : (
-                null
-            )
-          }
         </>
       ) : null}
 
