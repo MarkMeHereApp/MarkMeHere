@@ -26,7 +26,6 @@ export function CSV_Preview(props: {
             <TableHead className="w-[100px]">Name</TableHead>
             <TableHead>LMS ID</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Course ID</TableHead>
             <TableHead>Role</TableHead>
           </TableRow>
         </TableHeader>
@@ -52,10 +51,6 @@ export function CSV_Preview(props: {
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
                   {d.email}
-                </TableCell>
-                <TableCell className="font-medium" style={{ color: textColor }}>
-                  {' '}
-                  {d.courseId}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
                   {d.role}
