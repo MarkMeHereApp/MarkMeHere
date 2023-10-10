@@ -8,9 +8,10 @@ import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
 
-// let adapter = prismaAdapterDefault(prisma);
-
-// if (process.env.HASHEMAILS === 'true') adapter = prismaAdapterHashed(prisma);
+/* Check env to choose adapter */
+const prismaAdapter = process.env.HASHEMAILS === 'true'
+  ? prismaAdapterHashed(prisma) as Adapter
+  : prismaAdapterDefault(prisma) as Adapter;
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -56,7 +57,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   defaultProviders.push(...dbProviders);
 
   return {
-    adapter: prismaAdapterDefault(prisma) as Adapter,
+    adapter: prismaAdapter,
     providers: defaultProviders,
 
     logger: {

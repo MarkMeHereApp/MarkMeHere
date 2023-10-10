@@ -10,7 +10,6 @@ export default function prismaAdapterDefault(prisma: PrismaClient) {
       ...PrismaAdapter(prisma),
       createUser: (data: Omit<AdapterUser, 'id'>) => {
         const role = 'FACULTY';
-        console.log(data)
         return prisma.user.create({
           data: {
             name: data.name,
