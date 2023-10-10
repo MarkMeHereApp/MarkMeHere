@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import GitHubEduMessage from './github-edu-info';
 
 interface SignInFormProps {
   providers: Array<{ key: string; displayName: string }>;
@@ -145,7 +146,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 <AlertDescription>Log In Error: {error}</AlertDescription>
               )}
             </Alert>
-
+            <GitHubEduMessage providers={providers} />
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.key === 'credentials'
@@ -229,26 +230,33 @@ export default function SignInForm({ providers }: SignInFormProps) {
               )}
 
             {providers &&
-              Object.values(providers).map(
-                (provider, index) =>
-                  provider.key !== 'credentials' && (
-                    <Button
-                      key={index}
-                      type="button"
-                      onClick={() => onOAuthSubmit(provider.key)}
-                      disabled={isLoading[provider.key]}
-                    >
-                      {isLoading[provider.key] ? (
-                        <>
-                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                          Loading...
-                        </>
-                      ) : (
-                        <>{provider.displayName}</>
-                      )}
-                    </Button>
-                  )
-              )}
+              Object.values(providers)
+                // Sort providers so that GitHub Edu is always first, we do this because we also render a special message for GitHub Edu
+                .sort((a, b) =>
+                  a.key === 'githubedu' ? -1 : b.key === 'githubedu' ? 1 : 0
+                )
+                .map(
+                  (provider, index) =>
+                    provider.key !== 'credentials' && (
+                      <Button
+                        key={index}
+                        type="button"
+                        onClick={() => onOAuthSubmit(provider.key)}
+                        disabled={Object.values(isLoading).some(
+                          (value) => value
+                        )}
+                      >
+                        {isLoading[provider.key] ? (
+                          <>
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>{provider.displayName}</>
+                        )}
+                      </Button>
+                    )
+                )}
           </div>
         </CardContent>
       </Card>
