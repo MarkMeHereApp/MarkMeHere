@@ -78,20 +78,19 @@ export default function CoursesContext({
   );
 
   //This should only be called when we know the user is a professor or TA
-  const courseMembers =
-    trpc.courseMember.getCourseMembersOfCourseAndCurRole.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        enabled: !!selectedCourseId,
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-          setSelectedCourseRole(data?.role ?? null);
-        }
+  const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
+    {
+      courseId: selectedCourseId || ''
+    },
+    {
+      enabled: !!selectedCourseId,
+      onSuccess: (data) => {
+        if (!data) return;
+        setCourseMembersOfSelectedCourse(data.courseMembers);
+        setSelectedCourseRole(data?.role ?? null);
       }
-    );
+    }
+  );
 
   if (courseMembers.error) {
     throw courseMembers.error;

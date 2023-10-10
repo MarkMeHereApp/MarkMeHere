@@ -65,7 +65,7 @@ export const courseMemberRouter = router({
     }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
-    .input(z.array(zCourseMember))
+    .input(z.array(z.object({ id: z.string() })))
     .mutation(async (requestData) => {
       try {
         // Extract valid course member IDs from the input array
@@ -122,7 +122,7 @@ export const courseMemberRouter = router({
       }
     }),
 
-  getCourseMembersOfCourseAndCurRole: publicProcedure
+  getCourseMembersOfCourse: publicProcedure
 
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
