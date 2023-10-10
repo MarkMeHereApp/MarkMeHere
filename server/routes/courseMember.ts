@@ -8,22 +8,28 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { getServerSession } from 'next-auth';
 
 import { z } from 'zod';
 
 export const zCourseMember = z.object({
-  id: z.string(),
-  lmsId: z.string().nullable(),
+  lmsId: z.string().optional(),
   email: z.string(),
   name: z.string(),
   courseId: z.string(),
-  dateEnrolled: z.date(),
-  role: z.string()
+  role: z.string(),
+  optionalId: z.string().optional()
 });
 
 export const zGetCourseMembersOfCourse = z.object({
   courseId: z.string()
 });
+
+export const zGetCourseMemberOfCourse = z.object({
+  courseId: z.string(),
+  email: z.string()
+});
+
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
@@ -31,7 +37,7 @@ export const zCreateMultipleCourseMembers = z.object({
   courseId: z.string(),
   courseMembers: z.array(
     z.object({
-      lmsId: z.string().optional(),
+      optionalId: z.string().optional(),
       name: z.string(),
       email: z.string(),
       role: z.string()
@@ -46,8 +52,7 @@ export const courseMemberRouter = router({
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input,
-            id: requestData.input.id || undefined
+            ...requestData.input
           }
         });
         return { success: true, resEnrollment };
@@ -57,7 +62,7 @@ export const courseMemberRouter = router({
     }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
-    .input(z.array(zCourseMember))
+    .input(z.array(z.object({ id: z.string() })))
     .mutation(async (requestData) => {
       try {
         // Extract valid course member IDs from the input array
@@ -98,10 +103,64 @@ export const courseMemberRouter = router({
     }
   ),
 
-  getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
+  getCourseMemberOfCourse: elevatedCourseMemberCourseProcedure
+    .input(zGetCourseMemberOfCourse)
+    .query(async (requestData) => {
+      try {
+        const courseMember = await prisma.courseMember.findFirst({
+          where: {
+            courseId: requestData.input.courseId,
+            email: requestData.input.email
+          }
+        });
+        return { success: true, courseMember };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
+  getCourseMembersOfCourse: publicProcedure
+
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
+        const emailctx = requestData.ctx?.session?.email;
+
+        if (!emailctx)
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'user does not have a session'
+            })
+          );
+
+        const courseMembershipRes = await prisma.courseMember.findMany({
+          where: {
+            courseId: requestData.input.courseId,
+            email: emailctx
+          }
+        });
+
+        if (courseMembershipRes.length !== 1) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message:
+                'There should only be one course member with this email and id'
+            })
+          );
+        }
+
+        const courseMembershipRole = courseMembershipRes[0].role;
+
+        if (courseMembershipRole === 'student') {
+          return {
+            success: true,
+            courseMembers: [courseMembershipRes[0]],
+            role: courseMembershipRole
+          };
+        }
+
         const courseMembers = await prisma.courseMember.findMany({
           where: {
             courseId: requestData.input.courseId
@@ -110,35 +169,12 @@ export const courseMemberRouter = router({
             name: 'asc'
           }
         });
-        return { success: true, courseMembers };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
 
-  getCourseMemberRole: publicProcedure
-    .input(zGetCourseMemberRole)
-    .query(async (requestData) => {
-      try {
-        const email = requestData.ctx?.session?.email;
-        if (!email)
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message: 'user does not have a session'
-            })
-          );
-        //Find the role of the current course member
-        const role = await prisma.courseMember.findFirst({
-          where: {
-            courseId: requestData.input.courseId,
-            email: email
-          },
-          select: {
-            role: true
-          }
-        });
-        return { success: true, role: role?.role };
+        return {
+          success: true,
+          courseMembers: courseMembers,
+          role: courseMembershipRole
+        };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
@@ -151,29 +187,46 @@ export const courseMemberRouter = router({
       try {
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
-          const existingMember = await prisma.courseMember.findFirst({
-            where: {
-              courseId: requestData.input.courseId,
-              lmsId: memberData.lmsId
-            }
-          });
+          if (memberData.role === 'student') {
+            if (
+              memberData.optionalId !== null &&
+              memberData.optionalId !== undefined
+            ) {
+              const existingMember = await prisma.courseMember.findFirst({
+                where: {
+                  courseId: requestData.input.courseId,
+                  optionalId: memberData.optionalId
+                }
+              });
 
-          if (existingMember) {
-            // If the member exists, update it
-            const updatedMember = await prisma.courseMember.update({
-              where: { id: existingMember.id },
-              data: memberData
-            });
-            upsertedCourseMembers.push(updatedMember);
-          } else {
-            // If the member doesn't exist, create it
-            const createdMember = await prisma.courseMember.create({
-              data: {
-                ...memberData,
-                courseId: requestData.input.courseId
+              if (existingMember) {
+                // If the member exists and optionalId is not null, update it
+                const updatedMember = await prisma.courseMember.update({
+                  where: { id: existingMember.id },
+                  data: memberData
+                });
+                upsertedCourseMembers.push(updatedMember);
+              } else {
+                // If the member doesn't exist and optionalId is not null, create it
+                const createdMember = await prisma.courseMember.create({
+                  data: {
+                    ...memberData,
+                    courseId: requestData.input.courseId
+                  }
+                });
+                upsertedCourseMembers.push(createdMember);
               }
-            });
-            upsertedCourseMembers.push(createdMember);
+            } else {
+              // If optionalId is null or undefined, treat it as a new member (first-time import)
+              const createdMember = await prisma.courseMember.create({
+                data: {
+                  ...memberData,
+                  courseId: requestData.input.courseId
+                }
+              });
+
+              upsertedCourseMembers.push(createdMember);
+            }
           }
         }
 

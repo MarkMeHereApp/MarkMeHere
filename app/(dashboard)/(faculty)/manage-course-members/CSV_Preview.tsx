@@ -26,7 +26,6 @@ export function CSV_Preview(props: {
             <TableHead className="w-[100px]">Name</TableHead>
             <TableHead>LMS ID</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Course ID</TableHead>
             <TableHead>Role</TableHead>
           </TableRow>
         </TableHeader>
@@ -37,7 +36,7 @@ export function CSV_Preview(props: {
               existingMembers &&
               existingMembers.length > 0 &&
               existingMembers.some(
-                (existingMember) => existingMember.lmsId === d.lmsId
+                (existingMember) => existingMember.optionalId === d.optionalId
               );
 
             const textColor = isExistingMember ? 'IndianRed' : '';
@@ -48,14 +47,10 @@ export function CSV_Preview(props: {
                   {d.name}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
-                  {d.lmsId}
+                  {d.optionalId}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
                   {d.email}
-                </TableCell>
-                <TableCell className="font-medium" style={{ color: textColor }}>
-                  {' '}
-                  {d.courseId}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
                   {d.role}

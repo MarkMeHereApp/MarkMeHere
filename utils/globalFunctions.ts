@@ -33,17 +33,32 @@ export function toastWarning(
   });
 }
 
-export function encrypt(text: string) {
-  if (!process.env.ENCRYPTION_KEY) {
-    throw new Error('ENCRYPTION_KEY not set');
+// TThis is the generic success message
+export function toastSuccess(
+  successMessage: string,
+  action?: ToastActionElement | undefined
+) {
+  toast({
+    title: 'Success!',
+    icon: 'success',
+    description: successMessage,
+    action: action
+  });
+}
+
+export function encrypt(text: string, key?: string) {
+  let bufferKey = '';
+  if (key) {
+    bufferKey = key;
+  } else {
+    if (!process.env.ENCRYPTION_KEY) {
+      throw new Error('ENCRYPTION_KEY not set');
+    }
+    bufferKey = process.env.ENCRYPTION_KEY!;
   }
 
   let iv = crypto.randomBytes(16);
-  let cipher = crypto.createCipheriv(
-    'aes-256-cbc',
-    Buffer.from(process.env.ENCRYPTION_KEY!),
-    iv
-  );
+  let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(bufferKey), iv);
   let encrypted = cipher.update(text);
 
   encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -51,9 +66,15 @@ export function encrypt(text: string) {
   return iv.toString('hex') + ':' + encrypted.toString('hex');
 }
 
-export function decrypt(text: string) {
-  if (!process.env.ENCRYPTION_KEY) {
-    throw new Error('ENCRYPTION_KEY not set');
+export function decrypt(text: string, key?: string) {
+  let bufferKey = '';
+  if (key) {
+    bufferKey = key;
+  } else {
+    if (!process.env.ENCRYPTION_KEY) {
+      throw new Error('ENCRYPTION_KEY not set');
+    }
+    bufferKey = process.env.ENCRYPTION_KEY!;
   }
 
   let textParts = text.split(':');
@@ -61,7 +82,7 @@ export function decrypt(text: string) {
   let encryptedText = Buffer.from(textParts.join(':'), 'hex');
   let decipher = crypto.createDecipheriv(
     'aes-256-cbc',
-    Buffer.from(process.env.ENCRYPTION_KEY!),
+    Buffer.from(bufferKey),
     iv
   );
   let decrypted = decipher.update(encryptedText);

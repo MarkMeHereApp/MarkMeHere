@@ -83,13 +83,11 @@ export default function CoursesContext({
       courseId: selectedCourseId || ''
     },
     {
-      /* 
-        The query will only run if selectedCourseId is not null and the users course role is professor or TA
-      */
       enabled: !!selectedCourseId,
       onSuccess: (data) => {
         if (!data) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
+        setSelectedCourseRole(data?.role ?? null);
       }
     }
   );

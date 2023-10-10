@@ -58,7 +58,7 @@ export function DataTableRowActions<TData>({
 
   async function handleConfirmDelete() {
     row.toggleSelected();
-    await deleteCourseMemberMutation.mutateAsync([courseMemberData]);
+    await deleteCourseMemberMutation.mutateAsync([{ id: courseMemberData.id }]);
     handleDialogClose();
     await getCourseMembersOfCourseQuery.refetch();
 

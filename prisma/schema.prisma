@@ -86,6 +86,7 @@ model Course {
 
 model CourseMember {
   id                String            @id @default(cuid())
+  optionalId        String?           @db.VarChar(255)
   lmsId             String? // We need this when registering a student     
   email             String
   name              String            @db.VarChar(255) // Right now optional
@@ -96,7 +97,7 @@ model CourseMember {
   role              String            @default("student")
   attendanceEntries AttendanceEntry[]
 
-  @@unique([email, courseId])
+  @@unique([email, courseId, optionalId])
 }
 
 model qrcode {
@@ -125,12 +126,15 @@ model AuthProviderCredentials{
 
   id        String   @id @default(cuid())
   enabled  Boolean  @default(true)
-  provider  String    @unique
+  key  String    @unique
+  displayName String  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   clientId  String
   clientSecret String
+  allowDangerousEmailAccountLinking Boolean
   issuer  String?
+  tenantId String?
   authorizationUrl String?
   
 
