@@ -86,11 +86,11 @@ export default function SignInForm({ providers }: SignInFormProps) {
     ssr: false
   });
 
-  // useEffect(() => {
-  //   if (session && router) {
-  //     router.push('/overview');
-  //   }
-  // }, [session, router]);
+  useEffect(() => {
+    if (session && router) {
+      router.push('/overview');
+    }
+  }, [session, router]);
 
   const onCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

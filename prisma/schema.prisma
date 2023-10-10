@@ -87,6 +87,7 @@ model Course {
 
 model CourseMember {
   id                String            @id @default(cuid())
+  optionalId        String?           @db.VarChar(255)
   lmsId             String? // We need this when registering a student     
   email             String
   name              String            @db.VarChar(255) // Right now optional
@@ -97,7 +98,7 @@ model CourseMember {
   role              String            @default("student")
   attendanceEntries AttendanceEntry[]
 
-  @@unique([email, courseId])
+  @@unique([email, courseId, optionalId])
 }
 
 model qrcode {

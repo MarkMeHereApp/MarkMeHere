@@ -27,13 +27,11 @@ const CSV_Import = () => {
   const currentMembers = useCourseContext().courseMembersOfSelectedCourse;
   const createManyCourseMembers =
     trpc.courseMember.createMultipleCourseMembers.useMutation();
-  const courseID = useCourseContext().selectedCourseId;
   const [tableValues, setTableValues] = useState<CourseMember[]>([]);
   const [existedMembers, setExistedMembers] = useState<CourseMember[]>([]);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationColor, setVlidationColor] = useState('');
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
   const { toast } = useToast();
@@ -57,34 +55,32 @@ const CSV_Import = () => {
   const openConfirmationDialog = () => {
     setIsConfirmationDialogOpen(true);
   };
-  const validateCSV = async (headers: string[], values: CSVData[]) => {
+  const validateCSV = async (values: CSVData[]) => {
     try {
-      setVlidationColor('');
       setValidationProgress(0);
       setValidationMessage('Validating CSV structure...');
       await delay(1000);
       setValidationProgress(25);
       const firstObjectKeys = Object.keys(values[0]);
-      if (JSON.stringify(firstObjectKeys) !== JSON.stringify(headers)) {
+
+      const expectedHeaders = ['Name', 'ID', 'Email'];
+
+      const headersMatch = expectedHeaders.every((expectedHeader) =>
+        firstObjectKeys.some(
+          (header) =>
+            header.trim().toLowerCase() === expectedHeader.toLowerCase()
+        )
+      );
+
+      if (!headersMatch) {
         throw new Error(
-          `CSV file is invalid, Make sure CSV includes 'Student', 'ID', 'SIS Login ID' in the headers.`
+          `CSV file is invalid. Make sure CSV includes headers: 'Name', 'ID', 'Email'.`
         );
       }
 
-      const requiredColumns = ['Student', 'ID'];
-
-      const missingColumns: string[] = [];
       const missingValues: string[] = [];
 
-      for (const column of requiredColumns) {
-        // Check if any row in the values array is missing the required column
-
-        setValidationMessage('Checking for required columns...');
-
-        if (!values.every((row) => column in row)) {
-          missingColumns.push(column);
-        }
-
+      for (const column of expectedHeaders) {
         setValidationProgress(50);
         setValidationMessage('Checking for required fields...');
         // Check if any row in the values array has a null or empty value for the required column
@@ -93,12 +89,6 @@ const CSV_Import = () => {
         ) {
           missingValues.push(column);
         }
-      }
-
-      if (missingColumns.length > 0) {
-        throw new Error(
-          `CSV file is invalid, missing columns: ${missingColumns.join(', ')}`
-        );
       }
 
       if (missingValues.length > 0) {
@@ -114,17 +104,19 @@ const CSV_Import = () => {
 
       const data = values.map((row) => ({
         id: row['ID'],
-        name: row['Student'],
-        lmsId: row['ID'],
-        email: row['SIS Login ID'] + '@ucf.edu',
-        courseId: courseID || '',
+        name: row['Name'],
+        optionalId: row['ID'],
+        email: row['Email'],
+        courseId: '',
+        lmsId: '',
         dateEnrolled: new Date(),
         role: 'Student'
       }));
       if (currentMembers) {
         const existingMembers = currentMembers.filter(
           (member) =>
-            member.lmsId && data.some((row) => row.lmsId === member.lmsId)
+            member.optionalId &&
+            data.some((row) => row.optionalId === member.optionalId)
         );
 
         if (existingMembers.length > 0) {
@@ -133,7 +125,6 @@ const CSV_Import = () => {
       }
 
       setValidationProgress(100);
-      setVlidationColor('green');
       setValidationMessage('Validation completed!');
       await delay(1000);
 
@@ -143,7 +134,6 @@ const CSV_Import = () => {
         variant: 'destructive',
         title: 'Validation failed. Try Again. '
       });
-      setVlidationColor('red');
       setValidationProgress(0);
       setValidationMessage('' + error);
       await delay(10000);
@@ -169,7 +159,7 @@ const CSV_Import = () => {
         return [header, ...filteredLines].join('\n');
       },
       complete: async (results) => {
-        const columnsToKeep = ['Student', 'ID', 'SIS Login ID'];
+        const columnsToKeep = ['Name', 'ID', 'Email'];
 
         const filteredData = results.data.map((row) => {
           const filteredRow: CSVData = {};
@@ -183,7 +173,7 @@ const CSV_Import = () => {
 
         setIsValidating(true);
 
-        const data = await validateCSV(columnsToKeep, filteredData);
+        const data = await validateCSV(filteredData);
         setIsValidating(false);
 
         setTableValues(data || []);
@@ -197,8 +187,6 @@ const CSV_Import = () => {
 
     if (selectedFile) {
       parseCSV(selectedFile);
-    } else {
-      setIsFileUploaded(false);
     }
   };
 
@@ -216,8 +204,8 @@ const CSV_Import = () => {
     const transformedTableValues = tableValues.map((row) => ({
       role: 'student',
       name: row.name,
-      email: row.email + '@ucf.edu',
-      lmsId: row.lmsId || undefined
+      email: row.email,
+      optionalId: row.optionalId !== null ? row.optionalId : undefined
     }));
     try {
       const newMembers = await createManyCourseMembers.mutateAsync({
@@ -259,7 +247,7 @@ const CSV_Import = () => {
   const removeAlreadyExistedMembers = () => {
     if (currentMembers) {
       const existingMembers = currentMembers.filter((member) =>
-        tableValues.some((row) => row.lmsId === member.lmsId)
+        tableValues.some((row) => row.optionalId === member.optionalId)
       );
 
       if (existingMembers.length > 0) {
@@ -267,7 +255,7 @@ const CSV_Import = () => {
         const newTableValues = tableValues.filter(
           (row) =>
             !existingMembers.some(
-              (existingMember) => existingMember.lmsId === row.lmsId
+              (existingMember) => existingMember.optionalId === row.optionalId
             )
         );
 
@@ -302,10 +290,10 @@ const CSV_Import = () => {
           <div className="text-center">
             <p
               style={{
-                color: validationColor,
                 fontSize: '15px',
                 fontWeight: 'bold'
               }}
+              className="text-primary"
             >
               {validationMessage}
             </p>
@@ -318,20 +306,15 @@ const CSV_Import = () => {
                 }}
                 value={validationProgress}
               />
-              <div
-                style={{
-                  width: `${validationProgress}%`,
-                  backgroundColor: validationColor,
-                  height: '100%',
-                  borderRadius: '10px'
-                }}
-              />
             </div>
           </div>
         </DialogContent>
       </Dialog>
       <Dialog open={isFileUploaded}>
-        <DialogContent className="sm:max-w-[1000px] " onClose={closeDialog}>
+        <DialogContent
+          className="sm:max-w-[1000px] flex flex-col flex-grow"
+          onClose={closeDialog}
+        >
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>

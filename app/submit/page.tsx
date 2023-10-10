@@ -69,7 +69,7 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
 
     //If the token was not found valid, we continue to /submit?qr-error, that is just to trigger the error in the input page
     else{
-      redirect(`/submit?error=qrerror`)//add error to the url and then retrieve it 
+      redirect(`/submit?error=qr-error`)//add error to the url and then retrieve it 
     }
   }
 
