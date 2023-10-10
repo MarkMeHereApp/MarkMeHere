@@ -33,7 +33,7 @@ export const ActiveAuthProvider = ({
   const handleDelete = async () => {
     try {
       await deleteAuthProviderMutation.mutateAsync({ displayName });
-      toastSuccess('Successfully Deleted Auth Provider!');
+      toastSuccess(`Successfully deleted ${displayName}!`);
       setActiveProviders((prev) =>
         prev.filter((provider) => provider.providerKey !== providerKey)
       );

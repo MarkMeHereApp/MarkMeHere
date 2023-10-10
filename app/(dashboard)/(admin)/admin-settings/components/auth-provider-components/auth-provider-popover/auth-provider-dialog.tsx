@@ -171,7 +171,9 @@ export function ProviderSubmissionDialog({
 
       setLoading(false);
       setShowingTestContent(true);
-      toastSuccess('Successfully added new provider!');
+      toastSuccess(
+        `Successfully added your ${inputForm.displayName} provider! Please test the provider to ensure it works by signing out.`
+      );
       setActiveProviders((prev) => [
         ...prev,
         {
