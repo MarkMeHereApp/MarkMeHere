@@ -9,6 +9,8 @@ import { firaSansFont } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Icons } from '@/components/ui/icons';
 
+import GeoLocationChecker from './geolocation';
+
 enum ErrorType {
   InvalidInput,
   InvalidQR,
@@ -25,6 +27,23 @@ const InputTable = () => {
   const errorType = searchParams ? searchParams.get('error') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
+
+
+
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition((position) => {
+  //       const latitude = position.coords.latitude;
+  //       const longitude = position.coords.longitude;
+  //       console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+  //     }, (error) => {
+  //       console.error("Error occurred while getting geolocation", error);
+  //     });
+  //   } else {
+  //     console.log("Geolocation is not supported by this browser.");
+  //   }
+  // }, []);
+
 
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
@@ -117,6 +136,8 @@ const InputTable = () => {
           <AlertDescription className="">{errorDisplay}</AlertDescription>
         )}
       </Alert>
+
+      <GeoLocationChecker></GeoLocationChecker>
 
       <div className="gap-4 flex flex-col items-center pt-0 p-6">
         <Input
