@@ -6,16 +6,12 @@ import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { trpc } from '@/app/_trpc/client';
 
-const createRandomCourseMember = (selectedCourseId: string) =>
-  ({
-    id: faker.string.uuid(),
-    lmsId: faker.string.uuid(),
-    email: faker.internet.email(),
-    name: faker.person.fullName(),
-    courseId: selectedCourseId,
-    dateEnrolled: new Date(),
-    role: 'student'
-  }) as CourseMember;
+const createRandomCourseMember = (selectedCourseId: string) => ({
+  email: faker.internet.email(),
+  name: faker.person.fullName(),
+  courseId: selectedCourseId,
+  role: 'student'
+});
 
 const GenerateRandomCourseMember = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =

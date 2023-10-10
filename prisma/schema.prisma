@@ -127,12 +127,15 @@ model AuthProviderCredentials{
 
   id        String   @id @default(cuid())
   enabled  Boolean  @default(true)
-  provider  String    @unique
+  key  String    @unique
+  displayName String  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   clientId  String
   clientSecret String
+  allowDangerousEmailAccountLinking Boolean
   issuer  String?
+  tenantId String?
   authorizationUrl String?
   
 
