@@ -99,7 +99,7 @@ export const courseMemberRouter = router({
     }
   ),
 
-  getCourseMembersOfCourse: publicProcedure
+  getCourseMembersOfCourseAndCurRole: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
@@ -130,11 +130,14 @@ export const courseMemberRouter = router({
           );
         }
 
-        const courseMembership = courseMembershipRes[0];
+        const courseMembershipRole = courseMembershipRes[0].role;
 
-        if (courseMembership.role === 'student') {
-          console.log(courseMembership);
-          return { success: true, courseMembers: [courseMembership] };
+        if (courseMembershipRole === 'student') {
+          return {
+            success: true,
+            courseMembers: [courseMembershipRes[0]],
+            role: courseMembershipRole
+          };
         }
 
         const courseMembers = await prisma.courseMember.findMany({
@@ -145,37 +148,12 @@ export const courseMemberRouter = router({
             name: 'asc'
           }
         });
-        console.log(courseMembers);
 
-        return { success: true, courseMembers };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
-
-  getCourseMemberRole: publicProcedure
-    .input(zGetCourseMemberRole)
-    .query(async (requestData) => {
-      try {
-        const email = requestData.ctx?.session?.email;
-        if (!email)
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message: 'user does not have a session'
-            })
-          );
-        //Find the role of the current course member
-        const role = await prisma.courseMember.findFirst({
-          where: {
-            courseId: requestData.input.courseId,
-            email: email
-          },
-          select: {
-            role: true
-          }
-        });
-        return { success: true, role: role?.role };
+        return {
+          success: true,
+          courseMembers: courseMembers,
+          role: courseMembershipRole
+        };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
