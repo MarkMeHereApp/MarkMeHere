@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 
+import { ModeToggle } from '@/app/(dashboard)/components/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -132,13 +133,16 @@ export default function SignInForm({ providers }: SignInFormProps) {
       <div className="absolute top-0 right-0 h-full w-full">
         <Stars />
       </div>
-      <Card className="min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center p-4">
-        <CardContent className="flex flex-col w-[100%]">
-          <CardTitle className="text-2xl font-bold font-mono text-center">
-            <span className={firaSansFont.className}>
-              Sign in Mark Me Here!
-            </span>
-          </CardTitle>
+      <Card className="w-full sm:w-[500px] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center p-4">
+        <CardContent className="flex flex-col w-full">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-2xl font-bold font-mono">
+              <span className={firaSansFont.className}>
+                Sign in to Mark Me Here!
+              </span>
+            </CardTitle>
+            <ModeToggle />
+          </div>
 
           <div className="flex flex-col gap-4">
             <Alert className="text-center text-red-500 border-0">
