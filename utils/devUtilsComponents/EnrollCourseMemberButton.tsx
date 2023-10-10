@@ -63,7 +63,7 @@ const EnrollCourseMemberButton = () => {
     name: z.string(),
     email: z.string(),
     role: z.string(),
-    lmsId: z.string().nullable()
+    optionalId: z.string().optional()
   });
 
   type CourseMemberFormProps = z.infer<typeof zCourseMemberForm>;
@@ -81,9 +81,7 @@ const EnrollCourseMemberButton = () => {
 
         const response = await createCourseMemberMutation.mutateAsync({
           ...data,
-          id: '',
-          courseId: selectedCourseId,
-          dateEnrolled: new Date()
+          courseId: selectedCourseId
         });
 
         if (!response.success) throw new Error(errorMessage);
@@ -102,15 +100,15 @@ const EnrollCourseMemberButton = () => {
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger asChild>
-        <Button
-          variant="default"
-          onClick={() => handleDialogOpen()}
-          className="flex items-center"
-          style={{ maxWidth: '100%' }}
-        >
-          <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-          <span className="whitespace-nowrap">Enroll</span>
-        </Button>
+          <Button
+            variant="default"
+            onClick={() => handleDialogOpen()}
+            className="flex items-center"
+            style={{ maxWidth: '100%' }}
+          >
+            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">Enroll</span>
+          </Button>
         </DialogTrigger>
         <DialogContent
           className="sm:max-w-[425px]"
@@ -186,13 +184,11 @@ const EnrollCourseMemberButton = () => {
               />
               <FormField
                 control={form.control}
-                name="lmsId"
+                name="optionalId"
                 defaultValue=""
                 render={({ field }) => (
                   <FormItem className="grid-cols-3 grid-flow-col-dense items-center gap-4">
-                    <FormLabel className="text-right">
-                      LMS ID (Optional)
-                    </FormLabel>
+                    <FormLabel className="text-right">Optional ID</FormLabel>
                     <FormControl className="col-span-3">
                       <Input
                         placeholder="abc123"

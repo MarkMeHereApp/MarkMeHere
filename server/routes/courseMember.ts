@@ -13,14 +13,12 @@ import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 
 export const zCourseMember = z.object({
-  id: z.string(),
-  lmsId: z.string().nullable(),
+  lmsId: z.string().optional(),
   email: z.string(),
   name: z.string(),
   courseId: z.string(),
-  dateEnrolled: z.date(),
   role: z.string(),
-  optionalId: z.string()
+  optionalId: z.string().optional()
 });
 
 export const zGetCourseMembersOfCourse = z.object({
@@ -54,8 +52,7 @@ export const courseMemberRouter = router({
       try {
         const resEnrollment = await prisma.courseMember.create({
           data: {
-            ...requestData.input,
-            id: requestData.input.id || undefined
+            ...requestData.input
           }
         });
         return { success: true, resEnrollment };
