@@ -8,6 +8,8 @@ import { Adapter, AdapterUser } from 'next-auth/adapters';
 import bcrypt from 'bcrypt';
 import { decrypt } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
+import prismaAdapterDefault from './adapters/prismaAdapter';
+import prismaAdapterHashed from './adapters/prismaAdapterHashed';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -41,57 +43,6 @@ const getBuiltInNextAuthProviders = async (): Promise<
   return builtInAuthProviders;
 };
 
-/*
-Default Prisma database adapter
-*/
-function customPrismaAdapterDefault(prisma: PrismaClient) {
-  return {
-    ...PrismaAdapter(prisma),
-    createUser: (data: any) => {
-      const role = 'FACULTY';
-      return prisma.user.create({ data: { ...data, role: role } });
-    }
-  };
-}
-
-/*
-Prisma database adapter designed to handle email hashing
-*/
-function customPrismaAdapterHashed(prisma: PrismaClient) {
-  return {
-    ...PrismaAdapter(prisma),
-    createUser: async (data: Omit<AdapterUser, 'id'>) => {
-      const role = 'FACULTY';
-      const hashedEmail = await bcrypt.hash(data.email, 10);
-      return prisma.user.create({
-        data: {
-          name: data.name,
-          email: hashedEmail,
-          role: role,
-          image: data.image
-        }
-      });
-    },
-
-    getUserByEmail: async (email: string) => {
-      // Find all users from the database
-      const allUsers = await prisma.user.findMany();
-
-      // Iterate through all users and check if the provided email matches any user's hashed email
-      for (const user of allUsers) {
-        const isEmailMatch = await bcrypt.compare(email, user.email ?? '');
-        if (isEmailMatch) {
-          // Return the user if there's a match
-          console.log('USER FOUND');
-          return user;
-        }
-      }
-
-      // Return null if no matching user is found
-      return null;
-    }
-  };
-}
 
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders = [
@@ -105,7 +56,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   defaultProviders.push(...dbProviders);
 
   return {
-    adapter: customPrismaAdapterHashed(prisma) as Adapter,
+    adapter: prismaAdapterHashed(prisma) as Adapter,
     providers: defaultProviders,
 
     logger: {
