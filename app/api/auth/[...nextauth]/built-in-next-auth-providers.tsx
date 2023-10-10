@@ -14,6 +14,8 @@ import OneLoginProvider from 'next-auth/providers/onelogin';
 import FusionAuthProvider from 'next-auth/providers/fusionauth';
 import Auth0Provider from 'next-auth/providers/auth0';
 import OktaProvider from 'next-auth/providers/okta';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { GitHubLogoIcon } from '@radix-ui/react-icons';
 
 export type ProviderFunctionParams = {
   clientId: string;
@@ -259,9 +261,6 @@ export const providerFunctions: Provider[] = [
       })
   }
 ];
-
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { GitHubLogoIcon } from '@radix-ui/react-icons';
 
 function GitHubEduMessage() {
   return (
