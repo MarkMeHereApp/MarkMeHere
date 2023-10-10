@@ -32,7 +32,6 @@ const CSV_Import = () => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationColor, setVlidationColor] = useState('');
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
   const { toast } = useToast();
@@ -58,7 +57,6 @@ const CSV_Import = () => {
   };
   const validateCSV = async (values: CSVData[]) => {
     try {
-      setVlidationColor('');
       setValidationProgress(0);
       setValidationMessage('Validating CSV structure...');
       await delay(1000);
@@ -125,7 +123,6 @@ const CSV_Import = () => {
       }
 
       setValidationProgress(100);
-      setVlidationColor('green');
       setValidationMessage('Validation completed!');
       await delay(1000);
 
@@ -292,10 +289,10 @@ const CSV_Import = () => {
           <div className="text-center">
             <p
               style={{
-                color: validationColor,
                 fontSize: '15px',
                 fontWeight: 'bold'
               }}
+              className="text-primary"
             >
               {validationMessage}
             </p>
@@ -307,14 +304,6 @@ const CSV_Import = () => {
                   borderRadius: '10px'
                 }}
                 value={validationProgress}
-              />
-              <div
-                style={{
-                  width: `${validationProgress}%`,
-                  backgroundColor: validationColor,
-                  height: '100%',
-                  borderRadius: '10px'
-                }}
               />
             </div>
           </div>
