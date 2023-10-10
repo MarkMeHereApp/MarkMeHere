@@ -18,7 +18,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 interface AreYouSureDialogProps {
   title: string;
   AlertDescriptionComponent?: React.ComponentType;
-  proceedText: string;
+  proceedText?: string;
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
 }
@@ -34,7 +34,9 @@ export function AreYouSureDialog({
   const [isOpen, setIsOpen] = useState(false);
   const [isAwaitingConfirmationPromise, setAwaitingConfirmationPromise] =
     useState(false);
-  const isConfirmed = inputValue.toUpperCase() === proceedText.toUpperCase();
+  const isConfirmed = proceedText
+    ? inputValue.toUpperCase() === proceedText.toUpperCase()
+    : true;
 
   const handleConfirm = async () => {
     setAwaitingConfirmationPromise(true);
@@ -61,19 +63,25 @@ export function AreYouSureDialog({
             </div>
           </AlertDialogTitle>
           {AlertDescriptionComponent && <AlertDescriptionComponent />}
-          <AlertDialogDescription>
-            <b>
-              If you want to proceed type '
-              <span className="whitespace-pre inline">{proceedText}</span>'.
-            </b>
-          </AlertDialogDescription>
         </AlertDialogHeader>
-        <Input
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder={`Type '${proceedText}' to confirm`}
-          disabled={isAwaitingConfirmationPromise}
-        />
+        {proceedText && (
+          <div>
+            <AlertDialogDescription className="pb-4">
+              <b>
+                If you want to proceed type '
+                <span className="whitespace-pre inline">{proceedText}</span>'.
+              </b>
+            </AlertDialogDescription>
+
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder={`Type '${proceedText}' to confirm`}
+              disabled={isAwaitingConfirmationPromise}
+            />
+          </div>
+        )}
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
