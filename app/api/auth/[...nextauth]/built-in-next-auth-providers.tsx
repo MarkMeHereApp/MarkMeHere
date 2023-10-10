@@ -27,7 +27,7 @@ export interface Provider {
   key: string;
   CustomMessage?: React.ComponentType;
   defaultDisplayName: string;
-  creationLink: string;
+  docsLink: string;
   config: (params: any) => any;
 }
 
@@ -38,7 +38,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'zoom',
     defaultDisplayName: 'Zoom',
-    creationLink: 'https://developers.zoom.us/docs/integrations/create/',
+    docsLink: 'https://developers.zoom.us/docs/integrations/create/',
     config: ({
       clientId,
       clientSecret,
@@ -54,7 +54,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'github',
     defaultDisplayName: 'GitHub',
-    creationLink: '',
+    docsLink: '',
     config: ({
       clientId,
       clientSecret,
@@ -71,7 +71,7 @@ export const providerFunctions: Provider[] = [
     key: 'githubedu',
     defaultDisplayName: 'GitHub Edu',
     CustomMessage: GitHubEduMessage,
-    creationLink: 'https://developers.zoom.us/docs/integrations/create/',
+    docsLink: 'https://developers.zoom.us/docs/integrations/create/',
     config: ({
       clientId,
       clientSecret,
@@ -87,7 +87,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'google',
     defaultDisplayName: 'Google',
-    creationLink: 'https://console.developers.google.com/apis/credentials',
+    docsLink: 'https://console.developers.google.com/apis/credentials',
     config: ({
       clientId,
       clientSecret,
@@ -103,7 +103,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'facebook',
     defaultDisplayName: 'Facebook',
-    creationLink: 'https://developers.facebook.com/apps/',
+    docsLink: 'https://developers.facebook.com/apps/',
     config: ({
       clientId,
       clientSecret,
@@ -119,7 +119,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'apple',
     defaultDisplayName: 'Apple',
-    creationLink: 'https://developer.apple.com/account/resources/',
+    docsLink: 'https://developer.apple.com/account/resources/',
     config: ({
       clientId,
       clientSecret,
@@ -137,7 +137,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'discord',
     defaultDisplayName: 'Discord',
-    creationLink: 'https://discord.com/developers/applications',
+    docsLink: 'https://discord.com/developers/applications',
     config: ({
       clientId,
       clientSecret,
@@ -153,7 +153,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'azure-ad',
     defaultDisplayName: 'Azure AD',
-    creationLink:
+    docsLink:
       'https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       AzureADProvider({
@@ -165,7 +165,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'azure-ad-b2c',
     defaultDisplayName: 'Azure AD B2C',
-    creationLink:
+    docsLink:
       'https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       AzureADB2CProvider({
@@ -177,7 +177,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'cognito',
     defaultDisplayName: 'Amazon Cognito',
-    creationLink: 'https://console.aws.amazon.com/cognito/',
+    docsLink: 'https://console.aws.amazon.com/cognito/',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       CognitoProvider({
         clientId: clientId,
@@ -188,7 +188,7 @@ export const providerFunctions: Provider[] = [
   {
     key: '42-school',
     defaultDisplayName: '42 School',
-    creationLink: 'https://api.intra.42.fr/',
+    docsLink: 'https://api.intra.42.fr/',
     config: ({ clientId, clientSecret }: ProviderFunctionParams) =>
       FortyTwoProvider({
         clientId: clientId,
@@ -198,7 +198,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'duende-identity-server6',
     defaultDisplayName: 'Duende Identity Server 6',
-    creationLink: 'https://duendesoftware.com/products/identityserver',
+    docsLink: 'https://duendesoftware.com/products/identityserver',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       DuendeIDS6Provider({
         clientId: clientId,
@@ -209,7 +209,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'onelogin',
     defaultDisplayName: 'OneLogin',
-    creationLink: 'https://www.onelogin.com/developer-docs',
+    docsLink: 'https://www.onelogin.com/developer-docs',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       OneLoginProvider({
         clientId: clientId,
@@ -220,7 +220,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'fusionauth',
     defaultDisplayName: 'FusionAuth',
-    creationLink: 'https://fusionauth.io/docs/v1/tech/oauth/endpoints/',
+    docsLink: 'https://fusionauth.io/docs/v1/tech/oauth/endpoints/',
     config: ({
       clientId,
       clientSecret,
@@ -239,7 +239,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'auth0',
     defaultDisplayName: 'Auth0',
-    creationLink: 'https://manage.auth0.com/dashboard/',
+    docsLink: 'https://manage.auth0.com/dashboard/',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       Auth0Provider({
         clientId: clientId,
@@ -250,7 +250,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'okta',
     defaultDisplayName: 'Okta',
-    creationLink: 'https://developer.okta.com/',
+    docsLink: 'https://developer.okta.com/',
     config: ({ clientId, clientSecret, issuer }: ProviderFunctionParams) =>
       OktaProvider({
         clientId: clientId,
