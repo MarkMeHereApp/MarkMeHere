@@ -11,13 +11,15 @@ import ErrorTest from './components/ErrorTest';
 import GetCanvasCourses from './components/getCanvasCoursesTest';
 import IconsTest from './components/IconsTest';
 import CRUDButtons from '@/utils/devUtilsComponents/CRUDButtons';
+import GetCourseMembership from './components/GetCourseMembership';
 
 const tabComponents = [
   { value: 'Aldrich Test', component: <AldrichTest /> },
   { value: 'Sams Test', component: <SamTest /> },
   { value: 'Error Test', component: <ErrorTest /> },
   { value: 'GetCanvasCourses', component: <GetCanvasCourses /> },
-  { value: 'Icons', component: <IconsTest /> }
+  { value: 'Icons', component: <IconsTest /> },
+  { value: 'GetCourseMembership', component: <GetCourseMembership /> }
 
   // Add more components here
 ];

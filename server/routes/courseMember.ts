@@ -8,6 +8,7 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { getServerSession } from 'next-auth';
 
 import { z } from 'zod';
 
@@ -98,10 +99,44 @@ export const courseMemberRouter = router({
     }
   ),
 
-  getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
+  getCourseMembersOfCourse: publicProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
+        const emailctx = requestData.ctx?.session?.email;
+
+        if (!emailctx)
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'user does not have a session'
+            })
+          );
+
+        const courseMembershipRes = await prisma.courseMember.findMany({
+          where: {
+            courseId: requestData.input.courseId,
+            email: emailctx
+          }
+        });
+
+        if (courseMembershipRes.length !== 1) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message:
+                'There should only be one course member with this email and id'
+            })
+          );
+        }
+
+        const courseMembership = courseMembershipRes[0];
+
+        if (courseMembership.role === 'student') {
+          console.log(courseMembership);
+          return { success: true, courseMembers: [courseMembership] };
+        }
+
         const courseMembers = await prisma.courseMember.findMany({
           where: {
             courseId: requestData.input.courseId
@@ -110,6 +145,8 @@ export const courseMemberRouter = router({
             name: 'asc'
           }
         });
+        console.log(courseMembers);
+
         return { success: true, courseMembers };
       } catch (error) {
         throw generateTypedError(error as Error);
