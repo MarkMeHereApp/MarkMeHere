@@ -15,22 +15,26 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
-export function ConfirmDeleteDialog({
-  title,
-  AlertDescription,
-  onConfirm,
-  children
-}: {
+interface AreYouSureDialogProps {
   title: string;
-  AlertDescription?: React.ComponentType;
+  AlertDescriptionComponent?: React.ComponentType;
+  proceedText: string;
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
-}) {
+}
+
+export function AreYouSureDialog({
+  title,
+  AlertDescriptionComponent,
+  proceedText,
+  onConfirm,
+  children
+}: AreYouSureDialogProps) {
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isAwaitingConfirmationPromise, setAwaitingConfirmationPromise] =
     useState(false);
-  const isConfirmed = inputValue.toUpperCase() === 'I AM SURE';
+  const isConfirmed = inputValue.toUpperCase() === proceedText.toUpperCase();
 
   const handleConfirm = async () => {
     setAwaitingConfirmationPromise(true);
@@ -56,15 +60,18 @@ export function ConfirmDeleteDialog({
               {title}
             </div>
           </AlertDialogTitle>
-          {AlertDescription && <AlertDescription />}
+          {AlertDescriptionComponent && <AlertDescriptionComponent />}
           <AlertDialogDescription>
-            <b>If you want to proceed type 'I AM SURE'.</b>
+            <b>
+              If you want to proceed type '
+              <span className="whitespace-pre inline">{proceedText}</span>'.
+            </b>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type 'I AM SURE' to confirm"
+          placeholder={`Type '${proceedText}' to confirm`}
           disabled={isAwaitingConfirmationPromise}
         />
         <AlertDialogFooter>

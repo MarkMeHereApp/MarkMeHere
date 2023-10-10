@@ -3,7 +3,7 @@
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
-import { ConfirmDeleteDialog } from '@/components/general/are-you-sure-alert-dialog';
+import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
 import { toastSuccess } from '@/utils/globalFunctions';
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
@@ -71,15 +71,16 @@ export const ActiveAuthProvider = ({
             <AccountLinkingInfoHover />
           </div>
         </div>
-        <ConfirmDeleteDialog
+        <AreYouSureDialog
           title="Are you sure you want to delete the GitHub OAuth provider?"
-          AlertDescription={AlertDescription}
+          AlertDescriptionComponent={AlertDescription}
           onConfirm={handleDelete}
+          proceedText={`Delete ${displayName}`}
         >
           <Button variant="ghost">
             <b className="text-destructive">Remove</b>
           </Button>
-        </ConfirmDeleteDialog>
+        </AreYouSureDialog>
       </div>
     </Alert>
   );
