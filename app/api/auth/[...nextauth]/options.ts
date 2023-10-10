@@ -34,7 +34,7 @@ function customPrismaAdapterHashed(prisma: PrismaClient) {
       return prisma.user.create({
         data: {
           name: data.name,
-          email: hashedEmail ?? '',
+          email: hashedEmail,
           role: role,
           image: data.image
         }
