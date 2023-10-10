@@ -17,7 +17,7 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
             name: data.name,
             email: hashedEmail,
             role: role,
-            image: data.image
+            image: data.image,
           }
         });
       },
