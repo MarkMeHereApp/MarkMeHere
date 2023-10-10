@@ -133,7 +133,8 @@ export default function SignInForm({ providers }: SignInFormProps) {
       <div className="absolute top-0 right-0 h-full w-full">
         <Stars />
       </div>
-      <Card className="w-full sm:w-[500px] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center p-4">
+
+      <Card className="w-full sm:w-[500px] max-h-full overflow-y-auto mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center p-4 ">
         <CardContent className="flex flex-col w-full">
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl font-bold font-mono">
