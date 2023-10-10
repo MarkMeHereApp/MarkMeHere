@@ -8,6 +8,7 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { conforms } from 'lodash';
 
 import { z } from 'zod';
 
@@ -18,7 +19,8 @@ export const zCourseMember = z.object({
   name: z.string(),
   courseId: z.string(),
   dateEnrolled: z.date(),
-  role: z.string()
+  role: z.string(),
+  optionalId: z.string()
 });
 
 export const zGetCourseMembersOfCourse = z.object({
@@ -26,8 +28,8 @@ export const zGetCourseMembersOfCourse = z.object({
 });
 
 export const zGetCourseMemberOfCourse = z.object({
-    courseId: z.string(),
-    email: z.string()
+  courseId: z.string(),
+  email: z.string()
 });
 
 export const zGetCourseMemberRole = z.object({
@@ -37,7 +39,7 @@ export const zCreateMultipleCourseMembers = z.object({
   courseId: z.string(),
   courseMembers: z.array(
     z.object({
-      lmsId: z.string().optional(),
+      optionalId: z.string().optional(),
       name: z.string(),
       email: z.string(),
       role: z.string()
@@ -111,13 +113,13 @@ export const courseMemberRouter = router({
           where: {
             courseId: requestData.input.courseId,
             email: requestData.input.email
-          },
+          }
         });
         return { success: true, courseMember };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-  }),
+    }),
   getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
@@ -171,29 +173,46 @@ export const courseMemberRouter = router({
       try {
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
-          const existingMember = await prisma.courseMember.findFirst({
-            where: {
-              courseId: requestData.input.courseId,
-              lmsId: memberData.lmsId
-            }
-          });
+          if (memberData.role === 'student') {
+            if (
+              memberData.optionalId !== null &&
+              memberData.optionalId !== undefined
+            ) {
+              const existingMember = await prisma.courseMember.findFirst({
+                where: {
+                  courseId: requestData.input.courseId,
+                  optionalId: memberData.optionalId
+                }
+              });
 
-          if (existingMember) {
-            // If the member exists, update it
-            const updatedMember = await prisma.courseMember.update({
-              where: { id: existingMember.id },
-              data: memberData
-            });
-            upsertedCourseMembers.push(updatedMember);
-          } else {
-            // If the member doesn't exist, create it
-            const createdMember = await prisma.courseMember.create({
-              data: {
-                ...memberData,
-                courseId: requestData.input.courseId
+              if (existingMember) {
+                // If the member exists and optionalId is not null, update it
+                const updatedMember = await prisma.courseMember.update({
+                  where: { id: existingMember.id },
+                  data: memberData
+                });
+                upsertedCourseMembers.push(updatedMember);
+              } else {
+                // If the member doesn't exist and optionalId is not null, create it
+                const createdMember = await prisma.courseMember.create({
+                  data: {
+                    ...memberData,
+                    courseId: requestData.input.courseId
+                  }
+                });
+                upsertedCourseMembers.push(createdMember);
               }
-            });
-            upsertedCourseMembers.push(createdMember);
+            } else {
+              // If optionalId is null or undefined, treat it as a new member (first-time import)
+              const createdMember = await prisma.courseMember.create({
+                data: {
+                  ...memberData,
+                  courseId: requestData.input.courseId
+                }
+              });
+
+              upsertedCourseMembers.push(createdMember);
+            }
           }
         }
 

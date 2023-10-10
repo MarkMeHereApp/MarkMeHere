@@ -36,7 +36,7 @@ export function CSV_Preview(props: {
               existingMembers &&
               existingMembers.length > 0 &&
               existingMembers.some(
-                (existingMember) => existingMember.lmsId === d.lmsId
+                (existingMember) => existingMember.optionalId === d.optionalId
               );
 
             const textColor = isExistingMember ? 'IndianRed' : '';
@@ -47,7 +47,7 @@ export function CSV_Preview(props: {
                   {d.name}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
-                  {d.lmsId}
+                  {d.optionalId}
                 </TableCell>
                 <TableCell className="font-medium" style={{ color: textColor }}>
                   {d.email}

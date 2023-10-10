@@ -105,7 +105,7 @@ const CSV_Import = () => {
       const data = values.map((row) => ({
         id: row['ID'],
         name: row['Name'],
-        lmsId: row['ID'],
+        optionalId: row['ID'],
         email: row['Email'],
         courseId: '',
         dateEnrolled: new Date(),
@@ -114,7 +114,8 @@ const CSV_Import = () => {
       if (currentMembers) {
         const existingMembers = currentMembers.filter(
           (member) =>
-            member.lmsId && data.some((row) => row.lmsId === member.lmsId)
+            member.optionalId &&
+            data.some((row) => row.optionalId === member.optionalId)
         );
 
         if (existingMembers.length > 0) {
@@ -132,7 +133,6 @@ const CSV_Import = () => {
         variant: 'destructive',
         title: 'Validation failed. Try Again. '
       });
-      setVlidationColor('red');
       setValidationProgress(0);
       setValidationMessage('' + error);
       await delay(10000);
@@ -204,7 +204,7 @@ const CSV_Import = () => {
       role: 'student',
       name: row.name,
       email: row.email,
-      optionalId: row.lmsId
+      optionalId: row.optionalId
     }));
     try {
       const newMembers = await createManyCourseMembers.mutateAsync({
@@ -246,7 +246,7 @@ const CSV_Import = () => {
   const removeAlreadyExistedMembers = () => {
     if (currentMembers) {
       const existingMembers = currentMembers.filter((member) =>
-        tableValues.some((row) => row.lmsId === member.lmsId)
+        tableValues.some((row) => row.optionalId === member.optionalId)
       );
 
       if (existingMembers.length > 0) {
@@ -254,7 +254,7 @@ const CSV_Import = () => {
         const newTableValues = tableValues.filter(
           (row) =>
             !existingMembers.some(
-              (existingMember) => existingMember.lmsId === row.lmsId
+              (existingMember) => existingMember.optionalId === row.optionalId
             )
         );
 
