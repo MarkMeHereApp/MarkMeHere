@@ -1,11 +1,17 @@
 import GithubProvider from 'next-auth/providers/github';
+import ZoomProvider from 'next-auth/providers/zoom';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import type { PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
 import { decrypt } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
+import prismaAdapterDefault from './adapters/prismaAdapterDefault';
+import prismaAdapterHashed from './adapters/prismaAdapterHashed';
+
+/* Check env to choose adapter */
+const prismaAdapter = process.env.HASHEMAILS === 'true'
+  ? prismaAdapterHashed(prisma) as Adapter
+  : prismaAdapterDefault(prisma) as Adapter;
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -39,16 +45,6 @@ const getBuiltInNextAuthProviders = async (): Promise<
   return builtInAuthProviders;
 };
 
-function customPrismaAdapter(prisma: PrismaClient) {
-  return {
-    ...PrismaAdapter(prisma),
-    createUser: (data: any) => {
-      const role = 'FACULTY';
-      return prisma.user.create({ data: { ...data, role: role } });
-    }
-  };
-}
-
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders = [
     GithubProvider({
@@ -61,7 +57,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   defaultProviders.push(...dbProviders);
 
   return {
-    adapter: customPrismaAdapter(prisma) as Adapter,
+    adapter: prismaAdapter,
     providers: defaultProviders,
 
     logger: {
