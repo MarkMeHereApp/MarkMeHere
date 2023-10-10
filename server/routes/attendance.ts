@@ -3,18 +3,19 @@
 import { elevatedCourseMemberLectureProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { zAttendanceStatus } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { AttendanceEntry } from '@prisma/client';
 
 export const zCreateNewManyAttendanceRequest = z.object({
   lectureId: z.string(),
-  attendanceStatus: z.string(),
+  attendanceStatus: zAttendanceStatus,
   courseMemberIds: z.array(z.string())
 });
 
 export const zCreateOrUpdateSingleAttendanceRequest = z.object({
   lectureId: z.string(),
-  attendanceStatus: z.string(),
+  attendanceStatus: zAttendanceStatus,
   courseMemberId: z.string()
 });
 

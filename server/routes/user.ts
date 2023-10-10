@@ -3,13 +3,14 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 
 export const zCreateUser = z.object({
   name: z.string(),
   email: z.string(),
-  role: z.string()
+  role: zSiteRoles
 });
 
 export const userRouter = router({

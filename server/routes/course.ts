@@ -4,6 +4,7 @@ import { publicProcedure, router } from '../trpc';
 import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 import { zLMSProvider } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
@@ -22,7 +23,7 @@ export const zCreateCourseRequest = z.object({
     .object({
       email: z.string(),
       name: z.string(),
-      role: z.string(),
+      role: zCourseRoles,
       lmsId: z.string().nullable().optional()
     })
     .optional()
