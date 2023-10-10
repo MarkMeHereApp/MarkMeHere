@@ -108,6 +108,7 @@ const CSV_Import = () => {
         optionalId: row['ID'],
         email: row['Email'],
         courseId: '',
+        lmsId: '',
         dateEnrolled: new Date(),
         role: 'Student'
       }));
@@ -204,7 +205,7 @@ const CSV_Import = () => {
       role: 'student',
       name: row.name,
       email: row.email,
-      optionalId: row.optionalId
+      optionalId: row.optionalId !== null ? row.optionalId : undefined
     }));
     try {
       const newMembers = await createManyCourseMembers.mutateAsync({
