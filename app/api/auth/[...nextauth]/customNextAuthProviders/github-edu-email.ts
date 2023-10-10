@@ -112,7 +112,7 @@ export default function GithubEduEmail<P extends GithubProfile>(
       return {
         id: profile.id.toString(),
         name: profile.name ?? profile.login,
-        email: profile.email,
+        email: profile.email ?? 'NA',
         image: profile.avatar_url,
         role: profile.role
       };
