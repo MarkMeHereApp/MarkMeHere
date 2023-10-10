@@ -32,7 +32,6 @@ export const zGetCourseMemberOfCourse = z.object({
   email: z.string()
 });
 
-
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
@@ -122,8 +121,6 @@ export const courseMemberRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-  getCourseMembersOfCourse: elevatedCourseMemberCourseProcedure
-
 
   getCourseMembersOfCourseAndCurRole: publicProcedure
 
