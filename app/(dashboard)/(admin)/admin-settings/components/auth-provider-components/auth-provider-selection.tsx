@@ -1,7 +1,7 @@
 'use client';
 
 import { CaretSortIcon } from '@radix-ui/react-icons';
-
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProviderSubmissionDialog } from './auth-provider-popover/auth-provider-dialog';
 import { useProviderContext } from '@/app/context-auth-provider';
 import { Button } from '@/components/ui/button';
@@ -71,47 +71,49 @@ export default function AuthProviderSelector() {
           <Command>
             <CommandInput placeholder="Search Provider..." />
             <CommandEmpty>No Auth Providers Found</CommandEmpty>
-            <CommandGroup>
-              {Object.values(providerFunctions).map((provider) => {
-                const isActiveProvider = activeProviders
-                  .map((ap) => ap.providerKey)
-                  .includes(provider.key);
-                return (
-                  <CommandItem
-                    value={provider.defaultDisplayName}
-                    key={provider.key}
-                    onSelect={() => setSelectedProvider(provider.key)}
-                    disabled={isActiveProvider}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span
-                        className={`${isActiveProvider ? 'opacity-20' : ''}`}
-                      >
-                        {provider.defaultDisplayName}
-                      </span>
-                      <div className="ml-2">
-                        {provider.CustomMessage && (
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <span
-                                className={`${
-                                  isActiveProvider ? 'opacity-20' : ''
-                                }`}
-                              >
-                                <InfoCircledIcon />
-                              </span>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-96" side="right">
-                              <provider.CustomMessage />
-                            </HoverCardContent>
-                          </HoverCard>
-                        )}
+            <div className="overflow-y-auto max-h-[300px]">
+              <CommandGroup>
+                {Object.values(providerFunctions).map((provider) => {
+                  const isActiveProvider = activeProviders
+                    .map((ap) => ap.providerKey)
+                    .includes(provider.key);
+                  return (
+                    <CommandItem
+                      value={provider.defaultDisplayName}
+                      key={provider.key}
+                      onSelect={() => setSelectedProvider(provider.key)}
+                      disabled={isActiveProvider}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span
+                          className={`${isActiveProvider ? 'opacity-20' : ''}`}
+                        >
+                          {provider.defaultDisplayName}
+                        </span>
+                        <div className="ml-2">
+                          {provider.CustomMessage && (
+                            <HoverCard>
+                              <HoverCardTrigger asChild>
+                                <span
+                                  className={`${
+                                    isActiveProvider ? 'opacity-20' : ''
+                                  }`}
+                                >
+                                  <InfoCircledIcon />
+                                </span>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-96" side="right">
+                                <provider.CustomMessage />
+                              </HoverCardContent>
+                            </HoverCard>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </div>
           </Command>
         </PopoverContent>
       </Popover>
