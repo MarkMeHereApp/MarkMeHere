@@ -19,7 +19,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
+  FormMessage,
+  FormDescription
 } from '../../components/ui/form';
 import {
   Select,
@@ -30,25 +32,27 @@ import {
 } from '../../components/ui/select';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
+import { toastSuccess } from '../globalFunctions';
+import Loading from '@/components/general/loading';
+import { zCourseRoles } from '@/types/sharedZodTypes';
+import { formatString } from '../globalFunctions';
 
 const EnrollCourseMemberButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { selectedCourseId, setCourseMembersOfSelectedCourse } =
-    useCourseContext();
+  const [error, setError] = useState<Error | null>(null);
+  const {
+    selectedCourseId,
+    courseMembersOfSelectedCourse,
+    setCourseMembersOfSelectedCourse
+  } = useCourseContext();
+  const [loading, setLoading] = useState(false);
   const createCourseMemberMutation =
     trpc.courseMember.createCourseMember.useMutation();
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
+
+  if (error) {
+    setLoading(false);
+    throw error;
+  }
 
   const handleDialogOpen = () => {
     form.reset();
@@ -61,9 +65,27 @@ const EnrollCourseMemberButton = () => {
 
   const zCourseMemberForm = z.object({
     name: z.string(),
-    email: z.string(),
+    email: z
+      .string()
+      .refine(
+        (value) =>
+          !courseMembersOfSelectedCourse?.some(
+            (member) => member.email === value
+          ),
+        'Email is already in use in this course'
+      ),
     role: z.string(),
-    optionalId: z.string().optional()
+    optionalId: z
+      .string()
+      .optional()
+      .refine(
+        (value) =>
+          value === '' ||
+          !courseMembersOfSelectedCourse?.some(
+            (member) => member.optionalId === value
+          ),
+        'Optional ID is already in use in this course'
+      )
   });
 
   type CourseMemberFormProps = z.infer<typeof zCourseMemberForm>;
@@ -73,27 +95,31 @@ const EnrollCourseMemberButton = () => {
   });
 
   async function onSubmit(data: CourseMemberFormProps) {
-    const enrollCourseMember = async () => {
-      const errorMessage = 'Failed to enroll course member';
+    const errorMessage = 'Failed to enroll course member';
 
-      try {
-        if (!selectedCourseId) throw new Error('No selected course');
+    try {
+      if (!selectedCourseId) throw new Error('No selected course');
 
-        const response = await createCourseMemberMutation.mutateAsync({
-          ...data,
-          courseId: selectedCourseId
-        });
+      setLoading(true);
+      const response = await createCourseMemberMutation.mutateAsync({
+        ...data,
+        courseId: selectedCourseId
+      });
 
-        if (!response.success) throw new Error(errorMessage);
+      if (!response.success) throw new Error(errorMessage);
 
-        await getCourseMembersOfCourseQuery.refetch();
-      } catch (error) {
-        throw new Error(errorMessage);
-      }
-    };
+      setCourseMembersOfSelectedCourse((prev) => {
+        return prev
+          ? [...prev, response.resEnrollment]
+          : [response.resEnrollment];
+      });
 
-    await enrollCourseMember();
-    handleDialogClose();
+      setLoading(false);
+      toastSuccess(`Successfully enrolled ${data.name} as a ${data.role}!`);
+      handleDialogClose();
+    } catch (error) {
+      setError(error as Error);
+    }
   }
 
   return selectedCourseId ? (
@@ -130,77 +156,95 @@ const EnrollCourseMemberButton = () => {
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="grid grid-cols-3 grid-flow-col-dense	items-center gap-4">
-                    <FormLabel className="text-right">Name</FormLabel>
-                    <FormControl className="col-span-3">
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
                       <Input
                         className=""
                         placeholder="Aldrich Agabin"
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-3 grid-flow-col-dense items-center gap-4">
-                    <FormLabel className="text-right">Email</FormLabel>
-                    <FormControl className="col-span-3">
-                      <Input
-                        type="email"
-                        placeholder="Richard.Leinecker@ucf.edu"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="Richard.Leinecker@ucf.edu"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="role"
                 defaultValue="student"
                 render={({ field }) => (
-                  <FormItem className="grid-cols-3 grid-flow-col-dense items-center gap-4">
-                    <FormLabel className="text-right">Role</FormLabel>
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue="student"
                     >
-                      <FormControl className="col-span-3">
+                      <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="professor">Professor</SelectItem>
+                        {zCourseRoles.options.map((role) => (
+                          <SelectItem value={role}>
+                            {formatString(role)}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="optionalId"
+                key="optionalId"
                 defaultValue=""
                 render={({ field }) => (
-                  <FormItem className="grid-cols-3 grid-flow-col-dense items-center gap-4">
-                    <FormLabel className="text-right">Optional ID</FormLabel>
-                    <FormControl className="col-span-3">
+                  <FormItem>
+                    <FormLabel>Optional ID</FormLabel>
+                    <FormControl>
                       <Input
                         placeholder="abc123"
                         {...field}
                         value={field.value || ''}
                       />
                     </FormControl>
+                    <FormDescription>
+                      This is an optional Id that can help identify the
+                      courseMember with an ID other than their email. This is
+                      recommended especially if emails are hashed.
+                    </FormDescription>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
               <DialogFooter>
-                <Button type="submit">Enroll Course Member</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? <Loading /> : 'Enroll Course Member'}
+                </Button>
               </DialogFooter>
             </form>
           </Form>
