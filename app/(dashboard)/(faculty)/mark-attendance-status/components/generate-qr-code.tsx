@@ -22,11 +22,13 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
 
 import { trpc } from '@/app/_trpc/client';
 import { useSession } from 'next-auth/react';
 import { useCourseContext } from '@/app/context-course';
 import { CourseMember } from '@prisma/client';
+import { geolocationRouter } from '@/server/routes/geolocation';
 
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
@@ -46,7 +48,13 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
   const firstParam = Cookies.get('qrSettings') || defaultParam;
   const [parameters, setParameters] = useState(firstParam);
 
-  const [enableGeolocation, setEnableGeolocation] = useState(false)
+  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true)
+  
+  const handleGeolocationChange = () => {
+    setEnableGeolocation(!enableGeolocation);
+    console.log(!enableGeolocation)
+  };
+
   // const [lectureLatitude, setLectureLatitude] = useState<number>(0)
   // const [lectureLongitude, setLectureLongitude] = useState<number>(0)
   const lectureLatitude = useRef<number>(0)
@@ -129,49 +137,61 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
   const createProfessorLectureGeolocation = trpc.geolocation.CreateProfessorLectureGeolocation.useMutation()
   const handleGenerateQRCode =  async () => {
     
-    const location = await getGeolocationData()
     const selectedCourseMember = getCourseMember()
     const selectedCourseMemberId = selectedCourseMember ? selectedCourseMember.id : undefined
     console.log(lectureId)
     console.log(selectedCourseMemberId)
-    console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture after fetch`);
+    console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`);
 
     
+    if(enableGeolocation){
+      const location = await getGeolocationData()
 
-    if(location){
-      console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture after fetch`);
-
-      try{
-
-        if(!selectedCourseMemberId){
-          return 
+      if(location){
+  
+        try{
+  
+          if(!selectedCourseMemberId){
+            return 
+          }
+  
+          const res = await createProfessorLectureGeolocation.mutateAsync({
+            lectureLatitude: lectureLatitude.current,
+            lectureLongitude: lectureLongitude.current,
+            lectureId: lectureId,
+            courseMemberId: selectedCourseMemberId
+          })
+  
+          console.log(res)
+        }catch (error) {
+          console.log(error)
+          // setError(error as Error);
+        }finally{
+          router.push(navigation + parameters)
         }
 
-        const res = await createProfessorLectureGeolocation.mutateAsync({
-          lectureLatitude: lectureLatitude.current,
-          lectureLongitude: lectureLongitude.current,
-          lectureId: lectureId,
-          courseMemberId: selectedCourseMemberId
-        })
+      }
 
-        console.log(res)
-      }catch (error) {
-        console.log(error)
-        // setError(error as Error);
+      else{
+        console.log('unable to locate')
       }
     }
     
-    if(enableGeolocation){
-
+    if(!enableGeolocation){
+      console.log('location is disabled')
+      router.push(navigation + parameters)
     }
+    
 
-    //router.push(navigation + parameters)
+    
   };
 
   const onNewQRSettings = (newSetting: string) => {
     setParameters(newSetting);
     Cookies.set('qrSettings', newSetting);
   };
+
+ 
 
   return (
     <div>
@@ -259,6 +279,32 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+
+                <div className='mt-[10px]'>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={enableGeolocation}
+                            onClick={handleGeolocationChange}
+                          >
+                          </Switch>
+                          <Label htmlFor="r3">Location Checker</Label>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          This option displays only the QR code in a simplified
+                          format. It&apos;s best suited for presentations footers
+                          where distractions need to be minimized.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                
+                
               </RadioGroup>
 
               <div className="flex items-center space-x-2 pb-4 pl-4">
@@ -270,44 +316,6 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
                   Continue To QR Code
                 </Button>
               </div>
-
-              {/*
-              <div className="flex items-center space-x-2 p-4">
-                Or by going to this link:
-              </div>
-
-              <div className=" pl-4 flex-shrink-0">
-                <Card className="p-3">
-                  <CardDescription className=" w-full">
-                    <div className="flex justify-between  ">
-                      <div className="whitespace-nowrap overflow-auto">
-                        {address + navigation + parameters}
-                      </div>
-                      <Button
-                        variant="outline"
-                        size={'xs'}
-                        onClick={handleCopyUrl}
-                      >
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 15 15"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d={svgValue}
-                            fill="currentColor"
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </Button>
-                    </div>
-                  </CardDescription>
-                </Card>
-              </div>
-              */}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
