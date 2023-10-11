@@ -17,6 +17,7 @@ export default function ManageAttendance() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams(); // Initialize useSearchParams
 
+
   useEffect(() => {
     queryClient.invalidateQueries({
       queryKey: ['getAllLecturesAndAttendance']
@@ -42,6 +43,9 @@ export default function ManageAttendance() {
     }
   };
 
+  const getCurrentLectureProp = getCurrentLecture()
+
+
   return (
     <div className="flex flex-col md:flex-row">
       <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
@@ -49,7 +53,7 @@ export default function ManageAttendance() {
           <h2 className="text-3xl font-bold tracking-tight">
             Mark Attendance Status
           </h2>
-          {getCurrentLecture() && <StartScanningButton />}
+          {(getCurrentLecture() && getCurrentLectureProp) && <StartScanningButton lectureId={getCurrentLectureProp.id}/>}
         </div>
         {selectedCourseId ? (
           <>
