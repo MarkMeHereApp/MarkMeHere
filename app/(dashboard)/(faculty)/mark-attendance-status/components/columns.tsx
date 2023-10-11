@@ -52,49 +52,13 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'mark Status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader className="" column={column} title="Mark Status" />
     ),
-    cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
-  },
-  {
-    accessorKey: 'lmsId',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Canvas ID" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('lmsId')}</div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
-  },
-  {
-    accessorKey: 'date marked',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date Marked" />
-    ),
-    cell: ({ row }) => {
-      const originalValue = row.original as ExtendedCourseMember;
-      const dateMarked = originalValue.AttendanceEntry
-        ? originalValue.AttendanceEntry.dateMarked
-        : undefined;
-
-      if (!dateMarked) {
-        return <div className="flex w-full">No Data</div>;
-      }
-      const formattedDate = dateMarked.toLocaleDateString();
-      return <div className="flex w-full">{formattedDate}</div>;
-    },
-    enableSorting: true,
-    enableHiding: true,
-    enableGlobalFilter: true
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+    enableSorting: false,
+    enableHiding: true
   },
   {
     accessorKey: 'status',
@@ -146,14 +110,38 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     },
     enableSorting: false,
     enableHiding: true
+  }, 
+  {
+    accessorKey: 'date marked',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date Marked" />
+    ),
+    cell: ({ row }) => {
+      const originalValue = row.original as ExtendedCourseMember;
+      const dateMarked = originalValue.AttendanceEntry
+        ? originalValue.AttendanceEntry.dateMarked
+        : undefined;
+
+      if (!dateMarked) {
+        return <div className="flex w-full">No Data</div>;
+      }
+      const formattedDate = dateMarked.toLocaleDateString();
+      return <div className="flex w-full">{formattedDate}</div>;
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
   },
   {
-    accessorKey: 'mark Status',
+    accessorKey: 'email',
     header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Mark Status" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
-    cell: ({ row }) => <DataTableRowActions row={row} />,
-    enableSorting: false,
-    enableHiding: true
+    cell: ({ row }) => (
+      <div className="flex w-full">{row.getValue('email')}</div>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
   }
 ];
