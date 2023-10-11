@@ -14,37 +14,19 @@ interface StudentPageBoardProp {
 }
 
 const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
-  const searchParams = useSearchParams();
-  const { courseMembersOfSelectedCourse } = useCourseContext();
-
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
+  const { courseMembersOfSelectedCourse } = useCourseContext();
   const [student, setStudent] = React.useState<CourseMember>();
   const [showSuccess, setShowSuccess] = React.useState(true);
 
-  const attendanceEntry = searchParams ? searchParams.get('attendanceEntry') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
+    // for future use 
+    //   const searchParams = useSearchParams();
+    //   const attendanceEntry = searchParams ? searchParams.get('attendanceEntry') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
 
-  useEffect(() => {
-    if (attendanceEntry) {
-      // Set a timeout to hide the success message after 5 seconds
-      const timeoutId = setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000); // 5000 milliseconds = 5 seconds
-
-      // Cleanup the timeout to avoid memory leaks
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [attendanceEntry]);
-
-
-  const getCourseMember = () => {
-    console.log('here');
-    console.log(courseMembersOfSelectedCourse);
-
-    if (courseMembersOfSelectedCourse) {
+    const getCourseMember = () => {
+        if (courseMembersOfSelectedCourse) {
           const selectedCourseMember: CourseMember | undefined = courseMembersOfSelectedCourse.find(
             (member) => member.email === userEmail
           );
@@ -56,15 +38,26 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
           return null;
         }
     }
+
+    useEffect(() => {
+        if (dateMarked) {
+          // Set a timeout to hide the success message after 5 seconds
+          const timeoutId = setTimeout(() => {
+            setShowSuccess(false);
+            getCourseMember();
+          }, 5000); 
     
-  useEffect(() => {
-    getCourseMember();
-  }, []);
- 
+          return () => {
+            clearTimeout(timeoutId);
+          };
+        }
+        getCourseMember();
+      }, []);
+    
   return (
     <div className="flex flex-col md:flex-row">
         <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        {showSuccess && attendanceEntry && dateMarked ? (
+        {showSuccess && dateMarked ? (
             <MarkAttendanceSuccess dateMarked={dateMarked} />
         ) : (
             student && (

@@ -186,8 +186,6 @@ export default async function StudentPage ({
         );
       }
   
-      console.log(attendanceEntry.dateMarked)
-  
       return (
         <div>
           <StudentPageBoard dateMarked={attendanceEntry.dateMarked} />
@@ -198,15 +196,3 @@ export default async function StudentPage ({
         return <MarkAttendanceError message={ErrorType.message} />;
     }
 }  
-
-
-
-// export default function StudentPage() {
-//     return (
-//         <div>
-//             <StudentPageBoard />
-//         </div>
-        
-//       )
-// } 
-
