@@ -66,6 +66,19 @@ export default function MainNav({
             href="/manage-course-members"
             displayText="Course Members"
           />
+          <MainNavBarCustomLink
+                href="/student"
+                displayText="Student Dashboard"
+              />
+          {/* {selectedCourseRole == 'student' ? (
+              <MainNavBarCustomLink
+                href="/student"
+                displayText="Student Dashboard"
+              />
+            ) : (
+                null
+            )
+          } */}
         </>
       ) : null}
 
