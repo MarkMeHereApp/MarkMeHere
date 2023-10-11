@@ -363,7 +363,7 @@ const QR = () => {
           <QRCodeComponent
             url={
               process.env.NEXT_PUBLIC_BASE_URL +
-              `/api/submit?qr=${encodeURIComponent(activeCode)}`
+              `/submit?qr=${encodeURIComponent(activeCode)}`
             }
           />
         )}
