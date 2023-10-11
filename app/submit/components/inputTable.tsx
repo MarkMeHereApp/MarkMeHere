@@ -99,7 +99,7 @@ const InputTable = () => {
       console.log(res);
 
       if (res.success) {
-        router.push(`/markAttendance?attendanceTokenId=${res.token}`);
+        router.push(`/student?attendanceTokenId=${res.token}`);
       }
 
       if (!res.success) {

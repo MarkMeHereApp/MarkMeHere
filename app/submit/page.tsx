@@ -64,7 +64,7 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
 
     //If we recieve a valid token (in the end the ID) we redirect directly since the token is valid
     if(receivedToken){
-      redirect(`/markAttendance?attendanceTokenId=${receivedToken}`)
+      redirect(`/student?attendanceTokenId=${receivedToken}`)
     }
 
     //If the token was not found valid, we continue to /submit?qr-error, that is just to trigger the error in the input page

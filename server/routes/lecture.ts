@@ -1,6 +1,6 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { router, elevatedCourseMemberCourseProcedure } from '../trpc';
+import { router, elevatedCourseMemberCourseProcedure, publicProcedure } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
@@ -17,7 +17,7 @@ export const zCreateLecture = z.object({
 });
 
 export const lectureRouter = router({
-  getAllLecturesAndAttendance: elevatedCourseMemberCourseProcedure
+  getAllLecturesAndAttendance: publicProcedure
     .input(zGetLecturesOfCourse)
 
     .query(async (requestData) => {
