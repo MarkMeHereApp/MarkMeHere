@@ -76,6 +76,7 @@ export const ActiveAuthProvider = ({
           AlertDescriptionComponent={AlertDescription}
           onConfirm={handleDelete}
           proceedText={`Delete ${displayName}`}
+          bDestructive={true}
         >
           <Button variant="ghost">
             <b className="text-destructive">Remove</b>

@@ -14,11 +14,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { buttonVariants } from '@/components/ui/button';
 
 interface AreYouSureDialogProps {
-  title: string;
+  title?: string;
   AlertDescriptionComponent?: React.ComponentType;
   proceedText?: string;
+  buttonText?: string;
+  bDestructive?: boolean;
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
 }
@@ -27,6 +30,8 @@ export function AreYouSureDialog({
   title,
   AlertDescriptionComponent,
   proceedText,
+  buttonText,
+  bDestructive,
   onConfirm,
   children
 }: AreYouSureDialogProps) {
@@ -56,12 +61,15 @@ export function AreYouSureDialog({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            <div className="flex">
-              <ExclamationTriangleIcon className="text-primary mr-2 mt-1 w-5 h-5" />
-              {title}
-            </div>
-          </AlertDialogTitle>
+          {title && (
+            <AlertDialogTitle>
+              <div className="flex">
+                <ExclamationTriangleIcon className="text-primary mr-2 mt-1 w-5 h-5" />
+                {title}
+              </div>
+            </AlertDialogTitle>
+          )}
+
           {AlertDescriptionComponent && <AlertDescriptionComponent />}
         </AlertDialogHeader>
         {proceedText && (
@@ -87,8 +95,11 @@ export function AreYouSureDialog({
           <Button
             onClick={handleConfirm}
             disabled={!isConfirmed || isAwaitingConfirmationPromise}
+            variant={bDestructive ? 'destructive' : 'default'}
           >
-            {isAwaitingConfirmationPromise ? 'Loading...' : 'Confirm'}
+            {isAwaitingConfirmationPromise
+              ? 'Loading...'
+              : `${buttonText || 'Confirm'}`}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

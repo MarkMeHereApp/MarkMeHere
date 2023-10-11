@@ -19,10 +19,17 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import GitHubEduError from './github-edu-error';
 import GitHubEduMessage from './github-edu-info';
+import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+
+type TProvider = {
+  key: string;
+  displayName: string;
+};
 
 interface SignInFormProps {
-  providers: Array<{ key: string; displayName: string }>;
+  providers: Array<TProvider>;
 }
 
 export default function SignInForm({ providers }: SignInFormProps) {
@@ -128,6 +135,29 @@ export default function SignInForm({ providers }: SignInFormProps) {
     }
   };
 
+  const OAuthButton = ({
+    provider,
+    onSubmit
+  }: {
+    provider: TProvider;
+    onSubmit?: (key: string) => Promise<void>;
+  }) => (
+    <Button
+      type="button"
+      onClick={() => onSubmit && onSubmit(provider.key)}
+      disabled={Object.values(isLoading).some((value) => value)}
+    >
+      {isLoading[provider.key] ? (
+        <>
+          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          Loading...
+        </>
+      ) : (
+        <>{provider.displayName}</>
+      )}
+    </Button>
+  );
+
   return (
     <div className="relative h-screen">
       <div className="absolute top-0 right-0 h-full w-full">
@@ -151,7 +181,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 <AlertDescription>Log In Error: {error}</AlertDescription>
               )}
             </Alert>
-            <GitHubEduMessage providers={providers} />
+            <GitHubEduError providers={providers} errorType={errorType} />
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.key === 'credentials'
@@ -236,32 +266,45 @@ export default function SignInForm({ providers }: SignInFormProps) {
 
             {providers &&
               Object.values(providers)
-                // Sort providers so that GitHub Edu is always first, we do this because we also render a special message for GitHub Edu
                 .sort((a, b) =>
                   a.key === 'githubedu' ? -1 : b.key === 'githubedu' ? 1 : 0
                 )
-                .map(
-                  (provider, index) =>
-                    provider.key !== 'credentials' && (
-                      <Button
+                .map((provider, index) => {
+                  if (!provider) {
+                    // Render a placeholder or loading state here
+                    return <div>Loading...</div>;
+                  }
+
+                  if (
+                    provider.key !== 'credentials' &&
+                    provider.key !== 'githubedu'
+                  ) {
+                    return (
+                      <OAuthButton
                         key={index}
-                        type="button"
-                        onClick={() => onOAuthSubmit(provider.key)}
-                        disabled={Object.values(isLoading).some(
-                          (value) => value
+                        provider={provider}
+                        onSubmit={onOAuthSubmit}
+                      />
+                    );
+                  } else if (provider.key === 'githubedu') {
+                    return (
+                      <AreYouSureDialog
+                        key={index}
+                        buttonText={`Continue with ${provider.displayName}`}
+                        onConfirm={() => {
+                          return onOAuthSubmit(provider.key);
+                        }}
+                        AlertDescriptionComponent={() => (
+                          <GitHubEduMessage providers={providers} />
                         )}
                       >
-                        {isLoading[provider.key] ? (
-                          <>
-                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                            Loading...
-                          </>
-                        ) : (
-                          <>{provider.displayName}</>
-                        )}
-                      </Button>
-                    )
-                )}
+                        <Button type="button" className="w-full">
+                          {provider.displayName}
+                        </Button>
+                      </AreYouSureDialog>
+                    );
+                  }
+                })}
           </div>
         </CardContent>
       </Card>
