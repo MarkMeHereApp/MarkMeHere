@@ -23,7 +23,8 @@ import { LMSCourseSelector } from './lms-course-selector';
 import {
   zLMSCourseSchemeType,
   zLMSProvider,
-  zLMSProviderType
+  zLMSProviderType,
+  zCourseRoles
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
@@ -127,7 +128,7 @@ export default function CreateCourseForm({
         newMemberData: {
           email: userEmail,
           name: userFullName,
-          role: 'professor'
+          role: 'teacher'
         }
       });
 

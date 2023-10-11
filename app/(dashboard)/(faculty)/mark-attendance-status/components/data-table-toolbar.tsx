@@ -74,7 +74,7 @@ export function DataTableToolbar<TData>({
   const createNewAttendanceEntryMutation =
     trpc.attendance.createManyAttendanceRecords.useMutation();
 
-  const handleCreateNewAttendanceEntries = async (status: string) => {
+  const handleCreateNewAttendanceEntries = async (status: zAttendanceStatusType) => {
     const lecture = getCurrentLecture();
     const selectedRows = table.getSelectedRowModel().rows;
     const selectedCourseMembers: CourseMember[] = selectedRows.map(
