@@ -12,7 +12,7 @@ model User {
   id               String    @id @default(cuid())
   role             String    @db.VarChar(10)
   name             String?
-  email            String   @unique
+  email            String    @unique
   image            String?
   dateCreated      DateTime? @default(now())
   selectedCourseId String?   @db.VarChar(255)
@@ -48,12 +48,13 @@ model VerificationToken {
 }
 
 model Lecture {
-  id                String            @id @default(cuid())
-  course            Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId          String
-  lectureDate       DateTime
-  attendanceEntries AttendanceEntry[]
-  qrCodes           qrcode[]
+  id                          String                        @id @default(cuid())
+  course                      Course                        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId                    String
+  lectureDate                 DateTime
+  attendanceEntries           AttendanceEntry[]
+  qrCodes                     qrcode[]
+  professorLectureGeolocation ProfessorLectureGeolocation[]
 
   @@unique([courseId, lectureDate])
 }
@@ -65,7 +66,7 @@ model AttendanceEntry {
   courseMemberId String
   courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
   dateMarked     DateTime     @default(now())
-  status         String       
+  status         String
 }
 
 model Course {
@@ -85,17 +86,18 @@ model Course {
 }
 
 model CourseMember {
-  id                String            @id @default(cuid())
-  optionalId        String?           @db.VarChar(255)
-  lmsId             String? // We need this when registering a student     
-  email             String
-  name              String            @db.VarChar(255) // Right now optional
-  courseId          String
-  course            Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id                          String                        @id @default(cuid())
+  optionalId                  String?                       @db.VarChar(255)
+  lmsId                       String? // We need this when registering a student     
+  email                       String
+  name                        String                        @db.VarChar(255) // Right now optional
+  courseId                    String
+  course                      Course                        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
-  dateEnrolled      DateTime          @default(now())
-  role              String            @default("student")
-  attendanceEntries AttendanceEntry[]
+  dateEnrolled                DateTime                      @default(now())
+  role                        String                        @default("student")
+  attendanceEntries           AttendanceEntry[]
+  professorLectureGeolocation ProfessorLectureGeolocation[]
 
   @@unique([email, courseId, optionalId])
 }
@@ -121,22 +123,28 @@ model AttendanceToken {
   // expiresAt DateTime 
 }
 
-
-model AuthProviderCredentials{
-
-  id        String   @id @default(cuid())
-  enabled  Boolean  @default(true)
-  key  String    @unique
-  displayName String  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  clientId  String
-  clientSecret String
+model AuthProviderCredentials {
+  id                                String   @id @default(cuid())
+  enabled                           Boolean  @default(true)
+  key                               String   @unique
+  displayName                       String   @unique
+  createdAt                         DateTime @default(now())
+  updatedAt                         DateTime @updatedAt
+  clientId                          String
+  clientSecret                      String
   allowDangerousEmailAccountLinking Boolean
-  issuer  String?
-  tenantId String?
-  authorizationUrl String?
-  
+  issuer                            String?
+  tenantId                          String?
+  authorizationUrl                  String?
+}
 
-
+model ProfessorLectureGeolocation {
+  id             String       @id @default(cuid())
+  lectureId      String
+  lecture        Lecture      @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  courseMemberId String
+  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  lectureLatitude Float
+  lectureLongitude Float
 }

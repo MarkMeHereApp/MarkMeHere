@@ -1,7 +1,7 @@
 'use client';
 
 import Cookies from 'js-cookie';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,7 +23,16 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip';
 
-export function StartScanningButton() {
+import { trpc } from '@/app/_trpc/client';
+import { useSession } from 'next-auth/react';
+import { useCourseContext } from '@/app/context-course';
+import { CourseMember } from '@prisma/client';
+
+interface StartScanningButtonProps {
+  lectureId: string; // or number, depending on what type lectureId is supposed to be
+}
+
+export function StartScanningButton({lectureId}:StartScanningButtonProps) {
   const router = useRouter();
 
   const address = `${process.env.NEXT_PUBLIC_BASE_URL}`;
@@ -36,6 +45,23 @@ export function StartScanningButton() {
   const defaultParam = '?mode=default';
   const firstParam = Cookies.get('qrSettings') || defaultParam;
   const [parameters, setParameters] = useState(firstParam);
+
+  const [enableGeolocation, setEnableGeolocation] = useState(false)
+  // const [lectureLatitude, setLectureLatitude] = useState<number>(0)
+  // const [lectureLongitude, setLectureLongitude] = useState<number>(0)
+  const lectureLatitude = useRef<number>(0)
+  const lectureLongitude = useRef<number>(0)
+  
+
+  const session = useSession();
+  const userName = session?.data?.user?.name || '';
+  const userEmail = session.data?.user?.email;
+
+  const {courseMembersOfSelectedCourse} = useCourseContext()
+
+  const [selectCourseMember,setSelectCourseMember] = useState<CourseMember | undefined>()
+  const [error, setError] = useState<Error | null>(null);
+
 
   useEffect(() => {
     if (isCopied) {
@@ -52,9 +78,94 @@ export function StartScanningButton() {
     }
   }, [isCopied]);
 
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(address + navigation + parameters);
-    setCopied(true);
+  const getCourseMember = () => {
+    console.log(courseMembersOfSelectedCourse);
+
+    if (courseMembersOfSelectedCourse) {
+          const selectedCourseMember: CourseMember | undefined = courseMembersOfSelectedCourse.find(
+            (member) => member.email === userEmail
+          );
+          if (selectedCourseMember) {
+
+            setSelectCourseMember(selectedCourseMember);
+            return selectedCourseMember;
+          }
+          return null;
+        }
+    }
+
+
+
+  const getGeolocationData = () => {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          console.log(`Latitude: ${latitude}, Longitude: ${longitude} from the professor lecture before fetch`);
+
+          lectureLatitude.current = latitude
+          lectureLongitude.current = longitude
+  
+          resolve(true);
+        }, (error) => {
+          console.error("Error occurred while getting geolocation", error);
+          resolve(false);
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+        resolve(false);
+      }
+    });
+  }
+
+
+  if (error) {
+    throw error;
+  }
+
+  
+
+  const createProfessorLectureGeolocation = trpc.geolocation.CreateProfessorLectureGeolocation.useMutation()
+  const handleGenerateQRCode =  async () => {
+    
+    const location = await getGeolocationData()
+    const selectedCourseMember = getCourseMember()
+    const selectedCourseMemberId = selectedCourseMember ? selectedCourseMember.id : undefined
+    console.log(lectureId)
+    console.log(selectedCourseMemberId)
+    console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture after fetch`);
+
+    
+
+    if(location){
+      console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture after fetch`);
+
+      try{
+
+        if(!selectedCourseMemberId){
+          return 
+        }
+
+        const res = await createProfessorLectureGeolocation.mutateAsync({
+          lectureLatitude: lectureLatitude.current,
+          lectureLongitude: lectureLongitude.current,
+          lectureId: lectureId,
+          courseMemberId: selectedCourseMemberId
+        })
+
+        console.log(res)
+      }catch (error) {
+        console.log(error)
+        // setError(error as Error);
+      }
+    }
+    
+    if(enableGeolocation){
+
+    }
+
+    //router.push(navigation + parameters)
   };
 
   const onNewQRSettings = (newSetting: string) => {
@@ -155,7 +266,7 @@ export function StartScanningButton() {
               </div>
 
               <div className="flex items-center space-x-2 pl-4">
-                <Button onClick={() => router.push(navigation + parameters)}>
+                <Button onClick={handleGenerateQRCode}>
                   Continue To QR Code
                 </Button>
               </div>

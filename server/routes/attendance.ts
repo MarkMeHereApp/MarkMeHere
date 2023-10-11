@@ -1,6 +1,6 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { elevatedCourseMemberLectureProcedure, router } from '../trpc';
+import { elevatedCourseMemberLectureProcedure, publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { zAttendanceStatus } from '@/types/sharedZodTypes';
@@ -17,6 +17,10 @@ export const zCreateOrUpdateSingleAttendanceRequest = z.object({
   lectureId: z.string(),
   attendanceStatus: zAttendanceStatus,
   courseMemberId: z.string()
+});
+
+export const zGetCourseMemberAttendance = z.object({
+    courseMemberId: z.string()
 });
 
 export const attendanceRouter = router({
@@ -124,7 +128,22 @@ export const attendanceRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    })
+    }),
+    // want to get the attendance for a course member - students should be allowed to access this procedure
+    getCourseMemberAttendanceEntriesOfCourse:publicProcedure
+    .input(zGetCourseMemberAttendance)
+    .query(async (requestData) => {
+      try {
+        const attendanceEntries = await prisma.attendanceEntry.findMany({
+          where: {
+            courseMemberId: requestData.input.courseMemberId
+          },
+        });
+        return { success: true, attendanceEntries };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+  }),
 });
 
 export type AttendaceRouter = typeof attendanceRouter;

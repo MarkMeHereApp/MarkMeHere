@@ -40,6 +40,11 @@ export function DataTableRowActions<TData>({
     AttendanceEntry[]
   >(getCurrentLecture()?.attendanceEntries || []);
 
+  // Find the attendance entry for this student
+  const studentAttendanceEntry = attendanceEntries.find(
+    (entry) => entry.courseMemberId === courseMemberData.id
+  );
+
   const createNewAttendanceEntryMutation =
     trpc.attendance.createOrUpdateSingleAttendanceEntry.useMutation();
   const [error, setError] = React.useState<Error | null>(null);
@@ -61,6 +66,7 @@ export function DataTableRowActions<TData>({
           } else {
             // Add the new attendance entry
             curLecture.attendanceEntries.push(newEntry);
+            setAttendanceEntries(curLecture.attendanceEntries);
           }
         }
         return curLecture;
@@ -105,38 +111,52 @@ export function DataTableRowActions<TData>({
 
   return (
     <div className="flex space-x-6">
-      <div
-        title="Mark Here"
-        onClick={() => {
-          handleCreateNewAttendanceEntry('here');
-        }}
-      >
-        <CheckCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-      </div>
-      <div
-        title="Mark Late"
-        onClick={() => {
-          handleCreateNewAttendanceEntry('late');
-        }}
-      >
-        <ClockIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-      </div>
-      <div
-        title="Mark Excused"
-        onClick={() => {
-          handleCreateNewAttendanceEntry('excused');
-        }}
-      >
-        <CircleIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-      </div>
-      <div
-        title="Mark Absent"
-        onClick={() => {
-          handleCreateNewAttendanceEntry('absent');
-        }}
-      >
-        <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-      </div>
+        {/* Mark Here */}
+        <div
+            title="Mark Here"
+            onClick={() =>  handleCreateNewAttendanceEntry('here')}
+        >
+        {studentAttendanceEntry?.status === 'here' ? (
+            <CheckCircledIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        ) : (
+            <CheckCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        )}
+        </div>
+        {/* Mark Late */}
+        <div
+            title="Mark Late"
+            onClick={() =>  handleCreateNewAttendanceEntry('late')}
+        >
+        {studentAttendanceEntry?.status === 'late' ? (
+            <ClockIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        ) : (
+            <ClockIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        )}
+        </div>
+
+        {/* Mark Excused */}
+        <div
+            title="Mark Excused"
+            onClick={() =>  handleCreateNewAttendanceEntry('excused')}
+        >
+        {studentAttendanceEntry?.status === 'excused' ? (
+            <CircleIcon className="h-4 w-4 border-2 border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        ) : (
+            <CircleIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        )}
+        </div>
+
+        {/* Mark Absent */}
+        <div
+            title="Mark Absent"
+            onClick={() =>  handleCreateNewAttendanceEntry('absent')}
+        >
+        {studentAttendanceEntry?.status === 'absent' ? (
+            <CrossCircledIcon className="h-4 w-4 border border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        ) : (
+            <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
+        )}
+        </div>
     </div>
   );
 }

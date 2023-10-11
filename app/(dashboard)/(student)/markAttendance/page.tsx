@@ -6,6 +6,7 @@ import MarkAttendanceError from './components/mark-attendance-error';
 import MarkAttendanceSuccess from './components/mark-attendance-success';
 import { formatString } from '@/utils/globalFunctions';
 import { attendanceTokenExpirationTime } from '@/utils/globalVariables';
+import { redirect } from 'next/navigation';
 
 async function findAttendanceToken(
   attendanceTokenId: string,
@@ -179,11 +180,15 @@ export default async function markAttendance({
       );
     }
 
-    return (
-      <>
-        <MarkAttendanceSuccess dateMarked={attendanceEntry.dateMarked} />
-      </>
-    );
+    console.log(attendanceEntry.dateMarked)
+
+    redirect(`/student?attendanceEntry=${attendanceEntry.dateMarked}`)
+
+    // return (
+    //   <>
+    //     <MarkAttendanceSuccess dateMarked={attendanceEntry.dateMarked} />
+    //   </>
+    // );
   } catch (error) {
     const ErrorType = error as Error;
     return <MarkAttendanceError message={ErrorType.message} />;

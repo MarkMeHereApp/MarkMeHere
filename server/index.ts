@@ -10,6 +10,7 @@ import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
 import { attendanceTokenRouter } from './routes/attendanceToken';
 import { providerRouter } from './routes/provider';
+import { geolocationRouter } from './routes/geolocation';
 
 export const appRouter = router({
   course: courseRouter,
@@ -21,7 +22,8 @@ export const appRouter = router({
   canvas: canvasRouter,
   utils: utilsRouter,
   attendanceToken: attendanceTokenRouter,
-  provider: providerRouter
+  provider: providerRouter,
+  geolocation: geolocationRouter,
 });
 
 export type AppRouter = typeof appRouter;
