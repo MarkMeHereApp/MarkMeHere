@@ -64,19 +64,30 @@ const EnrollCourseMemberButton = () => {
   };
 
   const zCourseMemberForm = z.object({
-    name: z.string(),
+    name: z
+      .string()
+      .min(1)
+      .max(255)
+      .refine((value) => value.trim() === value, {
+        message: 'Value must not have leading or trailing spaces'
+      }),
     email: z
       .string()
+      .min(1)
       .refine(
         (value) =>
           !courseMembersOfSelectedCourse?.some(
             (member) => member.email === value
           ),
         'Email is already in use in this course'
-      ),
-    role: z.string(),
+      )
+      .refine((value) => value.trim() === value, {
+        message: 'Value must not have leading or trailing spaces'
+      }),
+    role: zCourseRoles,
     optionalId: z
       .string()
+      .max(255)
       .optional()
       .refine(
         (value) =>
@@ -85,6 +96,12 @@ const EnrollCourseMemberButton = () => {
             (member) => member.optionalId === value
           ),
         'Optional ID is already in use in this course'
+      )
+      .refine(
+        (value) => value === '' || (value ? value.trim() === value : true),
+        {
+          message: 'Value must not have leading or trailing spaces'
+        }
       )
   });
 

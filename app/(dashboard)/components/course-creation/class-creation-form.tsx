@@ -29,6 +29,7 @@ import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import { zCourseRoles } from '@/types/sharedZodTypes';
+import Loading from '@/components/general/loading';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -279,7 +280,7 @@ export default function CreateCourseForm({
           )}
         />
         <Button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Submit'}
+          {loading ? <Loading /> : 'Submit'}
         </Button>
       </form>
     </Form>
