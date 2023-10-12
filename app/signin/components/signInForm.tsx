@@ -22,6 +22,7 @@ import { toast } from '@/components/ui/use-toast';
 import GitHubEduError from './github-edu-error';
 import GitHubEduMessage from './github-edu-info';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import Loading from '@/components/general/loading';
 
 type TProvider = {
   key: string;
@@ -272,7 +273,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 .map((provider, index) => {
                   if (!provider) {
                     // Render a placeholder or loading state here
-                    return <div>Loading...</div>;
+                    return <Loading />;
                   }
 
                   if (

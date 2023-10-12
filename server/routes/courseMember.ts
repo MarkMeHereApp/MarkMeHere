@@ -28,31 +28,41 @@ export const zGetCourseMembersOfCourse = z.object({
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
-export const zCourseMemberArray = z.array(
-  z.object({
-    optionalId: z.string().optional(),
-    name: z.string(),
-    email: z.string(),
-    role: zCourseRoles
-  })
-);
-export type zCourseMemberArrayType = z.infer<
-  typeof zCourseMemberArray
->;
-
 export const zCreateMultipleCourseMembers = z.object({
   courseId: z.string(),
-  courseMembers: zCourseMemberArray
+  courseMembers: z.array(
+    z.object({
+      optionalId: z.string().optional(),
+      name: z.string(),
+      email: z.string(),
+      role: zCourseRoles
+    })
+  )
 });
-export type zCreateMultipleCourseMembersType = z.infer<
-  typeof zCreateMultipleCourseMembers
->;
+
+export const zDeleteCourseMembersFromCourse = z.object({
+  courseMemberIds: z.array(z.string()),
+  courseId: z.string()
+});
 
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
+        const { courseId, email, name, role } = requestData.input;
+
+        zCourseRoles.parse(role);
+
+        if (!courseId || !email || !name || !role) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing required fields'
+            })
+          );
+        }
+
         const resEnrollment = await prisma.courseMember.create({
           data: {
             ...requestData.input
@@ -65,14 +75,11 @@ export const courseMemberRouter = router({
     }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
-    .input(z.array(z.object({ id: z.string() })))
+    .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
       try {
-        // Extract valid course member IDs from the input array
-        const memberIdsToDelete = requestData.input.map((member) => member.id);
-
         // Check if there are valid IDs to delete
-        if (memberIdsToDelete.length === 0) {
+        if (requestData.input.courseMemberIds.length === 0) {
           throw new Error('No valid course member IDs provided');
         }
 
@@ -80,8 +87,11 @@ export const courseMemberRouter = router({
         await prisma.courseMember.deleteMany({
           where: {
             id: {
-              in: memberIdsToDelete
-            }
+              in: requestData.input.courseMemberIds
+            },
+            // We need to make sure that the user is not deleting courseMembers outside the course passed in the input.
+            // This is to prevent users from deleting courseMembers from other courses.
+            courseId: requestData.input.courseId
           }
         });
 
@@ -119,14 +129,14 @@ export const courseMemberRouter = router({
             })
           );
 
-        const courseMembershipRes = await prisma.courseMember.findMany({
+        const courseMembership = await prisma.courseMember.findFirst({
           where: {
             courseId: requestData.input.courseId,
             email: emailctx
           }
         });
 
-        if (courseMembershipRes.length !== 1) {
+        if (!courseMembership) {
           throw generateTypedError(
             new TRPCError({
               code: 'INTERNAL_SERVER_ERROR',
@@ -136,13 +146,14 @@ export const courseMemberRouter = router({
           );
         }
 
-        const courseMembershipRole = courseMembershipRes[0].role;
+        // @TODO check if user is admin
+        const isAdmin = false;
 
-        if (courseMembershipRole === 'student') {
+        if (courseMembership.role === zCourseRoles.enum.student && !isAdmin) {
           return {
             success: true,
-            courseMembers: [courseMembershipRes[0]],
-            role: courseMembershipRole
+            courseMembers: [courseMembership],
+            courseMembership: courseMembership
           };
         }
 
@@ -158,7 +169,7 @@ export const courseMemberRouter = router({
         return {
           success: true,
           courseMembers: courseMembers,
-          role: courseMembershipRole
+          courseMembership: courseMembership
         };
       } catch (error) {
         throw generateTypedError(error as Error);
@@ -172,7 +183,7 @@ export const courseMemberRouter = router({
       try {
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
-          if (memberData.role === 'student') {
+          if (memberData.role === zCourseRoles.enum.student) {
             if (
               memberData.optionalId !== null &&
               memberData.optionalId !== undefined

@@ -34,12 +34,12 @@ export const columns: ColumnDef<CourseMember>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => {
-        const curName: string = row.getValue('name');
-        if (curName.length > 13) {
-          const truncatedName = `${curName.substring(0, 13)}...`;
-          return <div className="flex w-full">{truncatedName}</div>
-        }
-        return <div className="flex w-full">{curName}</div>
+      const curName: string = row.getValue('name');
+      if (curName.length > 13) {
+        const truncatedName = `${curName.substring(0, 13)}...`;
+        return <div className="flex w-full">{truncatedName}</div>;
+      }
+      return <div className="flex w-full">{curName}</div>;
     },
     enableSorting: true,
     enableHiding: true,

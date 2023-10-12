@@ -21,10 +21,7 @@ import {
 import { CSV_Preview } from './CSV_Preview';
 import { BsUpload } from 'react-icons/bs';
 import { MdUploadFile } from 'react-icons/md';
-import {
-  zCourseMemberArrayType,
-  zCreateMultipleCourseMembersType
-} from '@/server/routes/courseMember';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 const CSV_Import = () => {
   const data = useCourseContext();
@@ -205,21 +202,17 @@ const CSV_Import = () => {
       return;
     }
     setIsImporting(true);
-    const transformedTableValues: zCourseMemberArrayType = tableValues.map(
-      (row) => ({
-        role: 'student',
-        name: row.name,
-        email: row.email,
-        optionalId: row.optionalId !== null ? row.optionalId : undefined
-      })
-    );
-    const courseMembersData: zCreateMultipleCourseMembersType = {
-      courseId: data.selectedCourseId,
-      courseMembers: transformedTableValues
-    };
+    const transformedTableValues = tableValues.map((row) => ({
+      role: zCourseRoles.enum.student,
+      name: row.name,
+      email: row.email,
+      optionalId: row.optionalId !== null ? row.optionalId : undefined
+    }));
     try {
-      const newMembers =
-        await createManyCourseMembers.mutateAsync(courseMembersData);
+      const newMembers = await createManyCourseMembers.mutateAsync({
+        courseId: data.selectedCourseId,
+        courseMembers: transformedTableValues
+      });
       closeDialog();
       if (newMembers.success) {
         toast({

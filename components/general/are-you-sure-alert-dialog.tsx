@@ -14,8 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { buttonVariants } from '@/components/ui/button';
-
+import Loading from '@/components/general/loading';
 interface AreYouSureDialogProps {
   title?: string;
   AlertDescriptionComponent?: React.ComponentType;
@@ -97,9 +96,11 @@ export function AreYouSureDialog({
             disabled={!isConfirmed || isAwaitingConfirmationPromise}
             variant={bDestructive ? 'destructive' : 'default'}
           >
-            {isAwaitingConfirmationPromise
-              ? 'Loading...'
-              : `${buttonText || 'Confirm'}`}
+            {isAwaitingConfirmationPromise ? (
+              <Loading />
+            ) : (
+              `${buttonText || 'Confirm'}`
+            )}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -87,7 +87,7 @@ export default function CoursesContext({
       onSuccess: (data) => {
         if (!data) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
-        setSelectedCourseRole(data?.role ?? null);
+        setSelectedCourseRole(data?.courseMembership.role ?? null);
       }
     }
   );

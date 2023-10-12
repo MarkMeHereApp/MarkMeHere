@@ -17,7 +17,7 @@ import { CourseMember } from '@prisma/client';
 import { useLecturesContext } from '@/app/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { setHours } from 'date-fns';
-import type { zCreateCourseRequestType } from '@/server/routes/course';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -69,7 +69,7 @@ const createRandomCourseMember = (selectedCourseId: string) =>
     name: faker.person.fullName(),
     courseId: selectedCourseId,
     dateEnrolled: new Date(),
-    role: 'student'
+    role: zCourseRoles.enum.student
   }) as CourseMember;
 
 export default function GenerateCourseAsProfessor() {
@@ -109,22 +109,21 @@ export default function GenerateCourseAsProfessor() {
       setError(new Error('User name or email is undefined.'));
       return;
     }
-    const courseData: zCreateCourseRequestType = {
-      newCourseData: {
-        courseCode: courseform.courseCode,
-        name: courseform.name,
-        lmsId: courseform.lmsId || undefined,
-        lmsType: courseform.lmsType
-      },
-      autoEnroll: courseform.autoEnroll,
-      newMemberData: {
-        email: userEmail,
-        name: userFullName,
-        role: 'teacher'
-      }
-    };
     try {
-      const handleCreateCourseResult = await createCourseMutation.mutateAsync(courseData);
+      const handleCreateCourseResult = await createCourseMutation.mutateAsync({
+        newCourseData: {
+          courseCode: courseform.courseCode,
+          name: courseform.name,
+          lmsId: courseform.lmsId || undefined,
+          lmsType: courseform.lmsType as zLMSProviderType
+        },
+        autoEnroll: courseform.autoEnroll,
+        newMemberData: {
+          email: userEmail,
+          name: userFullName,
+          role: zCourseRoles.enum.teacher
+        }
+      });
 
       if (!handleCreateCourseResult.resCourse) {
         setError(
