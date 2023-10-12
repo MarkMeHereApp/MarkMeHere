@@ -40,7 +40,7 @@ const courseInput = z.object({
 This middleware is meant for routes that use a lectureId
 1. Look up the lecture using lectureId.
 2. Look up the courseMember using courseId and user email. Verify they are either
-a professor or TA.
+a teacher or TA.
 3. If the courseMember is found the user has access.
 */
 const isElevatedCourseMemberLecture = trpc.middleware(
@@ -78,12 +78,12 @@ const isElevatedCourseMemberLecture = trpc.middleware(
         })
       );
 
-    //Find the first courseMember who is either a professor or TA
+    //Find the first courseMember who is either a teacher or TA
     const courseMember = await prisma.courseMember.findFirst({
       where: {
         courseId: lecture.courseId,
         email: email,
-        OR: [{ role: 'professor' }, { role: 'TA' }]
+        OR: [{ role: 'teacher' }, { role: 'TA' }]
       }
     });
 
@@ -121,12 +121,12 @@ const isElevatedCourseMemberCourse = trpc.middleware(
         })
       );
 
-    //Find the first courseMember who is either a professor or TA
+    //Find the first courseMember who is either a teacher or TA
     const courseMember = await prisma.courseMember.findFirst({
       where: {
         courseId: result.data.courseId,
         email: email,
-        OR: [{ role: 'professor' }, { role: 'TA' }]
+        OR: [{ role: 'teacher' }, { role: 'TA' }]
       }
     });
 
