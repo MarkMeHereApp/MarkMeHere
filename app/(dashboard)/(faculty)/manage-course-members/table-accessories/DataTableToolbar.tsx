@@ -26,7 +26,6 @@ export function DataTableToolbar<TData>({
   const isSelected =
     table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
     useCourseContext();
@@ -78,7 +77,10 @@ export function DataTableToolbar<TData>({
         .join(', ');
 
       toast({
-        title: `Successfully deleted ${filteredCourseMembers.length} course member(s)!`,
+        title:
+          filteredCourseMembers.length > 1
+            ? `Successfully deleted ${filteredCourseMembers.length} course members!`
+            : `Successfully deleted a course member!`,
         description: `Deleted: ${deletedNames}`,
         icon: 'success'
       });
