@@ -28,17 +28,25 @@ export const zGetCourseMembersOfCourse = z.object({
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
 });
+export const zCourseMemberArray = z.array(
+  z.object({
+    optionalId: z.string().optional(),
+    name: z.string(),
+    email: z.string(),
+    role: zCourseRoles
+  })
+);
+export type zCourseMemberArrayType = z.infer<
+  typeof zCourseMemberArray
+>;
+
 export const zCreateMultipleCourseMembers = z.object({
   courseId: z.string(),
-  courseMembers: z.array(
-    z.object({
-      optionalId: z.string().optional(),
-      name: z.string(),
-      email: z.string(),
-      role: zCourseRoles
-    })
-  )
+  courseMembers: zCourseMemberArray
 });
+export type zCreateMultipleCourseMembersType = z.infer<
+  typeof zCreateMultipleCourseMembers
+>;
 
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure

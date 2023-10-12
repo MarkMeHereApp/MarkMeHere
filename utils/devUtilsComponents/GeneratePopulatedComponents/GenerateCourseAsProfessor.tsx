@@ -114,7 +114,7 @@ export default function GenerateCourseAsProfessor() {
         courseCode: courseform.courseCode,
         name: courseform.name,
         lmsId: courseform.lmsId || undefined,
-        lmsType: courseform.lmsType as zLMSProviderType
+        lmsType: courseform.lmsType
       },
       autoEnroll: courseform.autoEnroll,
       newMemberData: {
