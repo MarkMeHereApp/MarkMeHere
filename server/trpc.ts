@@ -7,7 +7,7 @@ import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import { generateTypedError } from './errorTypes';
 import prisma from '@/prisma';
-import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 export const trpc = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -84,7 +84,10 @@ const isElevatedCourseMemberLecture = trpc.middleware(
       where: {
         courseId: lecture.courseId,
         email: email,
-        OR: [{ role: 'teacher' }, { role: 'TA' }]
+        OR: [
+          { role: zCourseRoles.enum.teacher },
+          { role: zCourseRoles.enum.ta }
+        ]
       }
     });
 
