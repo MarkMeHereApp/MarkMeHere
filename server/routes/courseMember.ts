@@ -41,6 +41,11 @@ export const zCreateMultipleCourseMembers = z.object({
   )
 });
 
+export const zDeleteCourseMembersFromCourse = z.object({
+  courseMemberIds: z.array(z.string()),
+  courseId: z.string()
+});
+
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
@@ -71,14 +76,11 @@ export const courseMemberRouter = router({
     }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
-    .input(z.array(z.object({ id: z.string() })))
+    .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
       try {
-        // Extract valid course member IDs from the input array
-        const memberIdsToDelete = requestData.input.map((member) => member.id);
-
         // Check if there are valid IDs to delete
-        if (memberIdsToDelete.length === 0) {
+        if (requestData.input.courseMemberIds.length === 0) {
           throw new Error('No valid course member IDs provided');
         }
 
@@ -86,8 +88,11 @@ export const courseMemberRouter = router({
         await prisma.courseMember.deleteMany({
           where: {
             id: {
-              in: memberIdsToDelete
-            }
+              in: requestData.input.courseMemberIds
+            },
+            // We need to make sure that the user is not deleting courseMembers outside the course passed in the input.
+            // This is to prevent users from deleting courseMembers from other courses.
+            courseId: requestData.input.courseId
           }
         });
 
