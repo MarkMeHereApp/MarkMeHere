@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/context-course';
-import { zLMSProvider, zLMSProviderType } from '@/types/sharedZodTypes';
+import {
+  zCourseRolesType,
+  zLMSProvider,
+  zLMSProviderType
+} from '@/types/sharedZodTypes';
 import { toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import { Button } from '@/components/ui/button';
@@ -13,6 +17,7 @@ import { CourseMember } from '@prisma/client';
 import { useLecturesContext } from '@/app/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { setHours } from 'date-fns';
+import type { zCreateCourseRequestType } from '@/server/routes/course';
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -104,21 +109,22 @@ export default function GenerateCourseAsProfessor() {
       setError(new Error('User name or email is undefined.'));
       return;
     }
+    const courseData: zCreateCourseRequestType = {
+      newCourseData: {
+        courseCode: courseform.courseCode,
+        name: courseform.name,
+        lmsId: courseform.lmsId || undefined,
+        lmsType: courseform.lmsType as zLMSProviderType
+      },
+      autoEnroll: courseform.autoEnroll,
+      newMemberData: {
+        email: userEmail,
+        name: userFullName,
+        role: 'teacher'
+      }
+    };
     try {
-      const handleCreateCourseResult = await createCourseMutation.mutateAsync({
-        newCourseData: {
-          courseCode: courseform.courseCode,
-          name: courseform.name,
-          lmsId: courseform.lmsId || undefined,
-          lmsType: courseform.lmsType as zLMSProviderType
-        },
-        autoEnroll: courseform.autoEnroll,
-        newMemberData: {
-          email: userEmail,
-          name: userFullName,
-          role: 'professor'
-        }
-      });
+      const handleCreateCourseResult = await createCourseMutation.mutateAsync(courseData);
 
       if (!handleCreateCourseResult.resCourse) {
         setError(

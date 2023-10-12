@@ -30,6 +30,7 @@ import {
 } from '../../components/ui/select';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 const EnrollCourseMemberButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -62,7 +63,7 @@ const EnrollCourseMemberButton = () => {
   const zCourseMemberForm = z.object({
     name: z.string(),
     email: z.string(),
-    role: z.string(),
+    role: zCourseRoles,
     optionalId: z.string().optional()
   });
 

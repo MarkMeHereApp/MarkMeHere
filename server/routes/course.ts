@@ -28,6 +28,7 @@ export const zCreateCourseRequest = z.object({
     })
     .optional()
 });
+export type zCreateCourseRequestType = z.infer<typeof zCreateCourseRequest>;
 
 export const courseRouter = router({
   /*

@@ -5,13 +5,21 @@ import { Button } from 'components/ui/button';
 import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { trpc } from '@/app/_trpc/client';
+import { zCourseRolesType } from '@/types/sharedZodTypes';
 
-const createRandomCourseMember = (selectedCourseId: string) => ({
+type randomCourseMember = {
+  email: string;
+  name: string;
+  courseId: string;
+  role: zCourseRolesType;
+};
+
+const createRandomCourseMember = (selectedCourseId: string): randomCourseMember => ({
   email: faker.internet.email(),
   name: faker.person.fullName(),
   courseId: selectedCourseId,
   role: 'student'
-});
+}); 
 
 const GenerateRandomCourseMember = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =
