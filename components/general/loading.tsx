@@ -2,9 +2,9 @@ import { Icons } from '../ui/icons';
 
 const Loading = () => {
   return (
-    <div>
+    <div className="flex items-center">
       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-      Loading...
+      <span>Loading...</span>
     </div>
   );
 };
