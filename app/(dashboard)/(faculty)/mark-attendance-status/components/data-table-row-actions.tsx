@@ -2,12 +2,6 @@ import { Row } from '@tanstack/react-table';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
-import {
-  ClockIcon,
-  CheckCircledIcon,
-  CrossCircledIcon,
-  CircleIcon
-} from '@radix-ui/react-icons';
 import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
@@ -77,6 +71,17 @@ export function DataTableRowActions<TData>({
     }
   };
 
+  const getAttendanceState = (): string | undefined => {
+    const currentLecture = lectures?.find(
+      (lecture) =>
+        lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+    );
+    const currentAttendanceEntry = currentLecture?.attendanceEntries.find(
+      (entry) => entry.courseMemberId === courseMemberData.id
+    );
+    return currentAttendanceEntry?.status;
+  };
+
   async function handleCreateNewAttendanceEntry(status: string) {
     const lecture = getCurrentLecture();
     if (lectures && lecture) {
@@ -119,7 +124,8 @@ export function DataTableRowActions<TData>({
           <Toggle
             title={`Mark ${value}`}
             onClick={() => handleCreateNewAttendanceEntry(value)}
-            pressed={studentAttendanceEntry?.status === value}
+            pressed={getAttendanceState() === value}
+            variant={'outline'}
             size="sm"
             key={value}
           >
