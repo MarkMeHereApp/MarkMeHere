@@ -28,6 +28,7 @@ import {
 import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -127,7 +128,7 @@ export default function CreateCourseForm({
         newMemberData: {
           email: userEmail,
           name: userFullName,
-          role: 'professor'
+          role: zCourseRoles.Enum.teacher
         }
       });
 

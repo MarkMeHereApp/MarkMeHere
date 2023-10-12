@@ -9,6 +9,7 @@ import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { getServerSession } from 'next-auth';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 import { z } from 'zod';
 
@@ -35,7 +36,7 @@ export const zCreateMultipleCourseMembers = z.object({
       optionalId: z.string().optional(),
       name: z.string(),
       email: z.string(),
-      role: z.string()
+      role: zCourseRoles
     })
   )
 });
@@ -45,6 +46,19 @@ export const courseMemberRouter = router({
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
+        const { courseId, email, name, role } = requestData.input;
+
+        zCourseRoles.parse(role);
+
+        if (!courseId || !email || !name || !role) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing required fields'
+            })
+          );
+        }
+
         const resEnrollment = await prisma.courseMember.create({
           data: {
             ...requestData.input
@@ -111,14 +125,14 @@ export const courseMemberRouter = router({
             })
           );
 
-        const courseMembershipRes = await prisma.courseMember.findMany({
+        const courseMembership = await prisma.courseMember.findFirst({
           where: {
             courseId: requestData.input.courseId,
             email: emailctx
           }
         });
 
-        if (courseMembershipRes.length !== 1) {
+        if (!courseMembership) {
           throw generateTypedError(
             new TRPCError({
               code: 'INTERNAL_SERVER_ERROR',
@@ -128,13 +142,14 @@ export const courseMemberRouter = router({
           );
         }
 
-        const courseMembershipRole = courseMembershipRes[0].role;
+        // @TODO check if user is admin
+        const isAdmin = false;
 
-        if (courseMembershipRole === 'student') {
+        if (courseMembership.role === zCourseRoles.enum.student && !isAdmin) {
           return {
             success: true,
-            courseMembers: [courseMembershipRes[0]],
-            role: courseMembershipRole
+            courseMembers: [courseMembership],
+            courseMembership: courseMembership
           };
         }
 
@@ -150,7 +165,7 @@ export const courseMemberRouter = router({
         return {
           success: true,
           courseMembers: courseMembers,
-          role: courseMembershipRole
+          courseMembership: courseMembership
         };
       } catch (error) {
         throw generateTypedError(error as Error);
@@ -164,7 +179,7 @@ export const courseMemberRouter = router({
       try {
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
-          if (memberData.role === 'student') {
+          if (memberData.role === zCourseRoles.enum.student) {
             if (
               memberData.optionalId !== null &&
               memberData.optionalId !== undefined

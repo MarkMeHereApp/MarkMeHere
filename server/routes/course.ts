@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zLMSProvider } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
@@ -22,7 +23,7 @@ export const zCreateCourseRequest = z.object({
     .object({
       email: z.string(),
       name: z.string(),
-      role: z.string(),
+      role: zCourseRoles,
       lmsId: z.string().nullable().optional()
     })
     .optional()

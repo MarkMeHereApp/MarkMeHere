@@ -13,6 +13,7 @@ import { CourseMember } from '@prisma/client';
 import { useLecturesContext } from '@/app/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { setHours } from 'date-fns';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -64,7 +65,7 @@ const createRandomCourseMember = (selectedCourseId: string) =>
     name: faker.person.fullName(),
     courseId: selectedCourseId,
     dateEnrolled: new Date(),
-    role: 'student'
+    role: zCourseRoles.enum.student
   }) as CourseMember;
 
 export default function GenerateCourseAsProfessor() {
@@ -116,7 +117,7 @@ export default function GenerateCourseAsProfessor() {
         newMemberData: {
           email: userEmail,
           name: userFullName,
-          role: 'professor'
+          role: zCourseRoles.enum.teacher
         }
       });
 

@@ -21,6 +21,7 @@ import {
 import { CSV_Preview } from './CSV_Preview';
 import { BsUpload } from 'react-icons/bs';
 import { MdUploadFile } from 'react-icons/md';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 const CSV_Import = () => {
   const data = useCourseContext();
@@ -202,7 +203,7 @@ const CSV_Import = () => {
     }
     setIsImporting(true);
     const transformedTableValues = tableValues.map((row) => ({
-      role: 'student',
+      role: zCourseRoles.enum.student,
       name: row.name,
       email: row.email,
       optionalId: row.optionalId !== null ? row.optionalId : undefined

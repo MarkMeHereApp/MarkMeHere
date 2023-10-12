@@ -5,11 +5,11 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
-
+import { zSiteRoles } from '@/types/sharedZodTypes';
 export const zCreateUser = z.object({
   name: z.string(),
   email: z.string(),
-  role: z.string()
+  role: zSiteRoles
 });
 
 export const userRouter = router({
@@ -21,6 +21,17 @@ export const userRouter = router({
     .mutation(async (requestData) => {
       try {
         const { name, email, role } = requestData.input;
+
+        zSiteRoles.parse(role);
+
+        if (!name || !email || !role) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing required fields'
+            })
+          );
+        }
 
         await prisma.user.create({
           data: {
