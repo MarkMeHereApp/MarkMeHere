@@ -89,7 +89,10 @@ const isElevatedCourseMemberLecture = trpc.middleware(
       where: {
         courseId: lecture.courseId,
         email: email,
-        OR: [{ role: 'professor' }, { role: 'TA' }]
+        OR: [
+          { role: zCourseRoles.enum.teacher },
+          { role: zCourseRoles.enum.ta }
+        ]
       }
     });
 
@@ -225,4 +228,9 @@ export const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
 /* -------- Checks privileges using courseId -------- */
 export const elevatedCourseMemberCourseProcedure = trpc.procedure.use(
   isElevatedCourseMemberCourse
+);
+
+/* -------- Checks privileges using courseId -------- */
+export const elevatedCourseMemberForCourseMemberProcedure = trpc.procedure.use(
+  isElevatedCourseMemberForCourseMember
 );
