@@ -8,17 +8,16 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
-import { getServerSession } from 'next-auth';
-import { zCourseRoles } from '@/types/sharedZodTypes';
 
 import { z } from 'zod';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
   name: z.string(),
   courseId: z.string(),
-  role: z.string(),
+  role: zCourseRoles,
   optionalId: z.string().optional()
 });
 

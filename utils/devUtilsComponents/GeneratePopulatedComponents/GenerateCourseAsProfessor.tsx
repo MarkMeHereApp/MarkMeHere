@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/context-course';
-import { zLMSProvider, zLMSProviderType } from '@/types/sharedZodTypes';
+import { zLMSProvider, zCourseRoles } from '@/types/sharedZodTypes';
 import { toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { CourseMember } from '@prisma/client';
 import { useLecturesContext } from '@/app/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { setHours } from 'date-fns';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+
 const CreateCourseFormSchema = z.object({
   courseCode: z
     .string()
@@ -111,7 +111,7 @@ export default function GenerateCourseAsProfessor() {
           courseCode: courseform.courseCode,
           name: courseform.name,
           lmsId: courseform.lmsId || undefined,
-          lmsType: courseform.lmsType as zLMSProviderType
+          lmsType: courseform.lmsType
         },
         autoEnroll: courseform.autoEnroll,
         newMemberData: {

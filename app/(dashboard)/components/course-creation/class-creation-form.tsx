@@ -23,12 +23,12 @@ import { LMSCourseSelector } from './lms-course-selector';
 import {
   zLMSCourseSchemeType,
   zLMSProvider,
-  zLMSProviderType
+  zLMSProviderType,
+  zCourseRoles
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
-import { zCourseRoles } from '@/types/sharedZodTypes';
 import Loading from '@/components/general/loading';
 
 const CreateCourseFormSchema = z.object({
