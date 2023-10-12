@@ -3,7 +3,6 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-import { zSiteRoles } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { zSiteRoles } from '@/types/sharedZodTypes';
