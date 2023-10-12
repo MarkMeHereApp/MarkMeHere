@@ -11,6 +11,9 @@ import {
 import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
+import { Toggle } from '@/components/ui/toggle';
+import { zAttendanceStatus } from '@/types/sharedZodTypes';
+import { zAttendanceStatusIconsNotFun } from '@/types/sharedZodTypes';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -110,52 +113,20 @@ export function DataTableRowActions<TData>({
 
   return (
     <div className="flex space-x-6">
-        {/* Mark Here */}
-        <div
-            title="Mark Here"
-            onClick={() =>  handleCreateNewAttendanceEntry('here')}
-        >
-        {studentAttendanceEntry?.status === 'here' ? (
-            <CheckCircledIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CheckCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-        {/* Mark Late */}
-        <div
-            title="Mark Late"
-            onClick={() =>  handleCreateNewAttendanceEntry('late')}
-        >
-        {studentAttendanceEntry?.status === 'late' ? (
-            <ClockIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <ClockIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-
-        {/* Mark Excused */}
-        <div
-            title="Mark Excused"
-            onClick={() =>  handleCreateNewAttendanceEntry('excused')}
-        >
-        {studentAttendanceEntry?.status === 'excused' ? (
-            <CircleIcon className="h-4 w-4 border-2 border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CircleIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-
-        {/* Mark Absent */}
-        <div
-            title="Mark Absent"
-            onClick={() =>  handleCreateNewAttendanceEntry('absent')}
-        >
-        {studentAttendanceEntry?.status === 'absent' ? (
-            <CrossCircledIcon className="h-4 w-4 border border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
+      {zAttendanceStatus.options.map((value) => {
+        const Icon = zAttendanceStatusIconsNotFun[value];
+        return (
+          <Toggle
+            title={`Mark ${value}`}
+            onClick={() => handleCreateNewAttendanceEntry(value)}
+            pressed={studentAttendanceEntry?.status === value}
+            size="sm"
+            key={value}
+          >
+            <Icon />
+          </Toggle>
+        );
+      })}
     </div>
   );
 }
