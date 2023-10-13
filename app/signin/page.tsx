@@ -9,16 +9,6 @@ export default async function SigninPage() {
         key: true
       }
     });
-
-    /*
-     * @TODO This should be removed when we handle no providers being available... this is just temporary because in
-     * auth/[...nextauth]/options.ts we are manually adding the GitHub provider, but we don't want to do that in production
-     */
-    providers.push({
-      key: 'github',
-      displayName: 'GitHub (This provider was manually Added)'
-    });
-
     let tempAdminSecretConfigured = false;
     if (process.env.TEMP_ADMIN_SECRET) {
       tempAdminSecretConfigured = true;
