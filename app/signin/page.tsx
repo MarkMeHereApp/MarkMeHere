@@ -19,9 +19,17 @@ export default async function SigninPage() {
       displayName: 'GitHub (This provider was manually Added)'
     });
 
+    let tempAdminSecretConfigured = false;
+    if (process.env.TEMP_ADMIN_SECRET) {
+      tempAdminSecretConfigured = true;
+    }
+
     return (
       <>
-        <SignInForm providers={providers} />
+        <SignInForm
+          providers={providers}
+          bHasTempAdminConfigured={tempAdminSecretConfigured}
+        />
       </>
     );
   } catch (error) {

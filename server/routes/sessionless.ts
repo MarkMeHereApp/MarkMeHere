@@ -16,11 +16,15 @@ export const sessionlessRouter = router({
     .input(zGenerateNewAdmin)
     .mutation(async ({ input }) => {
       try {
+        if (input.adminSecret === process.env.ADMIN_SECRET) {
+        }
+
         return { success: true };
       } catch (error) {
         throw error;
       }
     }),
+
   ValidateAndCreateAttendanceToken: publicProcedure
     .input(zActiveCode)
     .mutation(async ({ input }) => {

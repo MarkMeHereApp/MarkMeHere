@@ -19,10 +19,13 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import GitHubEduError from './github-edu-error';
-import GitHubEduMessage from './github-edu-info';
+import GitHubEduError from './info/github-edu-error';
+import GitHubEduMessage from './info/github-edu-info';
+import DemoModeInfo from './info/demo-mode-info';
+import TempAdminInfo from './info/temp-admin-info';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
 import Loading from '@/components/general/loading';
+import GenerateTemporaryAdmin from './generate-temporary-admin';
 
 type TProvider = {
   key: string;
@@ -31,9 +34,13 @@ type TProvider = {
 
 interface SignInFormProps {
   providers: Array<TProvider>;
+  bHasTempAdminConfigured?: boolean;
 }
 
-export default function SignInForm({ providers }: SignInFormProps) {
+export default function SignInForm({
+  providers,
+  bHasTempAdminConfigured
+}: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = React.useState<{ [key: string]: boolean }>(
@@ -136,6 +143,22 @@ export default function SignInForm({ providers }: SignInFormProps) {
     }
   };
 
+  const demoMode = !!process.env.NEXT_PUBLIC_DEMO_TEMP_ADMIN_SECRET;
+
+  const shouldRenderTemporaryAdmin = () => {
+    if (!providers) return true;
+    if (
+      process.env.NEXT_PUBLIC_FORCE_SHOW_TEMP_ADMIN?.toString().toLowerCase() ===
+      'true'
+    ) {
+      return true;
+    }
+
+    if (demoMode) return true;
+
+    return false;
+  };
+
   const OAuthButton = ({
     provider,
     onSubmit
@@ -182,7 +205,15 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 <AlertDescription>Log In Error: {error}</AlertDescription>
               )}
             </Alert>
+
+            {demoMode && <DemoModeInfo />}
+
+            {bHasTempAdminConfigured && !demoMode && <TempAdminInfo />}
+
             <GitHubEduError providers={providers} errorType={errorType} />
+
+            {shouldRenderTemporaryAdmin() && <GenerateTemporaryAdmin />}
+
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.key === 'credentials'
@@ -271,11 +302,6 @@ export default function SignInForm({ providers }: SignInFormProps) {
                   a.key === 'githubedu' ? -1 : b.key === 'githubedu' ? 1 : 0
                 )
                 .map((provider, index) => {
-                  if (!provider) {
-                    // Render a placeholder or loading state here
-                    return <Loading />;
-                  }
-
                   if (
                     provider.key !== 'credentials' &&
                     provider.key !== 'githubedu'
