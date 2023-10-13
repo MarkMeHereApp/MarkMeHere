@@ -8,6 +8,7 @@ import { trpc } from '@/app/_trpc/client';
 import { firaSansFont } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Icons } from '@/components/ui/icons';
+import Loading from '@/components/general/loading';
 
 import GeoLocationChecker from './geolocation';
 
@@ -20,6 +21,7 @@ enum ErrorType {
 const InputTable = () => {
   const [inputValue, setInputValue] = useState(''); //input value in the field
   const [errorDisplay, setErrorDisplay] = useState<string | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
+  const [error, setError] = useState<Error | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
 
   const router = useRouter(); //initalizing the router
 
@@ -28,7 +30,9 @@ const InputTable = () => {
 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
 
-
+  if (error) {
+    throw error;
+  }
 
   // useEffect(() => {
   //   if (navigator.geolocation) {
@@ -43,7 +47,6 @@ const InputTable = () => {
   //     console.log("Geolocation is not supported by this browser.");
   //   }
   // }, []);
-
 
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
@@ -87,7 +90,7 @@ const InputTable = () => {
   //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
-    trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
+    trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
 
@@ -95,8 +98,6 @@ const InputTable = () => {
       const res = await validateAndCreateToken.mutateAsync({
         code: inputValue
       });
-
-      console.log(res);
 
       if (res.success) {
         router.push(`/student?attendanceTokenId=${res.token}`);
@@ -106,7 +107,7 @@ const InputTable = () => {
         displayError(ErrorType.InvalidInput);
       }
     } catch (error) {
-      console.log(error);
+      setError(error as Error);
     } finally {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
     }
@@ -137,7 +138,7 @@ const InputTable = () => {
         )}
       </Alert>
 
-      <GeoLocationChecker></GeoLocationChecker>
+      <GeoLocationChecker />
 
       <div className="gap-4 flex flex-col items-center pt-0 p-6">
         <Input
@@ -153,10 +154,7 @@ const InputTable = () => {
           className=" flex w-[100%]"
           disabled={isLoadingSubmit}
         >
-          {isLoadingSubmit && (
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          <div className="">Submit</div>
+          {isLoadingSubmit ? <Loading /> : 'Submit'}
         </Button>
       </div>
     </Card>

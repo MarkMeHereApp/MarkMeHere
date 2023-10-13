@@ -1,15 +1,27 @@
 import { publicProcedure, router } from '../trpc';
-import prisma from '@/prisma';
 import { z } from 'zod';
+import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
+
+export const zGenerateNewAdmin = z.object({
+  adminSecret: z.string()
+});
 
 export const zActiveCode = z.object({
   code: z.string()
-})
+});
 
-export const attendanceTokenRouter = router({
-
-    ValidateAndCreateAttendanceToken: publicProcedure
+export const sessionlessRouter = router({
+  GenerateNewAdmin: publicProcedure
+    .input(zGenerateNewAdmin)
+    .mutation(async ({ input }) => {
+      try {
+        return { success: true };
+      } catch (error) {
+        throw error;
+      }
+    }),
+  ValidateAndCreateAttendanceToken: publicProcedure
     .input(zActiveCode)
     .mutation(async ({ input }) => {
       try {
@@ -26,7 +38,7 @@ export const attendanceTokenRouter = router({
         const { id } = await prisma.attendanceToken.create({
           data: {
             lectureId: qrResult.lectureId,
-            token:  uuidv4()
+            token: uuidv4()
           }
         });
 
@@ -34,7 +46,7 @@ export const attendanceTokenRouter = router({
       } catch (error) {
         throw error;
       }
-    }),
-})
+    })
+});
 
-
+export type SessionlessRouter = typeof sessionlessRouter;
