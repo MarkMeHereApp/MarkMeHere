@@ -2,7 +2,10 @@ import { Row } from '@tanstack/react-table';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
-import { zAttendanceStatus, zAttendanceStatusType } from '@/types/sharedZodTypes';
+import {
+  zAttendanceStatus,
+  zAttendanceStatusType
+} from '@/types/sharedZodTypes';
 import {
   ClockIcon,
   CheckCircledIcon,
@@ -13,7 +16,6 @@ import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
 import { Toggle } from '@/components/ui/toggle';
-import { zAttendanceStatus } from '@/types/sharedZodTypes';
 import { zAttendanceStatusIconsNotFun } from '@/types/sharedZodTypes';
 
 interface DataTableRowActionsProps<TData> {
@@ -89,7 +91,7 @@ export function DataTableRowActions<TData>({
     return currentAttendanceEntry?.status;
   };
 
-  async function handleCreateNewAttendanceEntry(status: string) {
+  async function handleCreateNewAttendanceEntry(status: zAttendanceStatusType) {
     const lecture = getCurrentLecture();
     if (lectures && lecture) {
       try {
