@@ -147,6 +147,10 @@ export default function SignInForm({
 
   const shouldRenderTemporaryAdmin = () => {
     if (!providers) return true;
+
+    if (providers.length === 1 && providers[0].key === 'credentials')
+      return true;
+
     if (
       process.env.NEXT_PUBLIC_FORCE_SHOW_TEMP_ADMIN?.toString().toLowerCase() ===
       'true'
