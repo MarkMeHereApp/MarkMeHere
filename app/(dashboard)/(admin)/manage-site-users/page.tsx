@@ -1,15 +1,20 @@
-// pages/hello.tsx
+'use client';
 
-const ManageSiteUsers: React.FC = () => {
+import { columns } from './columns';
+import UserTable from './UserTable';
+
+const ManageSiteUsers = () => {
   return (
-    <div>
-      <h1>
-        This Page will be how Admins can add other admins and moderators
-        <br />
-        Remember normal users don't need to be added here, if they sign up, and
-        are enrolled in a course, they will be added to the database
-        automatically.
-      </h1>
+    <div className="flex flex-col md:flex-row">
+      <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
+        <div className="flex flex-wrap items-center justify-between space-y-7 md:space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Manage Users</h2>
+
+          <div className="flex items-center space-x-2"></div>
+        </div>
+
+        <UserTable columns={columns} />
+      </div>
     </div>
   );
 };
