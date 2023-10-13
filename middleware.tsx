@@ -35,7 +35,7 @@ const roleToRoutes: Record<string, string[]> = {
     '/testing-playground',
     '/user-settings',
     '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
-    '/api/trpc/courseMember.getCourseMemberRole',                 //j
+    '/api/trpc/courseMember.getCourseMemberRole', //j
     '/api/trpc/canvas.getCanvasCourses',
     '/api/trpc/course.createCourse',
     '/api/trpc/qr.CreateNewQRCode',
@@ -61,7 +61,7 @@ const roleToRoutes: Record<string, string[]> = {
     '/markAttendance',
     '/submit',
     '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
-    '/api/trpc/courseMember.getCourseMemberRole',                 //j
+    '/api/trpc/courseMember.getCourseMemberRole', //j
     '/api/trpc/qr.CreateNewQRCode',
     '/api/trpc/lecture.CreateLecture',
     '/api/trpc/attendance.createOrUpdateSingleAttendanceEntry',
@@ -123,5 +123,6 @@ export default withAuth(
 //Our middleware needs to run over all routes besides signin/signup
 export const config = {
   // Matches the entire project except for the routes between the | characters.
-  matcher: '/((?!api/submit|signin|_next/static|_next/image|favicon.ico).*)'
+  matcher:
+    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/sessionless).*)'
 };
