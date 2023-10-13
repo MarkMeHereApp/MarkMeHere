@@ -7,7 +7,7 @@ import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import { generateTypedError } from './errorTypes';
 import prisma from '@/prisma';
-import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 export const trpc = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -45,7 +45,7 @@ const courseMemberInput = z.object({
 This middleware is meant for routes that use a lectureId
 1. Look up the lecture using lectureId.
 2. Look up the courseMember using courseId and user email. Verify they are either
-a professor or TA.
+a teacher or TA.
 3. If the courseMember is found the user has access.
 */
 const isElevatedCourseMemberLecture = trpc.middleware(
@@ -84,7 +84,7 @@ const isElevatedCourseMemberLecture = trpc.middleware(
         })
       );
 
-    //Find the first courseMember who is either a professor or TA
+    //Find the first courseMember who is either a teacher or TA
     const courseMember = await prisma.courseMember.findFirst({
       where: {
         courseId: lecture.courseId,
@@ -109,6 +109,11 @@ const isElevatedCourseMemberLecture = trpc.middleware(
   }
 );
 
+/* 
+This middleware is meant for routes that use a courseId
+1. Look up the courseMember using courseId. Verify they are either a teacher or ta
+2. If the courseMember is found the user has access.
+*/
 const isElevatedCourseMemberCourse = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
@@ -131,7 +136,7 @@ const isElevatedCourseMemberCourse = trpc.middleware(
         })
       );
 
-    //Find the first courseMember who is either a professor or TA
+    //Find the first courseMember who is either a teacher or TA
     const courseMember = await prisma.courseMember.findFirst({
       where: {
         courseId: result.data.courseId,

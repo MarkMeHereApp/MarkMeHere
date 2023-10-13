@@ -59,12 +59,13 @@ const CSV_Import = () => {
   const validateCSV = async (values: CSVData[]) => {
     try {
       setValidationProgress(0);
+      setExistedMembers([]);
       setValidationMessage('Validating CSV structure...');
       await delay(1000);
       setValidationProgress(25);
       const firstObjectKeys = Object.keys(values[0]);
 
-      const expectedHeaders = ['Name', 'ID', 'Email'];
+      const expectedHeaders = ['name', 'id', 'email'];
 
       const headersMatch = expectedHeaders.every((expectedHeader) =>
         firstObjectKeys.some(
@@ -104,10 +105,10 @@ const CSV_Import = () => {
       setValidationMessage('Checking the members of the course...');
 
       const data = values.map((row) => ({
-        id: row['ID'],
-        name: row['Name'],
-        optionalId: row['ID'],
-        email: row['Email'],
+        id: row['id'],
+        name: row['name'],
+        optionalId: row['id'],
+        email: row['email'],
         courseId: '',
         lmsId: '',
         dateEnrolled: new Date(),
@@ -150,8 +151,8 @@ const CSV_Import = () => {
       header: true,
       skipEmptyLines: true,
       beforeFirstChunk: (chunk) => {
-        const lines = chunk.split('\n');
-        const header = lines.shift();
+        const header = chunk.split('\n')[0].replace(/\s/g, '').toLowerCase();
+        const lines = chunk.split('\n').slice(1);
         const filteredLines = lines.filter((line) => {
           const columns = line.split(',');
           const idColumn = columns[3];
@@ -160,16 +161,18 @@ const CSV_Import = () => {
         return [header, ...filteredLines].join('\n');
       },
       complete: async (results) => {
-        const columnsToKeep = ['Name', 'ID', 'Email'];
+        const columnsToKeep = ['name', 'id', 'email'];
 
         const filteredData = results.data.map((row) => {
-          const filteredRow: CSVData = {};
+          const cleanedRow: CSVData = {};
           for (const column of columnsToKeep) {
             if (column in row) {
-              filteredRow[column] = row[column];
+              const cleanedColumn = column.trim().replace(/"/g, '');
+              const cleanedValue = row[column].trim().replace(/"/g, '');
+              cleanedRow[cleanedColumn] = cleanedValue;
             }
           }
-          return filteredRow;
+          return cleanedRow;
         });
 
         setIsValidating(true);

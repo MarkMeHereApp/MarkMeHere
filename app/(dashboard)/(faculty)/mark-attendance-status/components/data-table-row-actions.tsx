@@ -2,6 +2,13 @@ import { Row } from '@tanstack/react-table';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
+import { zAttendanceStatus, zAttendanceStatusType } from '@/types/sharedZodTypes';
+import {
+  ClockIcon,
+  CheckCircledIcon,
+  CrossCircledIcon,
+  CircleIcon
+} from '@radix-ui/react-icons';
 import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
