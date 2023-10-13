@@ -63,27 +63,25 @@ export function DataTableToolbar<TData>({
   };
 
   const handleConfirmDelete = async () => {
-    const selectedRows = table.getSelectedRowModel().rows;
-    const selectedCourseMembers: CourseMember[] = selectedRows.map(
-      (row) => row.original
-    ) as CourseMember[];
-    const filteredCourseMembers = selectedCourseMembers.filter((member) => {
-      return member.email !== userEmail;
-    });
-    await deleteCourseMemberMutation.mutateAsync(filteredCourseMembers);
-    table.resetRowSelection();
-    handleDialogClose();
-    await getCourseMembersOfCourseQuery.refetch();
-
-    const deletedNames = filteredCourseMembers
-      .map((member) => member.name)
-      .join(', ');
-
-    toast({
-      title: `Successfully deleted ${filteredCourseMembers.length} course member(s)!`,
-      description: `Deleted: ${deletedNames}`,
-      icon: 'success'
-    });
+    // const selectedRows = table.getSelectedRowModel().rows;
+    // const selectedCourseMembers: CourseMember[] = selectedRows.map(
+    //   (row) => row.original
+    // ) as CourseMember[];
+    // const filteredCourseMembers = selectedCourseMembers.filter((member) => {
+    //   return member.email !== userEmail;
+    // });
+    // await deleteCourseMemberMutation.mutateAsync(filteredCourseMembers);
+    // table.resetRowSelection();
+    // handleDialogClose();
+    // await getCourseMembersOfCourseQuery.refetch();
+    // const deletedNames = filteredCourseMembers
+    //   .map((member) => member.name)
+    //   .join(', ');
+    // toast({
+    //   title: `Successfully deleted ${filteredCourseMembers.length} course member(s)!`,
+    //   description: `Deleted: ${deletedNames}`,
+    //   icon: 'success'
+    // });
   };
 
   return (
