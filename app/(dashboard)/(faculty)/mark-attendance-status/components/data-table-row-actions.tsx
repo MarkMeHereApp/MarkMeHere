@@ -122,6 +122,11 @@ export function DataTableRowActions<TData>({
         const Icon = zAttendanceStatusIconsNotFun[value];
         return (
           <Toggle
+            className={
+              value === 'absent'
+                ? 'data-[state=on]:bg-destructive'
+                : 'data-[state=on]:bg-primary'
+            }
             title={`Mark ${value}`}
             onClick={() => handleCreateNewAttendanceEntry(value)}
             pressed={getAttendanceState() === value}
@@ -129,7 +134,15 @@ export function DataTableRowActions<TData>({
             size="sm"
             key={value}
           >
-            <Icon />
+            <Icon
+              className={
+                getAttendanceState() === value
+                  ? value === 'absent'
+                    ? 'text-destructive-foreground stroke-current stroke-1 w-4 h-4'
+                    : 'text-primary-foreground stroke-current stroke-1 w-4 h-4'
+                  : ''
+              }
+            />
           </Toggle>
         );
       })}

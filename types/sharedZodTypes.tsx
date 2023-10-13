@@ -57,12 +57,12 @@ export const zAttendanceStatusIcons: Record<
 
 export const zAttendanceStatusIconsNotFun: Record<
   zAttendanceStatusType,
-  React.ComponentType
+  (props: { className?: string }) => JSX.Element
 > = {
-  here: () => <CheckCircledIcon />,
-  late: () => <ClockIcon />,
-  excused: () => <CircleIcon />,
-  absent: () => <CrossCircledIcon />
+  here: ({ className }) => <CheckCircledIcon className={className} />,
+  late: ({ className }) => <ClockIcon className={className} />,
+  excused: ({ className }) => <CircleIcon className={className} />,
+  absent: ({ className }) => <CrossCircledIcon className={className} />
 };
 
 /////////////////////////////////////////////////////////////////////////////////
