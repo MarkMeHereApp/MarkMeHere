@@ -84,6 +84,7 @@ export function DataTable<TData, TValue>({
       rowSelection,
       columnFilters
     },
+    autoResetAll: false,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

@@ -2,7 +2,10 @@ import { Row } from '@tanstack/react-table';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
-import { zAttendanceStatus, zAttendanceStatusType } from '@/types/sharedZodTypes';
+import {
+  zAttendanceStatus,
+  zAttendanceStatusType
+} from '@/types/sharedZodTypes';
 import {
   ClockIcon,
   CheckCircledIcon,
@@ -12,6 +15,8 @@ import {
 import { useLecturesContext } from '@/app/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
+import { Toggle } from '@/components/ui/toggle';
+import { zAttendanceStatusIconsNotFun } from '@/types/sharedZodTypes';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -75,6 +80,17 @@ export function DataTableRowActions<TData>({
     }
   };
 
+  const getAttendanceState = (): string | undefined => {
+    const currentLecture = lectures?.find(
+      (lecture) =>
+        lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+    );
+    const currentAttendanceEntry = currentLecture?.attendanceEntries.find(
+      (entry) => entry.courseMemberId === courseMemberData.id
+    );
+    return currentAttendanceEntry?.status;
+  };
+
   async function handleCreateNewAttendanceEntry(status: zAttendanceStatusType) {
     const lecture = getCurrentLecture();
     if (lectures && lecture) {
@@ -111,52 +127,34 @@ export function DataTableRowActions<TData>({
 
   return (
     <div className="flex space-x-6">
-        {/* Mark Here */}
-        <div
-            title="Mark Here"
-            onClick={() =>  handleCreateNewAttendanceEntry('here')}
-        >
-        {studentAttendanceEntry?.status === 'here' ? (
-            <CheckCircledIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CheckCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-        {/* Mark Late */}
-        <div
-            title="Mark Late"
-            onClick={() =>  handleCreateNewAttendanceEntry('late')}
-        >
-        {studentAttendanceEntry?.status === 'late' ? (
-            <ClockIcon className="h-4 w-4 border-2 border-primary rounded-lg hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <ClockIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-
-        {/* Mark Excused */}
-        <div
-            title="Mark Excused"
-            onClick={() =>  handleCreateNewAttendanceEntry('excused')}
-        >
-        {studentAttendanceEntry?.status === 'excused' ? (
-            <CircleIcon className="h-4 w-4 border-2 border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CircleIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
-
-        {/* Mark Absent */}
-        <div
-            title="Mark Absent"
-            onClick={() =>  handleCreateNewAttendanceEntry('absent')}
-        >
-        {studentAttendanceEntry?.status === 'absent' ? (
-            <CrossCircledIcon className="h-4 w-4 border border-primary rounded-lg  hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        ) : (
-            <CrossCircledIcon className="h-4 w-4 hover:text-yellow-400 transition-colors hover:cursor-pointer" />
-        )}
-        </div>
+      {zAttendanceStatus.options.map((value) => {
+        const Icon = zAttendanceStatusIconsNotFun[value];
+        return (
+          <Toggle
+            className={
+              value === 'absent'
+                ? 'data-[state=on]:bg-destructive'
+                : 'data-[state=on]:bg-primary'
+            }
+            title={`Mark ${value}`}
+            onClick={() => handleCreateNewAttendanceEntry(value)}
+            pressed={getAttendanceState() === value}
+            variant={'outline'}
+            size="sm"
+            key={value}
+          >
+            <Icon
+              className={
+                getAttendanceState() === value
+                  ? value === 'absent'
+                    ? 'text-destructive-foreground stroke-current stroke-1 w-4 h-4'
+                    : 'text-primary-foreground stroke-current stroke-1 w-4 h-4'
+                  : ''
+              }
+            />
+          </Toggle>
+        );
+      })}
     </div>
   );
 }

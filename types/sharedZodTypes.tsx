@@ -1,6 +1,12 @@
 import z from 'zod';
 import { CourseMember, AttendanceEntry } from '@prisma/client';
-import { CircleIcon, ClockIcon, CrossCircledIcon } from '@radix-ui/react-icons';
+import {
+  CircleIcon,
+  ClockIcon,
+  CrossCircledIcon,
+  CheckCircledIcon
+} from '@radix-ui/react-icons';
+
 import { Icons } from '@/components/ui/icons';
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +53,16 @@ export const zAttendanceStatusIcons: Record<
   late: () => <ClockIcon className="mr-1" />,
   excused: () => <CircleIcon className="mr-1" />,
   absent: () => <CrossCircledIcon className="mr-1 text-destructive" />
+};
+
+export const zAttendanceStatusIconsNotFun: Record<
+  zAttendanceStatusType,
+  (props: { className?: string }) => JSX.Element
+> = {
+  here: ({ className }) => <CheckCircledIcon className={className} />,
+  late: ({ className }) => <ClockIcon className={className} />,
+  excused: ({ className }) => <CircleIcon className={className} />,
+  absent: ({ className }) => <CrossCircledIcon className={className} />
 };
 
 /////////////////////////////////////////////////////////////////////////////////
