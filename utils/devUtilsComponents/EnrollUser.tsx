@@ -44,6 +44,7 @@ const EnrollUser = () => {
     setCourseMembersOfSelectedCourse
   } = useCourseContext();
   // const createUserMutation = trpc.createUser.useMutation();
+  const createUser = trpc.user.createUser.useMutation();
   const [loading, setLoading] = useState(false);
   const getCourseMembersOfCourseQuery =
     trpc.courseMember.getCourseMembersOfCourse.useQuery(
@@ -116,21 +117,21 @@ const EnrollUser = () => {
   });
 
   async function onSubmit(data: CourseMemberFormProps) {
-    // const addNewAdmin = async () => {
-    //   try {
-    //     const response = await createUserMutation.mutateAsync({
-    //       name: data.name,
-    //       email: data.email,
-    //       role: 'Admin'
-    //     });
-    //     console.log(response);
-    //     await getCourseMembersOfCourseQuery.refetch();
-    //   } catch (error) {
-    //     throw new Error('Unable to create a new admin ' + error);
-    //   }
-    // };
-    // await addNewAdmin();
-    // handleDialogClose();
+    const addNewAdmin = async () => {
+      try {
+        const response = await createUser.mutateAsync({
+          name: data.name,
+          email: data.email,
+          role: data.role
+        });
+        console.log(response);
+        await getCourseMembersOfCourseQuery.refetch();
+      } catch (error) {
+        throw new Error('Unable to create a new admin ' + error);
+      }
+    };
+    await addNewAdmin();
+    handleDialogClose();
   }
 
   return selectedCourseId ? (

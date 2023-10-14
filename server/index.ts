@@ -11,7 +11,7 @@ import { utilsRouter } from './routes/utils';
 import { attendanceTokenRouter } from './routes/attendanceToken';
 import { providerRouter } from './routes/provider';
 import { geolocationRouter } from './routes/geolocation';
-
+import { userRouter } from './routes/user';
 export const appRouter = router({
   course: courseRouter,
   courseMember: courseMemberRouter,
@@ -24,6 +24,7 @@ export const appRouter = router({
   attendanceToken: attendanceTokenRouter,
   provider: providerRouter,
   geolocation: geolocationRouter,
+  user: userRouter
 });
 
 export type AppRouter = typeof appRouter;
