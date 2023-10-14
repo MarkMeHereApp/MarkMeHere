@@ -53,93 +53,93 @@ export const userRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
+    })
 
-  // Read User by ID
-  getUserByEmail: publicProcedure.input(z.string()).query(async (email) => {
-    const user = await prisma.user.findUnique({
-      where: { email: email }
-    });
+  // // Read User by ID
+  // getUserByEmail: publicProcedure.input(z.string()).query(async (email) => {
+  //   const user = await prisma.user.findUnique({
+  //     where: { email: email }
+  //   });
 
-    if (!user) {
-      throw generateTypedError(
-        new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'User not found'
-        })
-      );
-    }
+  //   if (!user) {
+  //     throw generateTypedError(
+  //       new TRPCError({
+  //         code: 'NOT_FOUND',
+  //         message: 'User not found'
+  //       })
+  //     );
+  //   }
 
-    return user;
-  }),
+  //   return user;
+  // }),
 
-  // Read All Users
-  getAllUsers: publicProcedure.query(async () => {
-    const users = await prisma.user.findMany();
-    return users;
-  }),
+  // // Read All Users
+  // getAllUsers: publicProcedure.query(async () => {
+  //   const users = await prisma.user.findMany();
+  //   return users;
+  // }),
 
-  // Update User
-  updateUser: publicProcedure
-    .input(zUpdateUser)
-    .mutation(async (requestData) => {
-      const { userId, name, email, role } = requestData.input;
+  // // Update User
+  // updateUser: publicProcedure
+  //   .input(zUpdateUser)
+  //   .mutation(async (requestData) => {
+  //     const { userId, name, email, role } = requestData.input;
 
-      if (!name && !email && !role) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'No updates provided'
-          })
-        );
-      }
+  //     if (!name && !email && !role) {
+  //       throw generateTypedError(
+  //         new TRPCError({
+  //           code: 'BAD_REQUEST',
+  //           message: 'No updates provided'
+  //         })
+  //       );
+  //     }
 
-      const existingUser = await prisma.user.findUnique({
-        where: { id: userId }
-      });
+  //     const existingUser = await prisma.user.findUnique({
+  //       where: { id: userId }
+  //     });
 
-      if (!existingUser) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'User not found'
-          })
-        );
-      }
+  //     if (!existingUser) {
+  //       throw generateTypedError(
+  //         new TRPCError({
+  //           code: 'NOT_FOUND',
+  //           message: 'User not found'
+  //         })
+  //       );
+  //     }
 
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: {
-          name: name || existingUser.name,
-          email: email || existingUser.email,
-          role: role || existingUser.role
-        }
-      });
+  //     const updatedUser = await prisma.user.update({
+  //       where: { id: userId },
+  //       data: {
+  //         name: name || existingUser.name,
+  //         email: email || existingUser.email,
+  //         role: role || existingUser.role
+  //       }
+  //     });
 
-      return { success: true, user: updatedUser };
-    }),
+  //     return { success: true, user: updatedUser };
+  //   }),
 
-  // Delete User by Email
-  deleteUser: publicProcedure.input(z.string()).mutation(async (email) => {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: email }
-    });
+  // // Delete User by Email
+  // deleteUser: publicProcedure.input(z.string()).mutation(async (email) => {
+  //   const existingUser = await prisma.user.findUnique({
+  //     where: { email: email }
+  //   });
 
-    if (!existingUser) {
-      throw generateTypedError(
-        new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'User not found'
-        })
-      );
-    }
+  //   if (!existingUser) {
+  //     throw generateTypedError(
+  //       new TRPCError({
+  //         code: 'NOT_FOUND',
+  //         message: 'User not found'
+  //       })
+  //     );
+  //   }
 
-    await prisma.user.delete({
-      where: { email: email }
-    });
+  //   await prisma.user.delete({
+  //     where: { email: email }
+  //   });
 
-    return { success: true };
-  })
+  //   return { success: true };
+  // })
 });
 
 export type UserRouter = typeof userRouter;
