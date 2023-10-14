@@ -10,6 +10,9 @@ import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
 import { providerRouter } from './routes/provider';
 import { geolocationRouter } from './routes/geolocation';
+
+import { userRouter } from './routes/user';
+
 import { sessionlessRouter } from './routes/sessionless';
 
 export const appRouter = router({
@@ -23,7 +26,9 @@ export const appRouter = router({
   utils: utilsRouter,
   provider: providerRouter,
   geolocation: geolocationRouter,
+  user: userRouter,
   sessionless: sessionlessRouter
+
 });
 
 export type AppRouter = typeof appRouter;
