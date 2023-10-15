@@ -124,7 +124,6 @@ const EnrollUser = () => {
           email: data.email,
           role: data.role
         });
-        console.log(response);
         await getCourseMembersOfCourseQuery.refetch();
       } catch (error) {
         throw new Error('Unable to create a new admin ' + error);
@@ -134,7 +133,7 @@ const EnrollUser = () => {
     handleDialogClose();
   }
 
-  return selectedCourseId ? (
+  return (
     <>
       <Dialog open={isDialogOpen}>
         <DialogTrigger asChild>
@@ -260,7 +259,7 @@ const EnrollUser = () => {
         </DialogContent>
       </Dialog>
     </>
-  ) : null;
+  );
 };
 
 export default EnrollUser;
