@@ -35,11 +35,13 @@ type TProvider = {
 interface SignInFormProps {
   providers: Array<TProvider>;
   bHasTempAdminConfigured?: boolean;
+  bIsDemoMode?: boolean;
 }
 
 export default function SignInForm({
   providers,
-  bHasTempAdminConfigured
+  bHasTempAdminConfigured,
+  bIsDemoMode
 }: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -143,26 +145,6 @@ export default function SignInForm({
     }
   };
 
-  const demoMode = !!process.env.NEXT_PUBLIC_DEMO_TEMP_ADMIN_SECRET;
-
-  const shouldRenderTemporaryAdmin = () => {
-    if (!providers) return true;
-
-    if (providers.length === 1 && providers[0].key === 'credentials')
-      return true;
-
-    if (
-      process.env.NEXT_PUBLIC_FORCE_SHOW_TEMP_ADMIN?.toString().toLowerCase() ===
-      'true'
-    ) {
-      return true;
-    }
-
-    if (demoMode) return true;
-
-    return false;
-  };
-
   const OAuthButton = ({
     provider,
     onSubmit
@@ -210,13 +192,15 @@ export default function SignInForm({
               )}
             </Alert>
 
-            {demoMode && <DemoModeInfo />}
+            {/*demoMode && <DemoModeInfo />*/}
 
-            {bHasTempAdminConfigured && !demoMode && <TempAdminInfo />}
+            {bHasTempAdminConfigured && (
+              <>
+                <TempAdminInfo /> <GenerateTemporaryAdmin />
+              </>
+            )}
 
             <GitHubEduError providers={providers} errorType={errorType} />
-
-            {shouldRenderTemporaryAdmin() && <GenerateTemporaryAdmin />}
 
             {providers &&
               Object.values(providers).some(

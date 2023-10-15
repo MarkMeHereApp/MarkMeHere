@@ -39,11 +39,7 @@ const GenerateTemporaryAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const form = useForm<AdminGeneratorFormProps>({
-    resolver: zodResolver(zAdminGeneratorForm),
-    defaultValues: {
-      adminSecret:
-        process.env.NEXT_PUBLIC_DEMO_TEMP_ADMIN_SECRET?.toString() || ''
-    }
+    resolver: zodResolver(zAdminGeneratorForm)
   });
 
   if (error) {
@@ -61,15 +57,13 @@ const GenerateTemporaryAdmin = () => {
     setIsDialogOpen(false);
   };
 
-  const demoMode = !!process.env.NEXT_PUBLIC_DEMO_TEMP_ADMIN_SECRET;
-
   async function onSubmit(data: AdminGeneratorFormProps) {
     try {
       form.reset();
       setLoading(true);
       await signIn('credentials', {
         key: data.adminSecret,
-        callbackUrl: demoMode ? '/' : '/admin-settings'
+        callbackUrl: '/admin-settings'
       });
     } catch (error) {
       setError(error as Error);
@@ -90,25 +84,16 @@ const GenerateTemporaryAdmin = () => {
             <DialogTitle>Log Into Temporary Admin</DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            {!demoMode ? (
-              <div>
-                <p>Please Enter the Admin Secret from you .env below.</p>
-                <p>For example if your secret was:</p>
-                <code>
-                  ADMIN_GENERATOR_SECRET=8de1d54992c8bc0d66ffc21dea27d60b
-                </code>
-                <p>
-                  <b>You would enter: "8de1d54992c8bc0d66ffc21dea27d60b"</b>
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p>
-                  You are currently in demo mode, proceeed by clicking "Log In
-                  To Temp Admin"
-                </p>
-              </div>
-            )}
+            <div>
+              <p>Please Enter the Admin Secret from you .env below.</p>
+              <p>For example if your secret was:</p>
+              <code>
+                ADMIN_GENERATOR_SECRET=8de1d54992c8bc0d66ffc21dea27d60b
+              </code>
+              <p>
+                <b>You would enter: "8de1d54992c8bc0d66ffc21dea27d60b"</b>
+              </p>
+            </div>
           </DialogDescription>
           <Form {...form}>
             <form
@@ -122,7 +107,7 @@ const GenerateTemporaryAdmin = () => {
                   <FormItem>
                     <FormLabel>Admin Secret</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={demoMode} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

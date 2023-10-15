@@ -9,16 +9,22 @@ export default async function SigninPage() {
         key: true
       }
     });
-    let tempAdminSecretConfigured = false;
+    let bTempAdminSecretConfigured = false;
     if (process.env.TEMP_ADMIN_SECRET) {
-      tempAdminSecretConfigured = true;
+      bTempAdminSecretConfigured = true;
+    }
+
+    let demoModeConfigured = false;
+    if (process.env.DEMO_MODE) {
+      demoModeConfigured = true;
     }
 
     return (
       <>
         <SignInForm
           providers={providers}
-          bHasTempAdminConfigured={tempAdminSecretConfigured}
+          bHasTempAdminConfigured={bTempAdminSecretConfigured}
+          bIsDemoMode={demoModeConfigured}
         />
       </>
     );
