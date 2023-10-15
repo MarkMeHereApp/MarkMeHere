@@ -7,7 +7,7 @@ import { decrypt } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
-import CredentialsProvider from './credentials-provider';
+import CredentialsProvider from './customNextAuthProviders/credentials-provider';
 /* Check env to choose adapter */
 const prismaAdapter =
   process.env.HASHEMAILS === 'true'
