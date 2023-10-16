@@ -54,6 +54,7 @@ export default CredentialsProvider({
           name: demoName,
           image: '',
           role: 'FACULTY',
+          optionalId: demoAccount.name,
           dateCreated: new Date(), // Provide the current date
           selectedCourseId: null // Set to null or provide a valid courseId
         };

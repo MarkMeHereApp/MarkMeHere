@@ -32,19 +32,18 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../components/ui/select';
-import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
 import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
-
+import React from 'react';
 const EnrollUser = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { courseMembersOfSelectedCourse } = useCourseContext();
   const createUser = trpc.user.createUser.useMutation();
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
+  const [selectedFormRole, setSelectedFormRole] = useState('');
 
   const handleDialogOpen = () => {
     form.reset();
@@ -66,13 +65,6 @@ const EnrollUser = () => {
     email: z
       .string()
       .min(1)
-      .refine(
-        (value) =>
-          !courseMembersOfSelectedCourse?.some(
-            (member) => member.email === value
-          ),
-        'Email is already in use in this course'
-      )
       .refine((value) => value.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
@@ -81,14 +73,6 @@ const EnrollUser = () => {
       .string()
       .max(255)
       .optional()
-      .refine(
-        (value) =>
-          value === '' ||
-          !courseMembersOfSelectedCourse?.some(
-            (member) => member.optionalId === value
-          ),
-        'Optional ID is already in use in this course'
-      )
       .refine(
         (value) => value === '' || (value ? value.trim() === value : true),
         {
@@ -103,37 +87,41 @@ const EnrollUser = () => {
     resolver: zodResolver(zUsers)
   });
 
+  if (error) {
+    setLoading(false);
+    if (
+      error instanceof TRPCClientError &&
+      error.shape?.data?.isUniqueConstraintError
+    ) {
+      toastError(error.message);
+      setError(null);
+    } else {
+      throw error;
+    }
+  }
+
   async function onSubmit(data: CourseMemberFormProps) {
-    const addNewAdmin = async () => {
-      try {
-        const response = await createUser.mutateAsync({
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          optionalId: data.optionalId
+    try {
+      setLoading(true);
+      const response = await createUser.mutateAsync({
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        optionalId: data.optionalId
+      });
+      if (userData.users) {
+        setUserData({
+          ...userData,
+          users: [...userData.users, response.user]
         });
-        if (userData.users) {
-          setUserData({
-            ...userData,
-            users: [...userData.users, response.user]
-          });
-        } else {
-          setUserData({ ...userData, users: [response.user] });
-        }
-      } catch (error) {
-        if (
-          error instanceof TRPCClientError &&
-          error.shape?.data?.isUniqueConstraintError
-        ) {
-          toastError(error.message);
-          setError(null);
-        } else {
-          throw error;
-        }
+      } else {
+        setUserData({ ...userData, users: [response.user] });
       }
-    };
-    await addNewAdmin();
-    handleDialogClose();
+      setLoading(false);
+      handleDialogClose();
+    } catch (error) {
+      setError(error as Error);
+    }
   }
 
   return (
@@ -147,7 +135,7 @@ const EnrollUser = () => {
             style={{ maxWidth: '100%' }}
           >
             <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-            <span className="whitespace-nowrap">Enroll Site User</span>
+            <span className="whitespace-nowrap">Create Site User</span>
           </Button>
         </DialogTrigger>
         <DialogContent
@@ -155,7 +143,7 @@ const EnrollUser = () => {
           onClose={() => setIsDialogOpen(false)}
         >
           <DialogHeader onClick={handleDialogClose}>
-            <DialogTitle>Enroll Site User</DialogTitle>
+            <DialogTitle>Create Site User</DialogTitle>
             <DialogDescription>
               Fill in the site user&apos;s information below and click create
               user when you&apos;re done.
@@ -205,11 +193,13 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
-                defaultValue="user"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue="user">
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue="moderator"
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
