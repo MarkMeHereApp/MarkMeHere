@@ -23,6 +23,7 @@ import { useLecturesContext } from '../../../../context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';
 import { AttendanceEntry } from '@prisma/client';
+import { Input } from '@/components/ui/input';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -129,6 +130,15 @@ export function DataTableToolbar<TData>({
       <div className="flex items-center space-x-2">
         {getCurrentLecture() && (
           <>
+            <Input
+                placeholder="Search for a student..."
+                value={'globalFilter' in table.getState() ? globalFilter : ''}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const searchString = event.target.value;
+                    table.setGlobalFilter(searchString);
+                }}
+                className="h-8 w-[150px] lg:w-[250px]"
+            />
             {isSelected && (
               <>
                 <AttendanceButtons
