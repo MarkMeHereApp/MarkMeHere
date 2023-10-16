@@ -1,9 +1,14 @@
 'use client';
 
+import UsersContextProvider from '../context-users';
 import { columns } from './columns';
 import UserTable from './UserTable';
-
+import Loading from '@/components/general/loading';
+import { useUsersContext } from '../context-users';
+import { useEffect } from 'react';
 const ManageSiteUsers = () => {
+  const { userData, setUserData } = useUsersContext();
+
   return (
     <div className="flex flex-col md:flex-row">
       <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
@@ -13,7 +18,9 @@ const ManageSiteUsers = () => {
           <div className="flex items-center space-x-2"></div>
         </div>
 
-        <UserTable columns={columns} />
+        <UsersContextProvider>
+          <UserTable columns={columns} />
+        </UsersContextProvider>
       </div>
     </div>
   );

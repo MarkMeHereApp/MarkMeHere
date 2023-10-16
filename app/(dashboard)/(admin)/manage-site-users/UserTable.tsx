@@ -26,8 +26,7 @@ import {
 import { DataTablePagination } from './table-accessories/DataTablePagination';
 import { DataTableToolbar } from './table-accessories/DataTableToolbar';
 import { useState } from 'react';
-import { useCourseContext } from '@/app/context-course';
-
+import { useUsersContext } from '../context-users';
 import Loading from '@/components/general/loading';
 
 interface DataTableProps<TData, TValue> {
@@ -41,10 +40,10 @@ export default function UserTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { userData, setUserData } = useUsersContext();
 
-  const data = [] as TData[];
   const table = useReactTable({
-    data,
+    data: userData.users as TData[],
     columns,
     state: {
       sorting,
@@ -65,7 +64,7 @@ export default function UserTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   });
 
-  return (
+  return userData.users ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
       <div className="rounded-md border">
@@ -138,5 +137,7 @@ export default function UserTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
+  ) : (
+    <Loading />
   );
 }
