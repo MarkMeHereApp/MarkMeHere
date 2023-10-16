@@ -38,7 +38,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
 
     const getCourseMemberAttendanceEntriesOfCourse = trpc.attendance.getCourseMemberAttendanceEntriesOfCourse.useQuery(
         {
-            courseMemberId: 'clnp3qfqr0003ru5jehiyq67t'
+            courseMemberId: student?.id ?? '' // add null check and default value
         },
         {
             onSuccess: (data) => {
@@ -71,7 +71,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
         const calculateAttendanceEntryData = () => {
           const totalAttendanceEntries = attendanceEntries.length;
           // here (green), absent (red), excused (yellow), late (orange)
-          const colors = ['#FBCE13', '#FF2E2E', '#ffc425', '#f37736'];
+          const colors = ['#FBCE13', '#7F1D1D', '#ffc425', '#f37736'];
     
           const hereEntries = attendanceEntries.filter((entry: AttendanceEntry) => {
             return entry.status === 'here';

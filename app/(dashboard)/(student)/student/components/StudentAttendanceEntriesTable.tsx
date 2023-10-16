@@ -29,8 +29,8 @@ const StudentAttendanceEntriesTable: React.FC<StudentAttendanceEntriesTableProps
                 <Table>
                     <TableHeader>
                         <TableRow className="flex justify-between">
-                            <TableHead>Date Marked</TableHead>
-                            <TableHead>Attendance Status</TableHead>
+                            <TableHead className='text-bold'>Date Marked</TableHead>
+                            <TableHead className='text-bold'>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

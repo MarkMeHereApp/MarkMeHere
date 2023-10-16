@@ -38,6 +38,7 @@ const StudentPieChart: React.FC<StudentPieChartProps> = ({
                         stroke="primary"
                     />
                     <Legend
+                        className='text-bold'
                         verticalAlign="bottom"
                         align="center"
                         payload={pieChartData.map((entry: PieChartData) => ({
