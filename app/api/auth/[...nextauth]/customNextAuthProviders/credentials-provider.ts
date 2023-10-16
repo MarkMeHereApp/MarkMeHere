@@ -11,21 +11,17 @@ export default CredentialsProvider({
   credentials: {
     username: { label: 'Username', type: 'text', optional: true },
     password: { label: 'Password', type: 'password', optional: true },
-    key: { label: 'Key', type: 'text', optional: true },
-    forceNextAuthLogin: { label: 'Demo Login', type: 'boolean', optional: true }
+    tempAdminKey: { label: 'Key', type: 'text', optional: true },
+    demoLogin: { label: 'Demo Login', type: 'boolean', optional: true }
   },
   async authorize(credentials) {
     const username: string = credentials?.username ?? '';
     const password: string = credentials?.password ?? '';
-    const key: string = credentials?.key ?? '';
-    const forceNextAuthLogin: boolean =
-      Boolean(credentials?.forceNextAuthLogin) ?? false;
+    const tempAdminKey: string = credentials?.tempAdminKey ?? '';
+    const demoLogin: boolean = Boolean(credentials?.demoLogin) ?? false;
 
     // Handle temporary admin login (first time setup logins)
-    if (
-      forceNextAuthLogin &&
-      key === process.env.TEMP_ADMIN_SECRET?.toString()
-    ) {
+    if (tempAdminKey === process.env.TEMP_ADMIN_SECRET?.toString()) {
       const user: User = {
         id: 'TemporaryAdminId', // Provide a unique id
         email: 'temporary@admin.com',
@@ -41,7 +37,7 @@ export default CredentialsProvider({
 
     // Handle demo logins
     if (
-      forceNextAuthLogin &&
+      demoLogin &&
       process.env.DEMO_MODE?.toString() === 'true' &&
       (process.env.NEXTAUTH_URL?.toString().startsWith('http://localhost') ||
         process.env.NEXTAUTH_URL?.toString().startsWith('https://localhost') ||

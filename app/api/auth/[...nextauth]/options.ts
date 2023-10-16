@@ -97,13 +97,24 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
 
-        // We need to allow demo logins and first time admin setups through next-auth
+        // We need to allow first time admin setups through next-auth
+        if (credentials?.key && process.env.TEMP_ADMIN_SECRET) {
+          return true;
+        }
+
+        // We need to allow demo logins through next-auth
         if (
-          credentials &&
-          credentials.forceNextAuthLogin &&
-          (process.env.DEMO_MODE?.toString() === 'true' ||
-            process.env.TEMP_ADMIN_SECRET)
+          credentials?.demoLogin &&
+          process.env.DEMO_MODE?.toString() === 'true'
         ) {
+          await prisma.user.create({
+            data: {
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              image: user.image
+            }
+          });
           return true;
         }
 

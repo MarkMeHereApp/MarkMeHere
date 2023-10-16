@@ -62,8 +62,7 @@ const GenerateTemporaryAdmin = () => {
       form.reset();
       setLoading(true);
       await signIn('credentials', {
-        key: data.adminSecret,
-        forceNextAuthLogin: true,
+        tempAdminKey: data.adminSecret,
         callbackUrl: '/admin-settings'
       });
     } catch (error) {

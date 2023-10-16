@@ -151,7 +151,7 @@ export default function SignInForm({
       await signIn('credentials', {
         username: name,
         password: name,
-        forceNextAuthLogin: true,
+        demoLogin: true,
         callbackUrl: callbackUrl
       });
     } catch (error) {
