@@ -100,7 +100,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         // We need to allow demo logins and first time admin setups through next-auth
         if (
           credentials &&
-          credentials.demoLogin &&
+          credentials.forceNextAuthLogin &&
           (process.env.DEMO_MODE?.toString() === 'true' ||
             process.env.TEMP_ADMIN_SECRET)
         ) {
