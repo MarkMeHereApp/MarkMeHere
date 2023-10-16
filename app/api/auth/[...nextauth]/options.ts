@@ -75,7 +75,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           where: { email: user.email }
         });
 
-        if (prismaUser && prismaUser.role !== zSiteRoles.enum.user) {
+        if (prismaUser) {
           return true;
         }
 
@@ -118,7 +118,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
 
-        return 'unauthorized-email?email=' + user.email;
+        return '/unauthorized-email?email=' + user.email;
       },
       jwt({ token, user }) {
         if (user) token.role = user.role;

@@ -95,7 +95,7 @@ export function ProviderSubmissionDialog({
   const formSchema = z.object({
     keys: z.object({
       ...keys.reduce((acc: { [key: string]: z.ZodString }, key) => {
-        acc[key] = z.string().min(1);
+        acc[key] = z.string().min(1).trim();
         return acc;
       }, {})
     }),
@@ -120,7 +120,7 @@ export function ProviderSubmissionDialog({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      allowAccountLinking: false
+      allowAccountLinking: true
     }
   });
 
@@ -272,17 +272,20 @@ export function ProviderSubmissionDialog({
                         control={form.control}
                         name="allowAccountLinking"
                         key="allowAccountLinking"
+                        defaultValue={true}
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                             <FormControl>
                               <Checkbox
-                                checked={Boolean(field.value)}
+                                checked={true /*checked={Boolean(field.value)*/}
+                                disabled={true}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="flex justify-between items-center">
-                                Allow Account Linking
+                                Allow Account Linking (Temporarily Forcibly
+                                Enabled)
                                 <div className="ml-auto">
                                   <AccountLinkingInfoHover />
                                 </div>
