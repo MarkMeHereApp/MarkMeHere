@@ -12,11 +12,11 @@ import { useSearchParams } from 'next/navigation'; // Import useRouter from next
 import { toast } from 'components/ui/use-toast';
 
 export default function ManageAttendance() {
-  const { selectedCourseId, selectedAttendanceDate, selectedCourseRole } = useCourseContext();
+  const { selectedCourseId, selectedAttendanceDate, selectedCourseRole } =
+    useCourseContext();
   const { lectures } = useLecturesContext();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams(); // Initialize useSearchParams
-
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -43,8 +43,7 @@ export default function ManageAttendance() {
     }
   };
 
-  const getCurrentLectureProp = getCurrentLecture()
-
+  const getCurrentLectureProp = getCurrentLecture();
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -53,7 +52,9 @@ export default function ManageAttendance() {
           <h2 className="text-3xl font-bold tracking-tight">
             Mark Attendance Status
           </h2>
-          {(getCurrentLecture() && getCurrentLectureProp) && <StartScanningButton lectureId={getCurrentLectureProp.id}/>}
+          {getCurrentLecture() && getCurrentLectureProp && (
+            <StartScanningButton lectureId={getCurrentLectureProp.id} />
+          )}
         </div>
         {selectedCourseId ? (
           <>
