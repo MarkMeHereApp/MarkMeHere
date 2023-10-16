@@ -24,7 +24,7 @@ export default CredentialsProvider({
         email: 'temporary@admin.com',
         name: 'Temporary Admin',
         image: '',
-        role: 'FACULTY',
+        role: zSiteRoles.Enum.admin,
         optionalId: 'TempOptionalId',
         dateCreated: new Date(), // Provide the current date
         selectedCourseId: null // Set to null or provide a valid courseId
@@ -53,7 +53,7 @@ export default CredentialsProvider({
           email: demoEmail,
           name: demoName,
           image: '',
-          role: 'FACULTY',
+          role: zSiteRoles.Enum.admin,
           optionalId: demoAccount.name,
           dateCreated: new Date(), // Provide the current date
           selectedCourseId: null // Set to null or provide a valid courseId

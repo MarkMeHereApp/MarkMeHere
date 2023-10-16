@@ -1,5 +1,6 @@
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
+import { zSiteRoles } from './types/sharedZodTypes';
 
 /* 
 We have two layers of middleware
@@ -111,11 +112,18 @@ export default withAuth(
     If the user has a valid JWT and role then go to middleware
     */
     callbacks: {
-      authorized: ({ token }) =>
-        !!token &&
-        (token.role === 'STUDENT' ||
-          token.role === 'FACULTY' ||
-          token.role === 'ADMIN')
+      authorized: ({ token }) => {
+        if (!token) {
+          return false;
+        }
+        const role = zSiteRoles.safeParse(token.role);
+        // Assuming zSiteRoles.parse returns a role string
+        // Check if the role is valid and return a boolean value
+        if (role?.success) {
+          return true;
+        }
+        return false;
+      }
     }
   }
 );
