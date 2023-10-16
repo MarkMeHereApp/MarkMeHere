@@ -24,6 +24,7 @@ import {
   FormLabel,
   FormMessage
 } from '../../components/ui/form';
+import { TRPCClientError } from '@trpc/client';
 import {
   Select,
   SelectContent,
@@ -34,30 +35,16 @@ import {
 import { useCourseContext } from '@/app/context-course';
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
-import { formatString } from '../globalFunctions';
+import { formatString, toastError } from '../globalFunctions';
+import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
 
 const EnrollUser = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const {
-    selectedCourseId,
-    courseMembersOfSelectedCourse,
-    setCourseMembersOfSelectedCourse
-  } = useCourseContext();
-  // const createUserMutation = trpc.createUser.useMutation();
+  const { courseMembersOfSelectedCourse } = useCourseContext();
   const createUser = trpc.user.createUser.useMutation();
   const [loading, setLoading] = useState(false);
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
+  const { userData, setUserData } = useUsersContext();
+  const [error, setError] = useState<Error | null>(null);
 
   const handleDialogOpen = () => {
     form.reset();
@@ -122,11 +109,27 @@ const EnrollUser = () => {
         const response = await createUser.mutateAsync({
           name: data.name,
           email: data.email,
-          role: data.role
+          role: data.role,
+          optionalId: data.optionalId
         });
-        await getCourseMembersOfCourseQuery.refetch();
+        if (userData.users) {
+          setUserData({
+            ...userData,
+            users: [...userData.users, response.user]
+          });
+        } else {
+          setUserData({ ...userData, users: [response.user] });
+        }
       } catch (error) {
-        throw new Error('Unable to create a new admin ' + error);
+        if (
+          error instanceof TRPCClientError &&
+          error.shape?.data?.isUniqueConstraintError
+        ) {
+          toastError(error.message);
+          setError(null);
+        } else {
+          throw error;
+        }
       }
     };
     await addNewAdmin();

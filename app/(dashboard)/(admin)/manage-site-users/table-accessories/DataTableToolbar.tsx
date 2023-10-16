@@ -6,22 +6,16 @@ import { DataTableViewOptions } from './DataTableViewOptions';
 import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
 import { trpc } from '@/app/_trpc/client';
-import { useCourseContext } from '@/app/context-course';
-import { toast } from '@/components/ui/use-toast';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
 import { roles } from './dataUtils';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+import { useUsersContext } from '../../context-users';
 import EnrollUser from '@/utils/devUtilsComponents/EnrollUser';
+import { User } from '@prisma/client';
+import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import { toastSuccess } from '@/utils/globalFunctions';
+import { useState } from 'react';
+
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -29,60 +23,70 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table
 }: DataTableToolbarProps<TData>) {
+  const { userData, setUserData } = useUsersContext();
+  const [error, setError] = useState<Error | null>(null);
+
+  if (error) {
+    throw error;
+  }
+
   const isFiltered = table.getState().columnFilters.length > 0;
   const isSelected =
     table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { selectedCourseId, setCourseMembersOfSelectedCourse } =
-    useCourseContext();
-  const deleteCourseMemberMutation =
-    trpc.courseMember.deleteCourseMembers.useMutation();
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
+  const deleteUsers = trpc.user.deleteUser.useMutation();
 
   const session = useSession();
   const userEmail = session.data?.user?.email;
 
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
-
   const handleConfirmDelete = async () => {
-    // const selectedRows = table.getSelectedRowModel().rows;
-    // const selectedCourseMembers: CourseMember[] = selectedRows.map(
-    //   (row) => row.original
-    // ) as CourseMember[];
-    // const filteredCourseMembers = selectedCourseMembers.filter((member) => {
-    //   return member.email !== userEmail;
-    // });
-    // await deleteCourseMemberMutation.mutateAsync(filteredCourseMembers);
-    // table.resetRowSelection();
-    // handleDialogClose();
-    // await getCourseMembersOfCourseQuery.refetch();
-    // const deletedNames = filteredCourseMembers
-    //   .map((member) => member.name)
-    //   .join(', ');
-    // toast({
-    //   title: `Successfully deleted ${filteredCourseMembers.length} course member(s)!`,
-    //   description: `Deleted: ${deletedNames}`,
-    //   icon: 'success'
-    // });
+    try {
+      const selectedRows = table.getSelectedRowModel().rows;
+      const selectedUsers: User[] = selectedRows.map(
+        (row) => row.original
+      ) as User[];
+      const filteredUsers = selectedUsers.filter((member) => {
+        return member.email !== userEmail;
+      });
+      const filteredEmails = filteredUsers.map((user) => user.email);
+      const deletedUserEmails = await deleteUsers.mutateAsync({
+        email: filteredEmails
+      });
+      table.resetRowSelection();
+      const deletedNames = filteredUsers
+        .map((member) => member.name)
+        .join(', ');
+
+      // Update the userData based on the deleted user emails
+      setUserData((prev) => {
+        if (!prev || !prev.users) return prev;
+
+        // Filter out the deleted users
+        const updatedUsers = prev.users.filter((user) => {
+          return !filteredEmails.includes(user.email);
+        });
+
+        return {
+          ...prev, // Maintain the rest of the properties
+          users: updatedUsers // Only update the users array
+        };
+      });
+
+      toastSuccess(`Successfully Deleted ${deletedNames}`);
+    } catch (error) {
+      setError(error as Error);
+    }
   };
+
+  const WarningMessage = () => (
+    <div>
+      <p>
+        <b className="text-destructive">
+          Deleting users is permanent and cannot be undone.
+        </b>
+      </p>
+    </div>
+  );
 
   return (
     <div className="flex items-center justify-between">
@@ -116,43 +120,19 @@ export function DataTableToolbar<TData>({
         )}
         {isSelected && (
           <>
-            <Dialog open={isDialogOpen}>
-              <DialogTrigger onClick={() => handleDialogOpen()} asChild>
-                <Button variant="destructive" className="h-8 px-2 lg:px-3">
-                  <TrashIcon className="mr-2 h-4 w-4" />
-                  Delete Selected User(s)
-                </Button>
-              </DialogTrigger>
-              <DialogContent onClose={() => handleDialogClose()}>
-                <DialogHeader>
-                  <DialogHeader>
-                    <DialogTitle>Confirm Data Deletion</DialogTitle>
-                    <DialogDescription>
-                      This action is irreversible. Are you certain you wish to
-                      permanently delete all the selected users?
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      handleConfirmDelete();
-                    }}
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handleDialogClose();
-                    }}
-                  >
-                    No
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <AreYouSureDialog
+              title="Confirm Data Deletion"
+              proceedText="DELETE"
+              buttonText="Delete"
+              bDestructive={true}
+              AlertDescriptionComponent={WarningMessage}
+              onConfirm={handleConfirmDelete}
+            >
+              <Button variant="destructive" className="h-8 px-2 lg:px-3">
+                <TrashIcon className="mr-2 h-4 w-4" />
+                Delete Selected User(s)
+              </Button>
+            </AreYouSureDialog>
           </>
         )}
       </div>

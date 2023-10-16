@@ -10,6 +10,7 @@ datasource db {
 
 model User {
   id               String    @id @default(cuid())
+  optionalId       String?    @db.VarChar(255)
   role             String    @db.VarChar(10)
   name             String?    @db.VarChar(255)
   email            String    @db.VarChar(255) @unique

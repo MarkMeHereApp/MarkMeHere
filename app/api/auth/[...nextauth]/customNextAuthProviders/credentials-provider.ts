@@ -25,6 +25,7 @@ export default CredentialsProvider({
         name: 'Temporary Admin',
         image: '',
         role: 'FACULTY',
+        optionalId: 'TempOptionalId',
         dateCreated: new Date(), // Provide the current date
         selectedCourseId: null // Set to null or provide a valid courseId
       };
