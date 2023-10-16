@@ -11,6 +11,10 @@ export default function DemoMode() {
         </AlertTitle>
         <AlertDescription className="text-left">
           <p>This is a demo of the Mark Me Here system.</p>
+          <b>
+            Note, we are in early stages of development so pages will be
+            incomplete and contain bugs
+          </b>
           <p>Select a demo account to check it out!</p>
           <p>
             For more information visit{' '}
