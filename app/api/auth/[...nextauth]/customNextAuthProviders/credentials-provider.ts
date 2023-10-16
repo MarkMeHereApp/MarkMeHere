@@ -40,8 +40,7 @@ export default CredentialsProvider({
       demoLogin &&
       process.env.DEMO_MODE?.toString() === 'true' &&
       (process.env.NEXTAUTH_URL?.toString().startsWith('http://localhost') ||
-        process.env.NEXTAUTH_URL?.toString().startsWith('https://localhost') ||
-        process.env.NEXTAUTH_URL?.toString() === 'https://demo.markmehere.com')
+        process.env.NEXTAUTH_URL?.toString().startsWith('https://localhost'))
     ) {
       const demoAccount = demoAccounts.find(
         (account) => account.name === username
