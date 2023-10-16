@@ -8,6 +8,8 @@ import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
+import { clientCallTypeToProcedureType } from '@trpc/client';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 /* Check env to choose adapter */
 const prismaAdapter =
   process.env.HASHEMAILS === 'true'
@@ -68,6 +70,45 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
 
     //When JWT is created store user role in the token
     callbacks: {
+      async signIn({ user, account, profile, email, credentials }) {
+        const prismaUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+
+        if (prismaUser && prismaUser.role !== zSiteRoles.enum.user) {
+          return true;
+        }
+
+        const courseMember = await prisma.courseMember.findFirst({
+          where: {
+            email: user.email
+          }
+        });
+
+        if (courseMember) {
+          await prisma.user.create({
+            data: {
+              name: user.name,
+              email: user.email,
+              role: zSiteRoles.enum.user,
+              image: user.image
+            }
+          });
+          return true;
+        }
+
+        // We need to allow demo logins and first time admin setups through next-auth
+        if (
+          credentials &&
+          credentials.demoLogin &&
+          (process.env.DEMO_MODE?.toString() === 'true' ||
+            process.env.TEMP_ADMIN_SECRET)
+        ) {
+          return true;
+        }
+
+        return 'unauthorized-email?email=' + user.email;
+      },
       jwt({ token, user }) {
         if (user) token.role = user.role;
         return token;

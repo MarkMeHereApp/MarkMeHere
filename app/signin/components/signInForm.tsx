@@ -151,6 +151,7 @@ export default function SignInForm({
       await signIn('credentials', {
         username: name,
         password: name,
+        demoLogin: true,
         callbackUrl: callbackUrl
       });
     } catch (error) {

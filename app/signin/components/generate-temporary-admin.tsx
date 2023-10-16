@@ -63,6 +63,7 @@ const GenerateTemporaryAdmin = () => {
       setLoading(true);
       await signIn('credentials', {
         key: data.adminSecret,
+        forceNextAuthLogin: true,
         callbackUrl: '/admin-settings'
       });
     } catch (error) {
