@@ -283,7 +283,7 @@ const CSV_Import = () => {
       <label
         htmlFor="csv"
         className={
-          'bg-primary cursor-pointer text-black text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
+          'bg-primary cursor-pointer text-primary-foreground text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
         }
       >
         <MdUploadFile className="h-5 w-4 mr-2" />
