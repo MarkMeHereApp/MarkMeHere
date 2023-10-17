@@ -45,12 +45,21 @@ export const zDeleteCourseMembersFromCourse = z.object({
   courseId: z.string()
 });
 
+/*
+First we need to look up if email already exists in the user table.
+If it exists then proceeed normally
+If it does not exist we need to create a new user cooresponding with the couremember email
+Then students who mark attendance for the first time will sign into an account
+that was already created removing the need to create a new account everytime a
+new student marks themselves present
+*/
+
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
-        const { courseId, email, name, role } = requestData.input;
+        const { courseId, email, name, role, optionalId } = requestData.input;
 
         zCourseRoles.parse(role);
 
@@ -61,6 +70,18 @@ export const courseMemberRouter = router({
               message: 'Missing required fields'
             })
           );
+        }
+
+        const existingUser = await prisma.user.findUnique({
+          where: { email: email }
+        });
+        console.log('existing user: ', existingUser);
+
+        //If user does not already exist with this email then create one
+        if (!existingUser) {
+          const user = await prisma.user.create({
+            data: { name, email, role: 'user', optionalId }
+          });
         }
 
         const resEnrollment = await prisma.courseMember.create({

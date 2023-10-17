@@ -8,6 +8,7 @@ Override the user type nextauth uses
 declare module 'next-auth' {
   interface User {
     id: string;
+    optionalId?: string;
     role: string;
     name?: string | null;
     email: string;
