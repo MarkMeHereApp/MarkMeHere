@@ -158,6 +158,7 @@ model GlobalSiteSettings {
   lightTheme        String        @db.VarChar(255)
   darkTheme         String        @db.VarChar(255)
   googleMapsApiKey  String        @db.VarChar(255)
+  hashEmails        Boolean
   allowModeratorsToUseGoogleMaps Boolean 
   allowUsersToUseGoogleMaps Boolean 
 }
