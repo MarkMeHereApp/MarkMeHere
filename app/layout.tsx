@@ -82,7 +82,7 @@ export default async function RootLayout({
     <html lang="en" className={openSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" defaultTheme={darkTheme}>
           <Providers>
             <ProviderContextProvider
               initialActiveProviders={initialActiveProviders}

@@ -3,7 +3,6 @@ import AuthProviderSelector from './components/auth-provider-components/auth-pro
 import { EditGoogleMapsKey } from './components/google-maps/edit-google-maps-key';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { SelectTheme } from './components/theme-selector/theme-selector';
-import { darkThemes } from '@/types/sharedZodTypes';
 export default async function SettingsAccountPage() {
   const globalSiteSettings = await getGlobalSiteSettings_Server({
     allowModeratorsToUseGoogleMaps: true,
@@ -57,8 +56,8 @@ export default async function SettingsAccountPage() {
           </p>
         </div>
         <Separator />
-        <SelectTheme currentThemeFromDB={lightTheme} />
-        <SelectTheme currentThemeFromDB={darkTheme} />
+        <SelectTheme currentThemeFromDB={lightTheme} currentThemeType="light" />
+        <SelectTheme currentThemeFromDB={darkTheme} currentThemeType="dark" />
       </div>
     </>
   );
