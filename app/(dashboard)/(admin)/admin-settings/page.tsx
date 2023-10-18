@@ -4,7 +4,14 @@ import { EditGoogleMapsKey } from './components/admin-settings-components/edit-g
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
 export default async function SettingsAccountPage() {
-  const globalSiteSettings = await getGlobalSiteSettings_Server();
+  const globalSiteSettings = await getGlobalSiteSettings_Server({
+    allowModeratorsToUseGoogleMaps: true,
+    allowUsersToUseGoogleMaps: true,
+    googleMapsApiKey: true
+  });
+  const allowUsersGMaps = globalSiteSettings.allowUsersToUseGoogleMaps;
+  const allowModeratorsGMaps =
+    globalSiteSettings.allowModeratorsToUseGoogleMaps;
 
   const hasGoogleMapsKey = !!globalSiteSettings?.googleMapsApiKey;
 
@@ -31,10 +38,8 @@ export default async function SettingsAccountPage() {
         <Separator />
         <EditGoogleMapsKey
           bHasConfigured={hasGoogleMapsKey}
-          allowUsersGMaps={globalSiteSettings.allowUsersToUseGoogleMaps}
-          allowModeratorsGMaps={
-            globalSiteSettings.allowModeratorsToUseGoogleMaps
-          }
+          allowUsersGMaps={allowUsersGMaps}
+          allowModeratorsGMaps={allowModeratorsGMaps}
         />
       </div>
     </>

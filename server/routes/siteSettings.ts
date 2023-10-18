@@ -16,7 +16,7 @@ const zGlobalSiteSettings = z.object({
 export const siteSettingsRouter = router({
   getSiteSettings: publicProcedure.input(z.object({})).query(async () => {
     try {
-      return await getGlobalSiteSettings_Server();
+      return await getGlobalSiteSettings_Server({});
     } catch (error) {
       throw generateTypedError(error as Error);
     }
@@ -25,7 +25,7 @@ export const siteSettingsRouter = router({
     .input(zGlobalSiteSettings)
     .mutation(async (requestData) => {
       try {
-        const siteSettings = await getGlobalSiteSettings_Server();
+        const siteSettings = await getGlobalSiteSettings_Server({});
         // Make sure there is only one site settings.
         const allSiteSettings = await prisma.globalSiteSettings.findMany();
         if (allSiteSettings.length > 1) {

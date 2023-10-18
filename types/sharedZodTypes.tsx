@@ -11,6 +11,48 @@ import { Icons } from '@/components/ui/icons';
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
+// Theme Colors
+export const zThemeColors = z.enum([
+  'zinc',
+  'slate',
+  'stone',
+  'gray',
+  'neutral',
+  'red',
+  'rose',
+  'orange',
+  'green',
+  'blue',
+  'yellow',
+  'violet'
+]);
+
+export const zThemeColorTypes: Record<
+  z.infer<typeof zThemeColors>,
+  { lightMode: boolean; darkMode: boolean }
+> = {
+  zinc: { lightMode: false, darkMode: true },
+  slate: { lightMode: false, darkMode: true },
+  stone: { lightMode: false, darkMode: true },
+  gray: { lightMode: false, darkMode: true },
+  neutral: { lightMode: false, darkMode: true },
+  red: { lightMode: false, darkMode: true },
+  rose: { lightMode: false, darkMode: true },
+  orange: { lightMode: false, darkMode: true },
+  green: { lightMode: false, darkMode: true },
+  blue: { lightMode: false, darkMode: true },
+  yellow: { lightMode: false, darkMode: true },
+  violet: { lightMode: false, darkMode: true }
+};
+
+export const lightThemes = zThemeColors.options
+  .filter((option) => zThemeColorTypes[option].lightMode)
+  .map((option) => 'light_' + option);
+export const darkThemes = zThemeColors.options
+  .filter((option) => zThemeColorTypes[option].darkMode)
+  .map((option) => 'dark_' + option);
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 // LMS TYPES
 
 // Currently supported LMS Providers: Canvas

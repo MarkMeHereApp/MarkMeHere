@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/app/(dashboard)/components/theme-toggle';
+import { ModeToggle } from '@/components/theme/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import GitHubEduError from './info/github-edu-error';
@@ -26,7 +25,6 @@ import TempAdminInfo from './info/temp-admin-info';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
 import Loading from '@/components/general/loading';
 import GenerateTemporaryAdmin from './generate-temporary-admin';
-import { zSiteRoles } from '@/types/sharedZodTypes';
 import {
   Select,
   SelectContent,
@@ -38,7 +36,6 @@ import {
 } from '@/components/ui/select';
 
 import { demoAccounts } from '@/utils/globalVariables';
-import { formatString } from '@/utils/globalFunctions';
 
 type TProvider = {
   key: string;
@@ -49,12 +46,16 @@ interface SignInFormProps {
   providers: Array<TProvider>;
   bHasTempAdminConfigured?: boolean;
   bIsDemoMode?: boolean;
+  lightTheme: string;
+  darkTheme: string;
 }
 
 export default function SignInForm({
   providers,
   bHasTempAdminConfigured,
-  bIsDemoMode
+  bIsDemoMode,
+  lightTheme,
+  darkTheme
 }: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -216,7 +217,7 @@ export default function SignInForm({
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>
-            <ModeToggle />
+            <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           </div>
 
           <div className="flex flex-col gap-4">
