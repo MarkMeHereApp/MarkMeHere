@@ -2,6 +2,11 @@ import Image from 'next/image';
 
 import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from '@/components/general/sidebar-nav';
+import { getServerSession } from 'next-auth';
+import prisma from '@/prisma';
+import { zSiteRoles } from '@/types/sharedZodTypes';
+import { redirect } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 const sidebarNavItems = [
   {
@@ -22,7 +27,30 @@ interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
-export default function SettingsLayout({ children }: SettingsLayoutProps) {
+export default async function SettingsLayout({
+  children
+}: SettingsLayoutProps) {
+  const session = await getServerSession();
+
+  const email = session?.user?.email;
+
+  if (!email) {
+    signOut();
+    return <></>;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email
+    }
+  });
+
+  // the temp admin secret is only enabled during the first time setup.
+  if (user?.role !== zSiteRoles.enum.admin && !process.env.TEMP_ADMIN_SECRET) {
+    redirect('/');
+    return <></>;
+  }
+
   return (
     <>
       <div className="hidden space-y-6 p-10 pb-16 md:block">

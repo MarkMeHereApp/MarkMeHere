@@ -38,14 +38,21 @@ export function AreYouSureDialog({
   const [isOpen, setIsOpen] = useState(false);
   const [isAwaitingConfirmationPromise, setAwaitingConfirmationPromise] =
     useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  if (error) throw error;
+
   const isConfirmed = proceedText
     ? inputValue.toUpperCase() === proceedText.toUpperCase()
     : true;
 
   const handleConfirm = async () => {
-    setAwaitingConfirmationPromise(true);
-    await onConfirm();
-    setIsOpen(false);
+    try {
+      setAwaitingConfirmationPromise(true);
+      await onConfirm();
+      setIsOpen(false);
+    } catch (error) {
+      setError(error as Error);
+    }
   };
 
   return (

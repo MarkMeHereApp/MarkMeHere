@@ -152,3 +152,10 @@ model ProfessorLectureGeolocation {
   lectureLatitude Float
   lectureLongitude Float
 }
+
+model GlobalSiteSettings {
+  id                String        @id
+  googleMapsApiKey  String        @db.VarChar(255)
+  allowModeratorsToUseGoogleMaps Boolean 
+  allowUsersToUseGoogleMaps Boolean 
+}
