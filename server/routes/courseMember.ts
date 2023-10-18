@@ -97,6 +97,7 @@ export const courseMemberRouter = router({
         */
         if(requestData.ctx.settings?.hashEmails === true){
           console.log("Successfully reading site settings from context")
+          console.log('CTX: ', requestData.ctx)
         //   const hashFunctions = prismaAdapterHashed(prisma);
         //   //We need to pull all users to run a bcrypt compare against each one
         //   const user = hashFunctions.getUserByEmail(email)

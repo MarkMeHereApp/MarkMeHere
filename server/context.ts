@@ -1,5 +1,6 @@
 import type { inferAsyncReturnType } from '@trpc/server';
 import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
+import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 import prisma from '@/prisma';
@@ -15,8 +16,10 @@ import prisma from '@/prisma';
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const session = await getToken({ req: opts.req as NextRequest });
-
-  const settings = await prisma.globalSiteSettings.findFirst();
+  const settings = await getGlobalSiteSettings_Server({
+    googleMapsApiKey: true,
+    hashEmails: true
+  });
 
   return {
     session,
