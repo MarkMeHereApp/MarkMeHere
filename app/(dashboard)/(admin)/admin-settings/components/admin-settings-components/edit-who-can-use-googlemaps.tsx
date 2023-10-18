@@ -62,21 +62,27 @@ export function WhoCanUseGoogleMaps({
   };
 
   return (
-    <Select
-      onValueChange={handleSelectChange}
-      value={selectedValue}
-      disabled={isLoading}
-    >
-      <SelectTrigger className="w-[300px]">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectMode text="everyone" />
-          <SelectMode text="onlyModeratorsAndAdmins" />
-          <SelectMode text="onlyAdmins" />
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div>
+      <div className="text-sm text-muted-foreground pb-4">
+        Who can use Google Maps? Please note that the Google Maps API costs
+        money after a usage threshold, so you may incur charges.
+      </div>
+      <Select
+        onValueChange={handleSelectChange}
+        value={selectedValue}
+        disabled={isLoading}
+      >
+        <SelectTrigger className="w-[300px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectMode text="everyone" />
+            <SelectMode text="onlyModeratorsAndAdmins" />
+            <SelectMode text="onlyAdmins" />
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
