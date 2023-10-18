@@ -152,3 +152,12 @@ model ProfessorLectureGeolocation {
   lectureLatitude Float
   lectureLongitude Float
 }
+
+model GlobalSiteSettings {
+  id                String        @id
+  lightTheme        String        @db.VarChar(255)
+  darkTheme         String        @db.VarChar(255)
+  googleMapsApiKey  String        @db.VarChar(255)
+  allowModeratorsToUseGoogleMaps Boolean 
+  allowUsersToUseGoogleMaps Boolean 
+}

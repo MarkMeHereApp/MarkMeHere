@@ -72,7 +72,7 @@ export const ActiveAuthProvider = ({
           </div>
         </div>
         <AreYouSureDialog
-          title="Are you sure you want to delete the GitHub OAuth provider?"
+          title={`Are you sure you want to delete the ${displayName} OAuth provider?`}
           AlertDescriptionComponent={AlertDescription}
           onConfirm={handleDelete}
           proceedText={`Delete ${displayName}`}

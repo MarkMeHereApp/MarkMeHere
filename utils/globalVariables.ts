@@ -1,5 +1,7 @@
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import z from 'zod';
+import { GlobalSiteSettings } from '@prisma/client';
+import { useTheme } from 'next-themes';
 
 export const attendanceTokenExpirationTime = 5 * 60 * 1000; // 5 minutes
 
@@ -23,3 +25,12 @@ export const demoAccounts: {
   { name: 'sam', role: zSiteRoles.enum.user },
   { name: 'josef', role: zSiteRoles.enum.user }
 ];
+
+export const defaultSiteSettings: GlobalSiteSettings = {
+  id: 'default',
+  darkTheme: 'dark_blue',
+  lightTheme: 'light_zinc',
+  googleMapsApiKey: '',
+  allowModeratorsToUseGoogleMaps: true,
+  allowUsersToUseGoogleMaps: true
+};

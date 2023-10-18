@@ -1,6 +1,9 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
 import crypto from 'crypto';
+import prisma from '@/prisma';
+import { Prisma, GlobalSiteSettings } from '@prisma/client';
+import { defaultSiteSettings } from '@/utils/globalVariables';
 
 export function formatString(str: string): string {
   return str
@@ -45,6 +48,32 @@ export function toastSuccess(
     action: action
   });
 }
+
+export const getGlobalSiteSettings_Server = async (
+  select?: Prisma.GlobalSiteSettingsSelect
+): Promise<GlobalSiteSettings> => {
+  const siteSettingsDB = await prisma.globalSiteSettings.findFirst({
+    select: select
+  });
+
+  if (siteSettingsDB) {
+    return siteSettingsDB;
+  }
+
+  await prisma.globalSiteSettings.create({
+    data: defaultSiteSettings
+  });
+
+  const newSiteSettings = await prisma.globalSiteSettings.findFirst({
+    select: select
+  });
+
+  if (!newSiteSettings) {
+    throw new Error('Failed to create initial site settings');
+  }
+
+  return newSiteSettings;
+};
 
 export function encrypt(text: string, key?: string) {
   let bufferKey = '';

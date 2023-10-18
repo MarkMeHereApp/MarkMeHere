@@ -1,5 +1,6 @@
 import SignInForm from '@/app/signin/components/signInForm';
 import prisma from '@/prisma';
+import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
 export default async function SigninPage() {
   try {
@@ -19,12 +20,21 @@ export default async function SigninPage() {
       demoModeConfigured = true;
     }
 
+    const globalSiteSettings = await getGlobalSiteSettings_Server({
+      darkTheme: true,
+      lightTheme: true
+    });
+    const darkTheme = globalSiteSettings.darkTheme;
+    const lightTheme = globalSiteSettings.lightTheme;
+
     return (
       <>
         <SignInForm
           providers={providers}
           bHasTempAdminConfigured={bTempAdminSecretConfigured}
           bIsDemoMode={demoModeConfigured}
+          darkTheme={darkTheme}
+          lightTheme={lightTheme}
         />
       </>
     );
