@@ -6,11 +6,11 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { themeGlobals } from '@/utils/globalVariables';
 import { formatString, toastSuccess } from '@/utils/globalFunctions';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { trpc } from '@/app/_trpc/client';
+import Loading from '@/components/general/loading';
 
 export function SelectTheme({
   currentThemeFromDB,
@@ -23,8 +23,9 @@ export function SelectTheme({
   const [selectedTheme, setSelectedTheme] =
     useState<string>(currentThemeFromDB);
   const [loading, setLoading] = useState(false);
+  const [reloadingPage, setReloadingPage] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, themes } = useTheme();
   const updateSettings = trpc.siteSettings.updateSiteSettings.useMutation();
   const activeTheme = theme || currentThemeFromDB;
 
@@ -32,26 +33,24 @@ export function SelectTheme({
     throw error;
   }
 
-  const popOverName =
-    currentThemeType === 'dark' ? 'Select Dark Theme' : 'Select Light Theme';
-
-  const darkThemes = themeGlobals
-    .map((theme) => theme.darkTheme)
-    .filter((theme) => theme !== undefined);
-  const lightThemes = themeGlobals
-    .map((theme) => theme.lightTheme)
-    .filter((theme) => theme !== undefined);
-
-  const themes = currentThemeType === 'dark' ? darkThemes : lightThemes;
+  const currentThemes =
+    currentThemeType === 'dark'
+      ? themes.filter((theme) => theme.startsWith('dark_'))
+      : themes.filter((theme) => theme.startsWith('light_'));
 
   const onChange = (theme: string) => {
     setSelectedTheme(theme);
     setTheme(theme);
   };
 
-  const resetTheme = () => {
-    setSelectedTheme(currentThemeFromDB);
-    setTheme(activeTheme);
+  const onOpen = (open: boolean) => {
+    if (open) {
+      setSelectedTheme(currentThemeFromDB);
+      setTheme(currentThemeFromDB);
+    } else {
+      setSelectedTheme(currentThemeFromDB);
+      setTheme(activeTheme);
+    }
   };
 
   const updateTheme = async () => {
@@ -68,29 +67,38 @@ export function SelectTheme({
       }
       setThemeFromDB(selectedTheme);
       setLoading(false);
-      toastSuccess('Theme updated successfully!');
+      toastSuccess('Theme updated successfully! Reloading page...');
+      setReloadingPage(true);
       window.location.reload();
     } catch (error) {
       setError(error as Error);
     }
   };
 
+  if (reloadingPage) {
+    return <Loading name="Reloading Page" />;
+  }
+
   return (
     <div>
-      <Popover onOpenChange={resetTheme}>
+      <Popover onOpenChange={onOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline">{popOverName}</Button>
+          <Button variant="outline">
+            Customize {formatString(currentThemeType)} Mode
+          </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80">
+        <PopoverContent className="w-80" side="right">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <h4 className="font-medium leading-none">{popOverName}</h4>
+              <h4 className="font-medium leading-none">
+                Select {formatString(currentThemeType)} Theme
+              </h4>
               <p className="text-sm text-muted-foreground">
-                Set your theme for your school.
+                Set your {currentThemeType} theme for your school.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2">
-              {themes.map(
+              {currentThemes.map(
                 (currTheme) =>
                   currTheme && (
                     <Button
@@ -113,7 +121,7 @@ export function SelectTheme({
               disabled={selectedTheme === themeFromDB || loading}
               onClick={updateTheme}
             >
-              {loading ? 'Updating...' : 'Submit'}
+              {loading ? <Loading /> : 'Save'}
             </Button>
           </div>
         </PopoverContent>

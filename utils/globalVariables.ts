@@ -1,7 +1,7 @@
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import z from 'zod';
 import { GlobalSiteSettings } from '@prisma/client';
-import { useState } from 'react';
+import { useTheme } from 'next-themes';
 
 export const attendanceTokenExpirationTime = 5 * 60 * 1000; // 5 minutes
 
@@ -34,60 +34,3 @@ export const defaultSiteSettings: GlobalSiteSettings = {
   allowModeratorsToUseGoogleMaps: true,
   allowUsersToUseGoogleMaps: true
 };
-
-interface Theme {
-  darkTheme?: string;
-  lightTheme?: string;
-  color?: string;
-}
-
-export const themeGlobals: Theme[] = [
-  {
-    darkTheme: 'dark_zinc',
-    lightTheme: 'light_zinc'
-  },
-  {
-    darkTheme: 'dark_slate',
-    lightTheme: 'light_slate'
-  },
-  {
-    darkTheme: 'dark_stone',
-    lightTheme: 'light_stone'
-  },
-  {
-    darkTheme: 'dark_gray',
-    lightTheme: 'light_gray'
-  },
-  {
-    darkTheme: 'dark_neutral',
-    lightTheme: 'light_neutral'
-  },
-  {
-    darkTheme: 'dark_red',
-    lightTheme: 'light_red'
-  },
-  {
-    darkTheme: 'dark_rose',
-    lightTheme: 'light_rose'
-  },
-  {
-    darkTheme: 'dark_orange',
-    lightTheme: 'light_orange'
-  },
-  {
-    darkTheme: 'dark_green',
-    lightTheme: 'light_green'
-  },
-  {
-    darkTheme: 'dark_blue',
-    lightTheme: 'light_blue'
-  },
-  {
-    darkTheme: 'dark_yellow',
-    lightTheme: 'light_yellow'
-  },
-  {
-    darkTheme: 'dark_purple',
-    lightTheme: 'light_purple'
-  }
-];

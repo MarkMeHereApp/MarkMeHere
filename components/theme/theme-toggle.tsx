@@ -13,7 +13,7 @@ export function ModeToggle({
   lightTheme: string;
   darkTheme: string;
 }) {
-  const { theme, setTheme, themes, resolvedTheme } = useTheme();
+  const { theme, setTheme, themes } = useTheme();
 
   const [mounted, setMounted] = useState(false);
 
