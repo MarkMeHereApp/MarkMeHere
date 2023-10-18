@@ -76,11 +76,16 @@ export const EditGoogleMapsKey = ({
     <>
       {isConfigured ? (
         <>
+          <p className="text-sm text-muted-foreground">
+            If you want to change your Google Maps API Key, remove the current
+            key, and add a new one.
+          </p>
+
           <Alert>
             <div className="flex items-center justify-between ">
               <div className="flex items-center ">
                 <CheckCircledIcon className="h-6 w-6 text-primary mr-2" />
-                <b>Google Maps API Key is configured</b>
+                <b>Google Maps API Key is added</b>
               </div>
               <AreYouSureDialog
                 title="Are you sure you want to Remove Your Google Maps API Key?"

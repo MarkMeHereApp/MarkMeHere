@@ -117,22 +117,32 @@ export default function AuthProviderSelector() {
           </Command>
         </PopoverContent>
       </Popover>
-      {activeProviders.map((provider) => {
-        const providerFunction = Object.values(providerFunctions).find(
-          (pf) => pf.key === provider.providerKey
-        );
-        const defaultDisplayName = providerFunction
-          ? providerFunction.defaultDisplayName
-          : provider.providerDisplayName;
-        return (
-          <ActiveAuthProvider
-            providerKey={provider.providerKey}
-            displayName={provider.providerDisplayName}
-            accountLinkingEnabled={provider.accountLinkingEnabled}
-            defaultDisplayName={defaultDisplayName}
-          />
-        );
-      })}
+      <>
+        {activeProviders.length > 0 && (
+          <>
+            <p className="text-sm text-muted-foreground">
+              Iif you want to change the keys of a provider, please remove the
+              provider and add it again.
+            </p>
+            {activeProviders.map((provider) => {
+              const providerFunction = Object.values(providerFunctions).find(
+                (pf) => pf.key === provider.providerKey
+              );
+              const defaultDisplayName = providerFunction
+                ? providerFunction.defaultDisplayName
+                : provider.providerDisplayName;
+              return (
+                <ActiveAuthProvider
+                  providerKey={provider.providerKey}
+                  displayName={provider.providerDisplayName}
+                  accountLinkingEnabled={provider.accountLinkingEnabled}
+                  defaultDisplayName={defaultDisplayName}
+                />
+              );
+            })}
+          </>
+        )}
+      </>
     </>
   );
 }
