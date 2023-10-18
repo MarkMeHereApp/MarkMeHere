@@ -10,13 +10,15 @@ import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 const zGlobalSiteSettings = z.object({
   googleMapsApiKey: z.string().optional(),
   allowModeratorsToUseGoogleMaps: z.boolean().optional(),
-  allowUsersToUseGoogleMaps: z.boolean().optional()
+  allowUsersToUseGoogleMaps: z.boolean().optional(),
+  darkTheme: z.string().optional(),
+  lightTheme: z.string().optional()
 });
 
 export const siteSettingsRouter = router({
   getSiteSettings: publicProcedure.input(z.object({})).query(async () => {
     try {
-      return await getGlobalSiteSettings_Server({});
+      return await getGlobalSiteSettings_Server();
     } catch (error) {
       throw generateTypedError(error as Error);
     }
@@ -25,9 +27,9 @@ export const siteSettingsRouter = router({
     .input(zGlobalSiteSettings)
     .mutation(async (requestData) => {
       try {
-        const siteSettings = await getGlobalSiteSettings_Server({});
+        const siteSettings = await getGlobalSiteSettings_Server();
         // Make sure there is only one site settings.
-        const allSiteSettings = await prisma.globalSiteSettings.findMany();
+        const allSiteSettings = await prisma.globalSiteSettings.findMany({});
         if (allSiteSettings.length > 1) {
           await prisma.globalSiteSettings.deleteMany();
           throw generateTypedError(
@@ -56,11 +58,23 @@ export const siteSettingsRouter = router({
             requestData.input.allowUsersToUseGoogleMaps;
         }
 
+        let darkTheme = siteSettings.darkTheme;
+        if (requestData.input.darkTheme !== undefined) {
+          darkTheme = requestData.input.darkTheme;
+        }
+
+        let lightTheme = siteSettings.lightTheme;
+        if (requestData.input.lightTheme !== undefined) {
+          lightTheme = requestData.input.lightTheme;
+        }
+
         const updated = await prisma.globalSiteSettings.updateMany({
           data: {
             googleMapsApiKey: googleMapsApiKey,
             allowModeratorsToUseGoogleMaps: allowedModeratorsToUseGoogleMaps,
-            allowUsersToUseGoogleMaps: allowedUsersToUseGoogleMaps
+            allowUsersToUseGoogleMaps: allowedUsersToUseGoogleMaps,
+            lightTheme: lightTheme,
+            darkTheme: darkTheme
           }
         });
         return { success: updated.count > 0 };

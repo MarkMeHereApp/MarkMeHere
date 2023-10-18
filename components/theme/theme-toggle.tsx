@@ -20,9 +20,6 @@ export function ModeToggle({
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
     setMounted(true);
-    if (lightTheme !== theme || darkTheme !== theme) {
-      setTheme(darkTheme);
-    }
   }, []);
 
   if (!mounted) {
@@ -33,21 +30,30 @@ export function ModeToggle({
     );
   }
 
+  const defaultLight = lightTheme || 'light_zinc';
+  const defaultDark = darkTheme || 'dark_blue';
+
   const toggleTheme = () => {
     if (theme?.startsWith('dark_')) {
-      setTheme(lightTheme);
+      setTheme(defaultLight);
       return;
     }
-    setTheme(darkTheme);
+    console.log(defaultDark);
+    setTheme(defaultDark);
   };
 
   return (
-    <Button variant="outline" size="icon" onClick={toggleTheme}>
-      {theme === lightTheme && <Sun className="h-[1.2rem] w-[1.2rem] " />}
-      {theme === darkTheme && (
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] " />
-      )}
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+    <>
+      <Button variant="outline" size="icon" onClick={toggleTheme}>
+        {theme?.startsWith('light_') && (
+          <Sun className="h-[1.2rem] w-[1.2rem] " />
+        )}
+        {theme?.startsWith('dark_') && (
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] " />
+        )}
+      </Button>
+    </>
   );
 }
+
+export default ModeToggle;

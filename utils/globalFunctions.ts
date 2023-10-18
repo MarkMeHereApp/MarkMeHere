@@ -50,7 +50,7 @@ export function toastSuccess(
 }
 
 export const getGlobalSiteSettings_Server = async (
-  select: Prisma.GlobalSiteSettingsSelect
+  select?: Prisma.GlobalSiteSettingsSelect
 ): Promise<GlobalSiteSettings> => {
   const siteSettingsDB = await prisma.globalSiteSettings.findFirst({
     select: select

@@ -31,7 +31,7 @@ export const zThemeColorTypes: Record<
   z.infer<typeof zThemeColors>,
   { lightMode: boolean; darkMode: boolean }
 > = {
-  zinc: { lightMode: false, darkMode: true },
+  zinc: { lightMode: true, darkMode: true },
   slate: { lightMode: false, darkMode: true },
   stone: { lightMode: false, darkMode: true },
   gray: { lightMode: false, darkMode: true },

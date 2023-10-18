@@ -27,7 +27,7 @@ export const demoAccounts: {
 
 export const defaultSiteSettings: GlobalSiteSettings = {
   id: 'default',
-  darkTheme: 'dark_neutral',
+  darkTheme: 'dark_blue',
   lightTheme: 'light_zinc',
   googleMapsApiKey: '',
   allowModeratorsToUseGoogleMaps: true,

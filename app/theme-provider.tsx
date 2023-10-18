@@ -6,12 +6,9 @@ import { type ThemeProviderProps } from 'next-themes/dist/types';
 import { lightThemes, darkThemes } from '@/types/sharedZodTypes';
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  const allThemes = [...lightThemes, ...darkThemes, 'dark_yellow', 'dark_red'];
   return (
-    <NextThemesProvider
-      themes={lightThemes.concat(darkThemes)}
-      enableSystem={false}
-      {...props}
-    >
+    <NextThemesProvider themes={allThemes} enableSystem={false} {...props}>
       {children}
     </NextThemesProvider>
   );

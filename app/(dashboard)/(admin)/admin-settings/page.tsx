@@ -1,19 +1,25 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-components/auth-provider-selection';
-import { EditGoogleMapsKey } from './components/admin-settings-components/edit-google-maps-key';
+import { EditGoogleMapsKey } from './components/google-maps/edit-google-maps-key';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
-
+import { SelectTheme } from './components/theme-selector/theme-selector';
+import { darkThemes } from '@/types/sharedZodTypes';
 export default async function SettingsAccountPage() {
   const globalSiteSettings = await getGlobalSiteSettings_Server({
     allowModeratorsToUseGoogleMaps: true,
     allowUsersToUseGoogleMaps: true,
-    googleMapsApiKey: true
+    googleMapsApiKey: true,
+    darkTheme: true,
+    lightTheme: true
   });
   const allowUsersGMaps = globalSiteSettings.allowUsersToUseGoogleMaps;
   const allowModeratorsGMaps =
     globalSiteSettings.allowModeratorsToUseGoogleMaps;
 
   const hasGoogleMapsKey = !!globalSiteSettings?.googleMapsApiKey;
+
+  const darkTheme = globalSiteSettings.darkTheme;
+  const lightTheme = globalSiteSettings.lightTheme;
 
   return (
     <>
@@ -28,7 +34,7 @@ export default async function SettingsAccountPage() {
         <Separator />
         <AuthProviderSelector />
       </div>
-      <div className="space-y-6">
+      <div className="space-y-6 pb-6">
         <div>
           <h3 className="text-lg font-medium">Configure Google Maps API</h3>
           <p className="text-sm text-muted-foreground">
@@ -41,6 +47,18 @@ export default async function SettingsAccountPage() {
           allowUsersGMaps={allowUsersGMaps}
           allowModeratorsGMaps={allowModeratorsGMaps}
         />
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">Configure School Theme.</h3>
+          <p className="text-sm text-muted-foreground">
+            Choose a dark color and light color!
+          </p>
+        </div>
+        <Separator />
+        <SelectTheme currentThemeFromDB={lightTheme} />
+        <SelectTheme currentThemeFromDB={darkTheme} />
       </div>
     </>
   );
