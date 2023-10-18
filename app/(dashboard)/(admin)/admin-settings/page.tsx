@@ -1,18 +1,42 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-components/auth-provider-selection';
+import { EditGoogleMapsKey } from './components/admin-settings-components/edit-google-maps-key';
+import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
 export default async function SettingsAccountPage() {
+  const globalSiteSettings = await getGlobalSiteSettings_Server();
+
+  const hasGoogleMapsKey = !!globalSiteSettings?.googleMapsApiKey;
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Provider Setup</h3>
-        <p className="text-sm text-muted-foreground">
-          Add custom OAuth providers on this page. Please read our documentation
-          for more info.
-        </p>
+    <>
+      <div className="space-y-6 pb-6">
+        <div>
+          <h3 className="text-lg font-medium">Provider Setup</h3>
+          <p className="text-sm text-muted-foreground">
+            Add custom OAuth providers on this page. Please read our
+            documentation for more info.
+          </p>
+        </div>
+        <Separator />
+        <AuthProviderSelector />
       </div>
-      <Separator />
-      <AuthProviderSelector />
-    </div>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">Configure Google Maps API</h3>
+          <p className="text-sm text-muted-foreground">
+            Add a Google Maps API key to visualize geolocation data.
+          </p>
+        </div>
+        <Separator />
+        <EditGoogleMapsKey
+          bHasConfigured={hasGoogleMapsKey}
+          allowUsersGMaps={globalSiteSettings.allowUsersToUseGoogleMaps}
+          allowModeratorsGMaps={
+            globalSiteSettings.allowModeratorsToUseGoogleMaps
+          }
+        />
+      </div>
+    </>
   );
 }
