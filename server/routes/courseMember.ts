@@ -54,6 +54,22 @@ that was already created removing the need to create a new account everytime a
 new student marks themselves present
 */
 
+/* 
+In the future lets focus on making this route compatible with hashed emails.
+We need to do more testing concerning where the callback url takes us on successfull 
+sign in
+We really need to test if when we mark our attendance and a new user is created
+we are taken to the correct url afterwards
+
+In order to support password hashing when we add course members the teacher will need to provide
+a plaintext email.
+We cannot store this email.
+So when a cours emember is added we will need to lookup the user using a bcrypt compare
+with the plaintyext email and hashed email stored. 
+If a matching hashed email is not found we will hash teh email and create the user.
+We need to do this because of how hashing works inherently
+*/
+
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
@@ -71,17 +87,17 @@ export const courseMemberRouter = router({
             })
           );
         }
+        if(process.env.HASHEMAILS === 'true'){
+          const existingUser = await prisma.user.findUnique({
+            where: { email: email }
+          });
 
-        const existingUser = await prisma.user.findUnique({
-          where: { email: email }
-        });
-        console.log('existing user: ', existingUser);
-
-        //If user does not already exist with this email then create one
+           //If user does not already exist with this email then create one
         if (!existingUser) {
           const user = await prisma.user.create({
             data: { name, email, role: 'user', optionalId }
           });
+        }
         }
 
         const resEnrollment = await prisma.courseMember.create({
