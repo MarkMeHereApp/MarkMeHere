@@ -11,6 +11,7 @@ import { TRPCError } from '@trpc/server';
 
 import { z } from 'zod';
 import { zCourseRoles } from '@/types/sharedZodTypes';
+import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -87,17 +88,28 @@ export const courseMemberRouter = router({
             })
           );
         }
-        if(process.env.HASHEMAILS === 'true'){
-          const existingUser = await prisma.user.findUnique({
-            where: { email: email }
-          });
+        /* 
+        Since user emails are used to pull course member data we need to ensure
+        the hashed email we store for our coursemember is the same one in the user 
+        table
+        To ensure this we need to create an account with this email if it does not exist yet
+        as all hashed values are random
+        */
+        if(requestData.ctx.settings?.hashEmails === true){
+          console.log("Successfully reading site settings from context")
+        //   const hashFunctions = prismaAdapterHashed(prisma);
+        //   //We need to pull all users to run a bcrypt compare against each one
+        //   const user = hashFunctions.getUserByEmail(email)
+        //   const existingUser = await prisma.user.findUnique({
+        //     where: { email: email }
+        //   });
 
-           //If user does not already exist with this email then create one
-        if (!existingUser) {
-          const user = await prisma.user.create({
-            data: { name, email, role: 'user', optionalId }
-          });
-        }
+        //    //If user does not already exist with this email then create one
+        // if (!existingUser) {
+        //   const user = await prisma.user.create({
+        //     data: { name, email, role: 'user', optionalId }
+        //   });
+        // }
         }
 
         const resEnrollment = await prisma.courseMember.create({

@@ -2,6 +2,7 @@ import type { inferAsyncReturnType } from '@trpc/server';
 import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
+import prisma from '@/prisma';
 
 /* 
   Here we need to cast our request as NextRequest type for the getToken function
@@ -10,13 +11,16 @@ import { NextRequest } from 'next/server';
   adequate adapter for nextjs13 app directory that uses type NextRequest
 
   KEEP AN EYE ON THIS FOR FUTURE JWT ERRORS
-  */ 
+  */
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const session = await getToken({ req: opts.req as NextRequest });
 
+  const settings = await prisma.globalSiteSettings.findFirst();
+
   return {
-    session: session
+    session,
+    settings
   };
 };
 
