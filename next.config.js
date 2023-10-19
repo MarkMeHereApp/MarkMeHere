@@ -19,13 +19,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
 
-module.exports = withBundleAnalyzer(nextConfig);
-
+// Add the env object to the configuration
 if (!process.env.NEXT_PUBLIC_BASE_URL || !process.env.NEXTAUTH_URL) {
-  module.exports = {
-    env: {
-      NEXTAUTH_URL: `https://${process.env.VERCEL_URL}`,
-      NEXT_PUBLIC_BASE_URL: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    }
+  nextConfig.env = {
+    NEXTAUTH_URL: `https://${process.env.VERCEL_URL}`,
+    NEXT_PUBLIC_BASE_URL: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
   };
 }
+
+module.exports = withBundleAnalyzer(nextConfig);

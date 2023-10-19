@@ -14,6 +14,8 @@ export const NoCourse = () => {
             <h2 className="text-4xl font-bold">Welcome to Mark Me Here!</h2>
             <h2 className="mt-1 text-2xl font-bold">
               Create a course to get started.
+              {`NEXT_PUBLIC_URL: ${process.env.NEXT_PUBLIC_URL}`}
+              {`NEXT_PUBLIC_VERCEL_URL: ${process.env.NEXT_PUBLIC_URL}`}
             </h2>
           </div>
         </span>
