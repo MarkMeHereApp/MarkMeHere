@@ -246,6 +246,8 @@ export const courseMemberRouter = router({
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
+        const hashFunctions = prismaAdapterHashed(prisma);
+        const { settings } = requestData.ctx;
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
           if (memberData.role === zCourseRoles.enum.student) {
@@ -278,6 +280,23 @@ export const courseMemberRouter = router({
                 upsertedCourseMembers.push(createdMember);
               }
             } else {
+              
+
+              if (settings?.hashEmails === true) {
+                const hashedEmail = await bcrypt.hash(memberData.email, 10);
+                const existingUser = await hashFunctions.getUserByEmail(memberData.email);
+
+                if (!existingUser) {
+                  await prisma.user.create({
+                    data: {
+                      name: memberData.name,
+                      email: hashedEmail,
+                      role: zSiteRoles.enum.user
+                    }
+                  });
+                }
+              }
+              
               // If optionalId is null or undefined, treat it as a new member (first-time import)
               const createdMember = await prisma.courseMember.create({
                 data: {
