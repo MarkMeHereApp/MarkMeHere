@@ -46,7 +46,7 @@ export default async function SettingsLayout({
   });
 
   // the temp admin secret is only enabled during the first time setup.
-  if (user?.role !== zSiteRoles.enum.admin && !process.env.TEMP_ADMIN_SECRET) {
+  if (user?.role !== zSiteRoles.enum.admin && !process.env.ADMIN_PASSWORD) {
     redirect('/');
     return <></>;
   }

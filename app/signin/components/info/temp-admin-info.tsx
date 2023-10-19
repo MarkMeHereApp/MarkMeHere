@@ -8,14 +8,13 @@ export default function TempAdminInfo() {
         <PiUserCircleGear className="w-5 h-5" />
 
         <AlertDescription className="text-left">
-          After logging into the Temp Admin, please immediately create your
-          admin account and link an Authentication Provider through the Admin
-          Settings. <br />
+          After logging into this temporary Admin account, please immediately
+          create your admin account and link an Authentication Provider through
+          the Admin Settings. <br />
           <span className="text-destructive">
             <b>
-              After setting up an actual user, please remove the
-              TEMP_ADMIN_SECRET value from your .env file to prevent
-              unauthorized access.
+              After setting up an actual user, please remove the ADMIN_PASSWORD
+              value from your .env file to prevent unauthorized access.
             </b>
           </span>
           <br />

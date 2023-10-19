@@ -98,7 +98,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         }
 
         // We need to allow first time admin setups through next-auth
-        if (credentials?.tempAdminKey && process.env.TEMP_ADMIN_SECRET) {
+        if (credentials?.tempAdminKey && process.env.ADMIN_PASSWORD) {
           return true;
         }
 

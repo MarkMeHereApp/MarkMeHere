@@ -80,10 +80,10 @@ export function encrypt(text: string, key?: string) {
   if (key) {
     bufferKey = key;
   } else {
-    if (!process.env.ENCRYPTION_KEY) {
-      throw new Error('ENCRYPTION_KEY not set');
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET not set');
     }
-    bufferKey = process.env.ENCRYPTION_KEY!;
+    bufferKey = process.env.NEXTAUTH_SECRET!;
   }
 
   let iv = crypto.randomBytes(16);
@@ -100,10 +100,10 @@ export function decrypt(text: string, key?: string) {
   if (key) {
     bufferKey = key;
   } else {
-    if (!process.env.ENCRYPTION_KEY) {
-      throw new Error('ENCRYPTION_KEY not set');
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET not set');
     }
-    bufferKey = process.env.ENCRYPTION_KEY!;
+    bufferKey = process.env.NEXTAUTH_SECRET!;
   }
 
   let textParts = text.split(':');
