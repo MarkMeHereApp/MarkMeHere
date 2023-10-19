@@ -8,9 +8,10 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import bcrypt from 'bcrypt';
 
 import { z } from 'zod';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 
 export const zCourseMember = z.object({
@@ -65,10 +66,16 @@ we are taken to the correct url afterwards
 In order to support password hashing when we add course members the teacher will need to provide
 a plaintext email.
 We cannot store this email.
-So when a cours emember is added we will need to lookup the user using a bcrypt compare
+So when a course member is added we will need to lookup the user using a bcrypt compare
 with the plaintyext email and hashed email stored. 
 If a matching hashed email is not found we will hash teh email and create the user.
 We need to do this because of how hashing works inherently
+*/
+
+/* 
+Create a course member, but check if emails are hashed.
+If emails are hashed, create user along with coursemember 
+if email does not already exist in user table.
 */
 
 export const courseMemberRouter = router({
@@ -77,6 +84,7 @@ export const courseMemberRouter = router({
     .mutation(async (requestData) => {
       try {
         const { courseId, email, name, role, optionalId } = requestData.input;
+        const { settings } = requestData.ctx;
 
         zCourseRoles.parse(role);
 
@@ -88,29 +96,36 @@ export const courseMemberRouter = router({
             })
           );
         }
-        /* 
-        Since user emails are used to pull course member data we need to ensure
-        the hashed email we store for our coursemember is the same one in the user 
-        table
-        To ensure this we need to create an account with this email if it does not exist yet
-        as all hashed values are random
-        */
-        if(requestData.ctx.settings?.hashEmails === true){
-          console.log("Successfully reading site settings from context")
-          console.log('CTX: ', requestData.ctx)
-        //   const hashFunctions = prismaAdapterHashed(prisma);
-        //   //We need to pull all users to run a bcrypt compare against each one
-        //   const user = hashFunctions.getUserByEmail(email)
-        //   const existingUser = await prisma.user.findUnique({
-        //     where: { email: email }
-        //   });
 
-        //    //If user does not already exist with this email then create one
-        // if (!existingUser) {
-        //   const user = await prisma.user.create({
-        //     data: { name, email, role: 'user', optionalId }
-        //   });
-        // }
+        if (settings?.hashEmails === true) {
+          console.log('Successfully reading site settings from context');
+          const hashFunctions = prismaAdapterHashed(prisma);
+          const hashedEmail = await bcrypt.hash(email, 10);
+
+          //Use bcrypt to compare plaintext email to hashed user emails
+          const existingUser = await hashFunctions.getUserByEmail(email);
+
+          //If user does not already exist with this email then create one
+          if (!existingUser) {
+            await prisma.user.create({
+              data: {
+                name: name,
+                email: hashedEmail,
+                role: zSiteRoles.enum.user
+              }
+            });
+          }
+
+          /*
+          Create course member with either existing hashed email or newly created hashed email
+          */
+          const resEnrollment = await prisma.courseMember.create({
+            data: {
+              ...requestData.input,
+              email: existingUser?.email ?? hashedEmail
+            }
+          });
+          return { success: true, resEnrollment };
         }
 
         const resEnrollment = await prisma.courseMember.create({
@@ -118,6 +133,7 @@ export const courseMemberRouter = router({
             ...requestData.input
           }
         });
+
         return { success: true, resEnrollment };
       } catch (error) {
         throw generateTypedError(error as Error);
