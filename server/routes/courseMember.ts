@@ -96,16 +96,18 @@ export const courseMemberRouter = router({
             })
           );
         }
-
+        /* 
+        Search all users to see if user with specified email already exists
+        If it does not exist create a new user and coursemember with the given email hashed
+        If it does exist create a new coursemember with the existing users hashed email
+        */
         if (settings?.hashEmails === true) {
           console.log('Successfully reading site settings from context');
           const hashFunctions = prismaAdapterHashed(prisma);
           const hashedEmail = await bcrypt.hash(email, 10);
 
-          //Use bcrypt to compare plaintext email to hashed user emails
           const existingUser = await hashFunctions.getUserByEmail(email);
 
-          //If user does not already exist with this email then create one
           if (!existingUser) {
             await prisma.user.create({
               data: {
@@ -116,9 +118,6 @@ export const courseMemberRouter = router({
             });
           }
 
-          /*
-          Create course member with either existing hashed email or newly created hashed email
-          */
           const resEnrollment = await prisma.courseMember.create({
             data: {
               ...requestData.input,
