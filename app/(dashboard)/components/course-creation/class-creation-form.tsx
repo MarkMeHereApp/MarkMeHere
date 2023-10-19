@@ -199,8 +199,9 @@ export default function CreateCourseForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
-
+        {process.env.NEXT_PUBLIC_CANVAS_ENABLED && (
+          <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
+        )}
         <FormField
           control={form.control}
           name="courseCode"
