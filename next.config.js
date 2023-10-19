@@ -25,7 +25,7 @@ if (!process.env.NEXT_PUBLIC_BASE_URL || !process.env.NEXTAUTH_URL) {
   module.exports = {
     env: {
       NEXTAUTH_URL: `https://${process.env.VERCEL_URL}`,
-      NEXT_PUBLIC_BASE_URL: `https://${process.env.VERCEL_URL}`
+      NEXT_PUBLIC_BASE_URL: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     }
   };
 }
