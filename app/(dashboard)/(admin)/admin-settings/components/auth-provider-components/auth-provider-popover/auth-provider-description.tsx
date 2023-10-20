@@ -1,6 +1,7 @@
 import { DialogDescription } from '@/components/ui/dialog';
 import { CopyableClipboard } from '@/components/general/copy-text';
 import { Provider } from '@/app/api/auth/[...nextauth]/built-in-next-auth-providers';
+import { getPublicUrl } from '@/utils/globalFunctions';
 
 export function AuthProviderDescription({ data }: { data: Provider }) {
   return (
@@ -12,12 +13,12 @@ export function AuthProviderDescription({ data }: { data: Provider }) {
       submit to upload the provider.
       <div className="py-2">
         <p className="py-1">Use the following as the homepage URL:</p>
-        <CopyableClipboard textToCopy={`${process.env.NEXT_PUBLIC_BASE_URL}`} />
+        <CopyableClipboard textToCopy={`${getPublicUrl()}`} />
       </div>
       <div className="py-2">
         <p className="py-1">Use the following as the callback URL:</p>
         <CopyableClipboard
-          textToCopy={`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/${data?.key}`}
+          textToCopy={`${getPublicUrl()}/api/auth/callback/${data?.key}`}
         />
       </div>
     </DialogDescription>

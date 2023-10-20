@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import superjson from 'superjson';
 
 import { trpc } from './client';
+import { getPublicUrl } from '@/utils/globalFunctions';
 
 export default function TRPC_Provider({
   children
@@ -16,7 +17,7 @@ export default function TRPC_Provider({
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/trpc`
+          url: `${getPublicUrl()}/api/trpc`
         })
       ],
       transformer: superjson

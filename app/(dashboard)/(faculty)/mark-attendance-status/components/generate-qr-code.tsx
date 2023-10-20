@@ -29,15 +29,16 @@ import { useSession } from 'next-auth/react';
 import { useCourseContext } from '@/app/context-course';
 import { CourseMember } from '@prisma/client';
 import { geolocationRouter } from '@/server/routes/geolocation';
+import { getPublicUrl } from '@/utils/globalFunctions';
 
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
 }
 
-export function StartScanningButton({lectureId}:StartScanningButtonProps) {
+export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const router = useRouter();
 
-  const address = `${process.env.NEXT_PUBLIC_BASE_URL}`;
+  const address = `${getPublicUrl()}`;
   const navigation = '/qr';
 
   const [isCopied, setCopied] = useState(false);
@@ -48,28 +49,28 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
   const firstParam = Cookies.get('qrSettings') || defaultParam;
   const [parameters, setParameters] = useState(firstParam);
 
-  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true)
-  
+  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true);
+
   const handleGeolocationChange = () => {
     setEnableGeolocation(!enableGeolocation);
-    console.log(!enableGeolocation)
+    console.log(!enableGeolocation);
   };
 
   // const [lectureLatitude, setLectureLatitude] = useState<number>(0)
   // const [lectureLongitude, setLectureLongitude] = useState<number>(0)
-  const lectureLatitude = useRef<number>(0)
-  const lectureLongitude = useRef<number>(0)
-  
+  const lectureLatitude = useRef<number>(0);
+  const lectureLongitude = useRef<number>(0);
 
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
 
-  const {courseMembersOfSelectedCourse} = useCourseContext()
+  const { courseMembersOfSelectedCourse } = useCourseContext();
 
-  const [selectCourseMember,setSelectCourseMember] = useState<CourseMember | undefined>()
+  const [selectCourseMember, setSelectCourseMember] = useState<
+    CourseMember | undefined
+  >();
   const [error, setError] = useState<Error | null>(null);
-
 
   useEffect(() => {
     if (isCopied) {
@@ -90,100 +91,95 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
     console.log(courseMembersOfSelectedCourse);
 
     if (courseMembersOfSelectedCourse) {
-          const selectedCourseMember: CourseMember | undefined = courseMembersOfSelectedCourse.find(
-            (member) => member.email === userEmail
-          );
-          if (selectedCourseMember) {
-
-            setSelectCourseMember(selectedCourseMember);
-            return selectedCourseMember;
-          }
-          return null;
-        }
+      const selectedCourseMember: CourseMember | undefined =
+        courseMembersOfSelectedCourse.find(
+          (member) => member.email === userEmail
+        );
+      if (selectedCourseMember) {
+        setSelectCourseMember(selectedCourseMember);
+        return selectedCourseMember;
+      }
+      return null;
     }
-
-
+  };
 
   const getGeolocationData = () => {
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude} from the professor lecture before fetch`);
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log(
+              `Latitude: ${latitude}, Longitude: ${longitude} from the professor lecture before fetch`
+            );
 
-          lectureLatitude.current = latitude
-          lectureLongitude.current = longitude
-  
-          resolve(true);
-        }, (error) => {
-          console.error("Error occurred while getting geolocation", error);
-          resolve(false);
-        });
+            lectureLatitude.current = latitude;
+            lectureLongitude.current = longitude;
+
+            resolve(true);
+          },
+          (error) => {
+            console.error('Error occurred while getting geolocation', error);
+            resolve(false);
+          }
+        );
       } else {
-        console.log("Geolocation is not supported by this browser.");
+        console.log('Geolocation is not supported by this browser.');
         resolve(false);
       }
     });
-  }
-
+  };
 
   if (error) {
     throw error;
   }
 
-  
+  const createProfessorLectureGeolocation =
+    trpc.geolocation.CreateProfessorLectureGeolocation.useMutation();
+  const handleGenerateQRCode = async () => {
+    const selectedCourseMember = getCourseMember();
+    const selectedCourseMemberId = selectedCourseMember
+      ? selectedCourseMember.id
+      : undefined;
+    console.log(lectureId);
+    console.log(selectedCourseMemberId);
+    console.log(
+      `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
+    );
 
-  const createProfessorLectureGeolocation = trpc.geolocation.CreateProfessorLectureGeolocation.useMutation()
-  const handleGenerateQRCode =  async () => {
-    
-    const selectedCourseMember = getCourseMember()
-    const selectedCourseMemberId = selectedCourseMember ? selectedCourseMember.id : undefined
-    console.log(lectureId)
-    console.log(selectedCourseMemberId)
-    console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`);
+    if (enableGeolocation) {
+      const location = await getGeolocationData();
 
-    
-    if(enableGeolocation){
-      const location = await getGeolocationData()
-
-      if(location){
-  
-        try{
-  
-          if(!selectedCourseMemberId){
-            return 
+      if (location) {
+        try {
+          if (!selectedCourseMemberId) {
+            return;
           }
-  
+
           const res = await createProfessorLectureGeolocation.mutateAsync({
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
             courseMemberId: selectedCourseMemberId
-          })
-  
-          console.log(res)
-        }catch (error) {
-          console.log(error)
+          });
+
+          console.log(res);
+        } catch (error) {
+          console.log(error);
           // setError(error as Error);
-        }finally{
-          router.push(navigation + parameters)
+        } finally {
+          router.push(navigation + parameters);
         }
-
-      }
-
-      else{
-        console.log('unable to locate')
+      } else {
+        console.log('unable to locate');
       }
     }
-    
-    if(!enableGeolocation){
-      console.log('location is disabled')
-      router.push(navigation + parameters)
-    }
-    
 
-    
+    if (!enableGeolocation) {
+      console.log('location is disabled');
+      router.push(navigation + parameters);
+    }
   };
 
   const onNewQRSettings = (newSetting: string) => {
@@ -191,16 +187,15 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
 
- 
-
   return (
     <div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button 
-            variant="default" 
-            size="default" 
-            className='whitespace-nowrap'>
+          <Button
+            variant="default"
+            size="default"
+            className="whitespace-nowrap"
+          >
             Generate QR Code
           </Button>
         </AlertDialogTrigger>
@@ -280,7 +275,7 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
                   </Tooltip>
                 </TooltipProvider>
 
-                <div className='mt-[10px]'>
+                <div className="mt-[10px]">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -288,23 +283,20 @@ export function StartScanningButton({lectureId}:StartScanningButtonProps) {
                           <Switch
                             checked={enableGeolocation}
                             onClick={handleGeolocationChange}
-                          >
-                          </Switch>
+                          ></Switch>
                           <Label htmlFor="r3">Location Checker</Label>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
                           This option displays only the QR code in a simplified
-                          format. It&apos;s best suited for presentations footers
-                          where distractions need to be minimized.
+                          format. It&apos;s best suited for presentations
+                          footers where distractions need to be minimized.
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                
-                
               </RadioGroup>
 
               <div className="flex items-center space-x-2 pb-4 pl-4">
