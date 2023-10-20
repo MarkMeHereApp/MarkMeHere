@@ -13,8 +13,9 @@ export default function TempAdminInfo() {
           the Admin Settings. <br />
           <span className="text-destructive">
             <b>
-              After setting up an actual user, please remove the ADMIN_PASSWORD
-              value from your .env file to prevent unauthorized access.
+              After setting up an actual user, please remove the
+              FIRST_TIME_SETUP_ADMIN_PASSWORD value from your .env file to
+              prevent unauthorized access.
             </b>
           </span>
           <br />

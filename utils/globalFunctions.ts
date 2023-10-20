@@ -5,6 +5,22 @@ import prisma from '@/prisma';
 import { Prisma, GlobalSiteSettings } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
+export function getPublicUrl(): string {
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL.toString();
+  }
+
+  if (window.location.origin) {
+    return window.location.origin;
+  }
+
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return 'https://' + process.env.NEXT_PUBLIC_VERCEL_URL.toString();
+  }
+
+  return 'URL_ERROR';
+}
+
 export function formatString(str: string): string {
   return str
     .split(/(?=[A-Z])/)
