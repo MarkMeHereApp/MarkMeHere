@@ -102,7 +102,7 @@ export const courseMemberRouter = router({
         If it does not exist create a new user and coursemember with the given email hashed
         If it does exist create a new coursemember with the existing users hashed email
         */
-        if (settings?.hashEmails === true) {
+        if (settings?.hashEmails) {
           const resEnrollment = createHashedCourseMember(requestData.input);
           return { success: true, resEnrollment };
         }
@@ -227,6 +227,7 @@ export const courseMemberRouter = router({
     .mutation(async (requestData) => {
       try {
         const hashFunctions = prismaAdapterHashed(prisma);
+        const { courseId } = requestData.input;
         const { settings } = requestData.ctx;
         const upsertedCourseMembers = [];
         for (const memberData of requestData.input.courseMembers) {
@@ -237,7 +238,7 @@ export const courseMemberRouter = router({
             ) {
               const existingMember = await prisma.courseMember.findFirst({
                 where: {
-                  courseId: requestData.input.courseId,
+                  courseId,
                   optionalId: memberData.optionalId
                 }
               });
@@ -257,37 +258,26 @@ export const courseMemberRouter = router({
                 const createdMember = await prisma.courseMember.create({
                   data: {
                     ...memberData,
-                    courseId: requestData.input.courseId
+                    courseId
                   }
                 });
                 upsertedCourseMembers.push(createdMember);
               }
+            } else if (settings?.hashEmails) {
+              const courseMember = { ...memberData, courseId };
+              const hashedMember = createHashedCourseMember(courseMember);
+              upsertedCourseMembers.push(hashedMember);
             } else {
-              if (settings?.hashEmails === true) {
-                const hashedEmail = await bcrypt.hash(memberData.email, 10);
-                const existingUser = await hashFunctions.getUserByEmail(
-                  memberData.email
-                );
-
-                if (!existingUser) {
-                  await prisma.user.create({
-                    data: {
-                      name: memberData.name,
-                      email: hashedEmail,
-                      role: zSiteRoles.enum.user
-                    }
-                  });
-                }
-              }
-
-              // If optionalId is null or undefined, treat it as a new member (first-time import)
+              /* 
+              If optionalId is null or undefined and emails are not hashed, 
+              treat it as a new member (first-time import)
+              */
               const createdMember = await prisma.courseMember.create({
                 data: {
                   ...memberData,
-                  courseId: requestData.input.courseId
+                  courseId
                 }
               });
-
               upsertedCourseMembers.push(createdMember);
             }
           }
