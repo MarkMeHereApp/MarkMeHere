@@ -11,7 +11,7 @@ export default async function SigninPage() {
       }
     });
     let bTempAdminSecretConfigured = false;
-    if (process.env.ADMIN_PASSWORD) {
+    if (process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD) {
       bTempAdminSecretConfigured = true;
     }
 

@@ -21,7 +21,9 @@ export default CredentialsProvider({
     const demoLogin: boolean = Boolean(credentials?.demoLogin) ?? false;
 
     // Handle temporary admin login (first time setup logins)
-    if (tempAdminKey === process.env.ADMIN_PASSWORD?.toString()) {
+    if (
+      tempAdminKey === process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD?.toString()
+    ) {
       const user: User = {
         id: 'TemporaryAdminId', // Provide a unique id
         email: 'temporary@admin.com',
