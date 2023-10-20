@@ -10,7 +10,9 @@ export function getPublicUrl(): string {
     return process.env.NEXT_PUBLIC_BASE_URL.toString();
   }
 
-  return process.env.NEXT_PUBLIC_VERCEL_URL?.toString() ?? 'ERROR';
+  return (
+    'https://' + (process.env.NEXT_PUBLIC_VERCEL_URL?.toString() ?? 'ERROR')
+  );
 }
 
 export function formatString(str: string): string {
