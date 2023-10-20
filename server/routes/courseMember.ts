@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
-import { createHashedCourseMember } from '@/utils/globalFunctions';
+import createHashedCourseMember from '../utils/createHashedCourseMember';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -103,7 +103,8 @@ export const courseMemberRouter = router({
         If it does exist create a new coursemember with the existing users hashed email
         */
         if (settings?.hashEmails) {
-          const resEnrollment = createHashedCourseMember(requestData.input);
+
+          const resEnrollment = await createHashedCourseMember(requestData.input);
           return { success: true, resEnrollment };
         }
 
@@ -265,7 +266,7 @@ export const courseMemberRouter = router({
               }
             } else if (settings?.hashEmails) {
               const courseMember = { ...memberData, courseId };
-              const hashedMember = createHashedCourseMember(courseMember);
+              const hashedMember = await createHashedCourseMember(courseMember);
               upsertedCourseMembers.push(hashedMember);
             } else {
               /* 
