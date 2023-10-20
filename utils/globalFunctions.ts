@@ -10,9 +10,15 @@ export function getPublicUrl(): string {
     return process.env.NEXT_PUBLIC_BASE_URL.toString();
   }
 
-  return (
-    'https://' + (process.env.NEXT_PUBLIC_VERCEL_URL?.toString() ?? 'ERROR')
-  );
+  if (window.location.origin) {
+    return window.location.origin;
+  }
+
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return 'https://' + process.env.NEXT_PUBLIC_VERCEL_URL.toString();
+  }
+
+  return 'URL_ERROR';
 }
 
 export function formatString(str: string): string {
