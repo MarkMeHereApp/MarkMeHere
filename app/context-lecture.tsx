@@ -40,9 +40,6 @@ export default function LecturesContextProvider({
 
   const { selectedCourseId, selectedCourseRole } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
 
-  const elevatedPrivileges =
-    selectedCourseRole === 'professor' || selectedCourseRole === 'TA';
-
   const newLectureData = trpc.lecture.getAllLecturesAndAttendance.useQuery(
     {
       courseId: selectedCourseId || ''
@@ -51,7 +48,7 @@ export default function LecturesContextProvider({
       /* 
         The query will only run if selectedCourseId is not null and the users course role is professor or TA
       */
-      enabled: !!selectedCourseId && elevatedPrivileges,
+      enabled: !!selectedCourseId,
       onSuccess: (data) => {
         if (!data) return;
         setLectures(data.lectures);
@@ -64,7 +61,7 @@ export default function LecturesContextProvider({
   }
 
   useEffect(() => {
-    if (selectedCourseId && elevatedPrivileges) {
+    if (selectedCourseId) {
       setLectures(null);
       setPageSize(10);
       newLectureData.refetch();

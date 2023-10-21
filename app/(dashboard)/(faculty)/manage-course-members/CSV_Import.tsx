@@ -21,6 +21,7 @@ import {
 import { CSV_Preview } from './CSV_Preview';
 import { BsUpload } from 'react-icons/bs';
 import { MdUploadFile } from 'react-icons/md';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 const CSV_Import = () => {
   const data = useCourseContext();
@@ -58,12 +59,13 @@ const CSV_Import = () => {
   const validateCSV = async (values: CSVData[]) => {
     try {
       setValidationProgress(0);
+      setExistedMembers([]);
       setValidationMessage('Validating CSV structure...');
       await delay(1000);
       setValidationProgress(25);
       const firstObjectKeys = Object.keys(values[0]);
 
-      const expectedHeaders = ['Name', 'ID', 'Email'];
+      const expectedHeaders = ['name', 'id', 'email'];
 
       const headersMatch = expectedHeaders.every((expectedHeader) =>
         firstObjectKeys.some(
@@ -103,10 +105,10 @@ const CSV_Import = () => {
       setValidationMessage('Checking the members of the course...');
 
       const data = values.map((row) => ({
-        id: row['ID'],
-        name: row['Name'],
-        optionalId: row['ID'],
-        email: row['Email'],
+        id: row['id'],
+        name: row['name'],
+        optionalId: row['id'],
+        email: row['email'],
         courseId: '',
         lmsId: '',
         dateEnrolled: new Date(),
@@ -149,8 +151,8 @@ const CSV_Import = () => {
       header: true,
       skipEmptyLines: true,
       beforeFirstChunk: (chunk) => {
-        const lines = chunk.split('\n');
-        const header = lines.shift();
+        const header = chunk.split('\n')[0].replace(/\s/g, '').toLowerCase();
+        const lines = chunk.split('\n').slice(1);
         const filteredLines = lines.filter((line) => {
           const columns = line.split(',');
           const idColumn = columns[3];
@@ -159,16 +161,18 @@ const CSV_Import = () => {
         return [header, ...filteredLines].join('\n');
       },
       complete: async (results) => {
-        const columnsToKeep = ['Name', 'ID', 'Email'];
+        const columnsToKeep = ['name', 'id', 'email'];
 
         const filteredData = results.data.map((row) => {
-          const filteredRow: CSVData = {};
+          const cleanedRow: CSVData = {};
           for (const column of columnsToKeep) {
             if (column in row) {
-              filteredRow[column] = row[column];
+              const cleanedColumn = column.trim().replace(/"/g, '');
+              const cleanedValue = row[column].trim().replace(/"/g, '');
+              cleanedRow[cleanedColumn] = cleanedValue;
             }
           }
-          return filteredRow;
+          return cleanedRow;
         });
 
         setIsValidating(true);
@@ -202,7 +206,7 @@ const CSV_Import = () => {
     }
     setIsImporting(true);
     const transformedTableValues = tableValues.map((row) => ({
-      role: 'student',
+      role: zCourseRoles.enum.student,
       name: row.name,
       email: row.email,
       optionalId: row.optionalId !== null ? row.optionalId : undefined
@@ -279,7 +283,7 @@ const CSV_Import = () => {
       <label
         htmlFor="csv"
         className={
-          'bg-primary cursor-pointer text-black text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
+          'bg-primary cursor-pointer text-primary-foreground text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
         }
       >
         <MdUploadFile className="h-5 w-4 mr-2" />

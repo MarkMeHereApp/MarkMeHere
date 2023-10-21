@@ -14,8 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { buttonVariants } from '@/components/ui/button';
-
+import Loading from '@/components/general/loading';
 interface AreYouSureDialogProps {
   title?: string;
   AlertDescriptionComponent?: React.ComponentType;
@@ -39,14 +38,21 @@ export function AreYouSureDialog({
   const [isOpen, setIsOpen] = useState(false);
   const [isAwaitingConfirmationPromise, setAwaitingConfirmationPromise] =
     useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  if (error) throw error;
+
   const isConfirmed = proceedText
     ? inputValue.toUpperCase() === proceedText.toUpperCase()
     : true;
 
   const handleConfirm = async () => {
-    setAwaitingConfirmationPromise(true);
-    await onConfirm();
-    setIsOpen(false);
+    try {
+      setAwaitingConfirmationPromise(true);
+      await onConfirm();
+      setIsOpen(false);
+    } catch (error) {
+      setError(error as Error);
+    }
   };
 
   return (
@@ -97,9 +103,11 @@ export function AreYouSureDialog({
             disabled={!isConfirmed || isAwaitingConfirmationPromise}
             variant={bDestructive ? 'destructive' : 'default'}
           >
-            {isAwaitingConfirmationPromise
-              ? 'Loading...'
-              : `${buttonText || 'Confirm'}`}
+            {isAwaitingConfirmationPromise ? (
+              <Loading />
+            ) : (
+              `${buttonText || 'Confirm'}`
+            )}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

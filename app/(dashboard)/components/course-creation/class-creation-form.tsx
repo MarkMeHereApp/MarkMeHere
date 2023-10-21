@@ -23,11 +23,13 @@ import { LMSCourseSelector } from './lms-course-selector';
 import {
   zLMSCourseSchemeType,
   zLMSProvider,
-  zLMSProviderType
+  zLMSProviderType,
+  zCourseRoles
 } from '@/types/sharedZodTypes';
 import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
+import Loading from '@/components/general/loading';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -127,7 +129,7 @@ export default function CreateCourseForm({
         newMemberData: {
           email: userEmail,
           name: userFullName,
-          role: 'professor'
+          role: zCourseRoles.Enum.teacher
         }
       });
 
@@ -197,8 +199,9 @@ export default function CreateCourseForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
-
+        {process.env.NEXT_PUBLIC_CANVAS_ENABLED && (
+          <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
+        )}
         <FormField
           control={form.control}
           name="courseCode"
@@ -278,7 +281,7 @@ export default function CreateCourseForm({
           )}
         />
         <Button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Submit'}
+          {loading ? <Loading /> : 'Submit'}
         </Button>
       </form>
     </Form>

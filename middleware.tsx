@@ -1,5 +1,6 @@
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
+import { zSiteRoles } from './types/sharedZodTypes';
 
 /* 
 We have two layers of middleware
@@ -35,7 +36,7 @@ const roleToRoutes: Record<string, string[]> = {
     '/testing-playground',
     '/user-settings',
     '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
-    '/api/trpc/courseMember.getCourseMemberRole',                 //j
+    '/api/trpc/courseMember.getCourseMemberRole', //j
     '/api/trpc/canvas.getCanvasCourses',
     '/api/trpc/course.createCourse',
     '/api/trpc/qr.CreateNewQRCode',
@@ -61,7 +62,7 @@ const roleToRoutes: Record<string, string[]> = {
     '/markAttendance',
     '/submit',
     '/api/trpc/attendanceToken.ValidateAndCreateAttendanceToken', //j
-    '/api/trpc/courseMember.getCourseMemberRole',                 //j
+    '/api/trpc/courseMember.getCourseMemberRole', //j
     '/api/trpc/qr.CreateNewQRCode',
     '/api/trpc/lecture.CreateLecture',
     '/api/trpc/attendance.createOrUpdateSingleAttendanceEntry',
@@ -111,11 +112,18 @@ export default withAuth(
     If the user has a valid JWT and role then go to middleware
     */
     callbacks: {
-      authorized: ({ token }) =>
-        !!token &&
-        (token.role === 'STUDENT' ||
-          token.role === 'FACULTY' ||
-          token.role === 'ADMIN')
+      authorized: ({ token }) => {
+        if (!token) {
+          return false;
+        }
+        const role = zSiteRoles.safeParse(token.role);
+        // Assuming zSiteRoles.parse returns a role string
+        // Check if the role is valid and return a boolean value
+        if (role?.success) {
+          return true;
+        }
+        return false;
+      }
     }
   }
 );
@@ -123,5 +131,6 @@ export default withAuth(
 //Our middleware needs to run over all routes besides signin/signup
 export const config = {
   // Matches the entire project except for the routes between the | characters.
-  matcher: '/((?!api/submit|signin|_next/static|_next/image|favicon.ico).*)'
+  matcher:
+    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/sessionless|unauthorized-email).*)'
 };

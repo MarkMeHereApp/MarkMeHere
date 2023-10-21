@@ -1,6 +1,25 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
 import crypto from 'crypto';
+import prisma from '@/prisma';
+import { Prisma, GlobalSiteSettings } from '@prisma/client';
+import { defaultSiteSettings } from '@/utils/globalVariables';
+
+export function getPublicUrl(): string {
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL.toString();
+  }
+
+  if (window.location.origin) {
+    return window.location.origin;
+  }
+
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return 'https://' + process.env.NEXT_PUBLIC_VERCEL_URL.toString();
+  }
+
+  return 'URL_ERROR';
+}
 
 export function formatString(str: string): string {
   return str
@@ -46,15 +65,41 @@ export function toastSuccess(
   });
 }
 
+export const getGlobalSiteSettings_Server = async (
+  select?: Prisma.GlobalSiteSettingsSelect
+): Promise<GlobalSiteSettings> => {
+  const siteSettingsDB = await prisma.globalSiteSettings.findFirst({
+    select: select
+  });
+
+  if (siteSettingsDB) {
+    return siteSettingsDB;
+  }
+
+  await prisma.globalSiteSettings.create({
+    data: defaultSiteSettings
+  });
+
+  const newSiteSettings = await prisma.globalSiteSettings.findFirst({
+    select: select
+  });
+
+  if (!newSiteSettings) {
+    throw new Error('Failed to create initial site settings');
+  }
+
+  return newSiteSettings;
+};
+
 export function encrypt(text: string, key?: string) {
   let bufferKey = '';
   if (key) {
     bufferKey = key;
   } else {
-    if (!process.env.ENCRYPTION_KEY) {
-      throw new Error('ENCRYPTION_KEY not set');
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET not set');
     }
-    bufferKey = process.env.ENCRYPTION_KEY!;
+    bufferKey = process.env.NEXTAUTH_SECRET!;
   }
 
   let iv = crypto.randomBytes(16);
@@ -71,10 +116,10 @@ export function decrypt(text: string, key?: string) {
   if (key) {
     bufferKey = key;
   } else {
-    if (!process.env.ENCRYPTION_KEY) {
-      throw new Error('ENCRYPTION_KEY not set');
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET not set');
     }
-    bufferKey = process.env.ENCRYPTION_KEY!;
+    bufferKey = process.env.NEXTAUTH_SECRET!;
   }
 
   let textParts = text.split(':');

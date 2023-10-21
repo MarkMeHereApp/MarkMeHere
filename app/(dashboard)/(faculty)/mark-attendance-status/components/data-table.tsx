@@ -38,6 +38,7 @@ import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 import { ExtendedCourseMember } from '@/types/sharedZodTypes';
 import { Icons } from '@/components/ui/icons';
+import Loading from '@/components/general/loading';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -83,6 +84,7 @@ export function DataTable<TData, TValue>({
       rowSelection,
       columnFilters
     },
+    autoResetAll: false,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -172,7 +174,7 @@ export function DataTable<TData, TValue>({
     return (
       <Button disabled={lectureLoading} onClick={() => handleClick()}>
         {lectureLoading ? (
-          <span>Creating...</span>
+          <Loading name="Creating" />
         ) : (
           <span>Create a new lecture</span>
         )}
@@ -198,11 +200,21 @@ export function DataTable<TData, TValue>({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
-                      const shouldHideColumn = ['email', 'lmsId', 'date marked', 'status'];
+                      const shouldHideColumn = [
+                        'email',
+                        'lmsId',
+                        'date marked',
+                        'status'
+                      ];
                       return (
-                        <TableHead key={header.id} className={shouldHideColumn.includes(header.id)
-                            ? 'hidden md:table-cell lg:table-cell'
-                            : 'table-cell md:table-cell lg:table-cell'}>
+                        <TableHead
+                          key={header.id}
+                          className={
+                            shouldHideColumn.includes(header.id)
+                              ? 'hidden md:table-cell lg:table-cell'
+                              : 'table-cell md:table-cell lg:table-cell'
+                          }
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -223,18 +235,28 @@ export function DataTable<TData, TValue>({
                       data-state={row.getIsSelected() && 'selected'}
                     >
                       {row.getVisibleCells().map((cell) => {
-                        const shouldHideColumn = ['email', 'lmsId', 'date marked', 'status'];
+                        const shouldHideColumn = [
+                          'email',
+                          'lmsId',
+                          'date marked',
+                          'status'
+                        ];
                         return (
-                        <TableCell key={cell.id} className={shouldHideColumn.includes(cell.column.id)
-                            ? 'hidden md:table-cell lg:table-cell'
-                            : 'table-cell md:table-cell lg:table-cell'}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                        )
-                        })}
+                          <TableCell
+                            key={cell.id}
+                            className={
+                              shouldHideColumn.includes(cell.column.id)
+                                ? 'hidden md:table-cell lg:table-cell'
+                                : 'table-cell md:table-cell lg:table-cell'
+                            }
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     </TableRow>
                   ))
                 ) : (

@@ -8,9 +8,13 @@ import { recordQRAttendanceRouter } from './routes/recordQRAttendance';
 import { lectureRouter } from './routes/lecture';
 import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
-import { attendanceTokenRouter } from './routes/attendanceToken';
 import { providerRouter } from './routes/provider';
 import { geolocationRouter } from './routes/geolocation';
+import { siteSettingsRouter } from './routes/siteSettings';
+
+import { userRouter } from './routes/user';
+
+import { sessionlessRouter } from './routes/sessionless';
 
 export const appRouter = router({
   course: courseRouter,
@@ -21,9 +25,11 @@ export const appRouter = router({
   attendance: attendanceRouter,
   canvas: canvasRouter,
   utils: utilsRouter,
-  attendanceToken: attendanceTokenRouter,
   provider: providerRouter,
   geolocation: geolocationRouter,
+  user: userRouter,
+  sessionless: sessionlessRouter,
+  siteSettings: siteSettingsRouter
 });
 
 export type AppRouter = typeof appRouter;

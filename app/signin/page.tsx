@@ -1,5 +1,6 @@
 import SignInForm from '@/app/signin/components/signInForm';
 import prisma from '@/prisma';
+import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
 export default async function SigninPage() {
   try {
@@ -9,19 +10,32 @@ export default async function SigninPage() {
         key: true
       }
     });
+    let bTempAdminSecretConfigured = false;
+    if (process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD) {
+      bTempAdminSecretConfigured = true;
+    }
 
-    /*
-     * @TODO This should be removed when we handle no providers being available... this is just temporary because in
-     * auth/[...nextauth]/options.ts we are manually adding the GitHub provider, but we don't want to do that in production
-     */
-    providers.push({
-      key: 'github',
-      displayName: 'GitHub (This provider was manually Added)'
+    let demoModeConfigured = false;
+    if (process.env.DEMO_MODE) {
+      demoModeConfigured = true;
+    }
+
+    const globalSiteSettings = await getGlobalSiteSettings_Server({
+      darkTheme: true,
+      lightTheme: true
     });
+    const darkTheme = globalSiteSettings.darkTheme;
+    const lightTheme = globalSiteSettings.lightTheme;
 
     return (
       <>
-        <SignInForm providers={providers} />
+        <SignInForm
+          providers={providers}
+          bHasTempAdminConfigured={bTempAdminSecretConfigured}
+          bIsDemoMode={demoModeConfigured}
+          darkTheme={darkTheme}
+          lightTheme={lightTheme}
+        />
       </>
     );
   } catch (error) {

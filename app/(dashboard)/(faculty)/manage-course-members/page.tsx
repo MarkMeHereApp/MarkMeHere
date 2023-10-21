@@ -22,7 +22,7 @@ const ManageCourseMembers = () => {
             <div className="flex items-center space-x-2">
               <EnrollCourseMemberButton />
               <Import_CSV />
-              <Button variant='default'>Export CSV</Button>
+              <Button variant="default">Export CSV</Button>
             </div>
           )}
         </div>

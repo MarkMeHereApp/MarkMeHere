@@ -18,6 +18,7 @@ import { ReloadIcon } from '@radix-ui/react-icons';
 import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';
 import { Lecture, AttendanceEntry } from '@prisma/client';
+import { getPublicUrl } from '@/utils/globalFunctions';
 
 const QR = () => {
   const [progress, setProgress] = React.useState(0);
@@ -300,7 +301,7 @@ const QR = () => {
               {DynamicQRCode && (
                 <DynamicQRCode
                   url={
-                    process.env.NEXT_PUBLIC_BASE_URL +
+                    getPublicUrl() +
                     `/submit?qr=${encodeURIComponent(activeCode)}`
                   }
                 />
@@ -341,7 +342,7 @@ const QR = () => {
           <div className="text-center">
             <span>Scan or enter the code at:</span>
             <div className="flex flex-col items-center justify-center text-xl break-all">
-              {`${process.env.NEXT_PUBLIC_BASE_URL}/submit`}
+              {`${getPublicUrl()}/submit`}
             </div>
 
             <CardHeader>
@@ -371,8 +372,7 @@ const QR = () => {
         ) : (
           <QRCodeComponent
             url={
-              process.env.NEXT_PUBLIC_BASE_URL +
-              `/submit?qr=${encodeURIComponent(activeCode)}`
+              getPublicUrl() + `/submit?qr=${encodeURIComponent(activeCode)}`
             }
           />
         )}

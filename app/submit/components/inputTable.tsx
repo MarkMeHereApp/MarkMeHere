@@ -8,6 +8,7 @@ import { trpc } from '@/app/_trpc/client';
 import { firaSansFont } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Icons } from '@/components/ui/icons';
+import Loading from '@/components/general/loading';
 
 enum ErrorType {
   InvalidInput,
@@ -18,6 +19,7 @@ enum ErrorType {
 const InputTable = () => {
   const [inputValue, setInputValue] = useState(''); //input value in the field
   const [errorDisplay, setErrorDisplay] = useState<string | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
+  const [error, setError] = useState<Error | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
 
   const router = useRouter(); //initalizing the router
 
@@ -27,6 +29,9 @@ const InputTable = () => {
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
   const hasDisplayedQRError = useRef(false)
 
+  if (error) {
+    throw error;
+  }
 
   const studentLatitude = useRef<number>(0)
   const studentLongitude = useRef<number>(0)
@@ -75,7 +80,7 @@ const InputTable = () => {
   //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
-    trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
+    trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
     
@@ -101,7 +106,7 @@ const InputTable = () => {
         displayError(ErrorType.InvalidInput);
       }
     } catch (error) {
-      console.log(error);
+      setError(error as Error);
     } finally {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
     }
@@ -151,10 +156,7 @@ const InputTable = () => {
           className=" flex w-[100%]"
           disabled={isLoadingSubmit}
         >
-          {isLoadingSubmit && (
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          <div className="">Submit</div>
+          {isLoadingSubmit ? <Loading /> : 'Submit'}
         </Button>
       </div>
     </Card>

@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/app/(dashboard)/components/theme-toggle';
+import { ModeToggle } from '@/components/theme/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
@@ -16,12 +16,26 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import GitHubEduError from './github-edu-error';
-import GitHubEduMessage from './github-edu-info';
+import GitHubEduError from './info/github-edu-error';
+import GitHubEduMessage from './info/github-edu-info';
+import DemoModeInfo from './info/demo-mode-info';
+import TempAdminInfo from './info/temp-admin-info';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import Loading from '@/components/general/loading';
+import GenerateTemporaryAdmin from './generate-temporary-admin';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+
+import { demoAccounts } from '@/utils/globalVariables';
 
 type TProvider = {
   key: string;
@@ -30,17 +44,32 @@ type TProvider = {
 
 interface SignInFormProps {
   providers: Array<TProvider>;
+  bHasTempAdminConfigured?: boolean;
+  bIsDemoMode?: boolean;
+  lightTheme: string;
+  darkTheme: string;
 }
 
-export default function SignInForm({ providers }: SignInFormProps) {
+export default function SignInForm({
+  providers,
+  bHasTempAdminConfigured,
+  bIsDemoMode,
+  lightTheme,
+  darkTheme
+}: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = React.useState<{ [key: string]: boolean }>(
     {}
   );
   const { data: session } = useSession();
-  const [email, setEmail] = React.useState<string>('');
+  const [username, setUsername] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
+  const [errorState, setErrorState] = React.useState<Error | null>(null);
+
+  if (errorState) {
+    throw errorState;
+  }
 
   const callbackUrl = searchParams
     ? searchParams.get('callbackUrl') || '/'
@@ -62,8 +91,8 @@ export default function SignInForm({ providers }: SignInFormProps) {
         error = `Third-Party Callback Error.`;
         break;
 
-      case 'email':
-        error = 'Email not found';
+      case 'username':
+        error = 'Username not found';
         break;
 
       case 'OAuthSignin':
@@ -72,7 +101,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
 
       case 'OAuthAccountNotLinked':
         error =
-          'There is already an account with that email address and the provider you just tried to sign-in with has Account Linking disabled. ';
+          'There is already an account with that username address and the provider you just tried to sign-in with has Account Linking disabled. ';
         break;
 
       default:
@@ -106,14 +135,30 @@ export default function SignInForm({ providers }: SignInFormProps) {
     setIsLoading((prevState) => ({ ...prevState, credentials: true })); // Set loading to true at the start of the function
     try {
       await signIn('credentials', {
-        email,
+        username,
         password,
         callbackUrl: callbackUrl
       });
     } catch (error) {
-      console.error('Unexpected Error: ', error);
+      setErrorState(error as Error);
     } finally {
       setIsLoading((prevState) => ({ ...prevState, credentials: false })); // Set loading to false at the end of the function
+    }
+  };
+
+  const onDemoSubmit = async ({ name }: { name: string }) => {
+    setIsLoading((prevState) => ({ ...prevState, demo: true })); // Set loading to true at the start of the function
+    try {
+      await signIn('credentials', {
+        username: name,
+        password: name,
+        demoLogin: true,
+        callbackUrl: callbackUrl
+      });
+    } catch (error) {
+      setErrorState(error as Error);
+    } finally {
+      setIsLoading((prevState) => ({ ...prevState, demo: false })); // Set loading to false at the end of the function
     }
   };
 
@@ -131,7 +176,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
         [providerId]: false
       }));
     } catch (error) {
-      throw error;
+      setErrorState(error as Error);
     }
   };
 
@@ -172,7 +217,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>
-            <ModeToggle />
+            <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -181,7 +226,43 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 <AlertDescription>Log In Error: {error}</AlertDescription>
               )}
             </Alert>
+
+            {bIsDemoMode && (
+              <>
+                <DemoModeInfo />
+                <Select
+                  onValueChange={(value) => onDemoSubmit({ name: value })}
+                  disabled={Object.values(isLoading).some((value) => value)}
+                >
+                  <SelectTrigger className="w-full">
+                    {isLoading.demo ? (
+                      <Loading name="Logging In" />
+                    ) : (
+                      <SelectValue placeholder="Select a Demo Account" />
+                    )}
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {/*<SelectLabel>Admin</SelectLabel>*/}
+                      {demoAccounts.map((account) => (
+                        <SelectItem key={account.name} value={account.name}>
+                          {`${account.name}@demo.com`}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+
+            {bHasTempAdminConfigured && (
+              <>
+                <TempAdminInfo /> <GenerateTemporaryAdmin />
+              </>
+            )}
+
             <GitHubEduError providers={providers} errorType={errorType} />
+
             {providers &&
               Object.values(providers).some(
                 (provider) => provider.key === 'credentials'
@@ -189,25 +270,25 @@ export default function SignInForm({ providers }: SignInFormProps) {
                 <form onSubmit={onCredentialsSubmit}>
                   <div className="gap-2 space-y-5">
                     <CardTitle className="text-center text-sm text-muted-foreground">
-                      Enter your email & password below to login
+                      Enter your username & password below to login
                     </CardTitle>
 
                     <div className="flex flex-col gap-1">
-                      <div className="text-sm font-bold mb-0">Email</div>
+                      <div className="text-sm font-bold mb-0">Username</div>
 
-                      <Label className="sr-only" htmlFor="email">
-                        Email
+                      <Label className="sr-only" htmlFor="username">
+                        Username
                       </Label>
 
                       <Input
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="test@test is a valid email"
-                        type="email"
+                        id="username"
+                        name="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="test@test is a valid username"
+                        type="username"
                         autoCapitalize="none"
-                        autoComplete="email"
+                        autoComplete="username"
                         autoCorrect="off"
                         disabled={isLoading.credentials}
                         required
@@ -270,11 +351,6 @@ export default function SignInForm({ providers }: SignInFormProps) {
                   a.key === 'githubedu' ? -1 : b.key === 'githubedu' ? 1 : 0
                 )
                 .map((provider, index) => {
-                  if (!provider) {
-                    // Render a placeholder or loading state here
-                    return <div>Loading...</div>;
-                  }
-
                   if (
                     provider.key !== 'credentials' &&
                     provider.key !== 'githubedu'
@@ -298,7 +374,13 @@ export default function SignInForm({ providers }: SignInFormProps) {
                           <GitHubEduMessage providers={providers} />
                         )}
                       >
-                        <Button type="button" className="w-full">
+                        <Button
+                          type="button"
+                          className="w-full"
+                          disabled={Object.values(isLoading).some(
+                            (value) => value
+                          )}
+                        >
                           {provider.displayName}
                         </Button>
                       </AreYouSureDialog>

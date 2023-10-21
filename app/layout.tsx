@@ -3,11 +3,12 @@ import '@/styles/styles.scss';
 
 import { Suspense } from 'react';
 
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/app/theme-provider';
 import { Providers } from './providers';
 import CoursesContext from '@/app/context-course';
 import LecturesContext from '@/app/context-lecture';
 import ProviderContextProvider from '@/app/context-auth-provider';
+import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
@@ -72,11 +73,16 @@ export default async function RootLayout({
     accountLinkingEnabled: provider.allowDangerousEmailAccountLinking
   }));
 
+  const globalSiteSettings = await getGlobalSiteSettings_Server({
+    darkTheme: true
+  });
+  const darkTheme = globalSiteSettings.darkTheme;
+
   return (
     <html lang="en" className={openSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme={darkTheme}>
           <Providers>
             <ProviderContextProvider
               initialActiveProviders={initialActiveProviders}
