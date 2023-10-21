@@ -5,12 +5,12 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/mark-attendance-status/components/data-table-view-options';
+import { DataTableViewOptions } from '@/app/(dashboard)/[school]/[course-code]/(faculty)/mark-attendance-status/components/data-table-view-options';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
-import { CalendarDateRangePicker } from '@/app/(dashboard)/(faculty)/components/date-picker';
+import { CalendarDateRangePicker } from '@/app/(dashboard)/[school]/[course-code]/(faculty)/components/date-picker';
 import {
   zAttendanceStatus,
   zAttendanceStatusIcons,
@@ -19,7 +19,7 @@ import {
 import { formatString } from '@/utils/globalFunctions';
 import { toast } from '@/components/ui/use-toast';
 import { useCourseContext } from '@/app/context-course';
-import { useLecturesContext } from '../../../../context-lecture';
+import { useLecturesContext } from '../../../../../../context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';
 import { AttendanceEntry } from '@prisma/client';
@@ -75,7 +75,9 @@ export function DataTableToolbar<TData>({
   const createNewAttendanceEntryMutation =
     trpc.attendance.createManyAttendanceRecords.useMutation();
 
-  const handleCreateNewAttendanceEntries = async (status: zAttendanceStatusType) => {
+  const handleCreateNewAttendanceEntries = async (
+    status: zAttendanceStatusType
+  ) => {
     const lecture = getCurrentLecture();
     const selectedRows = table.getSelectedRowModel().rows;
     const selectedCourseMembers: CourseMember[] = selectedRows.map(
@@ -131,13 +133,13 @@ export function DataTableToolbar<TData>({
         {getCurrentLecture() && (
           <>
             <Input
-                placeholder="Search for a student..."
-                value={'globalFilter' in table.getState() ? globalFilter : ''}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const searchString = event.target.value;
-                    table.setGlobalFilter(searchString);
-                }}
-                className="h-8 w-[150px] lg:w-[250px]"
+              placeholder="Search for a student..."
+              value={'globalFilter' in table.getState() ? globalFilter : ''}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const searchString = event.target.value;
+                table.setGlobalFilter(searchString);
+              }}
+              className="h-8 w-[150px] lg:w-[250px]"
             />
             {isSelected && (
               <>
@@ -180,7 +182,7 @@ export function DataTableToolbar<TData>({
           </>
         )}
       </div>
-      <div className='ml-2'>
+      <div className="ml-2">
         <CalendarDateRangePicker />
       </div>
     </div>
