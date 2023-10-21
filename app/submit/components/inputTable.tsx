@@ -80,7 +80,7 @@ const InputTable = () => {
   //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
-    trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
+    trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
     

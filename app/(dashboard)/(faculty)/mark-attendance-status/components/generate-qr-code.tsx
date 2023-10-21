@@ -150,7 +150,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
     if (enableGeolocation) {
       const location = await getGeolocationData();
-
+    }
     
     if(enableGeolocation){
       const location = await getGeolocationData()

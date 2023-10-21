@@ -14,7 +14,7 @@ import { siteSettingsRouter } from './routes/siteSettings';
 
 import { userRouter } from './routes/user';
 
-import { sessionlessRouter } from './routes/sessionless';
+import { attendanceTokenRouter } from './routes/attendanceToken';
 
 export const appRouter = router({
   course: courseRouter,
@@ -28,7 +28,7 @@ export const appRouter = router({
   provider: providerRouter,
   geolocation: geolocationRouter,
   user: userRouter,
-  sessionless: sessionlessRouter,
+  attendanceToken: attendanceTokenRouter,
   siteSettings: siteSettingsRouter
 });
 
