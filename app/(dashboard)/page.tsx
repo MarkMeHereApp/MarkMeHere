@@ -1,18 +1,15 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import MarkMeHereClassAnimation from '@/components/mark-me-here/MarkMeHereClassAnimation';
 import { firaSansFont } from '@/utils/fonts';
+import prisma from '@/prisma';
+import { Prisma } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
-export default function HomePage() {
-  const router = useRouter();
+export default async function HomePage() {
+  const school = await prisma.globalSiteSettings.findFirst({});
 
-  useEffect(() => {
-    if (router) {
-      router.push('/overview');
-    }
-  }, [router]);
+  if (school) {
+    redirect(`/${school.schoolAbbreviation}`);
+  }
 
   return (
     <div className="flex justify-center items-center w-full h-full">
