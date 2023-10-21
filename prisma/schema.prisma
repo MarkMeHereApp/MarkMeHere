@@ -103,21 +103,27 @@ model CourseMember {
 }
 
 model qrcode {
-  id        String   @id @default(cuid())
-  lectureId String
-  lecture   Lecture  @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  code      String   @unique // More work to do to make this code truly unique
-  createdAt DateTime @default(now())
-  expiresAt DateTime
+  id                            String                       @id @default(cuid())
+  lectureId                     String
+  lecture                       Lecture                      @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  courseId                      String
+  course                        Course                       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  code                          String                       @unique // More work to do to make this code truly unique
+  ProfessorLectureGeolocationId String?
+  ProfessorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [ProfessorLectureGeolocationId], references: [id], onDelete: Cascade)
+  createdAt                     DateTime                     @default(now())
+  expiresAt                     DateTime
 }
 
 model AttendanceToken {
-  id        String   @id @default(cuid())
-  token     String
-  lectureId String
-  createdAt DateTime @default(now())
+  id                            String                       @id @default(cuid())
+  token                         String
+  lectureId                     String
+  createdAt                     DateTime                     @default(now())
+  ProfessorLectureGeolocationId String?
+  ProfessorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [ProfessorLectureGeolocationId], references: [id], onDelete: Cascade)
+  attendanceStudentLatitude     Float?
+  attendanceStudentLongtitude   Float?
 
   // We could implement a system where these are auto deleted after expiration (e.g 10 mins)
   // expiresAt DateTime 
@@ -139,12 +145,14 @@ model AuthProviderCredentials {
 }
 
 model ProfessorLectureGeolocation {
-  id             String       @id @default(cuid())
-  lectureId      String
-  lecture        Lecture      @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  courseMemberId String
-  courseMember   CourseMember @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
-  createdAt      DateTime     @default(now())
-  lectureLatitude Float
+  id               String            @id @default(cuid())
+  lectureId        String
+  lecture          Lecture           @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  courseMemberId   String
+  courseMember     CourseMember      @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+  lectureLatitude  Float
   lectureLongitude Float
+  qrCodes          qrcode[]
+  attendanceTokens AttendanceToken[]
 }

@@ -101,6 +101,11 @@ const QR = () => {
       ? searchParams.get('mode')
       : 'default';
 
+
+  const locationId = searchParams && searchParams.get('location')
+    ? searchParams.get('location')
+    : false
+
   const [Stars, setStars] = React.useState<React.ComponentType | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
   const [DynamicQRCode, setDynamicQRCode] = React.useState<React.ComponentType<{
@@ -144,7 +149,8 @@ const QR = () => {
     lectureId: 'LOADING',
     courseId: 'LOADING',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 3153600000000) // This will expire in 100 year, so it will never expire...or will it ?
+    expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
+    ProfessorLectureGeolocationId: locationId || null 
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
@@ -165,7 +171,8 @@ const QR = () => {
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
         lectureId: currentLectureRef.current.id,
-        courseId: currentLectureRef.current.courseId
+        courseId: currentLectureRef.current.courseId,
+        professorLectureGeolocationId: locationId || ''
       });
       if (!currentLectureRef.current) {
         return;
@@ -192,7 +199,8 @@ const QR = () => {
       const newActiveCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 1.25, // * 1.25 to account for the initial fetch time
         lectureId: currentLectureRef.current.id,
-        courseId: currentLectureRef.current.courseId
+        courseId: currentLectureRef.current.courseId,
+        professorLectureGeolocationId: locationId || ''
       });
 
       // This happens if between the codes being initialized, the lecture was changed.
@@ -203,7 +211,8 @@ const QR = () => {
       const newBufferCode = await createQRMutator.mutateAsync({
         secondsToExpireNewCode: expirationTime * 2.5, //* 2.5 (to account for the buffer and the initial fetch time)
         lectureId: currentLectureRef.current.id,
-        courseId: currentLectureRef.current.courseId
+        courseId: currentLectureRef.current.courseId,
+        professorLectureGeolocationId: locationId || ''
       });
 
       // This happens if between the codes being initialized, the lecture was changed.
