@@ -19,12 +19,8 @@ export default async function DashboardLayout({
     redirect('/');
   }
 
-  const globalSiteSettings = await getGlobalSiteSettings_Server({
-    darkTheme: true,
-    lightTheme: true
-  });
-  const darkTheme = globalSiteSettings.darkTheme;
-  const lightTheme = globalSiteSettings.lightTheme;
+  const darkTheme = findSchool.darkTheme;
+  const lightTheme = findSchool.lightTheme;
 
   return (
     <>
