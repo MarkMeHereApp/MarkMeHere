@@ -45,7 +45,6 @@ const GenerateTemporaryAdmin = () => {
   if (error) {
     throw error;
   }
-  const generateAdminMutation = trpc.sessionless.GenerateNewAdmin.useMutation();
 
   const handleDialogOpen = () => {
     form.reset();

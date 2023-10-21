@@ -12,6 +12,13 @@ export const zCreateProfessorLectureGeolocation = z.object({
     courseMemberId: z.string(),
   });
 
+export const zCreateStudentGeolocation = z.object({
+    lectureLatitude: z.number(),
+    lectureLongitude: z.number(),
+    lectureId: z.string(),
+    attendanceTokenId: z.string()
+  });
+
 export const geolocationRouter = router({
     CreateProfessorLectureGeolocation: elevatedCourseMemberLectureProcedure
     .input(zCreateProfessorLectureGeolocation)

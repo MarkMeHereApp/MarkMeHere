@@ -1,7 +1,7 @@
 import { Card, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'components/ui/use-toast';
 import { trpc } from '@/app/_trpc/client';
@@ -9,8 +9,6 @@ import { firaSansFont } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Icons } from '@/components/ui/icons';
 import Loading from '@/components/general/loading';
-
-import GeoLocationChecker from './geolocation';
 
 enum ErrorType {
   InvalidInput,
@@ -29,24 +27,16 @@ const InputTable = () => {
   const errorType = searchParams ? searchParams.get('error') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
+  const hasDisplayedQRError = useRef(false)
 
   if (error) {
     throw error;
   }
 
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition((position) => {
-  //       const latitude = position.coords.latitude;
-  //       const longitude = position.coords.longitude;
-  //       console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-  //     }, (error) => {
-  //       console.error("Error occurred while getting geolocation", error);
-  //     });
-  //   } else {
-  //     console.log("Geolocation is not supported by this browser.");
-  //   }
-  // }, []);
+  const studentLatitude = useRef<number>(0)
+  const studentLongitude = useRef<number>(0)
+  
+
 
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
@@ -90,20 +80,29 @@ const InputTable = () => {
   //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
-    trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
+    trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
-
+    
     try {
       const res = await validateAndCreateToken.mutateAsync({
         code: inputValue
       });
 
-      if (res.success) {
-        router.push(`/student?attendanceTokenId=${res.token}`);
+
+      if (res.success && res.token) {
+        
+        if(res.location){
+          router.push(`/verification?attendanceTokenId=${res.token}`)
+        }
+
+        if(!res.location){
+          router.push(`/student?attendanceTokenId=${res.token}`);
+        }
       }
 
       if (!res.success) {
+        
         displayError(ErrorType.InvalidInput);
       }
     } catch (error) {
@@ -113,13 +112,18 @@ const InputTable = () => {
     }
   };
 
+  
+
   //checking what error type have we recieved in the server through the URL.
   //after the error message being displayed, we replace the URL with /submit and stay on page.
   //if we check more things than just qr-error, it will be added as another if statement.
   useEffect(() => {
-    if (errorType) {
+    console.log('useEffect triggered', errorType);
+
+    if (errorType && !hasDisplayedQRError.current) {
       if (errorType === 'qr-error') {
         displayError(ErrorType.InvalidQR);
+        hasDisplayedQRError.current = true
       }
     }
 
@@ -137,8 +141,6 @@ const InputTable = () => {
           <AlertDescription className="">{errorDisplay}</AlertDescription>
         )}
       </Alert>
-
-      <GeoLocationChecker />
 
       <div className="gap-4 flex flex-col items-center pt-0 p-6">
         <Input
