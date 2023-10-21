@@ -4,7 +4,6 @@ import { useCourseContext } from '@/app/context-course';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLecturesContext } from '../../../../../context-lecture';
-import { NoCourse } from './components/no-course';
 import { NoLecture } from './components/no-lecture';
 
 const OverviewAnalytics = dynamic(() => import('./analytics'));
@@ -40,8 +39,7 @@ export default function Overview() {
     );
   };
 
-  if (!selectedCourseId) return <NoCourse />;
-  if (!courseMembersOfSelectedCourse) return <></>;
+  if (!courseMembersOfSelectedCourse) return <></>; //@TODO Maybe add a skeleton here?
   if (!lectures) return <></>; //@TODO Maybe add a skeleton here?
   return <OverviewAnalyticsPage />;
 }
