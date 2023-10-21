@@ -29,6 +29,7 @@ export const demoAccounts: {
 export const defaultSiteSettings: GlobalSiteSettings = {
   id: 'default',
   name: 'test',
+  finishedSetup: false,
   schoolAbbreviation: 'test',
   darkTheme: 'dark_blue',
   lightTheme: 'light_zinc',

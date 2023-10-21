@@ -14,8 +14,27 @@ const zGlobalSiteSettings = z.object({
   darkTheme: z.string().optional(),
   lightTheme: z.string().optional()
 });
+const zCreateInitialSiteSettings = z.object({
+  name: z.string(),
+  schoolAbbreviation: z.string()
+});
 
 export const siteSettingsRouter = router({
+  createSiteSettings: publicProcedure
+    .input(zCreateInitialSiteSettings)
+    .mutation(async (requestData) => {
+      try {
+        return await prisma.globalSiteSettings.create({
+          data: {
+            name: requestData.input.name,
+            schoolAbbreviation:
+              requestData.input.schoolAbbreviation.toLowerCase()
+          }
+        });
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
   getSiteSettings: publicProcedure.input(z.object({})).query(async () => {
     try {
       return await getGlobalSiteSettings_Server();

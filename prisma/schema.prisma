@@ -162,12 +162,13 @@ model ProfessorLectureGeolocation {
 }
 
 model GlobalSiteSettings {
-  id                  String        @id @default(cuid())
-  name                String        @db.VarChar(255)
-  schoolAbbreviation  String        @unique @db.VarChar(255)
-  lightTheme          String        @db.VarChar(255)
-  darkTheme           String        @db.VarChar(255)
-  googleMapsApiKey    String        @db.VarChar(255)
-  allowModeratorsToUseGoogleMaps Boolean 
-  allowUsersToUseGoogleMaps Boolean 
+  id                              String        @id @default(cuid())
+  finishedSetup                   Boolean       @default(false)
+  name                            String        @db.VarChar(255)
+  schoolAbbreviation              String        @unique @db.VarChar(255)
+  lightTheme                      String        @db.VarChar(255) @default("light_neutral")
+  darkTheme                       String        @db.VarChar(255) @default(" dark_neutral")
+  googleMapsApiKey                String?        @db.VarChar(255) 
+  allowModeratorsToUseGoogleMaps  Boolean?      
+  allowUsersToUseGoogleMaps       Boolean? 
 }
