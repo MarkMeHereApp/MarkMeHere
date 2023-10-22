@@ -26,19 +26,19 @@ import {
 import { CourseCreationSheet } from './course-creation-sheet';
 import { useCourseContext } from '@/app/context-course';
 import { formatString } from '@/utils/globalFunctions';
-type PopoverTriggerProps = React.ComponentPropsWithoutRef<
-  typeof PopoverTrigger
->;
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import Loading from '@/components/general/loading';
 
 export default function CourseSelection({ className }: { className?: string }) {
   const {
     userCourses,
-    setUserCourses,
     userCourseMembers,
-    setUserCourseMembers,
     selectedCourseId,
-    setSelectedCourseId
+    courseMembersOfSelectedCourse
   } = useCourseContext();
+  const params = useParams();
+  const school = params['school'];
 
   const [open, setOpen] = React.useState(false);
   const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
@@ -83,7 +83,11 @@ export default function CourseSelection({ className }: { className?: string }) {
                 <Skeleton className="h-5 w-5 rounded-full" />
               </Avatar>
               <span className="pr-4 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {selectedCourse?.courseCode}
+                {courseMembersOfSelectedCourse ? (
+                  `${selectedCourse.name}`
+                ) : (
+                  <Loading name="Getting Course" />
+                )}
               </span>
               <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -107,37 +111,38 @@ export default function CourseSelection({ className }: { className?: string }) {
                   {uniqueRoles.map((role) => (
                     <CommandGroup key={role} heading={formatString(role)}>
                       {userCourses.map((course) => (
-                        <CommandItem
-                          key={course.id}
-                          onSelect={() => {
-                            setSelectedCourseId(course.id);
-                            setOpen(false);
-                          }}
-                          className="text-sm"
-                        >
-                          <Avatar className="mr-2 h-5 w-5">
-                            <AvatarImage
-                              src={`https://avatar.vercel.sh/${course.courseCode}.png`}
-                              alt={course.courseCode}
-                              className="grayscale"
-                            />
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                          </Avatar>
-                          <span
-                            className="overflow-ellipsis overflow-hidden max-w-85 whitespace-nowrap"
-                            style={{ maxWidth: '85%' }}
+                        <Link href={`/${school}/${course.courseCode}`}>
+                          <CommandItem
+                            key={course.id}
+                            onSelect={() => {
+                              setOpen(false);
+                            }}
+                            className="text-sm"
                           >
-                            {course.courseCode}
-                          </span>
-                          <CheckIcon
-                            className={cn(
-                              'ml-auto h-4 w-4',
-                              selectedCourse?.id === course.id
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            )}
-                          />
-                        </CommandItem>
+                            <Avatar className="mr-2 h-5 w-5">
+                              <AvatarImage
+                                src={`https://avatar.vercel.sh/${course.courseCode}.png`}
+                                alt={course.courseCode}
+                                className="grayscale"
+                              />
+                              <Skeleton className="h-5 w-5 rounded-full" />
+                            </Avatar>
+                            <span
+                              className="overflow-ellipsis overflow-hidden max-w-85 whitespace-nowrap"
+                              style={{ maxWidth: '85%' }}
+                            >
+                              {course.name}
+                            </span>
+                            <CheckIcon
+                              className={cn(
+                                'ml-auto h-4 w-4',
+                                selectedCourse?.id === course.id
+                                  ? 'opacity-100'
+                                  : 'opacity-0'
+                              )}
+                            />
+                          </CommandItem>
+                        </Link>
                       ))}
                     </CommandGroup>
                   ))}

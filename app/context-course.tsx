@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
+import { useParams } from 'next/navigation';
 
 interface CourseContextType {
   userCourses: Course[] | null;
@@ -18,7 +19,6 @@ interface CourseContextType {
   setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
 
   selectedCourseRole: string | null;
-  setSelectedCourseRole: React.Dispatch<React.SetStateAction<string | null>>;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
@@ -35,7 +35,6 @@ const CourseContext = createContext<CourseContextType>({
   selectedCourseId: null,
   setSelectedCourseId: () => {},
   selectedCourseRole: null,
-  setSelectedCourseRole: () => {},
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {},
   selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -45,14 +44,14 @@ const CourseContext = createContext<CourseContextType>({
 export default function CoursesContext({
   userCourses: initialUserCourses,
   userCourseMembers: initialUserCourseMembers,
-  userSelectedCourseId: initialSelectedCourseId,
   children
 }: {
   userCourses?: Course[];
   userCourseMembers?: CourseMember[];
-  userSelectedCourseId?: string | null;
   children?: React.ReactNode;
 }) {
+  const params = useParams();
+
   const [userCourses, setUserCourses] = useState<Course[] | null>(
     initialUserCourses || null
   );
@@ -60,10 +59,12 @@ export default function CoursesContext({
     CourseMember[] | null
   >(initialUserCourseMembers || null);
 
-  const courseId = initialSelectedCourseId || userCourses?.[0]?.id || null;
+  const selectedCourseCode = Array.isArray(params['course-code'])
+    ? params['course-code'][0]
+    : params['course-code'];
 
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
-    courseId
+    selectedCourseCode || null
   );
 
   const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
@@ -97,14 +98,17 @@ export default function CoursesContext({
   }
 
   useEffect(() => {
-    if (
-      selectedCourseId &&
-      !(courseMembersOfSelectedCourse?.[0]?.courseId === selectedCourseId)
-    ) {
+    if (selectedCourseId) {
+      const course = userCourses?.find(
+        (course) => course.courseCode === selectedCourseCode
+      );
       setCourseMembersOfSelectedCourse(null);
-      courseMembers.refetch();
+      if (course) {
+        setSelectedCourseId(course.id);
+        courseMembers.refetch();
+      }
     }
-  }, [selectedCourseId]);
+  }, [selectedCourseCode]);
 
   return (
     <CourseContext.Provider
@@ -116,7 +120,6 @@ export default function CoursesContext({
         selectedCourseId,
         setSelectedCourseId,
         selectedCourseRole,
-        setSelectedCourseRole,
         courseMembersOfSelectedCourse,
         setCourseMembersOfSelectedCourse,
         selectedAttendanceDate,
