@@ -1,6 +1,6 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
-import NoCourse from './no-course';
+import NoCourse from './components/no-course';
 import { getServerSession } from 'next-auth';
 
 export default async function Page({ params }: { params: { school: string } }) {

@@ -30,6 +30,8 @@ import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import Loading from '@/components/general/loading';
+import { redirect } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -40,11 +42,12 @@ const CreateCourseFormSchema = z.object({
     .max(255, {
       message: 'Course Label must not be longer than 255 characters.'
     })
-    .refine((value) => !/\s\s/.test(value), {
-      message: 'Course Label cannot contain double spaces'
+    .refine((value) => /^[A-Za-z0-9\-]+$/.test(value), {
+      message:
+        'Course Label can only contain letters, numbers, and dashes ("-")'
     })
     .transform((val) => val.trim())
-    .transform((val) => val.toUpperCase()),
+    .transform((val) => val.toLowerCase()),
   name: z
     .string()
     .min(2, {
@@ -67,6 +70,8 @@ export default function CreateCourseForm({
 }: {
   onSuccess: () => void;
 }) {
+  const params = useParams();
+  const school = params.school;
   const [loading, setLoading] = useState(false);
   const [getLMSSelectedCourse, setLMSSelectedCourse] =
     useState<zLMSCourseSchemeType | null>(null);
@@ -167,6 +172,8 @@ export default function CreateCourseForm({
       utils.canvas.getCanvasCourses.invalidate();
       onSuccess();
       setLoading(false);
+      redirect(`/${school}/${newCourse.courseCode}/overview`);
+
       return;
     } catch (error) {
       setError(error as Error);
@@ -177,7 +184,11 @@ export default function CreateCourseForm({
   useEffect(() => {
     if (getLMSSelectedCourse) {
       if (getLMSSelectedCourse.course_code) {
-        form.setValue('courseCode', getLMSSelectedCourse.course_code);
+        const courseCode = getLMSSelectedCourse.course_code
+          .trim()
+          .replace(/\s+/g, '-')
+          .toLowerCase();
+        form.setValue('courseCode', courseCode);
       }
       if (getLMSSelectedCourse.name) {
         form.setValue('name', getLMSSelectedCourse.name);
@@ -209,12 +220,12 @@ export default function CreateCourseForm({
             <FormItem>
               <FormLabel>Unique Course Code</FormLabel>
               <FormControl>
-                <Input placeholder="COP4935-23FALL 0002" {...field} />
+                <Input placeholder="cop4935-23fall-0002" {...field} />
               </FormControl>
               <FormDescription>
                 This is your course code, it must be <b>unique</b>. We recommend
                 referencing the term, year, and section.
-                <i> Note, the label will be converted to all uppercase.</i>
+                <i> Note, the label will be converted to all lowercase.</i>
               </FormDescription>
               <FormMessage />
             </FormItem>
