@@ -16,13 +16,14 @@ const OverviewAnalytics = () => {
   const selectedCourseName = userCourses?.find((courses) => {
     return courses.id === selectedCourseId;
   })?.name;
+
   // After getting the data, pass it to the AttendanceOverTimeLineGraph component and let it handle the rest
   // Do the same for the top students
   return (
     <div className="flex h-full w-full flex-col">
       <div className="w-full h-1/4 p-4">
         <OverviewBar
-          selectedCourseName={selectedCourseName}
+          selectedCourseName={selectedCourseName ?? ''}
           lectures={lectures}
           courseMembers={courseMembersOfSelectedCourse}
         />
