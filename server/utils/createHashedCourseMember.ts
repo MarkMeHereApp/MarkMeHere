@@ -3,7 +3,7 @@ import { ToastActionElement } from '@/components/ui/toast';
 import crypto from 'crypto';
 import prisma from '@/prisma';
 import bcrypt from 'bcrypt';
-import { Prisma, GlobalSiteSettings } from '@prisma/client';
+import { Prisma, GlobalSiteSettings, CourseMember } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
@@ -16,6 +16,12 @@ type CourseMemberInput = {
     lmsId?: string
     optionalId?: string
   };
+
+  type CreateHashedCourseMemberFunction = (
+    courseMember: CourseMemberInput
+  ) => Promise<CourseMember>;
+
+  export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 
 export default async function createHashedCourseMember(courseMember: CourseMemberInput) {
     console.log('Successfully reading site settings from context');

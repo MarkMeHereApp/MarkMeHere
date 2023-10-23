@@ -1,6 +1,7 @@
 import prisma from '@/prisma';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterDefault from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterDefault';
+import { CourseMember } from '@prisma/client';
 
 type CourseMemberInput = {
   name: string;
@@ -16,6 +17,11 @@ Search for user with matching course member email
 If user exists create the courseMember
 If user does not exist create the user and the course member
 */
+type CreateDefaultCourseMemberFunction = (
+  courseMember: CourseMemberInput
+) => Promise<CourseMember>;
+
+export type createDefaultCourseMemberType = CreateDefaultCourseMemberFunction;
 
 export default async function createDefaultCourseMember(
   courseMember: CourseMemberInput

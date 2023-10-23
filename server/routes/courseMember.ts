@@ -13,8 +13,9 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
-import createHashedCourseMember from '../utils/createHashedCourseMember';
-import createDefaultCourseMember from '../utils/createDefaultCourseMember';
+import createHashedCourseMember, { createHashedCourseMemberType } from '../utils/createHashedCourseMember';
+
+import createDefaultCourseMember, { createDefaultCourseMemberType } from '../utils/createDefaultCourseMember';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -90,6 +91,11 @@ export const courseMemberRouter = router({
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
+        async function createAndReturnHashedCourseMember(createFunction: createDefaultCourseMemberType | createHashedCourseMemberType) {
+          const resEnrollment = await createFunction(requestData.input);
+          return { success: true, resEnrollment };
+        }
+
         const { courseId, email, name, role } = requestData.input;
         const { settings } = requestData.ctx;
 
