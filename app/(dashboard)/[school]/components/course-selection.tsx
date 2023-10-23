@@ -25,7 +25,7 @@ import { formatString } from '@/utils/globalFunctions';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CourseSelection({}: {}) {
+export default function CourseSelection() {
   const {
     selectedCourseId,
     courseMembersOfSelectedCourse,

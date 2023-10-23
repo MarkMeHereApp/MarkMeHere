@@ -168,6 +168,6 @@ model GlobalSiteSettings {
   lightTheme                      String        @db.VarChar(255) @default("light_neutral")
   darkTheme                       String        @db.VarChar(255) @default("dark_red")
   googleMapsApiKey                String?        @db.VarChar(255) 
-  allowModeratorsToUseGoogleMaps  Boolean?      
-  allowUsersToUseGoogleMaps       Boolean? 
+  allowModeratorsToUseGoogleMaps  Boolean         @default(false)
+  allowUsersToUseGoogleMaps       Boolean         @default(false)
 }
