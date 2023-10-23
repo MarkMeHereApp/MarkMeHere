@@ -26,7 +26,6 @@ export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 export default async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
-  console.log('Successfully reading site settings from context');
   const { name, email } = courseMember;
   const hashFunctions = prismaAdapterHashed(prisma);
   const hashedEmail = await bcrypt.hash(email, 10);
