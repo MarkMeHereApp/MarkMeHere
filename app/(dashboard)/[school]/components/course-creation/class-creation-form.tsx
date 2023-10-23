@@ -1,3 +1,4 @@
+'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
@@ -18,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Course } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { LMSCourseSelector } from './lms-course-selector';
 import {
   zLMSCourseSchemeType,
@@ -77,8 +78,7 @@ export default function CreateCourseForm({
     useState<zLMSCourseSchemeType | null>(null);
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
-  const { setUserCourses, setUserCourseMembers, setSelectedCourseId } =
-    useCourseContext();
+  const { setUserCourses, setUserCourseMembers } = useCourseContext();
   const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
 
@@ -150,8 +150,6 @@ export default function CreateCourseForm({
       const newCourse = handleCreateCourseResult.resCourse;
 
       setUserCourses((userCourses) => [...(userCourses || []), newCourse]);
-      setSelectedCourseId(newCourse.id);
-
       if (newEnrollment === null) {
         toast({
           title: `${newCourse.name} Added Successfully!`,

@@ -13,7 +13,7 @@ import { qrcode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from '@/app/context-course';
-import { useLecturesContext } from '@/app/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';
@@ -102,10 +102,10 @@ const QR = () => {
       ? searchParams.get('mode')
       : 'default';
 
-
-  const locationId = searchParams && searchParams.get('location')
-    ? searchParams.get('location')
-    : false
+  const locationId =
+    searchParams && searchParams.get('location')
+      ? searchParams.get('location')
+      : false;
 
   const [Stars, setStars] = React.useState<React.ComponentType | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
@@ -151,7 +151,7 @@ const QR = () => {
     courseId: 'LOADING',
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
-    ProfessorLectureGeolocationId: locationId || null 
+    ProfessorLectureGeolocationId: locationId || null
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer

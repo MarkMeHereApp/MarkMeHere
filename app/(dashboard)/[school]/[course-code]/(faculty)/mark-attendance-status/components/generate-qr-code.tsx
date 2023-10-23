@@ -41,7 +41,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const address = `${getPublicUrl()}`;
   const navigation = '/qr';
 
-  const professorGeolocationId = useRef('')
+  const professorGeolocationId = useRef('');
 
   const [isCopied, setCopied] = useState(false);
   const [svgValue, setSvgValue] = useState(
@@ -51,19 +51,16 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const firstParam = Cookies.get('qrSettings') || defaultParam;
 
   const [parameters, setParameters] = useState(firstParam);
-  
 
-  
-  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true)
-  
+  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true);
+
   const handleGeolocationChange = () => {
     setEnableGeolocation(!enableGeolocation);
     console.log(!enableGeolocation);
   };
 
-  const lectureLatitude = useRef<number>(0)
-  const lectureLongitude = useRef<number>(0)
-  
+  const lectureLatitude = useRef<number>(0);
+  const lectureLongitude = useRef<number>(0);
 
   const session = useSession();
   const userName = session?.data?.user?.name || '';
@@ -110,9 +107,10 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const getGeolocationData = () => {
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
             lectureLatitude.current = latitude;
             lectureLongitude.current = longitude;
@@ -151,38 +149,46 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     if (enableGeolocation) {
       const location = await getGeolocationData();
     }
-    
-    if(enableGeolocation){
-      const location = await getGeolocationData()
 
-      if(location){
-        console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`);
+    if (enableGeolocation) {
+      const location = await getGeolocationData();
 
-        try{
-  
-          if(!selectedCourseMemberId){
-            return 
+      if (location) {
+        console.log(
+          `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`
+        );
+
+        try {
+          if (!selectedCourseMemberId) {
+            return;
           }
 
-  
           const res = await createProfessorLectureGeolocation.mutateAsync({
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
             courseMemberId: selectedCourseMemberId
-          })
-          
-          professorGeolocationId.current = res.id
+          });
 
+          professorGeolocationId.current = res.id;
 
-          console.log(res)
-        }catch (error) {
-          console.log(error)
+          console.log(res);
+        } catch (error) {
+          console.log(error);
           // setError(error as Error);
-        }finally{
-          
-          console.log(navigation + parameters + '&location=' + professorGeolocationId.current)
-          router.push(navigation + parameters + '&location=' + professorGeolocationId.current)
+        } finally {
+          console.log(
+            navigation +
+              parameters +
+              '&location=' +
+              professorGeolocationId.current
+          );
+          router.push(
+            navigation +
+              parameters +
+              '&location=' +
+              professorGeolocationId.current
+          );
         }
       } else {
         console.log('unable to locate');

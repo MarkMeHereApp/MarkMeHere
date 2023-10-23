@@ -1,6 +1,6 @@
 import { Row } from '@tanstack/react-table';
 import { CourseMember } from '@prisma/client';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { trpc } from '@/app/_trpc/client';
 import {
   zAttendanceStatus,
@@ -12,7 +12,7 @@ import {
   CrossCircledIcon,
   CircleIcon
 } from '@radix-ui/react-icons';
-import { useLecturesContext } from '@/app/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import { AttendanceEntry } from '@prisma/client';
 import * as React from 'react';
 import { Toggle } from '@/components/ui/toggle';

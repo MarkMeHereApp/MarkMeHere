@@ -5,7 +5,7 @@ import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/generate-qr-code';
 import { useCourseContext } from '@/app/context-course';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
-import { useLecturesContext } from '@/app/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useRouter from next/router

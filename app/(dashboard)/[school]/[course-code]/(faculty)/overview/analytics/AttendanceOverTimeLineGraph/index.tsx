@@ -1,4 +1,4 @@
-import { lecturesType } from '../../../../../../../context-lecture';
+import { lecturesType } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import AttendanceOverTimeLineGraphDisplay, { CoupledData } from './display';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 

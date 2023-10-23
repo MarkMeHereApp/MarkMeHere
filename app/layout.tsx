@@ -4,8 +4,6 @@ import '@/styles/styles.scss';
 import { Suspense } from 'react';
 
 import { Providers } from './providers';
-import CoursesContext from '@/app/context-course';
-import LecturesContext from '@/app/context-lecture';
 import ProviderContextProvider from '@/app/context-auth-provider';
 
 import { getServerSession } from 'next-auth/next';
@@ -26,37 +24,6 @@ export default async function RootLayout({
 }) {
   const serverSession = await getServerSession();
   const email = serverSession?.user?.email || '';
-
-  // By fetching the CourseMemberships in this server component,
-  // it will be immediately available when the user navigates to the website.
-  const courseMemberships = await prisma.courseMember.findMany({
-    where: {
-      email: email
-    }
-  });
-
-  // Extract the course IDs from the CourseMember records
-  const courseIds = courseMemberships.map(
-    (courseMember) => courseMember.courseId
-  );
-
-  // Fetch the courses using the extracted IDs
-  const courses = await prisma.course.findMany({
-    where: {
-      id: {
-        in: courseIds
-      }
-    }
-  });
-
-  const userSelectedCourseId = await prisma.user.findFirst({
-    where: {
-      email: email
-    },
-    select: {
-      selectedCourseId: true
-    }
-  });
 
   const authProviders = await prisma.authProviderCredentials.findMany({
     select: {
@@ -79,13 +46,7 @@ export default async function RootLayout({
           <ProviderContextProvider
             initialActiveProviders={initialActiveProviders}
           >
-            <CoursesContext
-              userCourses={courses}
-              userCourseMembers={courseMemberships}
-              userSelectedCourseId={userSelectedCourseId?.selectedCourseId}
-            >
-              <LecturesContext>{children}</LecturesContext>
-            </CoursesContext>
+            {children}
           </ProviderContextProvider>
         </Providers>
       </body>

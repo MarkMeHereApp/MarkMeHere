@@ -1,9 +1,9 @@
 'use client';
 
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { useLecturesContext } from '../../../../../context-lecture';
+import { useLecturesContext } from '../../context-lecture';
 import { NoLecture } from './components/no-lecture';
 
 const OverviewAnalytics = dynamic(() => import('./analytics'));

@@ -14,12 +14,14 @@ type randomCourseMember = {
   role: zCourseRolesType;
 };
 
-const createRandomCourseMember = (selectedCourseId: string): randomCourseMember => ({
+const createRandomCourseMember = (
+  selectedCourseId: string
+): randomCourseMember => ({
   email: faker.internet.email(),
   name: faker.person.fullName(),
   courseId: selectedCourseId,
   role: 'student'
-}); 
+});
 
 const GenerateRandomCourseMember = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =

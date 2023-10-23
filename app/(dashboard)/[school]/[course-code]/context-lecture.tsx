@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from './context-course';
 
 export type lecturesType =
   | ({ attendanceEntries: AttendanceEntry[] } & Lecture)[]

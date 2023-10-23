@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 
 export default function MainNav({
   className,
@@ -67,9 +67,9 @@ export default function MainNav({
             displayText="Course Members"
           />
           <MainNavBarCustomLink
-                href="/student"
-                displayText="Student Dashboard"
-              />
+            href="/student"
+            displayText="Student Dashboard"
+          />
           {/* {selectedCourseRole == 'student' ? (
               <MainNavBarCustomLink
                 href="/student"

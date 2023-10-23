@@ -15,9 +15,7 @@ interface CourseContextType {
   setUserCourseMembers: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
-  selectedCourseId: string | null;
-  setSelectedCourseId: React.Dispatch<React.SetStateAction<string | null>>;
-
+  selectedCourseId: string;
   selectedCourseRole: string | null;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
@@ -32,8 +30,7 @@ const CourseContext = createContext<CourseContextType>({
   setUserCourses: () => {},
   userCourseMembers: [],
   setUserCourseMembers: () => {},
-  selectedCourseId: null,
-  setSelectedCourseId: () => {},
+  selectedCourseId: '',
   selectedCourseRole: null,
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {},
@@ -63,9 +60,12 @@ export default function CoursesContext({
     ? params['course-code'][0]
     : params['course-code'];
 
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
-    selectedCourseCode || null
-  );
+  if (!selectedCourseCode) {
+    throw new Error('No course code provided');
+  }
+
+  const [selectedCourseId, setSelectedCourseId] =
+    useState<string>(selectedCourseCode);
 
   const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
     null
@@ -78,15 +78,24 @@ export default function CoursesContext({
     new Date(new Date().setHours(0, 0, 0, 0))
   );
 
-  //This should only be called when we know the user is a professor or TA
+  const [queryEnabled, setQueryEnabled] = useState<boolean>(false);
+
+  const selectedCourseIdFromParam = userCourses?.find(
+    (course) => course.courseCode === selectedCourseCode
+  )?.id;
+
+  if (!selectedCourseIdFromParam) {
+    throw new Error('No course id found');
+  }
+
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
-      courseId: selectedCourseId || ''
+      courseId: selectedCourseIdFromParam
     },
     {
-      enabled: !!selectedCourseId,
+      enabled: queryEnabled,
       onSuccess: (data) => {
-        if (!data) return;
+        if (!data || !data.courseMembers) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
         setSelectedCourseRole(data?.courseMembership.role ?? null);
       }
@@ -99,12 +108,10 @@ export default function CoursesContext({
 
   useEffect(() => {
     if (selectedCourseId) {
-      const course = userCourses?.find(
-        (course) => course.courseCode === selectedCourseCode
-      );
       setCourseMembersOfSelectedCourse(null);
-      if (course) {
-        setSelectedCourseId(course.id);
+      if (selectedCourseIdFromParam) {
+        setSelectedCourseId(selectedCourseIdFromParam);
+        setQueryEnabled(true);
         courseMembers.refetch();
       }
     }
@@ -118,7 +125,6 @@ export default function CoursesContext({
         userCourseMembers,
         setUserCourseMembers,
         selectedCourseId,
-        setSelectedCourseId,
         selectedCourseRole,
         courseMembersOfSelectedCourse,
         setCourseMembersOfSelectedCourse,

@@ -1,26 +1,34 @@
-// course-creation-sheet.tsx
+'use client';
 import * as React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetClose,
-  SheetFooter
+  SheetFooter,
+  SheetTrigger
 } from '@/components/ui/sheet';
 import ClassCreationForm from './course-creation/class-creation-form';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 
-type CourseCreationSheetProps = {
-  showNewCourseSheet: boolean;
-  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
-};
+export const CourseCreationSheet = () => {
+  const [showNewCourseSheet, setShowNewCourseSheet] = React.useState(false);
 
-export const CourseCreationSheet: React.FC<CourseCreationSheetProps> = ({
-  showNewCourseSheet,
-  onOpenChange
-}) => {
+  const toggleSheet = () => {
+    setShowNewCourseSheet(!showNewCourseSheet);
+  };
+
   return (
-    <Sheet open={showNewCourseSheet} onOpenChange={onOpenChange}>
+    <Sheet open={showNewCourseSheet}>
+      <SheetTrigger asChild onClick={toggleSheet}>
+        <Button variant="outline" className="w-full">
+          {' '}
+          <PlusCircledIcon className="mr-2 h-5 w-5" />
+          Create Course
+        </Button>
+      </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader className="pb-2">
           <SheetTitle
@@ -41,7 +49,7 @@ export const CourseCreationSheet: React.FC<CourseCreationSheetProps> = ({
         >
           <ClassCreationForm
             onSuccess={() => {
-              onOpenChange(false);
+              setShowNewCourseSheet(false);
             }}
           />
 

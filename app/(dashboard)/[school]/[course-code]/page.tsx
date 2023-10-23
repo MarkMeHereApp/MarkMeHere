@@ -25,8 +25,8 @@ export default async function Page({
     where: { email: session.user.email, courseId: course.id }
   });
 
-  if (!courseMember || !course) {
-    throw new Error('No course found');
+  if (!courseMember) {
+    throw new Error('No course Membership found');
   }
 
   const page = courseMember.role === 'student' ? '/student' : '/overview';

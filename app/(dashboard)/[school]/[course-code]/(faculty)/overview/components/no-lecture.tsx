@@ -2,7 +2,7 @@
 
 import { firaSansFont } from '@/utils/fonts';
 import { Icons } from '@/components/ui/icons';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 
 export const NoLecture = () => {
   const { selectedCourseId, userCourses, userCourseMembers } =

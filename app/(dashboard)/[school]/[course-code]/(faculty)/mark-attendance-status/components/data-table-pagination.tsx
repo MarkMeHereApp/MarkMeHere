@@ -15,7 +15,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { dataTablePaginationSizes } from '@/utils/globalVariables';
-import { useLecturesContext } from '@/app/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import * as React from 'react';
 import { useEffect } from 'react';
 
@@ -27,10 +27,10 @@ export function DataTablePagination<TData>({
   table
 }: DataTablePaginationProps<TData>) {
   const { pageSize, setPageSize } = useLecturesContext();
-  
+
   useEffect(() => {
     table.setPageSize(pageSize);
-  }, [pageSize])
+  }, [pageSize]);
 
   return (
     <div className="flex items-center justify-between md:justify-end px-2">
@@ -44,7 +44,7 @@ export function DataTablePagination<TData>({
           <Select
             value={String(pageSize)}
             onValueChange={(value) => {
-                setPageSize(Number(value));
+              setPageSize(Number(value));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
