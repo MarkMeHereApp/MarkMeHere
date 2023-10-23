@@ -253,15 +253,13 @@ export const courseMemberRouter = router({
         }
 
         for (const memberData of courseMembers) {
+          const { optionalId } = memberData;
           if (memberData.role === zCourseRoles.enum.student) {
-            if (
-              memberData.optionalId !== null &&
-              memberData.optionalId !== undefined
-            ) {
+            if (optionalId) {
               const existingMember = await prisma.courseMember.findFirst({
                 where: {
                   courseId,
-                  optionalId: memberData.optionalId
+                  optionalId
                 }
               });
 
@@ -284,7 +282,6 @@ export const courseMemberRouter = router({
               }
             } else {
               // If optionalId is null or undefined, treat it as a new member (first-time import)
-              //Insert new courseMember here
 
               const createdMember = await createAndReturnCourseMember(
                 settings?.hashEmails
@@ -292,13 +289,6 @@ export const courseMemberRouter = router({
                   : createDefaultCourseMember,
                 { ...memberData, courseId }
               );
-
-              // const createdMember = await prisma.courseMember.create({
-              //   data: {
-              //     ...memberData,
-              //     courseId
-              //   }
-              // });
 
               upsertedCourseMembers.push(createdMember);
             }
