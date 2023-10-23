@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import createHashedCourseMember from '../utils/createHashedCourseMember';
+import createDefaultCourseMember from '../utils/createDefaultCourseMember';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -118,11 +119,7 @@ export const courseMemberRouter = router({
           return { success: true, resEnrollment };
         }
 
-        const resEnrollment = await prisma.courseMember.create({
-          data: {
-            ...requestData.input
-          }
-        });
+        const resEnrollment = await createDefaultCourseMember(requestData.input)
 
         return { success: true, resEnrollment };
       } catch (error) {

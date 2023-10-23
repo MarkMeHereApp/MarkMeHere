@@ -11,10 +11,15 @@ type CourseMemberInput = {
   optionalId?: string;
 };
 
+/* 
+Search for user with matching course member email 
+If user exists create the courseMember
+If user does not exist create the user and the course member
+*/
+
 export default async function createDefaultCourseMember(
   courseMember: CourseMemberInput
 ) {
-  console.log('Successfully reading site settings from context');
   const { name, email } = courseMember;
   const defaultFunctions = prismaAdapterDefault(prisma);
 
@@ -31,13 +36,13 @@ export default async function createDefaultCourseMember(
       });
     }
 
-    // const resEnrollment = await prisma.courseMember.create({
-    //   data: {
-    //     ...courseMember,
-    //     email: existingUser?.email ?? hashedEmail
-    //   }
-    // });
-    return true;
+    const resEnrollment = await prisma.courseMember.create({
+      data: {
+        ...courseMember,
+        email
+      }
+    });
+    return resEnrollment;
   } catch (error) {
     // Handle the error here (e.g., log it, throw a custom error, or return false).
     console.error('Error in createCourseMember:', error);
