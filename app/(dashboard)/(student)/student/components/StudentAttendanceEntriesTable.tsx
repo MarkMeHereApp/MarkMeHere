@@ -70,7 +70,7 @@ const StudentAttendanceEntriesTable: React.FC<StudentAttendanceEntriesTableProps
                                 {entry.LectureDate && format(new Date(entry.LectureDate), 'LLL dd, y')}
                             </TableCell>
                             <TableCell>{format(entry.dateMarked, 'LLL dd, y')}</TableCell>
-                            <TableCell className='text-right'>{entry.status}</TableCell>
+                            <TableCell className='text-right'>{entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}</TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
