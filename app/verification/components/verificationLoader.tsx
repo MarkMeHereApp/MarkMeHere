@@ -76,6 +76,7 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
         console.log(error);
       } finally {
         setIsLoadingSubmit(false);
+        router.push(`/student?attendanceTokenId=${code}`)
       }
     };
     
