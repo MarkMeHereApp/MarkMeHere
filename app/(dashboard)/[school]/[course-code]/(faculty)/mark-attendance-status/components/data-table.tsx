@@ -32,7 +32,7 @@ import { DataTableToolbar } from './data-table-toolbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';

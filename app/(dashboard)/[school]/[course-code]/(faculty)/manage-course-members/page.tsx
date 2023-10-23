@@ -3,7 +3,7 @@
 import DataTable from './DataTable';
 import { columns } from './columns';
 import { Button } from '@/components/ui/button';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';

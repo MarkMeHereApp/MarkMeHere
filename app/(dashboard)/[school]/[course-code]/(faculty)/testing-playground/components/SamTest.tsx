@@ -1,5 +1,5 @@
 'use client';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';

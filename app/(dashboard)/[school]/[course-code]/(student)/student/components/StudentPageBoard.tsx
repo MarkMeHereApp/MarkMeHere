@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { useSession } from 'next-auth/react';
 import AttendanceView from './AttendanceView';
 import { CourseMember } from '@prisma/client';

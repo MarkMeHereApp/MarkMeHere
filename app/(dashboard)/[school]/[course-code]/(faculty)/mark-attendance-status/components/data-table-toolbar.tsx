@@ -18,7 +18,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { useLecturesContext } from '../../../context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';

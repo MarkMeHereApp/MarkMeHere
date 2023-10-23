@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../components/ui/select';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { toastSuccess } from '../globalFunctions';
 import Loading from '@/components/general/loading';

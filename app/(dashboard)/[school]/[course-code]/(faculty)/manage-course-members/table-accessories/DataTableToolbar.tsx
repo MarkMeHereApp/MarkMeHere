@@ -8,7 +8,7 @@ import { Table } from '@tanstack/react-table';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
 import { roles } from './dataUtils';
 import { trpc } from '@/app/_trpc/client';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { CourseMember } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
 import { useSession } from 'next-auth/react';

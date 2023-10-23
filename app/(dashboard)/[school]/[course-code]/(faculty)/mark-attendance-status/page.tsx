@@ -3,7 +3,7 @@
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/generate-qr-code';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
 import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 import { useQueryClient } from '@tanstack/react-query';

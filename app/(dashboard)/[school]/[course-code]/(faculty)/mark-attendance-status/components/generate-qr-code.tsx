@@ -26,7 +26,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { trpc } from '@/app/_trpc/client';
 import { useSession } from 'next-auth/react';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
 import { CourseMember } from '@prisma/client';
 import { geolocationRouter } from '@/server/routes/geolocation';
 import { getPublicUrl } from '@/utils/globalFunctions';
