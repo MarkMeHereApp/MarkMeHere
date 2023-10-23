@@ -15,18 +15,24 @@ async function validateAndCreateToken(
       }
     });
 
+    console.log(qrResult + 'error')
+
     if (qrResult === null) {
       return { success: false };
     }
 
+    console.log(qrResult.ProfessorLectureGeolocationId)
+
     const { id } = await prisma.attendanceToken.create({
       data: {
+        token: uuidv4(),
         lectureId: qrResult.lectureId,
-        token: uuidv4()
+        ProfessorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
       }
     });
 
-    return { success: true, token: id };
+    
+    return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId };
   } catch (error) {
     throw error;
   }
@@ -37,8 +43,7 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
   
 
   let qrCode = ''
-  let error = ''
-  
+  let error = ''  
   
 
   const handleToken = async () => {
@@ -46,7 +51,7 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
     const res = await validateAndCreateToken(qrCode)
   
     if(res){
-      return res.token;
+      return res;
     } else {
 
     }
@@ -55,22 +60,32 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
 
   //Checking if the submit page was called via scanning a QR code or accessed by typing /submit
   //If ?qr=XXXXX is included, we call handleToken(), which calls the validation endpoint.
+  
 
   if(searchParams.hasOwnProperty('qr')){
     console.log("QR Param included")
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
-    
-    const receivedToken = await handleToken(); 
 
-    //If we recieve a valid token (in the end the ID) we redirect directly since the token is valid
-    if(receivedToken){
-      redirect(`/student?attendanceTokenId=${receivedToken}`)
+    const validateToken = await handleToken();
+    const location = validateToken?.location
+    const id = validateToken?.token
+
+    if(validateToken?.success){
+      if(location && id){
+        console.log('the token as location included: ' + location + 'token id: ' + id)
+        redirect(`/verification?attendanceTokenId=${id}`)
+      }
+      
+      if(!location && id){
+        console.log('location not included only token id: ' + id)
+        redirect(`/student?attendanceTokenId=${id}`)
+      }
     }
 
-    //If the token was not found valid, we continue to /submit?qr-error, that is just to trigger the error in the input page
     else{
       redirect(`/submit?error=qr-error`)//add error to the url and then retrieve it 
     }
+
   }
 
 

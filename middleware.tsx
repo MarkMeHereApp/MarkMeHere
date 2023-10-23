@@ -133,5 +133,5 @@ export default withAuth(
 export const config = {
   // Matches the entire project except for the routes between the | characters.
   matcher:
-    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/sessionless|unauthorized-email).*)'
+    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email).*)'
 };
