@@ -118,11 +118,11 @@ export const courseMemberRouter = router({
           );
         }
 
-        if (settings?.hashEmails) {
-          return await createAndReturnCourseMember(createHashedCourseMember);
-        } else {
-          return await createAndReturnCourseMember(createDefaultCourseMember);
-        }
+        return await createAndReturnCourseMember(
+          settings?.hashEmails
+            ? createHashedCourseMember
+            : createDefaultCourseMember
+        );
       } catch (error) {
         throw generateTypedError(error as Error);
       }
@@ -237,6 +237,7 @@ export const courseMemberRouter = router({
       try {
         const courseId = requestData.input.courseId;
         const courseMembers = requestData.input.courseMembers;
+        const { settings } = requestData.ctx;
         const upsertedCourseMembers = [];
         for (const memberData of courseMembers) {
           if (memberData.role === zCourseRoles.enum.student) {
@@ -281,15 +282,21 @@ export const courseMemberRouter = router({
                   ...memberData,
                   courseId
                 });
-                return { success: true, resEnrollment };
+                return resEnrollment;
               }
 
-              const createdMember = await prisma.courseMember.create({
-                data: {
-                  ...memberData,
-                  courseId
-                }
-              });
+              const createdMember = await createAndReturnCourseMember(
+                settings?.hashEmails
+                  ? createHashedCourseMember
+                  : createDefaultCourseMember
+              );
+
+              // const createdMember = await prisma.courseMember.create({
+              //   data: {
+              //     ...memberData,
+              //     courseId
+              //   }
+              // });
 
               upsertedCourseMembers.push(createdMember);
             }
@@ -299,7 +306,7 @@ export const courseMemberRouter = router({
         // Fetch all course members after the upsert operation
         const allCourseMembersOfClass = await prisma.courseMember.findMany({
           where: {
-            courseId: requestData.input.courseId
+            courseId
           }
         });
 
