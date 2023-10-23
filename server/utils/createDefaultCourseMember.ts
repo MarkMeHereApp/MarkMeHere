@@ -19,7 +19,7 @@ If user does not exist create the user and the course member
 */
 type CreateDefaultCourseMemberFunction = (
   courseMember: CourseMemberInput
-) => Promise<CourseMember>;
+) => Promise<false | CourseMember>;
 
 export type createDefaultCourseMemberType = CreateDefaultCourseMemberFunction;
 

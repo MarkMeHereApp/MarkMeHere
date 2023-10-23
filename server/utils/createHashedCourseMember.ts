@@ -9,28 +9,32 @@ import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAda
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 
 type CourseMemberInput = {
-    name: string;
-    email: string;
-    role: zCourseRolesType
-    courseId: string;
-    lmsId?: string
-    optionalId?: string
-  };
+  name: string;
+  email: string;
+  role: zCourseRolesType;
+  courseId: string;
+  lmsId?: string;
+  optionalId?: string;
+};
 
-  type CreateHashedCourseMemberFunction = (
-    courseMember: CourseMemberInput
-  ) => Promise<CourseMember>;
+type CreateHashedCourseMemberFunction = (
+  courseMember: CourseMemberInput
+) => Promise<false | CourseMember>;
 
-  export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
+export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 
-export default async function createHashedCourseMember(courseMember: CourseMemberInput) {
+//Add try and catch here
+export default async function createHashedCourseMember(
+  courseMember: CourseMemberInput
+) {
+  try {
     console.log('Successfully reading site settings from context');
-    const { name, email } = courseMember
+    const { name, email } = courseMember;
     const hashFunctions = prismaAdapterHashed(prisma);
     const hashedEmail = await bcrypt.hash(email, 10);
-  
+
     const existingUser = await hashFunctions.getUserByEmail(email);
-  
+
     if (!existingUser) {
       await prisma.user.create({
         data: {
@@ -40,7 +44,7 @@ export default async function createHashedCourseMember(courseMember: CourseMembe
         }
       });
     }
-  
+
     const resEnrollment = await prisma.courseMember.create({
       data: {
         ...courseMember,
@@ -48,4 +52,9 @@ export default async function createHashedCourseMember(courseMember: CourseMembe
       }
     });
     return resEnrollment;
+  } catch (error) {
+    // Handle the error here (e.g., log it, throw a custom error, or return false).
+    console.error('Error in createHashedCourseMember:', error);
+    return false;
   }
+}

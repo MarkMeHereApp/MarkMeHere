@@ -13,9 +13,13 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
-import createHashedCourseMember, { createHashedCourseMemberType } from '../utils/createHashedCourseMember';
+import createHashedCourseMember, {
+  createHashedCourseMemberType
+} from '../utils/createHashedCourseMember';
 
-import createDefaultCourseMember, { createDefaultCourseMemberType } from '../utils/createDefaultCourseMember';
+import createDefaultCourseMember, {
+  createDefaultCourseMemberType
+} from '../utils/createDefaultCourseMember';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -91,7 +95,11 @@ export const courseMemberRouter = router({
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
-        async function createAndReturnHashedCourseMember(createFunction: createDefaultCourseMemberType | createHashedCourseMemberType) {
+        async function createAndReturnCourseMember(
+          createFunction:
+            | createDefaultCourseMemberType
+            | createHashedCourseMemberType
+        ) {
           const resEnrollment = await createFunction(requestData.input);
           return { success: true, resEnrollment };
         }
@@ -109,25 +117,12 @@ export const courseMemberRouter = router({
             })
           );
         }
-        /* 
-        Search all users to see if user with specified email already exists
-        If it does not exist create a new user and coursemember with the given email hashed
-        If it does exist create a new coursemember with the existing users hashed email
-        */
 
-        /* In each of these routes when we add course members we will have a hashed function
-        that performs this or a normal funciton that performs this 
-        */
-       //For both hashed and unhashed emails create users for both of them if they dont exist yet
-       //Create search route for users based on email
         if (settings?.hashEmails) {
-          const resEnrollment = await createHashedCourseMember(requestData.input);
-          return { success: true, resEnrollment };
+          return await createAndReturnCourseMember(createHashedCourseMember);
+        } else {
+          return await createAndReturnCourseMember(createDefaultCourseMember);
         }
-
-        const resEnrollment = await createDefaultCourseMember(requestData.input)
-
-        return { success: true, resEnrollment };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
