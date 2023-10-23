@@ -19,7 +19,7 @@ If user does not exist create the user and the course member
 */
 type CreateDefaultCourseMemberFunction = (
   courseMember: CourseMemberInput
-) => Promise<false | CourseMember>;
+) => Promise<CourseMember>;
 
 export type createDefaultCourseMemberType = CreateDefaultCourseMemberFunction;
 
@@ -29,29 +29,23 @@ export default async function createDefaultCourseMember(
   const { name, email } = courseMember;
   const defaultFunctions = prismaAdapterDefault(prisma);
 
-  try {
-    const existingUser = await defaultFunctions.getUserByEmail(email);
+  const existingUser = await defaultFunctions.getUserByEmail(email);
 
-    if (!existingUser) {
-      await prisma.user.create({
-        data: {
-          name: name,
-          email: email,
-          role: zSiteRoles.enum.user
-        }
-      });
-    }
-
-    const resEnrollment = await prisma.courseMember.create({
+  if (!existingUser) {
+    await prisma.user.create({
       data: {
-        ...courseMember,
-        email
+        name: name,
+        email: email,
+        role: zSiteRoles.enum.user
       }
     });
-    return resEnrollment;
-  } catch (error) {
-    // Handle the error here (e.g., log it, throw a custom error, or return false).
-    console.error('Error in createCourseMember:', error);
-    return false;
   }
+
+  const resEnrollment = await prisma.courseMember.create({
+    data: {
+      ...courseMember,
+      email
+    }
+  });
+  return resEnrollment;
 }

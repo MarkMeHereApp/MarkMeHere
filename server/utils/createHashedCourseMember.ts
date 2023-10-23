@@ -19,41 +19,35 @@ type CourseMemberInput = {
 
 type CreateHashedCourseMemberFunction = (
   courseMember: CourseMemberInput
-) => Promise<false | CourseMember>;
+) => Promise<CourseMember>;
 
 export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 
 export default async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
-  try {
-    console.log('Successfully reading site settings from context');
-    const { name, email } = courseMember;
-    const hashFunctions = prismaAdapterHashed(prisma);
-    const hashedEmail = await bcrypt.hash(email, 10);
+  console.log('Successfully reading site settings from context');
+  const { name, email } = courseMember;
+  const hashFunctions = prismaAdapterHashed(prisma);
+  const hashedEmail = await bcrypt.hash(email, 10);
 
-    const existingUser = await hashFunctions.getUserByEmail(email);
+  const existingUser = await hashFunctions.getUserByEmail(email);
 
-    if (!existingUser) {
-      await prisma.user.create({
-        data: {
-          name: name,
-          email: hashedEmail,
-          role: zSiteRoles.enum.user
-        }
-      });
-    }
-
-    const resEnrollment = await prisma.courseMember.create({
+  if (!existingUser) {
+    await prisma.user.create({
       data: {
-        ...courseMember,
-        email: existingUser?.email ?? hashedEmail
+        name: name,
+        email: hashedEmail,
+        role: zSiteRoles.enum.user
       }
     });
-    return resEnrollment;
-  } catch (error) {
-    // Handle the error here (e.g., log it, throw a custom error, or return false).
-    console.error('Error in createHashedCourseMember:', error);
-    return false;
   }
+
+  const resEnrollment = await prisma.courseMember.create({
+    data: {
+      ...courseMember,
+      email: existingUser?.email ?? hashedEmail
+    }
+  });
+  return resEnrollment;
 }
