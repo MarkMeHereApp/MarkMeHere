@@ -235,11 +235,10 @@ export const courseMemberRouter = router({
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
-        const hashFunctions = prismaAdapterHashed(prisma);
-        const { courseId } = requestData.input;
-        const { settings } = requestData.ctx;
+        const courseId = requestData.input.courseId;
+        const courseMembers = requestData.input.courseMembers;
         const upsertedCourseMembers = [];
-        for (const memberData of requestData.input.courseMembers) {
+        for (const memberData of courseMembers) {
           if (memberData.role === zCourseRoles.enum.student) {
             if (
               memberData.optionalId !== null &&
@@ -258,9 +257,6 @@ export const courseMemberRouter = router({
                   where: { id: existingMember.id },
                   data: memberData
                 });
-
-                //Check here if emails are hashed If they are hash the email before updating member info
-                //This new member data IE email needs to be hashed
                 upsertedCourseMembers.push(updatedMember);
               } else {
                 // If the member doesn't exist and optionalId is not null, create it
@@ -272,21 +268,29 @@ export const courseMemberRouter = router({
                 });
                 upsertedCourseMembers.push(createdMember);
               }
-            } else if (settings?.hashEmails) {
-              const courseMember = { ...memberData, courseId };
-              const hashedMember = await createHashedCourseMember(courseMember);
-              upsertedCourseMembers.push(hashedMember);
             } else {
-              /* 
-              If optionalId is null or undefined and emails are not hashed, 
-              treat it as a new member (first-time import)
-              */
+              // If optionalId is null or undefined, treat it as a new member (first-time import)
+              //Insert new courseMember here
+
+              async function createAndReturnCourseMember(
+                createFunction:
+                  | createDefaultCourseMemberType
+                  | createHashedCourseMemberType
+              ) {
+                const resEnrollment = await createFunction({
+                  ...memberData,
+                  courseId
+                });
+                return { success: true, resEnrollment };
+              }
+
               const createdMember = await prisma.courseMember.create({
                 data: {
                   ...memberData,
                   courseId
                 }
               });
+
               upsertedCourseMembers.push(createdMember);
             }
           }

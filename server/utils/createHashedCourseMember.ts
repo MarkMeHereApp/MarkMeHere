@@ -29,6 +29,7 @@ export default async function createHashedCourseMember(
   const { name, email } = courseMember;
   const hashFunctions = prismaAdapterHashed(prisma);
   const hashedEmail = await bcrypt.hash(email, 10);
+  console.log(hashedEmail)
 
   const existingUser = await hashFunctions.getUserByEmail(email);
 
