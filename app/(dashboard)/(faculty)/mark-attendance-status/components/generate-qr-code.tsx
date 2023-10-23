@@ -148,9 +148,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
     );
 
-    if (enableGeolocation) {
-      const location = await getGeolocationData();
-    }
     
     if(enableGeolocation){
       const location = await getGeolocationData()
