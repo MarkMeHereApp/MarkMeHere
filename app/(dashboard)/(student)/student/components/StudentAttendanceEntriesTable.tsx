@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
 import {
     Card,
     CardContent
@@ -15,6 +16,8 @@ import {
     TableRow,
   } from "@/components/ui/table";
 import { AttendanceEntry } from '@prisma/client';
+import { useLecturesContext } from '@/app/context-lecture';
+import { ExtendedAttendanceEntry } from '@/types/sharedZodTypes';
 
 interface StudentAttendanceEntriesTableProps {
     attendanceEntries: AttendanceEntry[];
@@ -23,21 +26,51 @@ interface StudentAttendanceEntriesTableProps {
 const StudentAttendanceEntriesTable: React.FC<StudentAttendanceEntriesTableProps> = ({
     attendanceEntries
 }) => {
+  const [extendedEntries, setExtendedEntries] = React.useState<ExtendedAttendanceEntry[]>([]);
+  const { lectures } = useLecturesContext();  
+
+  const getLectureDate = (lectureId: string) => {
+    const curLecture = lectures?.find((lecture) => lecture.id === lectureId);
+    return curLecture?.lectureDate;
+  };
+
+  useEffect(() => {
+    const sortedEntries = attendanceEntries.sort((a, b) => {
+        const aLectureDate = getLectureDate(a.lectureId);
+        const bLectureDate = getLectureDate(b.lectureId);
+        if (aLectureDate && bLectureDate) {
+          return Number(bLectureDate) - Number(aLectureDate);
+        }
+        return 0;
+      });
+    const newEntries: ExtendedAttendanceEntry[] = sortedEntries.map((entry) => {
+        return {
+            ...entry, 
+            LectureDate: getLectureDate(entry.lectureId), 
+        };
+    });
+    setExtendedEntries(newEntries);
+  }, [attendanceEntries]);
+
   return (
         <Card className='h-full'>
             <CardContent className='p-4'> 
                 <Table>
                     <TableHeader>
-                        <TableRow className="flex justify-between">
+                        <TableRow>
+                            <TableHead className='w-[120px] text-bold'>Date</TableHead>
                             <TableHead className='text-bold'>Date Marked</TableHead>
-                            <TableHead className='text-bold'>Status</TableHead>
+                            <TableHead className='text-right text-bold'>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {attendanceEntries.map((entry) => (
-                        <TableRow className="flex justify-between text-right" key={entry.id}>
+                        {extendedEntries.map((entry) => (
+                        <TableRow key={entry.id}>
+                            <TableCell>
+                                {entry.LectureDate && format(new Date(entry.LectureDate), 'LLL dd, y')}
+                            </TableCell>
                             <TableCell>{format(entry.dateMarked, 'LLL dd, y')}</TableCell>
-                            <TableCell>{entry.status}</TableCell>
+                            <TableCell className='text-right'>{entry.status}</TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
