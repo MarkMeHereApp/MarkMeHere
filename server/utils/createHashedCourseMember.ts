@@ -23,7 +23,6 @@ type CreateHashedCourseMemberFunction = (
 
 export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 
-//Add try and catch here
 export default async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
