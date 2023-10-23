@@ -10,7 +10,7 @@ import {
   SheetFooter,
   SheetTrigger
 } from '@/components/ui/sheet';
-import ClassCreationForm from './course-creation/class-creation-form';
+import ClassCreationForm from '../../components/course-creation/class-creation-form';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 
 export const CourseCreationSheet = () => {

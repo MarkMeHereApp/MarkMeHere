@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/components/theme/theme-toggle';
+import { ModeToggle } from '@/app/(dashboard)/[school]/components/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';

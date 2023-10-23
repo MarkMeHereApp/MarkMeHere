@@ -3,8 +3,11 @@
 import * as React from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
+import { useSchoolContext } from './context-school';
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  const { themes } = useSchoolContext();
+
   return (
     <NextThemesProvider
       themes={[
@@ -34,7 +37,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
         'light_purple'
       ]}
       enableSystem={false}
-      {...props}
+      defaultTheme={themes.light}
+      attribute="class"
     >
       {children}
     </NextThemesProvider>

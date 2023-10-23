@@ -1,12 +1,11 @@
-import MainBar from '@/app/(dashboard)/[school]/components/main-bar';
-import { ThemeProvider } from '@/app/theme-provider';
+import MainBar from './components/main-bar';
 import prisma from '@/prisma';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import CoursesContext from './context-course';
 import LecturesContext from './context-lecture';
 
-export default async function DashboardLayout({
+export default async function CourseLayout({
   children,
   params
 }: {
@@ -19,14 +18,6 @@ export default async function DashboardLayout({
 
   if (!email) {
     throw new Error('No email found in session');
-  }
-
-  const school = await prisma.globalSiteSettings.findFirst({
-    where: { schoolAbbreviation: params.school }
-  });
-
-  if (!school) {
-    redirect('/');
   }
 
   // By fetching the CourseMemberships in this server component,
@@ -50,22 +41,17 @@ export default async function DashboardLayout({
     redirect('/');
   }
 
-  const darkTheme = school.darkTheme;
-  const lightTheme = school.lightTheme;
-
   return (
     <>
-      <ThemeProvider attribute="class" defaultTheme={darkTheme}>
-        <CoursesContext
-          userCourseMembers={courseMembershipShips}
-          userCourses={courses}
-        >
-          <LecturesContext>
-            <MainBar darkTheme={darkTheme} lightTheme={lightTheme} />
-            {children}
-          </LecturesContext>
-        </CoursesContext>
-      </ThemeProvider>
+      <CoursesContext
+        userCourseMembers={courseMembershipShips}
+        userCourses={courses}
+      >
+        <LecturesContext>
+          <MainBar />
+          {children}
+        </LecturesContext>
+      </CoursesContext>
     </>
   );
 }

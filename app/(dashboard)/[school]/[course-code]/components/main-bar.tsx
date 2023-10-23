@@ -1,20 +1,14 @@
 'use client';
 
-import { ModeToggle } from '@/components/theme/theme-toggle';
-import UserNav from './user-nav';
+import { ModeToggle } from '@/app/(dashboard)/[school]/components/theme-toggle';
+import UserNav from '../../components/user-nav';
 import MainNav from './main-nav';
 import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';
 import { Icons } from '@/components/ui/icons';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
-export default function MainBar({
-  lightTheme,
-  darkTheme
-}: {
-  lightTheme: string;
-  darkTheme: string;
-}) {
+export default function MainBar() {
   const isQRCodePage = usePathname() === '/qr';
 
   const divClassName = !isQRCodePage
@@ -35,7 +29,7 @@ export default function MainBar({
           <CourseSelection />
         </div>
         <div className="flex align-top items-center justify-end space-x-4 mt-2">
-          <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
+          <ModeToggle />
           <UserNav />
         </div>
       </div>

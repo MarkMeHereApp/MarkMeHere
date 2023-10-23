@@ -5,15 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSchoolContext } from '@/app/(dashboard)/[school]/context-school';
 
-export function ModeToggle({
-  lightTheme,
-  darkTheme
-}: {
-  lightTheme: string;
-  darkTheme: string;
-}) {
+export function ModeToggle() {
   const { theme, setTheme, themes } = useTheme();
+
+  const { themes: schoolThemes } = useSchoolContext();
 
   const [mounted, setMounted] = useState(false);
 
@@ -30,8 +27,8 @@ export function ModeToggle({
     );
   }
 
-  const defaultLight = lightTheme || 'light_zinc';
-  const defaultDark = darkTheme || 'dark_blue';
+  const defaultLight = schoolThemes.light || 'light_zinc';
+  const defaultDark = schoolThemes.dark || 'dark_blue';
 
   const toggleTheme = () => {
     if (theme?.startsWith('dark_')) {
