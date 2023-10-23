@@ -8,7 +8,7 @@ import { defaultSiteSettings } from '@/utils/globalVariables';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 
-type CourseMemberInput = {
+export type CourseMemberInput = {
   name: string;
   email: string;
   role: zCourseRolesType;
@@ -16,12 +16,6 @@ type CourseMemberInput = {
   lmsId?: string;
   optionalId?: string;
 };
-
-type CreateHashedCourseMemberFunction = (
-  courseMember: CourseMemberInput
-) => Promise<CourseMember>;
-
-export type createHashedCourseMemberType = CreateHashedCourseMemberFunction;
 
 export default async function createHashedCourseMember(
   courseMember: CourseMemberInput
@@ -51,3 +45,7 @@ export default async function createHashedCourseMember(
   });
   return resEnrollment;
 }
+
+export type CreateHashedCourseMemberType = (
+  courseMember: CourseMemberInput
+) => Promise<CourseMember>;

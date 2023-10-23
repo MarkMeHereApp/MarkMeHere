@@ -14,12 +14,14 @@ import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import createHashedCourseMember, {
-  createHashedCourseMemberType
+  CreateHashedCourseMemberType
 } from '../utils/createHashedCourseMember';
 
 import createDefaultCourseMember, {
-  createDefaultCourseMemberType
+  CourseMemberInput,
+  CreateDefaultCourseMemberType
 } from '../utils/createDefaultCourseMember';
+import { CourseMember } from '@prisma/client';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -97,8 +99,8 @@ export const courseMemberRouter = router({
       try {
         async function createAndReturnCourseMember(
           createFunction:
-            | createDefaultCourseMemberType
-            | createHashedCourseMemberType
+            | CreateDefaultCourseMemberType
+            | CreateHashedCourseMemberType
         ) {
           const resEnrollment = await createFunction(requestData.input);
           return { success: true, resEnrollment };
@@ -239,6 +241,17 @@ export const courseMemberRouter = router({
         const courseMembers = requestData.input.courseMembers;
         const { settings } = requestData.ctx;
         const upsertedCourseMembers = [];
+
+        async function createAndReturnCourseMember(
+          createFunction:
+            | CreateDefaultCourseMemberType
+            | CreateHashedCourseMemberType,
+          courseMember: CourseMemberInput
+        ) {
+          const resEnrollment = await createFunction(courseMember);
+          return resEnrollment;
+        }
+
         for (const memberData of courseMembers) {
           if (memberData.role === zCourseRoles.enum.student) {
             if (
@@ -273,22 +286,11 @@ export const courseMemberRouter = router({
               // If optionalId is null or undefined, treat it as a new member (first-time import)
               //Insert new courseMember here
 
-              async function createAndReturnCourseMember(
-                createFunction:
-                  | createDefaultCourseMemberType
-                  | createHashedCourseMemberType
-              ) {
-                const resEnrollment = await createFunction({
-                  ...memberData,
-                  courseId
-                });
-                return resEnrollment;
-              }
-
               const createdMember = await createAndReturnCourseMember(
                 settings?.hashEmails
                   ? createHashedCourseMember
-                  : createDefaultCourseMember
+                  : createDefaultCourseMember,
+                { ...memberData, courseId }
               );
 
               // const createdMember = await prisma.courseMember.create({
