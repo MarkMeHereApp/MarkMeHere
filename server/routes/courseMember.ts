@@ -79,6 +79,11 @@ If emails are hashed, create user along with coursemember
 if email does not already exist in user table.
 */
 
+/* 
+No matter if emails are hashed or not we are making a user
+account if it does not exist 
+*/
+
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
@@ -102,8 +107,13 @@ export const courseMemberRouter = router({
         If it does not exist create a new user and coursemember with the given email hashed
         If it does exist create a new coursemember with the existing users hashed email
         */
-        if (settings?.hashEmails) {
 
+        /* In each of these routes when we add course members we will have a hashed function
+        that performs this or a normal funciton that performs this 
+        */
+       //For both hashed and unhashed emails create users for both of them if they dont exist yet
+       //Create search route for users based on email
+        if (settings?.hashEmails) {
           const resEnrollment = await createHashedCourseMember(requestData.input);
           return { success: true, resEnrollment };
         }
