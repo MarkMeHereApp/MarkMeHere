@@ -58,19 +58,19 @@ const StudentAttendanceEntriesTable: React.FC<StudentAttendanceEntriesTableProps
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className='w-[120px] text-bold'>Date</TableHead>
-                            <TableHead className='text-bold'>Date Marked</TableHead>
-                            <TableHead className='text-right text-bold'>Status</TableHead>
+                            <TableHead className='w-[120px] font-semibold'>Date</TableHead>
+                            <TableHead className='font-semibold'>Date Marked</TableHead>
+                            <TableHead className='text-right font-semibold'>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {extendedEntries.map((entry) => (
                         <TableRow key={entry.id}>
-                            <TableCell>
+                            <TableCell className='font-normal'>
                                 {entry.LectureDate && format(new Date(entry.LectureDate), 'LLL dd, y')}
                             </TableCell>
-                            <TableCell>{format(entry.dateMarked, 'LLL dd, y')}</TableCell>
-                            <TableCell className='text-right'>{entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}</TableCell>
+                            <TableCell className='font-normal'>{format(entry.dateMarked, 'LLL dd, y')}</TableCell>
+                            <TableCell className='text-right font-normal'>{entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}</TableCell>
                         </TableRow>
                         ))}
                     </TableBody>

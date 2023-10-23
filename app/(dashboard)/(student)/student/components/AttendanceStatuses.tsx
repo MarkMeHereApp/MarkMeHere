@@ -25,7 +25,7 @@ const AttendanceStatuses: React.FC<AttendanceStatusesProps> = ({
     <Card>
         <CardContent className='p-2 flex flex-row items-center justify-center w-full'> 
             <div className='grid grid-cols-2 lg:grid-cols-4 gap-x-14'>
-                <div className='p-2 flex flex-col text-center font-bold '>
+                <div className='p-2 flex flex-col text-center font-semibold'>
                     <div className='flex flex-row items-center'>
                         <CheckCircledIcon className="mr-2 h-16 w-16" />
                         <div className='flex flex-col text-start'>
@@ -34,7 +34,7 @@ const AttendanceStatuses: React.FC<AttendanceStatusesProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className='p-2 flex flex-col text-center font-bold '>
+                <div className='p-2 flex flex-col text-center font-semibold'>
                     <div className='flex flex-row items-center'>
                         <CircleIcon className="mr-2 h-16 w-16" />
                         <div className='flex flex-col text-start'>
@@ -43,7 +43,7 @@ const AttendanceStatuses: React.FC<AttendanceStatusesProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className='p-2 flex flex-col text-center font-bold '>
+                <div className='p-2 flex flex-col text-center font-semibold'>
                     <div className='flex flex-row items-center'>
                         <ClockIcon className="mr-2 h-16 w-16" />
                         <div className='flex flex-col text-start'>
@@ -52,11 +52,11 @@ const AttendanceStatuses: React.FC<AttendanceStatusesProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className='p-2 flex flex-col text-center font-bold '>
+                <div className='p-2 flex flex-col text-center font-semibold'>
                     <div className='flex flex-row items-center'>
                         <CrossCircledIcon className="mr-2 h-16 w-16" />
                         <div className='flex flex-col text-start'>
-                            <span className='text-4xl text-destructive'>{String(attendanceData[3].value) + '%'}</span>
+                            <span className='text-4xl'>{String(attendanceData[3].value) + '%'}</span>
                             <span className='text-xl'>ABSENT</span>
                         </div>
                     </div>

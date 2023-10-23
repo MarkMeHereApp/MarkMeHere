@@ -46,8 +46,9 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
 
     const calculateAttendanceEntryData = (attendanceEntries: AttendanceEntry[]) => {
         const totalAttendanceEntries = attendanceEntries.length;
-        // here (green), absent (red), excused (yellow), late (orange)
-        const colors = ['#FBCE13', '#7F1D1D', '#ffc425', '#f37736'];
+
+        // attended (green), not attended (red)
+        const colors = ['#2B7113','#C1201B'];
 
         const hereEntries = attendanceEntries.filter((entry: AttendanceEntry) => {
             return entry.status === 'here';
@@ -62,7 +63,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
             return entry.status === 'absent';
         });
 
-        const pieData1 = [
+        const pieData = [
             {
                 label: 'Attended',
                 name: 'Attended',
@@ -78,33 +79,29 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
             },
         ];
 
-        const pieData2 = [
+        const statusData = [
             {
                 label: 'Here',
                 name: 'Here',
                 value: Math.round((hereEntries.length / totalAttendanceEntries) * 100),
-                fill: colors[0]
             },
             {
                 label: 'Excused',
                 name: 'Excused',
                 value: Math.round((excusedEntries.length / totalAttendanceEntries) * 100),
-                fill: colors[2]
             },
             {
                 label: 'Late',
                 name: 'Late',
                 value: Math.round((lateEntries.length / totalAttendanceEntries) * 100),
-                fill: colors[3]
             },
             {
                 label: 'Absent',
                 name: 'Absent',
                 value: Math.round((absentEntries.length / totalAttendanceEntries) * 100),
-                fill: colors[1]
             }
         ];
-        setAttendanceData([pieData1, pieData2]);
+        setAttendanceData([pieData, statusData]);
     };
 
     const getAttendanceEntries = () => {
