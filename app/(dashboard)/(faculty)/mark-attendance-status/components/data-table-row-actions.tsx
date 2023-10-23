@@ -95,13 +95,13 @@ export function DataTableRowActions<TData>({
     const lecture = getCurrentLecture();
     if (lectures && lecture) {
       try {
-        const newEntry: AttendanceEntry = {
-          id: 'predicted',
-          status: status,
-          courseMemberId: courseMemberData.id,
-          lectureId: lecture.id,
-          dateMarked: new Date()
-        };
+        // const newEntry: AttendanceEntry = {
+        //   id: 'predicted',
+        //   status: status,
+        //   courseMemberId: courseMemberData.id,
+        //   lectureId: lecture.id,
+        //   dateMarked: new Date()
+        // };
 
         //We should update the state here for responsiveness
         // But if the lecture context useQuery is not yet finished during a refetch,
