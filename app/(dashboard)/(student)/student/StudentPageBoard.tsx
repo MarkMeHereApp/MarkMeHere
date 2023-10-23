@@ -37,10 +37,10 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
           const selectedCourseMember: CourseMember | undefined = courseMembersOfSelectedCourse.find(
             (member) => member.email === userEmail
           );
-        if (selectedCourseMember) {
+          if (selectedCourseMember) {
             return selectedCourseMember;
-        }
-        return null;
+          }
+          return null;
         }
     }
 
@@ -109,7 +109,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
 
         lectures?.forEach((lecture) => {
             lecture.attendanceEntries.forEach((entry) => {
-                if (entry.courseMemberId === 'clnt0q5hg0001ru9yh9m8lii8') {
+                if (entry.courseMemberId === getCourseMember()?.id) {
                     attendanceEntries.push(entry);
                 }
             });
@@ -125,7 +125,6 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
           // Set a timeout to hide the success message after 5 seconds
           const timeoutId = setTimeout(() => {
             setShowSuccess(false);
-            getCourseMember();
           }, 5000); 
     
           return () => {
@@ -133,7 +132,6 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
           };
         }
         setShowSuccess(false);
-        getCourseMember();
       }, []);
     
   return (
