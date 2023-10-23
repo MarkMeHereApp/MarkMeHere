@@ -42,6 +42,10 @@ export type ExtendedCourseMember = CourseMember & {
   AttendanceEntry?: AttendanceEntry;
 };
 
+export type ExtendedAttendanceEntry = AttendanceEntry & {
+    LectureDate?: Date;
+};
+
 export const zAttendanceStatus = z.enum(['here', 'excused', 'late', 'absent']);
 export type zAttendanceStatusType = z.infer<typeof zAttendanceStatus>;
 
