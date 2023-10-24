@@ -3,14 +3,11 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
-import { CourseMember } from '@prisma/client';
 import { capitalize } from 'lodash';
 import { MdEdit } from 'react-icons/md';
 import EditUsers from '@/utils/devUtilsComponents/EditUsers';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-
-export const columns: ColumnDef<CourseMember>[] = [
+import { User } from 'next-auth';
+export const columns: ColumnDef<User>[] = [
   {
     id: 'id',
     header: ({ table }) => (

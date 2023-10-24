@@ -34,7 +34,12 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
+<<<<<<< HEAD
 import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
+=======
+import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
+import React from 'react';
+>>>>>>> 3499647 (add update to users table)
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
 const EditUsers = ({ user }: { user: User }) => {
@@ -43,6 +48,17 @@ const EditUsers = ({ user }: { user: User }) => {
   const updateUser = trpc.user.updateUser.useMutation();
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
+<<<<<<< HEAD
+=======
+  const handleDialogOpen = () => {
+    form.reset();
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
+>>>>>>> 3499647 (add update to users table)
 
   const zUsers = z.object({
     name: z
@@ -73,9 +89,15 @@ const EditUsers = ({ user }: { user: User }) => {
       )
   });
 
+<<<<<<< HEAD
   type UsersFormProps = z.infer<typeof zUsers>;
 
   const form = useForm<UsersFormProps>({
+=======
+  type CourseMemberFormProps = z.infer<typeof zUsers>;
+
+  const form = useForm<CourseMemberFormProps>({
+>>>>>>> 3499647 (add update to users table)
     resolver: zodResolver(zUsers)
   });
 
@@ -92,6 +114,7 @@ const EditUsers = ({ user }: { user: User }) => {
     }
   }
 
+<<<<<<< HEAD
   async function onSubmit(data: UsersFormProps) {
     try {
       setLoading(true);
@@ -113,10 +136,34 @@ const EditUsers = ({ user }: { user: User }) => {
 
       setLoading(false);
       setIsDialogOpen(false);
+=======
+  async function onSubmit(data: CourseMemberFormProps) {
+    try {
+      setLoading(true);
+      const response = await updateUser.mutateAsync({
+        origEmail: user.email,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        optionalId: data.optionalId
+      });
+      console.log(response);
+      if (userData.users) {
+        setUserData({
+          ...userData,
+          users: [...userData.users, response.user]
+        });
+      } else {
+        setUserData({ ...userData, users: [response.user] });
+      }
+      setLoading(false);
+      handleDialogClose();
+>>>>>>> 3499647 (add update to users table)
     } catch (error) {
       setError(error as Error);
     }
   }
+<<<<<<< HEAD
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -127,6 +174,22 @@ const EditUsers = ({ user }: { user: User }) => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
+=======
+
+  return (
+    <>
+      <Dialog open={isDialogOpen}>
+        <DialogTrigger asChild>
+          <Button className="p-2" onClick={() => handleDialogOpen()}>
+            <MdEdit />
+          </Button>
+        </DialogTrigger>
+        <DialogContent
+          className="sm:max-w-[425px]"
+          onClose={() => setIsDialogOpen(false)}
+        >
+          <DialogHeader onClick={handleDialogClose}>
+>>>>>>> 3499647 (add update to users table)
             <DialogTitle>Modify Site User</DialogTitle>
             <DialogDescription>
               Modify the user and click submit when you're done.
@@ -140,14 +203,20 @@ const EditUsers = ({ user }: { user: User }) => {
               <FormField
                 control={form.control}
                 name="name"
+<<<<<<< HEAD
                 key={'name'}
+=======
+>>>>>>> 3499647 (add update to users table)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         className=""
+<<<<<<< HEAD
                         key={'nameInput'}
+=======
+>>>>>>> 3499647 (add update to users table)
                         defaultValue={user.name || ''}
                         {...field}
                       />
@@ -160,8 +229,11 @@ const EditUsers = ({ user }: { user: User }) => {
                 <FormField
                   control={form.control}
                   name="email"
+<<<<<<< HEAD
                   key={'email'}
                   disabled
+=======
+>>>>>>> 3499647 (add update to users table)
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -180,7 +252,10 @@ const EditUsers = ({ user }: { user: User }) => {
               <FormField
                 control={form.control}
                 name="role"
+<<<<<<< HEAD
                 key={'role'}
+=======
+>>>>>>> 3499647 (add update to users table)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
