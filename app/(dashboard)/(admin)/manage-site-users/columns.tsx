@@ -3,10 +3,11 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
-import { CourseMember } from '@prisma/client';
 import { capitalize } from 'lodash';
-
-export const columns: ColumnDef<CourseMember>[] = [
+import { MdEdit } from 'react-icons/md';
+import EditUsers from '@/utils/devUtilsComponents/EditUsers';
+import { User } from 'next-auth';
+export const columns: ColumnDef<User>[] = [
   {
     id: 'id',
     header: ({ table }) => (
@@ -83,5 +84,11 @@ export const columns: ColumnDef<CourseMember>[] = [
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
+  },
+  {
+    id: 'modify',
+    cell: ({ row }) => <EditUsers user={row.original} />,
+    enableSorting: false,
+    enableHiding: false
   }
 ];

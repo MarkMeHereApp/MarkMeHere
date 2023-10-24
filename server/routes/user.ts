@@ -16,10 +16,11 @@ export const zCreateUser = z.object({
 });
 
 export const zUpdateUser = z.object({
-  userId: z.string(),
+  origEmail: z.string(),
   name: z.string().optional(),
   email: z.string().optional(),
-  role: z.string().optional()
+  role: z.string().optional(),
+  optionalId: z.string().optional()
 });
 
 export const zDeleteUser = z.object({
@@ -80,9 +81,8 @@ export const userRouter = router({
   updateUser: publicProcedure
     .input(zUpdateUser)
     .mutation(async (requestData) => {
-      const { userId, name, email, role } = requestData.input;
-
-      if (!name && !email && !role) {
+      const { origEmail, name, email, role, optionalId } = requestData.input;
+      if (!name && !email && !role && !optionalId) {
         throw generateTypedError(
           new TRPCError({
             code: 'BAD_REQUEST',
@@ -92,9 +92,8 @@ export const userRouter = router({
       }
 
       const existingUser = await prisma.user.findUnique({
-        where: { id: userId }
+        where: { email: origEmail }
       });
-
       if (!existingUser) {
         throw generateTypedError(
           new TRPCError({
@@ -105,11 +104,12 @@ export const userRouter = router({
       }
 
       const updatedUser = await prisma.user.update({
-        where: { id: userId },
+        where: { email: origEmail },
         data: {
           name: name || existingUser.name,
           email: email || existingUser.email,
-          role: role || existingUser.role
+          role: role || existingUser.role,
+          optionalId: optionalId || existingUser.optionalId
         }
       });
 
