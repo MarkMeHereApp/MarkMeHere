@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
@@ -9,20 +9,17 @@ import { trpc } from '@/app/_trpc/client';
 import { useParams } from 'next/navigation';
 
 interface CourseContextType {
-  userCourses: Course[] | null;
-  setUserCourses: React.Dispatch<React.SetStateAction<Course[] | null>>;
-  userCourseMembers: CourseMember[] | null;
-  setUserCourseMembers: React.Dispatch<
-    React.SetStateAction<CourseMember[] | null>
-  >;
+  userCourses: Course[];
+  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
+  userCourseMembers: CourseMember[];
+  setUserCourseMembers: React.Dispatch<React.SetStateAction<CourseMember[]>>;
   selectedCourseId: string;
-  selectedCourseRole: string | null;
+  selectedCourseRole: string;
+  selectedCourseEnrollment: ({ course: Course } & CourseMember) | null;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
     React.SetStateAction<CourseMember[] | null>
   >;
-  selectedAttendanceDate: Date;
-  setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 const CourseContext = createContext<CourseContextType>({
@@ -31,73 +28,56 @@ const CourseContext = createContext<CourseContextType>({
   userCourseMembers: [],
   setUserCourseMembers: () => {},
   selectedCourseId: '',
-  selectedCourseRole: null,
+  selectedCourseRole: '',
+  selectedCourseEnrollment: null,
   courseMembersOfSelectedCourse: [],
-  setCourseMembersOfSelectedCourse: () => {},
-  selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
-  setSelectedAttendanceDate: () => {}
+  setCourseMembersOfSelectedCourse: () => {}
 });
 
 export default function CoursesContext({
   userCourses: initialUserCourses,
   userCourseMembers: initialUserCourseMembers,
+  selectedCourseEnrollment: initialSelectedCourseEnrollment,
   children
 }: {
-  userCourses?: Course[];
-  userCourseMembers?: CourseMember[];
+  userCourses: Course[];
+  userCourseMembers: CourseMember[];
+  selectedCourseEnrollment: { course: Course } & CourseMember;
   children?: React.ReactNode;
 }) {
-  const params = useParams();
-
-  const [userCourses, setUserCourses] = useState<Course[] | null>(
-    initialUserCourses || null
+  const [userCourses, setUserCourses] = useState<Course[]>(initialUserCourses);
+  const [userCourseMembers, setUserCourseMembers] = useState<CourseMember[]>(
+    initialUserCourseMembers
   );
-  const [userCourseMembers, setUserCourseMembers] = useState<
-    CourseMember[] | null
-  >(initialUserCourseMembers || null);
 
-  const selectedCourseCode = Array.isArray(params['course-code'])
-    ? params['course-code'][0]
-    : params['course-code'];
+  const [selectedCourseEnrollment] = useState<
+    | ({
+        course: Course;
+      } & CourseMember)
+    | null
+  >(initialSelectedCourseEnrollment);
 
-  if (!selectedCourseCode) {
-    throw new Error('No course code provided');
+  if (!selectedCourseEnrollment) {
+    throw new Error('No course found');
   }
 
-  const [selectedCourseId, setSelectedCourseId] =
-    useState<string>(selectedCourseCode);
-
-  const [selectedCourseRole, setSelectedCourseRole] = useState<string | null>(
-    null
+  const [selectedCourseId] = useState<string>(
+    selectedCourseEnrollment.course.id
   );
+
+  const [selectedCourseRole] = useState<string>(selectedCourseEnrollment.role);
 
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
 
-  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<Date>(
-    new Date(new Date().setHours(0, 0, 0, 0))
-  );
-
-  const [queryEnabled, setQueryEnabled] = useState<boolean>(false);
-
-  const selectedCourseIdFromParam = userCourses?.find(
-    (course) => course.courseCode === selectedCourseCode
-  )?.id;
-
-  if (!selectedCourseIdFromParam) {
-    throw new Error('No course id found');
-  }
-
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
-      courseId: selectedCourseIdFromParam
+      courseId: selectedCourseEnrollment.course.id
     },
     {
-      enabled: queryEnabled,
       onSuccess: (data) => {
         if (!data || !data.courseMembers) return;
         setCourseMembersOfSelectedCourse(data.courseMembers);
-        setSelectedCourseRole(data?.courseMembership.role ?? null);
       }
     }
   );
@@ -105,17 +85,6 @@ export default function CoursesContext({
   if (courseMembers.error) {
     throw courseMembers.error;
   }
-
-  useEffect(() => {
-    if (selectedCourseId) {
-      setCourseMembersOfSelectedCourse(null);
-      if (selectedCourseIdFromParam) {
-        setSelectedCourseId(selectedCourseIdFromParam);
-        setQueryEnabled(true);
-        courseMembers.refetch();
-      }
-    }
-  }, [selectedCourseCode]);
 
   return (
     <CourseContext.Provider
@@ -126,10 +95,9 @@ export default function CoursesContext({
         setUserCourseMembers,
         selectedCourseId,
         selectedCourseRole,
+        selectedCourseEnrollment,
         courseMembersOfSelectedCourse,
-        setCourseMembersOfSelectedCourse,
-        selectedAttendanceDate,
-        setSelectedAttendanceDate
+        setCourseMembersOfSelectedCourse
       }}
     >
       {children}

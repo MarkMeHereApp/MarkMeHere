@@ -111,7 +111,10 @@ export default function CourseSelection() {
                 {uniqueRoles.map((role) => (
                   <CommandGroup key={role} heading={formatString(role)}>
                     {userCourses?.map((course) => (
-                      <Link href={`/${school}/${course.courseCode}`}>
+                      <Link
+                        key={course.id}
+                        href={`/${school}/${course.courseCode}`}
+                      >
                         <CommandItem
                           key={course.id}
                           onSelect={() => {

@@ -46,6 +46,7 @@ export default async function CourseLayout({
       <CoursesContext
         userCourseMembers={courseMembershipShips}
         userCourses={courses}
+        selectedCourseEnrollment={courseEnrollment}
       >
         <LecturesContext>
           <MainBar />
