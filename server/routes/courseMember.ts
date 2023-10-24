@@ -8,9 +8,20 @@ import {
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import bcrypt from 'bcrypt';
 
 import { z } from 'zod';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
+import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
+import createHashedCourseMember, {
+  CreateHashedCourseMemberType
+} from '../utils/createHashedCourseMember';
+
+import createDefaultCourseMember, {
+  CourseMemberInput,
+  CreateDefaultCourseMemberType
+} from '../utils/createDefaultCourseMember';
+import { CourseMember } from '@prisma/client';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -45,12 +56,58 @@ export const zDeleteCourseMembersFromCourse = z.object({
   courseId: z.string()
 });
 
+/*
+First we need to look up if email already exists in the user table.
+If it exists then proceeed normally
+If it does not exist we need to create a new user cooresponding with the couremember email
+Then students who mark attendance for the first time will sign into an account
+that was already created removing the need to create a new account everytime a
+new student marks themselves present
+*/
+
+/* 
+In the future lets focus on making this route compatible with hashed emails.
+We need to do more testing concerning where the callback url takes us on successfull 
+sign in
+We really need to test if when we mark our attendance and a new user is created
+we are taken to the correct url afterwards
+
+In order to support password hashing when we add course members the teacher will need to provide
+a plaintext email.
+We cannot store this email.
+So when a course member is added we will need to lookup the user using a bcrypt compare
+with the plaintyext email and hashed email stored. 
+If a matching hashed email is not found we will hash teh email and create the user.
+We need to do this because of how hashing works inherently
+*/
+
+/* 
+Create a course member, but check if emails are hashed.
+If emails are hashed, create user along with coursemember 
+if email does not already exist in user table.
+*/
+
+/* 
+No matter if emails are hashed or not we are making a user
+account if it does not exist 
+*/
+
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
+        async function createAndReturnCourseMember(
+          createFunction:
+            | CreateDefaultCourseMemberType
+            | CreateHashedCourseMemberType
+        ) {
+          const resEnrollment = await createFunction(requestData.input);
+          return { success: true, resEnrollment };
+        }
+
         const { courseId, email, name, role } = requestData.input;
+        const { settings } = requestData.ctx;
 
         zCourseRoles.parse(role);
 
@@ -63,12 +120,11 @@ export const courseMemberRouter = router({
           );
         }
 
-        const resEnrollment = await prisma.courseMember.create({
-          data: {
-            ...requestData.input
-          }
-        });
-        return { success: true, resEnrollment };
+        return await createAndReturnCourseMember(
+          settings?.hashEmails
+            ? createHashedCourseMember
+            : createDefaultCourseMember
+        );
       } catch (error) {
         throw generateTypedError(error as Error);
       }
@@ -181,17 +237,34 @@ export const courseMemberRouter = router({
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
+        const courseId = requestData.input.courseId;
+        const courseMembers = requestData.input.courseMembers;
+        const { settings } = requestData.ctx;
         const upsertedCourseMembers = [];
-        for (const memberData of requestData.input.courseMembers) {
-          if (memberData.role === zCourseRoles.enum.student) {
-            if (
-              memberData.optionalId !== null &&
-              memberData.optionalId !== undefined
-            ) {
+
+        async function createAndReturnCourseMember(
+          createFunction:
+            | CreateDefaultCourseMemberType
+            | CreateHashedCourseMemberType,
+          courseMember: CourseMemberInput
+        ) {
+          const resEnrollment = await createFunction(courseMember);
+          return resEnrollment;
+        }
+
+        for (const memberData of courseMembers) {
+          const { optionalId, role} = memberData;
+          if (role === zCourseRoles.enum.student) {
+
+            //This function needs to do the same thing but with email
+            //If a student with the same email is found we should delete
+            //it and insert the updated course member
+            if (optionalId) {
+              //This search needs to only include students. Not teachers or TA's
               const existingMember = await prisma.courseMember.findFirst({
                 where: {
-                  courseId: requestData.input.courseId,
-                  optionalId: memberData.optionalId
+                  courseId,
+                  optionalId
                 }
               });
 
@@ -207,19 +280,20 @@ export const courseMemberRouter = router({
                 const createdMember = await prisma.courseMember.create({
                   data: {
                     ...memberData,
-                    courseId: requestData.input.courseId
+                    courseId
                   }
                 });
                 upsertedCourseMembers.push(createdMember);
               }
             } else {
               // If optionalId is null or undefined, treat it as a new member (first-time import)
-              const createdMember = await prisma.courseMember.create({
-                data: {
-                  ...memberData,
-                  courseId: requestData.input.courseId
-                }
-              });
+
+              const createdMember = await createAndReturnCourseMember(
+                settings?.hashEmails
+                  ? createHashedCourseMember
+                  : createDefaultCourseMember,
+                { ...memberData, courseId }
+              );
 
               upsertedCourseMembers.push(createdMember);
             }
@@ -229,7 +303,7 @@ export const courseMemberRouter = router({
         // Fetch all course members after the upsert operation
         const allCourseMembersOfClass = await prisma.courseMember.findMany({
           where: {
-            courseId: requestData.input.courseId
+            courseId
           }
         });
 

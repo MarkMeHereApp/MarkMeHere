@@ -31,6 +31,7 @@ export const defaultSiteSettings: GlobalSiteSettings = {
   darkTheme: 'dark_blue',
   lightTheme: 'light_zinc',
   googleMapsApiKey: '',
+  hashEmails: false,
   allowModeratorsToUseGoogleMaps: true,
   allowUsersToUseGoogleMaps: true
 };
