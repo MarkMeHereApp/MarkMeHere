@@ -94,10 +94,10 @@ export default withAuth(
   //In here we may need to ferry error parameters through to clientside pages
   //If qr code page fails the url param will be returned here and we can add it to
   //The route we redirect to
-  function middleware(req) {
+  // function middleware(req) {
   //   const role = req.nextauth.token?.role as string;
-    const route = req.nextUrl.pathname;
-    console.log(route)
+    // const route = req.nextUrl.pathname;
+    // console.log(route)
   //   const errorParams = req.nextUrl.searchParams.get('qr-warning');
   //   const allowedRoutes = roleToRoutes[role];
 
@@ -106,7 +106,7 @@ export default withAuth(
   //       defaultRoutes[role] + (errorParams ? `?qr-warning=${errorParams}` : '');
   //     return NextResponse.redirect(new URL(redirectPath, req.url));
   //   }
-  },
+  // },
   {
     /*
     This runs first. 
