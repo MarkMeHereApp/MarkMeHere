@@ -8,6 +8,12 @@ import { defaultSiteSettings } from '@/utils/globalVariables';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 
+/*************************************************************************************
+Search for user with matching course member email (bcrypt)
+If user exists create the courseMember
+If user does not exist create the user and the course member
+*/
+
 export type CourseMemberInput = {
   name: string;
   email: string;
@@ -49,6 +55,11 @@ export async function createHashedCourseMember(
 export type CreateHashedCourseMemberType = (
   courseMember: CourseMemberInput
 ) => Promise<CourseMember>;
+
+/*************************************************************************************
+Grab all courseMembers 
+Iterate though coursemembers and find the coursemember with a matching hashed email
+*/
 
 export async function findHashedCourseMember(courseId: string, email: string) {
   const members = await prisma.courseMember.findMany({

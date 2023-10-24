@@ -68,7 +68,7 @@ export type findDefaultCourseMemberType = (
 ) => Promise<CourseMember | null>;
 
 /*************************************************************************************
-Search for course member with matching user email
+Update existing course member
 */
 
 export type MemberData = {
