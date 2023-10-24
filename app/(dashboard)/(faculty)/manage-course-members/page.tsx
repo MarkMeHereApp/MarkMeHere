@@ -2,7 +2,6 @@
 
 import DataTable from './DataTable';
 import { columns } from './columns';
-import { Button } from '@/components/ui/button';
 import { useCourseContext } from '@/app/context-course';
 import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
 import Import_CSV from './CSV_Import';
@@ -22,7 +21,6 @@ const ManageCourseMembers = () => {
             <div className="flex items-center space-x-2">
               <EnrollCourseMemberButton />
               <Import_CSV />
-              <Button variant="default">Export CSV</Button>
             </div>
           )}
         </div>

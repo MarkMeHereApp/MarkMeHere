@@ -16,10 +16,11 @@ import { useState } from 'react';
 import { useLecturesContext } from '@/app/context-lecture';
 
 interface StudentPageBoardProp {
+    studentId?: string;
     dateMarked?: Date;
 }
 
-const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
+const StudentPageBoard: React.FC<StudentPageBoardProp> = ({studentId, dateMarked}) => {
     const session = useSession();
     const userName = session?.data?.user?.name || '';
     const userEmail = session.data?.user?.email;
@@ -109,7 +110,11 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
 
         lectures?.forEach((lecture) => {
             lecture.attendanceEntries.forEach((entry) => {
-                if (entry.courseMemberId === getCourseMember()?.id) {
+                if (studentId && entry.courseMemberId === studentId) {
+                    attendanceEntries.push(entry);
+                    console.log(studentId);
+                }
+                else if (entry.courseMemberId === getCourseMember()?.id){
                     attendanceEntries.push(entry);
                 }
             });
@@ -142,9 +147,12 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
         ) : (
             userName && attendanceEntries && (
             <>
-                <span className="text-3xl font-bold tracking-tight">
-                {`Welcome ${userName.substring(0, userName.indexOf(' '))}!`}
-                </span>
+                {!studentId && (
+                    <span className="text-3xl font-bold tracking-tight">
+                    {`Welcome ${userName.substring(0, userName.indexOf(' '))}!`}
+                    </span>
+                  )
+                }
                 {!lectures ? (
                     <div className="pt-8 flex justify-center items-center">
                     <Icons.logo
@@ -166,9 +174,16 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({dateMarked}) => {
                     </>
                 ) :
                 <div className="pt-8 flex justify-center items-center">
-                    <span className="text-1xl">
-                        Statistics will appear here once you have attendance data.
-                    </span>
+                    {!studentId ? (
+                        <span className="text-1xl">
+                            Statistics will appear here once you have attendance data.
+                        </span>
+                    ) : (
+                        <span className="text-1xl">
+                            Student has no attendance data. 
+                        </span>
+                    )
+                    }
                 </div>
                 }
             </>
