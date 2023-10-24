@@ -18,7 +18,7 @@ If user exists create the courseMember
 If user does not exist create the user and the course member
 */
 
-export default async function createDefaultCourseMember(
+export async function createDefaultCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
@@ -48,3 +48,22 @@ export default async function createDefaultCourseMember(
 export type CreateDefaultCourseMemberType = (
   courseMember: CourseMemberInput
 ) => Promise<CourseMember>;
+
+/* 
+Search for course member with matching user email
+*/
+
+export async function findDefaultCourseMember(courseId: string, email: string) {
+  const courseMember = await prisma.courseMember.findFirst({
+    where: {
+      courseId,
+      email
+    }
+  });
+  return courseMember;
+}
+
+export type findDefaultCourseMemberType = (
+  courseId: string,
+  email: string
+) => Promise<CourseMember | null>;

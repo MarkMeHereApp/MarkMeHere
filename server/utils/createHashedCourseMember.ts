@@ -17,7 +17,7 @@ export type CourseMemberInput = {
   optionalId?: string;
 };
 
-export default async function createHashedCourseMember(
+export async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
@@ -49,3 +49,24 @@ export default async function createHashedCourseMember(
 export type CreateHashedCourseMemberType = (
   courseMember: CourseMemberInput
 ) => Promise<CourseMember>;
+
+export async function findHashedCourseMember(courseId: string, email: string) {
+  const members = await prisma.courseMember.findMany({
+    where: {
+      courseId,
+    }
+  });
+
+  for (const courseMember of members) {
+    const isEmailMatch = await bcrypt.compare(email, courseMember.email ?? '');
+    if (isEmailMatch) {
+      return courseMember;
+    }
+  }
+  return null
+}
+
+export type findHashedCourseMemberType = (
+  courseId: string,
+  email: string
+) => Promise<CourseMember | null>;

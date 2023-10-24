@@ -13,13 +13,16 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
-import createHashedCourseMember, {
-  CreateHashedCourseMemberType
+import {
+  createHashedCourseMember,
+  CreateHashedCourseMemberType,
+  findHashedCourseMember
 } from '../utils/createHashedCourseMember';
-
-import createDefaultCourseMember, {
+import {
+  createDefaultCourseMember,
   CourseMemberInput,
-  CreateDefaultCourseMemberType
+  CreateDefaultCourseMemberType,
+  findDefaultCourseMember
 } from '../utils/createDefaultCourseMember';
 import { CourseMember } from '@prisma/client';
 
@@ -253,61 +256,60 @@ export const courseMemberRouter = router({
         }
 
         for (const memberData of courseMembers) {
-          const { optionalId, role} = memberData;
-          if (role === zCourseRoles.enum.student) {
+          const { role, email } = memberData;
 
-            //This function needs to do the same thing but with email
-            //If a student with the same email is found we should delete
-            //it and insert the updated course member
-            if (optionalId) {
-              //This search needs to only include students. Not teachers or TA's
-              const existingMember = await prisma.courseMember.findFirst({
-                where: {
-                  courseId,
-                  optionalId
-                }
-              });
+          //This function needs to do the same thing but with email
+          //If a student with the same email is found we should delete
+          //it and insert the updated course member
 
-              if (existingMember) {
-                // If the member exists and optionalId is not null, update it
-                const updatedMember = await prisma.courseMember.update({
-                  where: { id: existingMember.id },
-                  data: memberData
-                });
-                upsertedCourseMembers.push(updatedMember);
-              } else {
-                // If the member doesn't exist and optionalId is not null, create it
-                const createdMember = await prisma.courseMember.create({
-                  data: {
-                    ...memberData,
-                    courseId
-                  }
-                });
-                upsertedCourseMembers.push(createdMember);
+          //Check if email of user is already listed as course member
+          //For hashed emails pull all courseMembers and run bgcrypt
+          //compare against each one
+
+         
+          //Check if emails are hashed or not to use the correct search function
+          const searchFunction = settings.hashEmails ? findHashedCourseMember : findDefaultCourseMember;
+          const existingMember = await searchFunction(courseId, email);
+
+          if (existingMember) {
+            //If the course member exists update the row
+            const updatedMember = await prisma.courseMember.update({
+              where: { id: existingMember.id },
+              data: memberData
+            });
+            upsertedCourseMembers.push(updatedMember);
+          } else {
+            // If the course member does not exist create the courseMember along with the user
+            //If it does nto exist
+            const createdMember = await prisma.courseMember.create({
+              data: {
+                ...memberData,
+                courseId
               }
-            } else {
-              // If optionalId is null or undefined, treat it as a new member (first-time import)
-
-              const createdMember = await createAndReturnCourseMember(
-                settings?.hashEmails
-                  ? createHashedCourseMember
-                  : createDefaultCourseMember,
-                { ...memberData, courseId }
-              );
-
-              upsertedCourseMembers.push(createdMember);
-            }
+            });
+            upsertedCourseMembers.push(createdMember);
           }
+
+          // If optionalId is null or undefined, treat it as a new member (first-time import)
+
+          const createdMember = await createAndReturnCourseMember(
+            settings?.hashEmails
+              ? createHashedCourseMember
+              : createDefaultCourseMember,
+            { ...memberData, courseId }
+          );
+
+          upsertedCourseMembers.push(createdMember);
         }
 
         // Fetch all course members after the upsert operation
-        const allCourseMembersOfClass = await prisma.courseMember.findMany({
-          where: {
-            courseId
-          }
-        });
+        // const allCourseMembersOfClass = await prisma.courseMember.findMany({
+        //   where: {
+        //     courseId
+        //   }
+        // });
 
-        return { success: true, allCourseMembersOfClass };
+        return { success: true, upsertedCourseMembers };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
