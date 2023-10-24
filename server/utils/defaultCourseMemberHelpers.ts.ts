@@ -78,7 +78,7 @@ export type MemberData = {
   optionalId?: string;
 };
 
-export async function updateDefaultCourseMember(
+export async function updateCourseMember(
   id: string,
   memberData: MemberData
 ) {

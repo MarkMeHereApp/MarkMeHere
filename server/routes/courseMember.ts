@@ -1,18 +1,15 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
+import prisma from '@/prisma';
+import { generateTypedError } from '@/server/errorTypes';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 import {
   elevatedCourseMemberCourseProcedure,
   publicProcedure,
   router
 } from '../trpc';
-import prisma from '@/prisma';
-import { generateTypedError } from '@/server/errorTypes';
-import { TRPCError } from '@trpc/server';
-import bcrypt from 'bcrypt';
-
-import { z } from 'zod';
-import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
-import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import {
   createHashedCourseMember,
   CreateHashedCourseMemberType,
@@ -22,9 +19,9 @@ import {
   createDefaultCourseMember,
   CourseMemberInput,
   CreateDefaultCourseMemberType,
-  findDefaultCourseMember
+  findDefaultCourseMember,
+  updateCourseMember
 } from '../utils/defaultCourseMemberHelpers.ts';
-import { CourseMember } from '@prisma/client';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
@@ -243,66 +240,42 @@ export const courseMemberRouter = router({
         const courseId = requestData.input.courseId;
         const courseMembers = requestData.input.courseMembers;
         const { settings } = requestData.ctx;
-        const upsertedCourseMembers = [];
+        const updatedCourseMembers = [];
 
-        async function createAndReturnCourseMember(
-          createFunction:
-            | CreateDefaultCourseMemberType
-            | CreateHashedCourseMemberType,
-          courseMember: CourseMemberInput
-        ) {
-          const resEnrollment = await createFunction(courseMember);
-          return resEnrollment;
-        }
+        //Use the correct search function based off settings
+        const searchFunction = settings.hashEmails
+          ? findHashedCourseMember
+          : findDefaultCourseMember;
+
+        const createFunction = settings.hashEmails
+          ? createHashedCourseMember
+          : createDefaultCourseMember;
 
         for (const memberData of courseMembers) {
-          const { email } = memberData;
-
-          //Check if emails are hashed or not to use the correct search function
-          const searchFunction = settings.hashEmails
-            ? findHashedCourseMember
-            : findDefaultCourseMember;
-          const existingMember = await searchFunction(courseId, email);
+          //Search for existing courseMember with given email
+          const existingMember = await searchFunction(
+            courseId,
+            memberData.email
+          );
 
           if (existingMember) {
             //If the course member exists update the row
-            const updatedMember = await prisma.courseMember.update({
-              where: { id: existingMember.id },
-              data: memberData
+            const updatedMember = await updateCourseMember(existingMember.id, {
+              ...memberData,
+              email: existingMember.email
             });
-            upsertedCourseMembers.push(updatedMember);
+            updatedCourseMembers.push(updatedMember);
           } else {
-            // If the course member does not exist create the courseMember along with the user
-            //If it does not exist
-            const createdMember = await prisma.courseMember.create({
-              data: {
-                ...memberData,
-                courseId
-              }
+            //If the course member does not exist create the courseMember along with the user
+            const createdMember = await createFunction({
+              ...memberData,
+              courseId
             });
-            upsertedCourseMembers.push(createdMember);
+            updatedCourseMembers.push(createdMember);
           }
-
-          // If optionalId is null or undefined, treat it as a new member (first-time import)
-
-          const createdMember = await createAndReturnCourseMember(
-            settings?.hashEmails
-              ? createHashedCourseMember
-              : createDefaultCourseMember,
-            { ...memberData, courseId }
-          );
-
-          upsertedCourseMembers.push(createdMember);
         }
 
-        // Fetch all course members after the upsert operation
-        // const allCourseMembersOfClass = await prisma.courseMember.findMany({
-        //   where: {
-        //     courseId
-        //   }
-        // });
-
-        return { success: true, upsertedCourseMembers };
+        return { success: true, updatedCourseMembers };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
