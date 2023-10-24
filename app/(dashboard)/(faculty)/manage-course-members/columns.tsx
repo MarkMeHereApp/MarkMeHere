@@ -5,6 +5,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { CourseMember } from '@prisma/client';
 import { capitalize } from 'lodash';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"; 
+import StudentPageBoard from '../../(student)/student/StudentPageBoard';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -71,5 +78,28 @@ export const columns: ColumnDef<CourseMember>[] = [
     enableSorting: true,
     enableHiding: true,
     enableGlobalFilter: true
+  },
+  {
+    accessorKey: 'view Stats',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Statistics" />
+    ),
+    cell: ({ row }) => {
+        const id = row.original.id;
+        return (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant='outline'>View Stats</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[1300px] h-full">
+                <div className='grid gap-4 py-4'>
+                    <StudentPageBoard studentId={id} />
+                </div>
+              </DialogContent>
+          </Dialog>
+        ); 
+    },
+    enableSorting: false,
+    enableHiding: true
   }
 ];
