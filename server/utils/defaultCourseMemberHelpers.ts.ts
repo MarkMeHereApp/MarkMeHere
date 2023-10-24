@@ -3,6 +3,12 @@ import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterDefault from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterDefault';
 import { CourseMember } from '@prisma/client';
 
+/*************************************************************************************
+Search for user with matching course member email 
+If user exists create the courseMember
+If user does not exist create the user and the course member
+*/
+
 export type CourseMemberInput = {
   name: string;
   email: string;
@@ -11,19 +17,6 @@ export type CourseMemberInput = {
   lmsId?: string;
   optionalId?: string;
 };
-
-export type MemberData = {
-  name: string;
-  email: string;
-  role: zCourseRolesType;
-  optionalId?: string;
-};
-
-/* 
-Search for user with matching course member email 
-If user exists create the courseMember
-If user does not exist create the user and the course member
-*/
 
 export async function createDefaultCourseMember(
   courseMember: CourseMemberInput
@@ -56,10 +49,9 @@ export type CreateDefaultCourseMemberType = (
   courseMember: CourseMemberInput
 ) => Promise<CourseMember>;
 
-/* 
+/*************************************************************************************
 Search for course member with matching user email
 */
-
 export async function findDefaultCourseMember(courseId: string, email: string) {
   const courseMember = await prisma.courseMember.findFirst({
     where: {
@@ -75,9 +67,16 @@ export type findDefaultCourseMemberType = (
   email: string
 ) => Promise<CourseMember | null>;
 
-/* 
+/*************************************************************************************
 Search for course member with matching user email
 */
+
+export type MemberData = {
+  name: string;
+  email: string;
+  role: zCourseRolesType;
+  optionalId?: string;
+};
 
 export async function updateDefaultCourseMember(
   id: string,

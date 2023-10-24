@@ -17,13 +17,13 @@ import {
   createHashedCourseMember,
   CreateHashedCourseMemberType,
   findHashedCourseMember
-} from '../utils/createHashedCourseMember';
+} from '../utils/hashedCourseMemberHelpers.ts';
 import {
   createDefaultCourseMember,
   CourseMemberInput,
   CreateDefaultCourseMemberType,
   findDefaultCourseMember
-} from '../utils/createDefaultCourseMember';
+} from '../utils/defaultCourseMemberHelpers.ts';
 import { CourseMember } from '@prisma/client';
 
 export const zCourseMember = z.object({
@@ -257,9 +257,11 @@ export const courseMemberRouter = router({
 
         for (const memberData of courseMembers) {
           const { email } = memberData;
-         
+
           //Check if emails are hashed or not to use the correct search function
-          const searchFunction = settings.hashEmails ? findHashedCourseMember : findDefaultCourseMember;
+          const searchFunction = settings.hashEmails
+            ? findHashedCourseMember
+            : findDefaultCourseMember;
           const existingMember = await searchFunction(courseId, email);
 
           if (existingMember) {
