@@ -4,7 +4,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader';
 import { capitalize } from 'lodash';
-import { MdEdit } from 'react-icons/md';
 import EditUsers from '@/utils/devUtilsComponents/EditUsers';
 import { User } from 'next-auth';
 export const columns: ColumnDef<User>[] = [

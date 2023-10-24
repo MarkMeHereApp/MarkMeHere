@@ -38,8 +38,11 @@ import { formatString, toastError } from '../globalFunctions';
 import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
 =======
 import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
+<<<<<<< HEAD
 import React from 'react';
 >>>>>>> 3499647 (add update to users table)
+=======
+>>>>>>> 87a6eb6 (more clean up)
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
 const EditUsers = ({ user }: { user: User }) => {
@@ -147,7 +150,6 @@ const EditUsers = ({ user }: { user: User }) => {
         role: data.role,
         optionalId: data.optionalId
       });
-      console.log(response);
       if (userData.users) {
         setUserData({
           ...userData,
