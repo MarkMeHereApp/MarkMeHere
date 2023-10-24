@@ -23,7 +23,7 @@ export async function createHashedCourseMember(
   const { name, email } = courseMember;
   const hashFunctions = prismaAdapterHashed(prisma);
   const hashedEmail = await bcrypt.hash(email, 10);
-  console.log(hashedEmail)
+  console.log(hashedEmail);
 
   const existingUser = await hashFunctions.getUserByEmail(email);
 
@@ -53,7 +53,7 @@ export type CreateHashedCourseMemberType = (
 export async function findHashedCourseMember(courseId: string, email: string) {
   const members = await prisma.courseMember.findMany({
     where: {
-      courseId,
+      courseId
     }
   });
 
@@ -63,7 +63,7 @@ export async function findHashedCourseMember(courseId: string, email: string) {
       return courseMember;
     }
   }
-  return null
+  return null;
 }
 
 export type findHashedCourseMemberType = (

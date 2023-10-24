@@ -12,6 +12,13 @@ export type CourseMemberInput = {
   optionalId?: string;
 };
 
+export type MemberData = {
+  name: string;
+  email: string;
+  role: zCourseRolesType;
+  optionalId?: string;
+};
+
 /* 
 Search for user with matching course member email 
 If user exists create the courseMember
@@ -66,4 +73,24 @@ export async function findDefaultCourseMember(courseId: string, email: string) {
 export type findDefaultCourseMemberType = (
   courseId: string,
   email: string
+) => Promise<CourseMember | null>;
+
+/* 
+Search for course member with matching user email
+*/
+
+export async function updateDefaultCourseMember(
+  id: string,
+  memberData: MemberData
+) {
+  const courseMember = await prisma.courseMember.update({
+    where: { id },
+    data: memberData
+  });
+  return courseMember;
+}
+
+export type updateDefaultCourseMemberType = (
+  id: string,
+  memberData: MemberData
 ) => Promise<CourseMember | null>;

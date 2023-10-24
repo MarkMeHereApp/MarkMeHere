@@ -256,16 +256,7 @@ export const courseMemberRouter = router({
         }
 
         for (const memberData of courseMembers) {
-          const { role, email } = memberData;
-
-          //This function needs to do the same thing but with email
-          //If a student with the same email is found we should delete
-          //it and insert the updated course member
-
-          //Check if email of user is already listed as course member
-          //For hashed emails pull all courseMembers and run bgcrypt
-          //compare against each one
-
+          const { email } = memberData;
          
           //Check if emails are hashed or not to use the correct search function
           const searchFunction = settings.hashEmails ? findHashedCourseMember : findDefaultCourseMember;
@@ -280,7 +271,7 @@ export const courseMemberRouter = router({
             upsertedCourseMembers.push(updatedMember);
           } else {
             // If the course member does not exist create the courseMember along with the user
-            //If it does nto exist
+            //If it does not exist
             const createdMember = await prisma.courseMember.create({
               data: {
                 ...memberData,
