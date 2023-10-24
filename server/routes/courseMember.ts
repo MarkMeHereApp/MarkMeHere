@@ -275,7 +275,7 @@ export const courseMemberRouter = router({
           }
         }
 
-        return { success: true, updatedCourseMembers };
+        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
