@@ -82,9 +82,9 @@ const EditUsers = ({ user }: { user: User }) => {
       )
   });
 
-  type CourseMemberFormProps = z.infer<typeof zUsers>;
+  type UsersFormProps = z.infer<typeof zUsers>;
 
-  const form = useForm<CourseMemberFormProps>({
+  const form = useForm<UsersFormProps>({
     resolver: zodResolver(zUsers)
   });
 
@@ -101,7 +101,7 @@ const EditUsers = ({ user }: { user: User }) => {
     }
   }
 
-  async function onSubmit(data: CourseMemberFormProps) {
+  async function onSubmit(data: UsersFormProps) {
     try {
       setLoading(true);
       const response = await updateUser.mutateAsync({
