@@ -35,7 +35,6 @@ import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
 import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
-import React from 'react';
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
 const EditUsers = ({ user }: { user: User }) => {
@@ -111,7 +110,6 @@ const EditUsers = ({ user }: { user: User }) => {
         role: data.role,
         optionalId: data.optionalId
       });
-      console.log(response);
       if (userData.users) {
         setUserData({
           ...userData,

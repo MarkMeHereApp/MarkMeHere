@@ -6,7 +6,6 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { conforms } from 'lodash';
 
 export const zCreateUser = z.object({
   name: z.string(),
@@ -151,9 +150,7 @@ export const userRouter = router({
           );
         }
 
-        console.log(requestData.input.email);
-
-        // Delete course members by their IDs
+        // Delete users by their IDs
         const deleteResponse = await prisma.user.deleteMany({
           where: {
             email: {
