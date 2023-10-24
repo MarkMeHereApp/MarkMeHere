@@ -28,8 +28,9 @@ import { trpc } from '@/app/_trpc/client';
 import { useSession } from 'next-auth/react';
 import { useCourseContext } from '@/app/context-course';
 import { CourseMember } from '@prisma/client';
-import { geolocationRouter } from '@/server/routes/geolocation';
 import { getPublicUrl } from '@/utils/globalFunctions';
+import Loading from '@/components/general/loading';
+
 
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
@@ -63,7 +64,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const lectureLatitude = useRef<number>(0)
   const lectureLongitude = useRef<number>(0)
-  
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
+
 
   const session = useSession();
   const userName = session?.data?.user?.name || '';
@@ -138,6 +140,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const createProfessorLectureGeolocation =
     trpc.geolocation.CreateProfessorLectureGeolocation.useMutation();
   const handleGenerateQRCode = async () => {
+    setIsLoadingSubmit(true)
     const selectedCourseMember = getCourseMember();
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
@@ -177,7 +180,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
           console.log(error)
           // setError(error as Error);
         }finally{
-          
+          setIsLoadingSubmit(false)
           console.log(navigation + parameters + '&location=' + professorGeolocationId.current)
           router.push(navigation + parameters + '&location=' + professorGeolocationId.current)
         }
@@ -314,8 +317,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
               </div>
 
               <div className="flex items-center space-x-2 pl-4">
-                <Button onClick={handleGenerateQRCode}>
-                  Continue To QR Code
+                <Button onClick={handleGenerateQRCode} disabled={isLoadingSubmit}>
+                {isLoadingSubmit ? <Loading/> : 'Continue To QR Code'}
                 </Button>
               </div>
             </AlertDialogDescription>
