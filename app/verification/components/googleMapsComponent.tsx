@@ -22,14 +22,14 @@ const GoogleMapsComponent: React.FC<{ latitude?: number, longtitude?: number }> 
             lat: latitude, lng: longtitude
         }
 
-        console.log(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
+        console.log()
 
         return (
             <LoadScript
-            googleMapsApiKey={'AIzaSyDHPsrSbU-xlMq-vBkBBoG_YtxE1D4zwx4' || ''}>
+            googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}>
             <GoogleMap
                 mapContainerStyle={mapStyles}
-                zoom={12}
+                zoom={15}
                 center={defaultCenter}
                 options={{styles:googleMapsStyles,
                 mapTypeControl:false,
