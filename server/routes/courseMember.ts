@@ -253,9 +253,14 @@ export const courseMemberRouter = router({
         }
 
         for (const memberData of courseMembers) {
-          const { optionalId } = memberData;
-          if (memberData.role === zCourseRoles.enum.student) {
+          const { optionalId, role} = memberData;
+          if (role === zCourseRoles.enum.student) {
+
+            //This function needs to do the same thing but with email
+            //If a student with the same email is found we should delete
+            //it and insert the updated course member
             if (optionalId) {
+              //This search needs to only include students. Not teachers or TA's
               const existingMember = await prisma.courseMember.findFirst({
                 where: {
                   courseId,
