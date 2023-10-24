@@ -24,9 +24,9 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
     },
 
     /* 
-      Iterate through all users and use bcrypt to check if the provided email matches 
-      any user's hashed email
-      */
+    Iterate through all users and use bcrypt to check if the provided email matches 
+    any user's hashed email
+    */
     getUserByEmail: async (email: string) => {
       const allUsers = await prisma.user.findMany();
 
