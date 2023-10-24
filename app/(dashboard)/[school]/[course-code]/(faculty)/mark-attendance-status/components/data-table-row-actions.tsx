@@ -25,8 +25,8 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row
 }: DataTableRowActionsProps<TData>) {
-  const { lectures, setLectures } = useLecturesContext();
-  const { selectedAttendanceDate } = useCourseContext();
+  const { lectures, setLectures, selectedAttendanceDate } =
+    useLecturesContext();
 
   // Get the course member data of a selected row for one student
   const courseMemberData = row.original as CourseMember;

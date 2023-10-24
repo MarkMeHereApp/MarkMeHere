@@ -37,8 +37,8 @@ export function DataTableToolbar<TData>({
     value: zAttendanceStatusType | 'unmarked';
     icon: React.ComponentType;
   };
-  const { selectedAttendanceDate } = useCourseContext();
-  const { lectures, setLectures } = useLecturesContext();
+  const { lectures, setLectures, selectedAttendanceDate } =
+    useLecturesContext();
 
   const isFiltered = table.getState().columnFilters.length > 0;
   const isSelected =

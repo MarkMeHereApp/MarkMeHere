@@ -28,9 +28,8 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { selectedAttendanceDate, userCourses, selectedCourseRole } =
-    useCourseContext();
-  const { lectures } = useLecturesContext();
+  const { userCourses, selectedCourseRole } = useCourseContext();
+  const { lectures, selectedAttendanceDate } = useLecturesContext();
 
   //Only Professors or TA's can access this page
   if (selectedCourseRole === 'student') {

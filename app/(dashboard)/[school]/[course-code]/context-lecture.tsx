@@ -19,6 +19,8 @@ interface LecturesContextType {
       ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null
     >
   >;
+  selectedAttendanceDate: Date;
+  setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date>>;
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -27,7 +29,9 @@ const LecturesContext = createContext<LecturesContextType>({
   lectures: null,
   setLectures: () => {},
   pageSize: 10,
-  setPageSize: () => {}
+  setPageSize: () => {},
+  selectedAttendanceDate: new Date(new Date().setHours(0, 0, 0, 0)),
+  setSelectedAttendanceDate: () => {}
 });
 
 export default function LecturesContextProvider({
@@ -37,6 +41,9 @@ export default function LecturesContextProvider({
 }) {
   const [lectures, setLectures] = useState<lecturesType>(null);
   const [pageSize, setPageSize] = useState<number>(10); // Default page size is 10; will never be null
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState<Date>(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
 
   const { selectedCourseId, selectedCourseRole } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
 
@@ -76,6 +83,8 @@ export default function LecturesContextProvider({
       value={{
         lectures,
         setLectures,
+        selectedAttendanceDate,
+        setSelectedAttendanceDate,
         pageSize,
         setPageSize
       }}

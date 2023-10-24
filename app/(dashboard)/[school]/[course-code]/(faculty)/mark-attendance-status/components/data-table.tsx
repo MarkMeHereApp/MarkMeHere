@@ -47,14 +47,12 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns
 }: DataTableProps<TData, TValue>) {
-  const {
-    selectedAttendanceDate,
-    courseMembersOfSelectedCourse,
-    selectedCourseId
-  } = useCourseContext();
+  const { courseMembersOfSelectedCourse, selectedCourseId } =
+    useCourseContext();
 
   const [lectureLoading, setLectureLoading] = React.useState<boolean>(false);
-  const { setLectures, lectures } = useLecturesContext();
+  const { setLectures, lectures, selectedAttendanceDate } =
+    useLecturesContext();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

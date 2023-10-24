@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/app/(dashboard)/[school]/components/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -217,7 +216,6 @@ export default function SignInForm({
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>
-            <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           </div>
 
           <div className="flex flex-col gap-4">

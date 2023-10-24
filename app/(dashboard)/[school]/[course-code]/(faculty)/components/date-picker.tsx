@@ -12,13 +12,13 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
+import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
 
 export function CalendarDateRangePicker({
   className
 }: React.HTMLAttributes<HTMLDivElement>) {
   const { selectedAttendanceDate, setSelectedAttendanceDate } =
-    useCourseContext();
+    useLecturesContext();
   const [date, setDate] = React.useState<Date | undefined>(
     selectedAttendanceDate || new Date()
   );
