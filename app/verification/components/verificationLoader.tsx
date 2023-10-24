@@ -16,7 +16,8 @@ enum WarningType {
   ValidLocation,
   DisabledLocation,
   LocationUnavailable,
-  NoLocation
+  NoLocation,
+  DefaultError
 }
 
 const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
@@ -29,20 +30,16 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   const studentLatitude = useRef<number>(0)
   const studentLongitude = useRef<number>(0)
 
-
   const rangeValidator = useRef<boolean>(false)
   const range = useRef<number>(0)
 
   const [warningDisplay, setWarningDisplay] = useState<string | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
   const infoTrigger = useRef<boolean>(true)
 
-  useEffect(()=>{
-    if(infoTrigger.current){
-      displayWarning(WarningType.Info,allowedRange)
-      infoTrigger.current = false
-    }
+  const [isFirstClickNoLocation, setIsFirstClickNoLocation] = useState<boolean>(true);
+  const [isFirstClickVerified, setIsFirstClickVerified] = useState<boolean>(true);
 
-  },[infoTrigger.current])
+  const [proceedButtonText, setProceedButtonText] = useState<string>('Continue')
 
   const displayWarning = (warningType: WarningType, additionalInformation: any) => {
     switch (warningType) {
@@ -103,16 +100,28 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
         break;
 
       case WarningType.NoLocation:
-      setWarningDisplay('Proceed without location');
-      toast({
-        title: 'You are about to proceed WITHOUT sharing your location!',
-        description:
-          `This lecture requires your location to be shared. Proceeding without it might result in absence!`,
-        icon: 'error_for_destructive_toasts',
-        variant: 'destructive'
-          
-      });
-      break;
+        setWarningDisplay('Proceed without location');
+        toast({
+          title: 'You are about to proceed WITHOUT sharing your location!',
+          description:
+            `This lecture requires your location to be shared. Proceeding without it might result in absence!`,
+          icon: 'error_for_destructive_toasts',
+          variant: 'destructive'
+            
+        });
+        break;
+
+      case WarningType.DefaultError:
+      setWarningDisplay('Uncategorized Error Occured');
+        toast({
+          title: 'Uncategorized Error Occured!',
+          description:
+            `This Error is caused by unknown reason, please scan the QR Code again or continue to submit page and enter the code again`,
+          icon: 'error_for_destructive_toasts',
+          variant: 'destructive'
+            
+        });
+        break;
     }
   };
 
@@ -142,9 +151,16 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   }
 
 
+
   const validateGeolocation = trpc.attendanceToken.ValidateGeolocation.useMutation()
   const ValidateGeolocation = async () => {
     setIsLoadingSubmit(true);
+
+    if (!isFirstClickVerified) {
+      //first warn the student that this step might result in this absence
+      //on second press
+      router.push(`/student?attendanceTokenId=${code}`)
+    }
 
     if(code){
       try {
@@ -155,62 +171,64 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
         });
   
   
-        if (res.success) {
+        if (res.success && code == res.id) {
           if(res.distance){ // here we can add how far does the professor allow the students to be 
             
             const distanceRounded = parseFloat(res.distance.toFixed(2))
 
             if(distanceRounded > 50){
+              rangeValidator.current = false
+              setIsFirstClickVerified(false)
+              setProceedButtonText('INVALID')
               displayWarning(WarningType.InvalidLocation,distanceRounded)
             }
 
             if(distanceRounded <= 50){
               rangeValidator.current = true
-              displayWarning(WarningType.ValidLocation,res.distance)
+              setIsFirstClickVerified(false)
+              setProceedButtonText('VALID')
+              displayWarning(WarningType.ValidLocation,distanceRounded)
             }
-
-            range.current = res.distance // idk I need to trigger this somehow PLEASE ALDRICH
-            
-          }
-          
-          //If range.current<some value: router push, else display warning message. 
-          if(code == res.id){
-            console.log('IDs are matching!')
-            //router.push(`/student?attendanceTokenId=${code}`);
-          }
-          
+            range.current = res.distance // idk I need to trigger this somehow PLEASE ALDRICH         
+          }        
         }
   
         if (!res.success) {
-          
-          console.log('Error while checking the code')
+          displayWarning(WarningType.DefaultError, null)
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoadingSubmit(false);
-        //router.push(`/student?attendanceTokenId=${code}`)
-      }
-    };
-    
-    
+
+        }catch (error) {
+          console.log(error);
+          displayWarning(WarningType.DefaultError, null)
+
+        }finally {
+          setIsLoadingSubmit(false);
+        }
+      };    
     }
 
-    const [isFirstClick, setIsFirstClick] = useState<boolean>(true);
 
 
     const ContinueNoLocation = () => {
-      if (isFirstClick) {
-        setIsFirstClick(false);
+      if (isFirstClickNoLocation) {
+        setIsFirstClickNoLocation(false);
         displayWarning(WarningType.NoLocation, null)
-      } else {
+      } 
+      if (!isFirstClickNoLocation) {
         //first warn the student that this step might result in this absence
         //on second press
-        //router.push(`/student?attendanceTokenId=${code}`)
+        router.push(`/student?attendanceTokenId=${code}`)
       }
     }
 
 
+    useEffect(()=>{
+      if(infoTrigger.current){
+        displayWarning(WarningType.Info,allowedRange)
+        infoTrigger.current = false
+      }
+
+    },[infoTrigger.current])
 
     
     return (
@@ -218,8 +236,8 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
           <CardTitle className="text-2xl font-bold font-mono text-center">
             <span>Location Verification</span>
           </CardTitle>
-
-          <GoogleMapsComponent latitude={29.6001185} longtitude={-82.2091926}></GoogleMapsComponent>
+          
+          <GoogleMapsComponent latitude={28.602382123205356} longtitude={-81.20026260122206}></GoogleMapsComponent>
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
             <Button 
@@ -227,7 +245,10 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
               disabled={isLoadingSubmit}
               onClick={() => CheckGeolocation()} >
               
-              {isLoadingSubmit ? <Loading/> : 'Verify My Location'}
+              {isLoadingSubmit ? <Loading/> : 
+                <div>
+                  {isFirstClickVerified ? 'Verify My Location' : `Continue with ${proceedButtonText} Location`}
+                </div>}
             </Button>
 
             <Button 
@@ -237,7 +258,7 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
               variant="destructive">
               
               
-            <div className="">{isFirstClick ? 'Proceed Without Verification' : 'Are you sure?'}</div>
+            <div className="">{isFirstClickNoLocation ? 'Proceed Without Verification' : 'Are you sure?'}</div>
             </Button>   
           </div>
 
