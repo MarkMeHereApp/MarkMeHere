@@ -1,4 +1,4 @@
-import StudentPageBoard from './components/StudentPageBoard';
+import StudentPageBoard from './StudentPageBoard';
 import prisma from '@/prisma';
 import { AttendanceEntry } from '@prisma/client';
 import { getServerSession } from 'next-auth';

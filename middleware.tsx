@@ -96,7 +96,8 @@ export default withAuth(
   //The route we redirect to
   // function middleware(req) {
   //   const role = req.nextauth.token?.role as string;
-  //   const route = req.nextUrl.pathname;
+    // const route = req.nextUrl.pathname;
+    // console.log(route)
   //   const errorParams = req.nextUrl.searchParams.get('qr-warning');
   //   const allowedRoutes = roleToRoutes[role];
 
