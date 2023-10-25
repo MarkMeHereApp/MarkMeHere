@@ -10,7 +10,7 @@ import { useOrganizationContext } from '@/app/(dashboard)/[school]/context-organ
 export function ModeToggle() {
   const { theme, setTheme, themes } = useTheme();
 
-  const { themes: schoolThemes } = useOrganizationContext();
+  const { organization } = useOrganizationContext();
 
   const [mounted, setMounted] = useState(false);
 
@@ -27,15 +27,14 @@ export function ModeToggle() {
     );
   }
 
-  const defaultLight = schoolThemes.light || 'light_zinc';
-  const defaultDark = schoolThemes.dark || 'dark_blue';
+  const defaultLight = organization?.lightTheme || 'light_neutral';
+  const defaultDark = organization?.darkTheme || 'dark_neutral';
 
   const toggleTheme = () => {
     if (theme?.startsWith('dark_')) {
       setTheme(defaultLight);
       return;
     }
-    console.log(defaultDark);
     setTheme(defaultDark);
   };
 

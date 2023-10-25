@@ -2,7 +2,7 @@ import { ThemeProvider } from './theme-provider';
 import prisma from '@/prisma';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import SchoolContextProvider from './context-organization';
+import OrganizationContextProvider from './context-organization';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { decrypt } from '@/utils/globalFunctions';
 
@@ -11,7 +11,7 @@ export default async function SchoolLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { organization: string };
+  params: { school: string };
 }) {
   const session = await getServerSession();
 
@@ -32,7 +32,7 @@ export default async function SchoolLayout({
   }
 
   const organization = await prisma.globalSiteSettings.findFirst({
-    where: { uniqueCode: params.organization }
+    where: { uniqueCode: params.school }
   });
 
   if (organization?.googleMapsApiKey) {
@@ -63,17 +63,11 @@ export default async function SchoolLayout({
     redirect('/');
   }
 
-  const darkTheme = organization.darkTheme;
-  const lightTheme = organization.lightTheme;
-
   return (
     <>
-      <SchoolContextProvider
-        themes={{ light: lightTheme, dark: darkTheme }}
-        organization={organization}
-      >
+      <OrganizationContextProvider organization={organization}>
         <ThemeProvider>{children}</ThemeProvider>
-      </SchoolContextProvider>
+      </OrganizationContextProvider>
     </>
   );
 }

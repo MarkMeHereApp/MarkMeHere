@@ -6,7 +6,7 @@ import { type ThemeProviderProps } from 'next-themes/dist/types';
 import { useOrganizationContext } from './context-organization';
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const { themes } = useOrganizationContext();
+  const { organization } = useOrganizationContext();
 
   return (
     <NextThemesProvider
@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         'light_purple'
       ]}
       enableSystem={false}
-      defaultTheme={themes.light}
+      defaultTheme={organization?.lightTheme || 'light_neutral'}
       attribute="class"
     >
       {children}
