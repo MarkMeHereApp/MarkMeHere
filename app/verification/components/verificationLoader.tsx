@@ -29,6 +29,9 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   const studentLatitude = useRef<number>(0)
   const studentLongitude = useRef<number>(0)
 
+  const professorLatitude = useRef<number>(0)
+  const professorLongitude = useRef<number>(0)
+
   const rangeValidator = useRef<boolean>(false)
   const range = useRef<number>(0)
 
@@ -39,6 +42,13 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   const [isFirstClickVerified, setIsFirstClickVerified] = useState<boolean>(true);
 
   const [proceedButtonText, setProceedButtonText] = useState<string>('Continue')
+
+  const locationData = {
+    studentLatitude: studentLatitude.current,
+    studentLongitude: studentLongitude.current,
+    professorLatitude: professorLatitude.current, // Replace with actual value
+    professorLongitude: professorLongitude.current, // Replace with actual value
+  };
 
   const displayWarning = (warningType: WarningType, additionalInformation: any) => {
     switch (warningType) {
@@ -168,11 +178,15 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
         const res = await validateGeolocation.mutateAsync({
           id: code,
           studentLatitude: studentLatitude.current,
-          studentLongtitude: studentLongitude.current
+          studentLongtitude: studentLongitude.current,
         });
   
   
         if (res.success && code == res.id) {
+
+          professorLatitude.current = res.lectureLatitude
+          professorLongitude.current = res.lectureLongtitude
+
           if(res.distance){ // here we can add how far does the professor allow the students to be 
             
             const distanceRounded = parseFloat(res.distance.toFixed(2))
@@ -237,7 +251,7 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
             <span>Location Verification</span>
           </CardTitle>
           
-          <GoogleMapsComponent latitude={28.602382123205356} longtitude={-81.20026260122206}></GoogleMapsComponent>
+          <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
             <Button 
