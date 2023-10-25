@@ -45,16 +45,12 @@ interface SignInFormProps {
   providers: Array<TProvider>;
   bHasTempAdminConfigured?: boolean;
   bIsDemoMode?: boolean;
-  lightTheme: string;
-  darkTheme: string;
 }
 
 export default function SignInForm({
   providers,
   bHasTempAdminConfigured,
-  bIsDemoMode,
-  lightTheme,
-  darkTheme
+  bIsDemoMode
 }: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
