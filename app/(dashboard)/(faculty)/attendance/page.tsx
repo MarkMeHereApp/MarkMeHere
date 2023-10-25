@@ -50,7 +50,7 @@ export default function ManageAttendance() {
       <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div className="flex items-center justify-between space-y-2 space-x-6">
           <h2 className="text-3xl font-bold tracking-tight">
-            Mark Attendance Status
+            Attendance
           </h2>
           {getCurrentLecture() && getCurrentLectureProp && (
             <StartScanningButton lectureId={getCurrentLectureProp.id} />

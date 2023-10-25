@@ -5,7 +5,7 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/mark-attendance-status/components/data-table-view-options';
+import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/attendance/components/data-table-view-options';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';

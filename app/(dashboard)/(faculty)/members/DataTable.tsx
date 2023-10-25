@@ -75,7 +75,7 @@ export default function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const shouldHideColumn = ['email', 'lmsId'];
+                  const shouldHideColumn = ['email', 'lmsId', 'view Stats'];//
                   return (
                     <TableHead
                       key={header.id}

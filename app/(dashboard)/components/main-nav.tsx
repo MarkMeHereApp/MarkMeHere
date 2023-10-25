@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 import { useCourseContext } from '@/app/context-course';
+import isDevMode from '@/utils/isDevMode';
 
 export default function MainNav({
   className,
@@ -59,12 +60,12 @@ export default function MainNav({
       {selectedCourseId ? (
         <>
           <MainNavBarCustomLink
-            href="/mark-attendance-status"
-            displayText="Mark Attendance Status"
+            href="/attendance"
+            displayText="Attendance"
           />
           <MainNavBarCustomLink
-            href="/manage-course-members"
-            displayText="Course Members"
+            href="/members"
+            displayText="Members"
           />
           <MainNavBarCustomLink
                 href="/student"
@@ -81,10 +82,13 @@ export default function MainNav({
           } */}
         </>
       ) : null}
-      <MainNavBarCustomLink
-        href="/testing-playground"
-        displayText="Testing Playground"
-      />
+      {isDevMode && (
+          <MainNavBarCustomLink
+              href="/testing-playground"
+              displayText="Testing Playground"
+          />
+       )
+      }
     </nav>
   );
 }
