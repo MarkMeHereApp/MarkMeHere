@@ -3,14 +3,14 @@ import * as z from 'zod';
 import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { zLMSProvider, zCourseRoles } from '@/types/sharedZodTypes';
 import { toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import { Button } from '@/components/ui/button';
 import { faker } from '@faker-js/faker';
 import { CourseMember } from '@prisma/client';
-import { useLecturesContext } from '@/app/(dashboard)/[school]/[course-code]/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { setHours } from 'date-fns';
 
