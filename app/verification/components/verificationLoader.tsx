@@ -24,11 +24,13 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   
   const [allowedRange,setAllowedRange] = React.useState<number>(50) //this will in the future serve as the professors ability to pick the range of the classroom 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
-
   const router = useRouter()
 
   const studentLatitude = useRef<number>(0)
   const studentLongitude = useRef<number>(0)
+
+  const professorLatitude = useRef<number>(0)
+  const professorLongitude = useRef<number>(0)
 
   const rangeValidator = useRef<boolean>(false)
   const range = useRef<number>(0)
@@ -40,6 +42,13 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   const [isFirstClickVerified, setIsFirstClickVerified] = useState<boolean>(true);
 
   const [proceedButtonText, setProceedButtonText] = useState<string>('Continue')
+
+  const locationData = {
+    studentLatitude: studentLatitude.current,
+    studentLongitude: studentLongitude.current,
+    professorLatitude: professorLatitude.current, // Replace with actual value
+    professorLongitude: professorLongitude.current, // Replace with actual value
+  };
 
   const displayWarning = (warningType: WarningType, additionalInformation: any) => {
     switch (warningType) {
@@ -126,6 +135,9 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   };
 
   const CheckGeolocation = () =>{
+
+    setIsLoadingSubmit(true);
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           studentLatitude.current = position.coords.latitude;
@@ -154,7 +166,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
 
   const validateGeolocation = trpc.attendanceToken.ValidateGeolocation.useMutation()
   const ValidateGeolocation = async () => {
-    setIsLoadingSubmit(true);
 
     if (!isFirstClickVerified) {
       //first warn the student that this step might result in this absence
@@ -167,11 +178,15 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
         const res = await validateGeolocation.mutateAsync({
           id: code,
           studentLatitude: studentLatitude.current,
-          studentLongtitude: studentLongitude.current
+          studentLongtitude: studentLongitude.current,
         });
   
   
         if (res.success && code == res.id) {
+
+          professorLatitude.current = res.lectureLatitude
+          professorLongitude.current = res.lectureLongtitude
+
           if(res.distance){ // here we can add how far does the professor allow the students to be 
             
             const distanceRounded = parseFloat(res.distance.toFixed(2))
@@ -208,7 +223,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
     }
 
 
-
     const ContinueNoLocation = () => {
       if (isFirstClickNoLocation) {
         setIsFirstClickNoLocation(false);
@@ -233,11 +247,11 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
     
     return (
         <Card className=" min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
-          <CardTitle className="text-2xl font-bold font-mono text-center">
+          <CardTitle className="text-2xl font-bold font-mono text-center pb-[20px]">
             <span>Location Verification</span>
           </CardTitle>
           
-          <GoogleMapsComponent latitude={28.602382123205356} longtitude={-81.20026260122206}></GoogleMapsComponent>
+          <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
             <Button 

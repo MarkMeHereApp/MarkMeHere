@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 
 export const attendanceTokenExpirationTime = 5 * 60 * 1000; // 5 minutes
 
-export const qrCodeExpirationTime = 5 * 1000; // 5 seconds
+export const qrCodeExpirationTime = 10 * 1000; // 5 seconds
 
 // When a student scans a QR code right before it expires,
 // the server may not have enough time to process the request

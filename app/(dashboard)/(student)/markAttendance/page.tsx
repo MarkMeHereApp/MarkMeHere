@@ -171,8 +171,15 @@ export default async function markAttendance({
       attendanceEntry = await createAttendanceEntry(lectureId, courseMemberId);
     }
 
-    console.log("TOKEN-ID: ", attendanceTokenId)
-    await deleteAttendanceToken(attendanceTokenId);
+    const ProfessorGeolocationId = tokenRow.ProfessorLectureGeolocationId
+    
+    if(!ProfessorGeolocationId){
+      <MarkAttendanceError message='The professor does not have geolocationID'/>
+    }
+
+    console.log(tokenRow.ProfessorLectureGeolocationId)
+    console.log("TOKEN-ID: line 181", attendanceTokenId)
+    // await deleteAttendanceToken(attendanceTokenId);
 
     if (!attendanceEntry) {
       return (
@@ -182,7 +189,7 @@ export default async function markAttendance({
 
     console.log(attendanceEntry.dateMarked)
 
-    redirect(`/student?attendanceEntry=${attendanceEntry.dateMarked}`)
+    //redirect(`/student?attendanceEntry=${attendanceEntry.dateMarked}`)
 
     // return (
     //   <>

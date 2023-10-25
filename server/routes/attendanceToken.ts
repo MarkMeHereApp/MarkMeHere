@@ -129,7 +129,7 @@ export const attendanceTokenRouter = router({
 
        
 
-        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult };
+        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult, lectureLatitude: lectureLatitude, lectureLongtitude: lectureLongitude  };
       } catch (error) {
         throw error;
       }
