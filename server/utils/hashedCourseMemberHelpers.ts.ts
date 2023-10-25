@@ -8,6 +8,12 @@ import { defaultSiteSettings } from '@/utils/globalVariables';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 
+/*************************************************************************************
+Search for user with matching course member email (bcrypt)
+If user exists create the courseMember
+If user does not exist create the user and the course member
+*/
+
 export type CourseMemberInput = {
   name: string;
   email: string;
@@ -17,13 +23,13 @@ export type CourseMemberInput = {
   optionalId?: string;
 };
 
-export default async function createHashedCourseMember(
+export async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
   const hashFunctions = prismaAdapterHashed(prisma);
   const hashedEmail = await bcrypt.hash(email, 10);
-  console.log(hashedEmail)
+  console.log(hashedEmail);
 
   const existingUser = await hashFunctions.getUserByEmail(email);
 
@@ -49,3 +55,29 @@ export default async function createHashedCourseMember(
 export type CreateHashedCourseMemberType = (
   courseMember: CourseMemberInput
 ) => Promise<CourseMember>;
+
+/*************************************************************************************
+Grab all courseMembers 
+Iterate though coursemembers and find the coursemember with a matching hashed email
+*/
+
+export async function findHashedCourseMember(courseId: string, email: string) {
+  const members = await prisma.courseMember.findMany({
+    where: {
+      courseId
+    }
+  });
+
+  for (const courseMember of members) {
+    const isEmailMatch = await bcrypt.compare(email, courseMember.email ?? '');
+    if (isEmailMatch) {
+      return courseMember;
+    }
+  }
+  return null;
+}
+
+export type findHashedCourseMemberType = (
+  courseId: string,
+  email: string
+) => Promise<CourseMember | null>;
