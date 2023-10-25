@@ -52,6 +52,7 @@ export type CreateDefaultCourseMemberType = (
 /*************************************************************************************
 Search for course member with matching user email
 */
+
 export async function findDefaultCourseMember(courseId: string, email: string) {
   const courseMember = await prisma.courseMember.findFirst({
     where: {

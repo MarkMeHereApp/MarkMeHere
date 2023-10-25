@@ -252,7 +252,7 @@ export const courseMemberRouter = router({
           : createDefaultCourseMember;
 
         for (const memberData of courseMembers) {
-          //Search for existing courseMember with given email
+
           const existingMember = await searchFunction(
             courseId,
             memberData.email
