@@ -2,14 +2,16 @@ import { ThemeProvider } from './theme-provider';
 import prisma from '@/prisma';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import SchoolContextProvider from './context-school';
+import SchoolContextProvider from './context-organization';
+import { zSiteRoles } from '@/types/sharedZodTypes';
+import { decrypt } from '@/utils/globalFunctions';
 
 export default async function SchoolLayout({
   children,
   params
 }: {
   children: React.ReactNode;
-  params: { school: string };
+  params: { organization: string };
 }) {
   const session = await getServerSession();
 
@@ -19,22 +21,56 @@ export default async function SchoolLayout({
     throw new Error('No email found in session');
   }
 
-  const school = await prisma.globalSiteSettings.findFirst({
-    where: { schoolAbbreviation: params.school }
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email
+    }
   });
 
-  if (!school) {
+  if (!user) {
+    throw new Error('No user found');
+  }
+
+  const organization = await prisma.globalSiteSettings.findFirst({
+    where: { uniqueCode: params.organization }
+  });
+
+  if (organization?.googleMapsApiKey) {
+    const key = organization.googleMapsApiKey;
+
+    organization.googleMapsApiKey = '';
+
+    if (user.role === zSiteRoles.enum.admin) {
+      organization.googleMapsApiKey = decrypt(key);
+    }
+
+    if (
+      user.role === zSiteRoles.enum.moderator &&
+      organization.allowModeratorsToUseGoogleMaps
+    ) {
+      organization.googleMapsApiKey = decrypt(key);
+    }
+
+    if (
+      user.role === zSiteRoles.enum.user &&
+      organization.allowUsersToUseGoogleMaps
+    ) {
+      organization.googleMapsApiKey = decrypt(key);
+    }
+  }
+
+  if (!organization) {
     redirect('/');
   }
 
-  const darkTheme = school.darkTheme;
-  const lightTheme = school.lightTheme;
+  const darkTheme = organization.darkTheme;
+  const lightTheme = organization.lightTheme;
 
   return (
     <>
       <SchoolContextProvider
         themes={{ light: lightTheme, dark: darkTheme }}
-        schoolAbbreviation={school.schoolAbbreviation}
+        organization={organization}
       >
         <ThemeProvider>{children}</ThemeProvider>
       </SchoolContextProvider>

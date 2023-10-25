@@ -2,87 +2,84 @@ import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
-import { TRPCError } from '@trpc/server';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
-import crypto from 'crypto';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 
-const zGlobalSiteSettings = z.object({
+const zUpdateOrganization = z.object({
   googleMapsApiKey: z.string().optional(),
   allowModeratorsToUseGoogleMaps: z.boolean().optional(),
   allowUsersToUseGoogleMaps: z.boolean().optional(),
   darkTheme: z.string().optional(),
   lightTheme: z.string().optional()
 });
-const zCreateInitialSiteSettings = z.object({
+const zCreateOrganization = z.object({
   name: z.string(),
-  schoolAbbreviation: z.string()
+  uniqueCode: z.string()
 });
 
-export const siteSettingsRouter = router({
-  createSiteSettings: publicProcedure
-    .input(zCreateInitialSiteSettings)
+export const organizationRouter = router({
+  createOrganization: publicProcedure
+    .input(zCreateOrganization)
     .mutation(async (requestData) => {
       try {
         return await prisma.globalSiteSettings.create({
           data: {
             name: requestData.input.name,
-            schoolAbbreviation:
-              requestData.input.schoolAbbreviation.toLowerCase()
+            uniqueCode: requestData.input.uniqueCode.toLowerCase()
           }
         });
       } catch (error) {
         throw generateTypedError(error as Error);
       }
     }),
-  getSiteSettings: publicProcedure.input(z.object({})).query(async () => {
+  getOrganization: publicProcedure.input(z.object({})).query(async () => {
     try {
       return await getGlobalSiteSettings_Server();
     } catch (error) {
       throw generateTypedError(error as Error);
     }
   }),
-  updateSiteSettings: publicProcedure
-    .input(zGlobalSiteSettings)
+  updateOrganization: publicProcedure
+    .input(zUpdateOrganization)
     .mutation(async (requestData) => {
       try {
-        const siteSettings = await getGlobalSiteSettings_Server();
-        // Make sure there is only one site settings.
+        const organizationSettings = await getGlobalSiteSettings_Server();
+        // Make sure there is only one organization settings.
         const allSiteSettings = await prisma.globalSiteSettings.findMany({});
         if (allSiteSettings.length > 1) {
           await prisma.globalSiteSettings.deleteMany();
           throw generateTypedError(
             new Error(
-              'More than one site settings found, this should never happen. Please try again!'
+              'More than one organization settings found, this should never happen. Please try again!'
             )
           );
         }
 
-        let googleMapsApiKey = siteSettings.googleMapsApiKey;
+        let googleMapsApiKey = organizationSettings.googleMapsApiKey;
         if (requestData.input.googleMapsApiKey !== undefined) {
           googleMapsApiKey = encrypt(requestData.input.googleMapsApiKey);
         }
 
         let allowedModeratorsToUseGoogleMaps =
-          siteSettings.allowModeratorsToUseGoogleMaps;
+          organizationSettings.allowModeratorsToUseGoogleMaps;
         if (requestData.input.allowModeratorsToUseGoogleMaps !== undefined) {
           allowedModeratorsToUseGoogleMaps =
             requestData.input.allowModeratorsToUseGoogleMaps;
         }
 
         let allowedUsersToUseGoogleMaps =
-          siteSettings.allowUsersToUseGoogleMaps;
+          organizationSettings.allowUsersToUseGoogleMaps;
         if (requestData.input.allowUsersToUseGoogleMaps !== undefined) {
           allowedUsersToUseGoogleMaps =
             requestData.input.allowUsersToUseGoogleMaps;
         }
 
-        let darkTheme = siteSettings.darkTheme;
+        let darkTheme = organizationSettings.darkTheme;
         if (requestData.input.darkTheme !== undefined) {
           darkTheme = requestData.input.darkTheme;
         }
 
-        let lightTheme = siteSettings.lightTheme;
+        let lightTheme = organizationSettings.lightTheme;
         if (requestData.input.lightTheme !== undefined) {
           lightTheme = requestData.input.lightTheme;
         }
@@ -103,4 +100,4 @@ export const siteSettingsRouter = router({
     })
 });
 
-export type SiteSettingsRouter = typeof siteSettingsRouter;
+export type OrganizationRouter = typeof organizationRouter;

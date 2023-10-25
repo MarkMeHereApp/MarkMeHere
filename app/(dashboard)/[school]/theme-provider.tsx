@@ -3,10 +3,10 @@
 import * as React from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
-import { useSchoolContext } from './context-school';
+import { useOrganizationContext } from './context-organization';
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const { themes } = useSchoolContext();
+  const { themes } = useOrganizationContext();
 
   return (
     <NextThemesProvider

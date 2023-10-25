@@ -164,7 +164,7 @@ model ProfessorLectureGeolocation {
 model GlobalSiteSettings {
   id                              String        @id @default(cuid())
   name                            String        @db.VarChar(255)
-  schoolAbbreviation              String        @unique @db.VarChar(255)
+  uniqueCode              String        @unique @db.VarChar(255)
   lightTheme                      String        @db.VarChar(255) @default("light_neutral")
   darkTheme                       String        @db.VarChar(255) @default("dark_red")
   googleMapsApiKey                String?        @db.VarChar(255) 

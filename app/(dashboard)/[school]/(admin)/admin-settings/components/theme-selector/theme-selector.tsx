@@ -26,7 +26,7 @@ export function SelectTheme({
   const [reloadingPage, setReloadingPage] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { theme, setTheme, themes } = useTheme();
-  const updateSettings = trpc.siteSettings.updateSiteSettings.useMutation();
+  const updateSettings = trpc.organization.updateOrganization.useMutation();
   const activeTheme = theme || currentThemeFromDB;
 
   if (error) {

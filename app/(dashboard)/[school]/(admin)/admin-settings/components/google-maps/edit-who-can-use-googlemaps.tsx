@@ -30,7 +30,7 @@ export function WhoCanUseGoogleMaps({
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
   if (error) throw error;
-  const updateSiteSettings = trpc.siteSettings.updateSiteSettings.useMutation();
+  const updateSiteSettings = trpc.organization.updateOrganization.useMutation();
 
   const handleSelectChange = async (value: string) => {
     setSelectedValue(value);

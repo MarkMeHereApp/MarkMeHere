@@ -21,11 +21,11 @@ export const EditGoogleMapsKey = ({
 }) => {
   const [isConfigured, setIsConfigured] = useState(bHasConfigured);
 
-  const updateSiteSettings = trpc.siteSettings.updateSiteSettings.useMutation();
+  const updateOrganization = trpc.organization.updateOrganization.useMutation();
 
   const handleCreateKey = async (inputString: string) => {
     try {
-      const updatedSiteSettings = await updateSiteSettings.mutateAsync({
+      const updatedOrganization = await updateOrganization.mutateAsync({
         googleMapsApiKey: inputString
       });
       toastSuccess('Successfully added your Google Maps API key!');
@@ -38,7 +38,7 @@ export const EditGoogleMapsKey = ({
 
   const handleDelete = async () => {
     try {
-      const updatedSiteSettings = await updateSiteSettings.mutateAsync({
+      const updatedOrganization = await updateOrganization.mutateAsync({
         googleMapsApiKey: ''
       });
       toastSuccess('Successfully deleted your Google Maps API key!');

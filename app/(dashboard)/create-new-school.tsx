@@ -36,7 +36,7 @@ export default function InitiallyCreateSchool() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const createSchoolMutation =
-    trpc.siteSettings.createSiteSettings.useMutation();
+    trpc.organization.createOrganization.useMutation();
 
   if (error) {
     setLoading(false);
@@ -47,7 +47,7 @@ export default function InitiallyCreateSchool() {
     schoolname: z.string().min(2, {
       message: 'School name must be at least 2 characters.'
     }),
-    schoolAbbreviation: z
+    uniqueCode: z
       .string()
       .min(1, {
         message: 'School abbreviation must be at least 1 character.'
@@ -66,11 +66,11 @@ export default function InitiallyCreateSchool() {
     try {
       setLoading(true);
       const school = await createSchoolMutation.mutateAsync({
-        schoolAbbreviation: data.schoolAbbreviation,
+        uniqueCode: data.uniqueCode,
         name: data.schoolname
       });
 
-      redirect(`/${school.schoolAbbreviation}`);
+      redirect(`/${school.uniqueCode}`);
     } catch (e) {
       setError(e as Error);
     }
@@ -128,7 +128,7 @@ export default function InitiallyCreateSchool() {
                     />
                     <FormField
                       control={form.control}
-                      name="schoolAbbreviation"
+                      name="uniqueCode"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>School Abbreviation</FormLabel>

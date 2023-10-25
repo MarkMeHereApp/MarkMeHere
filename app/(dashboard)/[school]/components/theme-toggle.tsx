@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSchoolContext } from '@/app/(dashboard)/[school]/context-school';
+import { useOrganizationContext } from '@/app/(dashboard)/[school]/context-organization';
 
 export function ModeToggle() {
   const { theme, setTheme, themes } = useTheme();
 
-  const { themes: schoolThemes } = useSchoolContext();
+  const { themes: schoolThemes } = useOrganizationContext();
 
   const [mounted, setMounted] = useState(false);
 

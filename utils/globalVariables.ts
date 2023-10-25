@@ -29,7 +29,7 @@ export const demoAccounts: {
 export const defaultSiteSettings: GlobalSiteSettings = {
   id: 'default',
   name: 'test',
-  schoolAbbreviation: 'test',
+  uniqueCode: 'test',
   darkTheme: 'dark_blue',
   lightTheme: 'light_zinc',
   googleMapsApiKey: '',
