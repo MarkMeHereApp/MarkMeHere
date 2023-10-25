@@ -24,7 +24,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   
   const [allowedRange,setAllowedRange] = React.useState<number>(50) //this will in the future serve as the professors ability to pick the range of the classroom 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
-
   const router = useRouter()
 
   const studentLatitude = useRef<number>(0)
@@ -126,6 +125,9 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   };
 
   const CheckGeolocation = () =>{
+
+    setIsLoadingSubmit(true);
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           studentLatitude.current = position.coords.latitude;
@@ -154,7 +156,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
 
   const validateGeolocation = trpc.attendanceToken.ValidateGeolocation.useMutation()
   const ValidateGeolocation = async () => {
-    setIsLoadingSubmit(true);
 
     if (!isFirstClickVerified) {
       //first warn the student that this step might result in this absence
@@ -208,7 +209,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
     }
 
 
-
     const ContinueNoLocation = () => {
       if (isFirstClickNoLocation) {
         setIsFirstClickNoLocation(false);
@@ -233,7 +233,7 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
     
     return (
         <Card className=" min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
-          <CardTitle className="text-2xl font-bold font-mono text-center">
+          <CardTitle className="text-2xl font-bold font-mono text-center pb-[20px]">
             <span>Location Verification</span>
           </CardTitle>
           
