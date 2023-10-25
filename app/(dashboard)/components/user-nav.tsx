@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-
 import { signOut } from 'next-auth/react';
+import { GearIcon } from '@radix-ui/react-icons';
 
 /*
  * @TODO - This should be a server component
@@ -49,7 +49,13 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           {' '}
-          <Link href="/user-settings">User Settings</Link>
+          <Link href="/manage-courses">Admin</Link>
+          </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className='justify-between' >
+          {' '}
+          <Link href="/user-settings">Settings</Link>
+          <GearIcon />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

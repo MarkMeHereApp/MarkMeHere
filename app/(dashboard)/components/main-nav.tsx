@@ -81,12 +81,6 @@ export default function MainNav({
           } */}
         </>
       ) : null}
-
-      <MainNavBarCustomLink
-        href="/manage-courses"
-        displayText="Admin Dashboard"
-      />
-
       <MainNavBarCustomLink
         href="/testing-playground"
         displayText="Testing Playground"
