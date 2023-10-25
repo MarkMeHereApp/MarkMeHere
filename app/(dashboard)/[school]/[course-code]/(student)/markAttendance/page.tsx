@@ -8,20 +8,16 @@ import { formatString } from '@/utils/globalFunctions';
 import { attendanceTokenExpirationTime } from '@/utils/globalVariables';
 import { redirect } from 'next/navigation';
 
-async function findAttendanceToken(
-  attendanceTokenId: string,
-) {
+async function findAttendanceToken(attendanceTokenId: string) {
   return await prisma.attendanceToken.findFirst({
     where: {
-      id: attendanceTokenId,
+      id: attendanceTokenId
     }
   });
 }
 
-async function findCourseId(
-  lectureId: string
-) {
-  const lecture =  await prisma.lecture.findFirst({
+async function findCourseId(lectureId: string) {
+  const lecture = await prisma.lecture.findFirst({
     where: {
       id: lectureId
     }
@@ -38,14 +34,10 @@ async function findCourseMember(courseId: string, email: string) {
   });
 }
 
-async function deleteAttendanceToken(
-  attendanceTokenId: string,
-  
-) {
+async function deleteAttendanceToken(attendanceTokenId: string) {
   return await prisma.attendanceToken.delete({
     where: {
-      id: attendanceTokenId,
-      
+      id: attendanceTokenId
     }
   });
 }
@@ -85,41 +77,39 @@ async function createAttendanceEntry(
 }
 
 export default async function markAttendance({
-  searchParams
+  searchParams,
+  params
 }: {
   searchParams: {
     attendanceTokenId: string;
-    // lectureId: string;
-    // courseId: string;
+  };
+  params: {
+    school: string;
+    'course-code': string;
   };
 }) {
   const serverSession = await getServerSession();
 
-
-
   const email: string | null = serverSession?.user?.email || null;
   const attendanceTokenId = searchParams.attendanceTokenId;
-  
 
   try {
-    
     if (!email) {
       return <MarkAttendanceError message="No Valid Email" />;
     }
 
     const tokenRow = await findAttendanceToken(attendanceTokenId);
 
-
     if (!tokenRow) {
       return <MarkAttendanceError message="Invalid Attendance Token" />;
     }
 
-    const lectureId = tokenRow.lectureId
-    
-    const courseId = await findCourseId(tokenRow.lectureId)
+    const lectureId = tokenRow.lectureId;
 
-    if(!courseId) {
-      return <MarkAttendanceError message="Missing Course ID"/>
+    const courseId = await findCourseId(tokenRow.lectureId);
+
+    if (!courseId) {
+      return <MarkAttendanceError message="Missing Course ID" />;
     }
 
     if (
@@ -171,7 +161,7 @@ export default async function markAttendance({
       attendanceEntry = await createAttendanceEntry(lectureId, courseMemberId);
     }
 
-    console.log("TOKEN-ID: ", attendanceTokenId)
+    console.log('TOKEN-ID: ', attendanceTokenId);
     await deleteAttendanceToken(attendanceTokenId);
 
     if (!attendanceEntry) {
@@ -180,9 +170,11 @@ export default async function markAttendance({
       );
     }
 
-    console.log(attendanceEntry.dateMarked)
+    console.log(attendanceEntry.dateMarked);
 
-    redirect(`/student?attendanceEntry=${attendanceEntry.dateMarked}`)
+    redirect(
+      `/${params.school}/${params['course-code']}/student?attendanceEntry=${attendanceEntry.dateMarked}`
+    );
 
     // return (
     //   <>

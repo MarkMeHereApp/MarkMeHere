@@ -30,7 +30,8 @@ export default function CourseSelection() {
     selectedCourseId,
     courseMembersOfSelectedCourse,
     userCourses,
-    userCourseMembers
+    userCourseMembers,
+    currentCourseUrl
   } = useCourseContext();
 
   const [open, setOpen] = React.useState(false);
@@ -111,10 +112,7 @@ export default function CourseSelection() {
                 {uniqueRoles.map((role) => (
                   <CommandGroup key={role} heading={formatString(role)}>
                     {userCourses?.map((course) => (
-                      <Link
-                        key={course.id}
-                        href={`/${school}/${course.courseCode}`}
-                      >
+                      <Link key={course.id} href={`/${currentCourseUrl}`}>
                         <CommandItem
                           key={course.id}
                           onSelect={() => {

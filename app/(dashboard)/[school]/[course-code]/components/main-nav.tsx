@@ -4,22 +4,24 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 import { useCourseContext } from '@/app/(dashboard)/[school]/[course-code]/context-course';
+import { useOrganizationContext } from '@/app/(dashboard)/[school]/context-organization';
 
 export default function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { selectedCourseId } = useCourseContext();
+  const { currentCourseUrl } = useCourseContext();
+  const { organizationUrl } = useOrganizationContext();
   const pathname = usePathname(); // Use the hook
 
   // A helper function to determine if the link is active
   function isActive(href: string) {
     // Since the Admin Dashboard has a bunch of pages inside of it, we have to be a big janky with it, and highlight the admin dashboard for all of its pages.
-    if (href === '/manage-courses') {
+    if (href === `${organizationUrl}/manage-courses`) {
       return (
-        pathname === '/manage-courses' ||
-        pathname === '/manage-site-users' ||
-        pathname === '/admin-settings'
+        pathname === `${organizationUrl}/manage-courses` ||
+        pathname === `${organizationUrl}/manage-site-users` ||
+        pathname === `${organizationUrl}/admin-settings`
       );
     }
     return pathname === href;
@@ -55,40 +57,40 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
-      <MainNavBarCustomLink href="/overview" displayText="Overview" />
-      {selectedCourseId ? (
-        <>
-          <MainNavBarCustomLink
-            href="/mark-attendance-status"
-            displayText="Mark Attendance Status"
-          />
-          <MainNavBarCustomLink
-            href="/manage-course-members"
-            displayText="Course Members"
-          />
-          <MainNavBarCustomLink
-            href="/student"
-            displayText="Student Dashboard"
-          />
-          {/* {selectedCourseRole == 'student' ? (
+      <MainNavBarCustomLink
+        href={`${currentCourseUrl}/overview`}
+        displayText="Overview"
+      />
+
+      <MainNavBarCustomLink
+        href={`${currentCourseUrl}/mark-attendance-status`}
+        displayText="Mark Attendance Status"
+      />
+      <MainNavBarCustomLink
+        href={`${currentCourseUrl}/manage-course-members`}
+        displayText="Course Members"
+      />
+      <MainNavBarCustomLink
+        href={`${currentCourseUrl}/student`}
+        displayText="Student Dashboard"
+      />
+      {/* {selectedCourseRole == 'student' ? (
               <MainNavBarCustomLink
-                href="/student"
+                href={`${currentCourseUrl}/student`}
                 displayText="Student Dashboard"
               />
             ) : (
                 null
             )
           } */}
-        </>
-      ) : null}
 
       <MainNavBarCustomLink
-        href="/manage-courses"
+        href={`${organizationUrl}/manage-courses`}
         displayText="Admin Dashboard"
       />
 
       <MainNavBarCustomLink
-        href="/testing-playground"
+        href={`${currentCourseUrl}/testing-playground`}
         displayText="Testing Playground"
       />
     </nav>

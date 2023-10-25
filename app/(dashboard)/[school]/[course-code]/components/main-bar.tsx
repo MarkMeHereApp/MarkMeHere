@@ -7,9 +7,11 @@ import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';
 import { Icons } from '@/components/ui/icons';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
+import { useCourseContext } from '../context-course';
 
 export default function MainBar() {
-  const isQRCodePage = usePathname() === '/qr';
+  const { currentCourseUrl } = useCourseContext();
+  const isQRCodePage = usePathname() === `${currentCourseUrl}/qr`;
 
   const divClassName = !isQRCodePage
     ? 'border-b flex-col'
@@ -19,7 +21,7 @@ export default function MainBar() {
     <div className={divClassName}>
       <div className="flex items-center pb-2 pr-8 justify-between">
         <div className="flex flex-row items-center ml-6 space-x-2 mt-2 mr-4">
-          <Link href="/overview" className="-mr-2">
+          <Link href={`${currentCourseUrl}/overview`} className="-mr-2">
             <Icons.logo
               className="hover:wave-infinite"
               style={{ flex: 1, width: '50px', height: '50px' }}

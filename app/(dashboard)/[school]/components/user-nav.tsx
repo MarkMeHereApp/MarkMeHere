@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-
+import { useOrganizationContext } from '@/app/(dashboard)/[school]/context-organization';
 import { signOut } from 'next-auth/react';
 
 /*
@@ -22,6 +22,7 @@ import { signOut } from 'next-auth/react';
  */
 
 export default function UserNav() {
+  const { organization } = useOrganizationContext();
   const session = useSession();
   const name = session?.data?.user?.name || '';
   const userEmail = session?.data?.user?.email || '';
@@ -49,7 +50,9 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           {' '}
-          <Link href="/user-settings">User Settings</Link>
+          <Link href={`/${organization.uniqueCode}/user-settings`}>
+            User Settings
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

@@ -11,6 +11,7 @@ type themeType = { light: string; dark: string };
 interface OrganizationContextType {
   organization: GlobalSiteSettings;
   setOrganization: React.Dispatch<React.SetStateAction<GlobalSiteSettings>>;
+  organizationUrl: string;
 }
 
 const defaultOrganization: GlobalSiteSettings = {
@@ -26,7 +27,8 @@ const defaultOrganization: GlobalSiteSettings = {
 
 const OrganizationContext = createContext<OrganizationContextType>({
   organization: defaultOrganization,
-  setOrganization: () => {}
+  setOrganization: () => {},
+  organizationUrl: ''
 });
 
 export default function OrganizationContextProvider({
@@ -37,6 +39,7 @@ export default function OrganizationContextProvider({
   organization: GlobalSiteSettings;
 }) {
   const [organization, setOrganization] = useState(initialOrganization);
+  const [organizationUrl] = useState(`/${organization.uniqueCode}`);
 
   if (!organization || organization.id === '') {
     throw new Error('No organization found');
@@ -46,7 +49,8 @@ export default function OrganizationContextProvider({
     <OrganizationContext.Provider
       value={{
         organization,
-        setOrganization
+        setOrganization,
+        organizationUrl
       }}
     >
       {children}

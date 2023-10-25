@@ -125,7 +125,7 @@ export default function SignInForm({
 
   useEffect(() => {
     if (session && router) {
-      router.push('/overview');
+      router.push('/');
     }
   }, [session, router]);
 

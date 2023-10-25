@@ -37,9 +37,11 @@ interface StartScanningButtonProps {
 
 export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const router = useRouter();
+  const { courseMembersOfSelectedCourse, currentCourseUrl } =
+    useCourseContext();
 
   const address = `${getPublicUrl()}`;
-  const navigation = '/qr';
+  const navigation = `${currentCourseUrl}/qr`;
 
   const professorGeolocationId = useRef('');
 
@@ -65,8 +67,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
-
-  const { courseMembersOfSelectedCourse } = useCourseContext();
 
   const [selectCourseMember, setSelectCourseMember] = useState<
     CourseMember | undefined

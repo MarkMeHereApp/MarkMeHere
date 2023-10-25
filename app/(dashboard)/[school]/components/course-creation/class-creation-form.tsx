@@ -71,14 +71,13 @@ export default function CreateCourseForm({
 }: {
   onSuccess: () => void;
 }) {
-  const params = useParams();
-  const school = params.school;
   const [loading, setLoading] = useState(false);
   const [getLMSSelectedCourse, setLMSSelectedCourse] =
     useState<zLMSCourseSchemeType | null>(null);
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
-  const { setUserCourses, setUserCourseMembers } = useCourseContext();
+  const { setUserCourses, setUserCourseMembers, currentCourseUrl } =
+    useCourseContext();
   const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
 
@@ -170,7 +169,7 @@ export default function CreateCourseForm({
       utils.canvas.getCanvasCourses.invalidate();
       onSuccess();
       setLoading(false);
-      redirect(`/${school}/${newCourse.courseCode}/overview`);
+      redirect(`${currentCourseUrl}/overview`);
 
       return;
     } catch (error) {
