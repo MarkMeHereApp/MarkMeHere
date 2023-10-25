@@ -28,13 +28,14 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { userCourses, selectedCourseRole } = useCourseContext();
+  const { userCourses, selectedCourseRole, currentCourseUrl } =
+    useCourseContext();
   const { lectures, selectedAttendanceDate } = useLecturesContext();
 
   //Only Professors or TA's can access this page
   if (selectedCourseRole === 'student') {
     router.push(
-      `/?qr-warning=${encodeURIComponent(
+      `${currentCourseUrl}/mark-attendance-status?qr-warning=${encodeURIComponent(
         'You must be a Professor or TA to generate QR codes for this course'
       )}`
     );
@@ -86,7 +87,9 @@ const QR = () => {
     if (!newLecture) {
       const message = 'There is no lecture for selected date';
       const encodedMessage = encodeURIComponent(message);
-      router.push(`/mark-attendance-status?qr-warning=${encodedMessage}`);
+      router.push(
+        `${currentCourseUrl}/mark-attendance-status?qr-warning=${encodedMessage}`
+      );
       return;
     }
 
@@ -392,7 +395,11 @@ const QR = () => {
 
         <Card className="h-full w-[55%] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
-          <Button onClick={() => router.push('/mark-attendance-status')}>
+          <Button
+            onClick={() =>
+              router.push(`${currentCourseUrl}/mark-attendance-status`)
+            }
+          >
             <div>Finish</div>
           </Button>
         </Card>

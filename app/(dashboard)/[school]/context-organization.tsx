@@ -9,12 +9,23 @@ import { GlobalSiteSettings } from '@prisma/client';
 type themeType = { light: string; dark: string };
 
 interface OrganizationContextType {
-  organization: GlobalSiteSettings | null;
+  organization: GlobalSiteSettings;
   setOrganization: React.Dispatch<React.SetStateAction<GlobalSiteSettings>>;
 }
 
+const defaultOrganization: GlobalSiteSettings = {
+  id: '',
+  name: '',
+  uniqueCode: '',
+  lightTheme: '',
+  darkTheme: '',
+  googleMapsApiKey: null,
+  allowModeratorsToUseGoogleMaps: false,
+  allowUsersToUseGoogleMaps: false
+};
+
 const OrganizationContext = createContext<OrganizationContextType>({
-  organization: null,
+  organization: defaultOrganization,
   setOrganization: () => {}
 });
 
@@ -27,7 +38,9 @@ export default function OrganizationContextProvider({
 }) {
   const [organization, setOrganization] = useState(initialOrganization);
 
-  if (!organization) throw new Error('No organization found');
+  if (!organization || organization.id === '') {
+    throw new Error('No organization found');
+  }
 
   return (
     <OrganizationContext.Provider
