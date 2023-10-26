@@ -133,6 +133,36 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
+    accessorKey: 'location',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Location" />
+    ),
+    cell: ({ row }) => {
+      const originalValue = row.original as ExtendedCourseMember;
+      const range = originalValue.Range
+        ? originalValue.Range
+        : undefined;
+
+      if (range) {
+        if (range > 50) {
+          return <div className="flex w-full">Out of Range</div>;
+        }
+        else if (range < 50 && range > 0) {
+          return <div className="flex w-full">In Range</div>;
+        }
+        else if (range == -1) {
+          return <div className="flex w-full">No Location</div>;
+        }
+        else if(range == 0){
+          return <div className="flex w-full">Location Disabled</div>;
+        }
+      }
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
     accessorKey: 'email',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
