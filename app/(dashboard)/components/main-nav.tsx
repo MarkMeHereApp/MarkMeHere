@@ -5,6 +5,15 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
 import { useCourseContext } from '@/app/context-course';
 import isDevMode from '@/utils/isDevMode';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
 
 export default function MainNav({
   className,
@@ -56,39 +65,55 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
-      <MainNavBarCustomLink href="/overview" displayText="Overview" />
-      {selectedCourseId ? (
-        <>
-          <MainNavBarCustomLink
-            href="/attendance"
-            displayText="Attendance"
-          />
-          <MainNavBarCustomLink
-            href="/members"
-            displayText="Members"
-          />
-          <MainNavBarCustomLink
-                href="/student"
-                displayText="Student Dashboard"
-              />
-          {/* {selectedCourseRole == 'student' ? (
-              <MainNavBarCustomLink
-                href="/student"
-                displayText="Student Dashboard"
-              />
-            ) : (
-                null
-            )
-          } */}
-        </>
-      ) : null}
-      {isDevMode && (
-          <MainNavBarCustomLink
-              href="/testing-playground"
-              displayText="Testing Playground"
-          />
-       )
-      }
+        <DropdownMenu>
+            <DropdownMenuTrigger  className='flex sm:hidden'>
+              <HamburgerMenuIcon className='h-5 w-5'/>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem>
+                    <MainNavBarCustomLink 
+                        href="/overview" 
+                        displayText="Overview" 
+                    />
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <MainNavBarCustomLink
+                        href="/attendance"
+                        displayText="Attendance"
+                    />
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <MainNavBarCustomLink
+                        href="/members"
+                        displayText="Members"
+                    />
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+      <div className='hidden sm:flex space-x-4'>
+        <MainNavBarCustomLink href="/overview" displayText="Overview" />
+        {selectedCourseId ? (
+            <>
+            <MainNavBarCustomLink
+                href="/attendance"
+                displayText="Attendance"
+            />
+            <MainNavBarCustomLink
+                href="/members"
+                displayText="Members"
+            />
+            </>
+        ) : null}
+        {isDevMode && (
+            <MainNavBarCustomLink
+                href="/testing-playground"
+                displayText="Testing"
+            />
+        )
+        }
+      </div>
     </nav>
   );
 }
