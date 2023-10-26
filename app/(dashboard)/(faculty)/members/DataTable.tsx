@@ -75,7 +75,7 @@ export default function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const shouldHideColumn = ['email', 'lmsId', 'view Stats'];//
+                  const shouldHideColumn = ['email', 'lmsId', 'view Stats'];
                   return (
                     <TableHead
                       key={header.id}
@@ -105,7 +105,7 @@ export default function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    const shouldHideColumn = ['email', 'lmsId'];
+                    const shouldHideColumn = ['email', 'lmsId', 'view Stats'];
                     return (
                       <TableCell
                         key={cell.id}
