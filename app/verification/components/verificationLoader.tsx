@@ -9,6 +9,11 @@ import { Icons } from "@/components/ui/icons";
 import Loading from '@/components/general/loading';
 import { info } from "console";
 import GoogleMapsComponent from "./googleMapsComponent";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"; 
 
 enum WarningType {
   Info,
@@ -138,6 +143,12 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
 
     setIsLoadingSubmit(true);
 
+    if (!isFirstClickVerified) {
+      //first warn the student that this step might result in this absence
+      //on second press
+      router.push(`/student?attendanceTokenId=${code}`)
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           studentLatitude.current = position.coords.latitude;
@@ -166,12 +177,6 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
 
   const validateGeolocation = trpc.attendanceToken.ValidateGeolocation.useMutation()
   const ValidateGeolocation = async () => {
-
-    if (!isFirstClickVerified) {
-      //first warn the student that this step might result in this absence
-      //on second press
-      router.push(`/student?attendanceTokenId=${code}`)
-    }
 
     if(code){
       try {
@@ -251,7 +256,7 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
             <span>Location Verification</span>
           </CardTitle>
           
-          <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
+          
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
             <Button 
@@ -263,7 +268,25 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
                 <div>
                   {isFirstClickVerified ? 'Verify My Location' : `Continue with ${proceedButtonText} Location`}
                 </div>}
+
+                
             </Button>
+
+            {!isLoadingSubmit && (
+                  
+              <Dialog>
+
+                <DialogTrigger>
+                <Button variant='outline' size='xs' className='pl-2 pr-2'>View Stats</Button>
+
+                </DialogTrigger>
+                  <DialogContent>
+                  <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
+                  </DialogContent>
+               
+              </Dialog>
+                  
+            )}
 
             <Button 
               className="flex w-[100%] min-w-[100%]"
