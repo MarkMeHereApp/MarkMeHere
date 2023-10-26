@@ -21,14 +21,14 @@ const OverviewAnalytics = () => {
   // Do the same for the top students
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="w-full h-1/4 p-4">
+      <div className="w-full h-1/4">
         <OverviewBar
           selectedCourseName={selectedCourseName ?? ''}
           lectures={lectures}
           courseMembers={courseMembersOfSelectedCourse}
         />
       </div>
-      <div className="w-full h-3/4 p-4">
+      <div className="w-full h-3/4 pt-4">
         <AttendanceOverTimeLineGraph
           lectures={lectures}
           numStudents={studentsOfSelectedCourse?.length ?? 0}
