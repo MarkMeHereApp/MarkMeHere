@@ -30,6 +30,7 @@ export const SelectedLecturesProvider: React.FC<
   SelectedLecturesProviderProps
 > = ({ children }) => {
   const { lectures } = useLecturesContext();
+  lectures?.sort((a, b) => a.lectureDate.getTime() - b.lectureDate.getTime());
   const [selectedLectures, setSelectedLectures] = useState(lectures);
 
   const defaultFrom = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

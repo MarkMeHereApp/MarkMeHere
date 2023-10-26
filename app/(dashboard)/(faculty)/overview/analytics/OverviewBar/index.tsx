@@ -37,7 +37,7 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
   return (
     <>
       <Card>
-        <CardContent className="flex p-4">
+        <CardContent className="flex p-4 gap-4">
           <Button onClick={() => onClickExport()}>Export to JSON</Button>
           <CalendarDateRangePicker />
         </CardContent>
