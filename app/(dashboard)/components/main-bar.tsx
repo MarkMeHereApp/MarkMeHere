@@ -24,17 +24,19 @@ export default function MainBar({
   return (
     <div className={divClassName}>
       <div className="flex items-center pb-2 pr-8 justify-between">
-        <div className="flex flex-row items-center ml-6 space-x-2 mt-2 mr-4">
-          <Link href="/overview" className="-mr-2">
-            <Icons.logo
-              className="hover:wave-infinite"
-              style={{ flex: 1, width: '50px', height: '50px' }}
-            />
-          </Link>
-          <Icons.slash style={{ width: '50px', height: '50px' }} />
+        <div className="flex flex-row sm:items-center ml-6 sm:space-x-2 mt-4 sm:mt-2 mr-4">
+            <div className="hidden sm:flex">
+                <Link href="/overview" className="-mr-2">
+                    <Icons.logo
+                    className="hover:wave-infinite"
+                    style={{ flex: 1, width: '50px', height: '50px' }}
+                    />
+                </Link>
+                <Icons.slash style={{ width: '50px', height: '50px' }} />
+            </div>
           <CourseSelection />
         </div>
-        <div className="flex align-top items-center justify-end space-x-4 mt-2">
+        <div className="flex align-top items-center justify-end space-x-4 mt-4 sm:mt-2">
           <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           <UserNav />
         </div>
