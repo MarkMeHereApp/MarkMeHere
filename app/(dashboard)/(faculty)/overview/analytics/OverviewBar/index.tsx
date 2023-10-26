@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CourseMember } from '@prisma/client';
 import { saveAs } from 'file-saver';
+import { CalendarDateRangePicker } from './date-rangepicker';
 
 export interface OverviewBarProps {
   selectedCourseName: string;
@@ -36,8 +37,9 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
   return (
     <>
       <Card>
-        <CardContent className="flex p-4">
+        <CardContent className="flex p-4 gap-4">
           <Button onClick={() => onClickExport()}>Export to JSON</Button>
+          <CalendarDateRangePicker />
         </CardContent>
       </Card>
     </>

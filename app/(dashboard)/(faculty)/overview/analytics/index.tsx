@@ -1,13 +1,12 @@
 import { useCourseContext } from '@/app/context-course';
-import { useLecturesContext } from '../../../../context-lecture';
 import AttendanceOverTimeLineGraph from './AttendanceOverTimeLineGraph';
 import OverviewBar from './OverviewBar';
-
+import { useState } from 'react';
+import { useSelectedLectureContext } from '../components/context-selected-lectures';
+import { useLecturesContext } from '@/app/context-lecture';
 const OverviewAnalytics = () => {
-  const { lectures } = useLecturesContext();
-  // This gets the lectures from the current course already
-  // lectures is an array of objects, where each object consists of a lecture and its attendance entries
-
+  const { selectedLectures } = useSelectedLectureContext();
+  console.log(selectedLectures);
   const { courseMembersOfSelectedCourse, userCourses, selectedCourseId } =
     useCourseContext();
   const studentsOfSelectedCourse = courseMembersOfSelectedCourse?.filter(
@@ -17,20 +16,18 @@ const OverviewAnalytics = () => {
     return courses.id === selectedCourseId;
   })?.name;
 
-  // After getting the data, pass it to the AttendanceOverTimeLineGraph component and let it handle the rest
-  // Do the same for the top students
   return (
     <div className="flex h-full w-full flex-col">
       <div className="w-full h-1/4 p-4">
         <OverviewBar
           selectedCourseName={selectedCourseName ?? ''}
-          lectures={lectures}
+          lectures={selectedLectures}
           courseMembers={courseMembersOfSelectedCourse}
         />
       </div>
       <div className="w-full h-3/4 p-4">
         <AttendanceOverTimeLineGraph
-          lectures={lectures}
+          lectures={selectedLectures}
           numStudents={studentsOfSelectedCourse?.length ?? 0}
         />
       </div>
