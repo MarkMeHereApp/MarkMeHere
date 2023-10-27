@@ -1,4 +1,4 @@
-import { lecturesType } from '@/app/context-lecture';
+import { lecturesType } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CourseMember } from '@prisma/client';

@@ -25,7 +25,8 @@ export const organizationRouter = router({
         return await prisma.globalSiteSettings.create({
           data: {
             name: requestData.input.name,
-            uniqueCode: requestData.input.uniqueCode.toLowerCase()
+            uniqueCode: requestData.input.uniqueCode.toLowerCase(),
+            hashEmails: false
           }
         });
       } catch (error) {

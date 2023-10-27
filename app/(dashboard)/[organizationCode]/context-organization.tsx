@@ -20,6 +20,7 @@ const defaultOrganization: GlobalSiteSettings = {
   uniqueCode: '',
   lightTheme: '',
   darkTheme: '',
+  hashEmails: false,
   googleMapsApiKey: null,
   allowModeratorsToUseGoogleMaps: false,
   allowUsersToUseGoogleMaps: false

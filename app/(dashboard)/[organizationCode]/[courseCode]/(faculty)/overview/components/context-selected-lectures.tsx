@@ -5,7 +5,11 @@ import React, {
   ReactNode,
   useEffect
 } from 'react';
-import { lecturesType, useLecturesContext } from '@/app/context-lecture';
+import {
+  lecturesType,
+  useLecturesContext
+} from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
+
 import { DateRange } from 'react-day-picker';
 
 // Define the shape of the context data
