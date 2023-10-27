@@ -22,6 +22,7 @@ export const organizationRouter = router({
     .input(zCreateOrganization)
     .mutation(async (requestData) => {
       try {
+        console.log('Creating organization');
         return await prisma.globalSiteSettings.create({
           data: {
             name: requestData.input.name,

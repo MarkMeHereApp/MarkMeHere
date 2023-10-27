@@ -76,7 +76,7 @@ export const getGlobalSiteSettings_Server = async (
     return siteSettingsDB;
   }
 
-  throw new Error('Site settings not found');
+  throw new Error('Organization not found');
 };
 
 export function encrypt(text: string, key?: string) {

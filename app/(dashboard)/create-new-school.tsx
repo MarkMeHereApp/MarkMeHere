@@ -24,19 +24,19 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { useForm } from 'react-hook-form';
-import Continue from '@/components/general/continue';
+import { ContinueButton } from '@/components/general/continue-button';
 import MarkMeHereClassAnimation from '@/components/mark-me-here/MarkMeHereClassAnimation';
 import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
 import Loading from '@/components/general/loading';
+import SettingsDisplayPage from './[organizationCode]/[courseCode]/(faculty)/user-settings/display/page';
 
 export default function InitiallyCreateSchool() {
   const [displayingForm, setDisplayingForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const createSchoolMutation =
-    trpc.organization.createOrganization.useMutation();
+  const createOrganization = trpc.organization.createOrganization.useMutation();
 
   if (error) {
     setLoading(false);
@@ -65,12 +65,16 @@ export default function InitiallyCreateSchool() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const school = await createSchoolMutation.mutateAsync({
+      const school = await createOrganization.mutateAsync({
         uniqueCode: data.uniqueCode,
         name: data.schoolname
       });
 
-      redirect(`/${school.uniqueCode}`);
+      if (school) {
+        redirect(`/${school.uniqueCode}`);
+      } else {
+        setError(new Error('Something went wrong. Please try again.'));
+      }
     } catch (e) {
       setError(e as Error);
     }
@@ -86,13 +90,10 @@ export default function InitiallyCreateSchool() {
               <h2 className="text-3xl font-bold">Welcome To Mark Me Here!</h2>
             </span>
             <div className="mt-4">
-              <Button
-                variant={'outline'}
-                className="transition-all duration-500 ease-in-out group"
+              <ContinueButton
+                name="Create Your School"
                 onClick={() => setDisplayingForm(true)}
-              >
-                <Continue name="Create Your School" />
-              </Button>
+              />
             </div>
           </div>
         </div>
@@ -144,13 +145,13 @@ export default function InitiallyCreateSchool() {
                       )}
                     />
                     <div className="flex justify-end">
-                      <Button
-                        className="transition-all duration-500 ease-in-out group"
-                        type="submit"
-                        disabled={loading}
-                      >
-                        {loading ? <Loading /> : <Continue />}
-                      </Button>
+                      {loading ? (
+                        <Button disabled={true} variant={'outline'}>
+                          <Loading />
+                        </Button>
+                      ) : (
+                        <ContinueButton type="submit" />
+                      )}
                     </div>
                   </form>
                 </Form>

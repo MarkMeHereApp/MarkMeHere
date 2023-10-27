@@ -1,9 +1,9 @@
 import type { inferAsyncReturnType } from '@trpc/server';
 import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
 import prisma from '@/prisma';
+import { defaultSiteSettings } from '@/utils/globalVariables';
 
 /* 
   Here we need to cast our request as NextRequest type for the getToken function
@@ -14,16 +14,22 @@ import prisma from '@/prisma';
   KEEP AN EYE ON THIS FOR FUTURE JWT ERRORS
   */
 
+/*
+  @TODO: The site settings shouldn't be here.
+  */
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const session = await getToken({ req: opts.req as NextRequest });
-  const settings = await getGlobalSiteSettings_Server({
-    googleMapsApiKey: true,
-    hashEmails: true
-  });
+  const siteSettingsDB = await prisma.globalSiteSettings.findFirst();
+
+  if (siteSettingsDB) {
+    return {
+      session,
+      siteSettingsDB
+    };
+  }
 
   return {
-    session,
-    settings
+    session
   };
 };
 
