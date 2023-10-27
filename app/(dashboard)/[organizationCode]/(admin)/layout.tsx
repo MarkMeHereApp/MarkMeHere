@@ -7,29 +7,18 @@ import prisma from '@/prisma';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { redirect } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { ContinueButton } from '@/components/general/continue-button';
 
-const sidebarNavItems = [
-  {
-    title: 'Manage Courses',
-    href: '/manage-courses'
-  },
-  {
-    title: 'Manage Users',
-    href: '/manage-site-users'
-  },
-  {
-    title: 'Admin Settings',
-    href: '/admin-settings'
-  }
-];
-
-interface SettingsLayoutProps {
+export default async function SchoolLayout({
+  children,
+  params
+}: {
   children: React.ReactNode;
-}
+  params: { organizationCode: string };
+}) {
+  const organizationCode = params.organizationCode;
 
-export default async function SettingsLayout({
-  children
-}: SettingsLayoutProps) {
   const session = await getServerSession();
 
   const email = session?.user?.email;
@@ -54,14 +43,26 @@ export default async function SettingsLayout({
     return <></>;
   }
 
+  const sidebarNavItems = [
+    {
+      title: 'Manage Users',
+      href: `/${organizationCode}/manage-site-users`
+    },
+    {
+      title: 'Admin Settings',
+      href: `/${organizationCode}/admin-settings`
+    }
+  ];
+
   return (
     <>
-      <div className="hidden space-y-6 p-10 pb-16 md:block">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">Admin Settings</h2>
-          <p className="text-muted-foreground">
-            Configure global site settings.
-          </p>
+      <div className="space-y-6 p-10 pb-16">
+        <div className="flex items-center space-x-4">
+          <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
+
+          <Link href={`/${organizationCode}`}>
+            <ContinueButton name="Go Back To App" />
+          </Link>
         </div>
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">

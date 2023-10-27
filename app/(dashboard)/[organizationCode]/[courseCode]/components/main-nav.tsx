@@ -85,7 +85,7 @@ export default function MainNav({
           } */}
 
       <MainNavBarCustomLink
-        href={`${organizationUrl}/manage-courses`}
+        href={`${organizationUrl}/admin-settings`}
         displayText="Admin Dashboard"
       />
 
