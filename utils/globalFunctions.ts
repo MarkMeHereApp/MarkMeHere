@@ -76,19 +76,7 @@ export const getGlobalSiteSettings_Server = async (
     return siteSettingsDB;
   }
 
-  await prisma.globalSiteSettings.create({
-    data: defaultSiteSettings
-  });
-
-  const newSiteSettings = await prisma.globalSiteSettings.findFirst({
-    select: select
-  });
-
-  if (!newSiteSettings) {
-    throw new Error('Failed to create initial site settings');
-  }
-
-  return newSiteSettings;
+  throw new Error('Organization not found');
 };
 
 export function encrypt(text: string, key?: string) {

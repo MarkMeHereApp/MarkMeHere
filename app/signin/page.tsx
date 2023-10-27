@@ -20,21 +20,12 @@ export default async function SigninPage() {
       demoModeConfigured = true;
     }
 
-    const globalSiteSettings = await getGlobalSiteSettings_Server({
-      darkTheme: true,
-      lightTheme: true
-    });
-    const darkTheme = globalSiteSettings.darkTheme;
-    const lightTheme = globalSiteSettings.lightTheme;
-
     return (
       <>
         <SignInForm
           providers={providers}
           bHasTempAdminConfigured={bTempAdminSecretConfigured}
           bIsDemoMode={demoModeConfigured}
-          darkTheme={darkTheme}
-          lightTheme={lightTheme}
         />
       </>
     );
