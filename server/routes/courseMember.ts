@@ -23,6 +23,7 @@ import {
   updateCourseMember
 } from '../utils/defaultCourseMemberHelpers.ts';
 
+import { request } from 'http';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -175,6 +176,15 @@ export const courseMemberRouter = router({
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
+        if (requestData.input.courseId === '') {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing CourseId in getCourseMembersOfCourse'
+            })
+          );
+        }
+
         const emailctx = requestData.ctx?.session?.email;
 
         if (!emailctx)
@@ -196,8 +206,7 @@ export const courseMemberRouter = router({
           throw generateTypedError(
             new TRPCError({
               code: 'INTERNAL_SERVER_ERROR',
-              message:
-                'There should only be one course member with this email and id'
+              message: 'No course membership found for this user in this course'
             })
           );
         }

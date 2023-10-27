@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/components/theme/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -46,16 +45,12 @@ interface SignInFormProps {
   providers: Array<TProvider>;
   bHasTempAdminConfigured?: boolean;
   bIsDemoMode?: boolean;
-  lightTheme: string;
-  darkTheme: string;
 }
 
 export default function SignInForm({
   providers,
   bHasTempAdminConfigured,
-  bIsDemoMode,
-  lightTheme,
-  darkTheme
+  bIsDemoMode
 }: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,7 +121,7 @@ export default function SignInForm({
 
   useEffect(() => {
     if (session && router) {
-      router.push('/overview');
+      router.push('/');
     }
   }, [session, router]);
 
@@ -217,7 +212,6 @@ export default function SignInForm({
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>
-            <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           </div>
 
           <div className="flex flex-col gap-4">
