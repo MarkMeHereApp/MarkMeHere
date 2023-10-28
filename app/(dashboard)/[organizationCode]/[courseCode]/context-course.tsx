@@ -39,6 +39,7 @@ const defaultCourseEnrollment: { course: Course } & CourseMember = {
     courseCode: '',
     name: '',
     lmsType: '',
+    organizationCode: '',
     lmsId: null,
     dateCreated: new Date(),
     StartDate: null,

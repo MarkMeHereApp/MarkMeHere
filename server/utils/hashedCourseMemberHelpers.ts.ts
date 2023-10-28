@@ -3,7 +3,7 @@ import { ToastActionElement } from '@/components/ui/toast';
 import crypto from 'crypto';
 import prisma from '@/prisma';
 import bcrypt from 'bcrypt';
-import { Prisma, GlobalSiteSettings, CourseMember } from '@prisma/client';
+import { Prisma, Organization, CourseMember } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';

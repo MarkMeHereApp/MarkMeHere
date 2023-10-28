@@ -19,17 +19,18 @@ import { defaultSiteSettings } from '@/utils/globalVariables';
   */
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
   const session = await getToken({ req: opts.req as NextRequest });
-  const siteSettingsDB = await prisma.globalSiteSettings.findFirst();
+  const siteSettingsDB = await prisma.organization.findFirst();
 
   if (siteSettingsDB) {
     return {
       session,
-      siteSettingsDB
+      settings: siteSettingsDB
     };
   }
 
   return {
-    session
+    session,
+    settings: defaultSiteSettings
   };
 };
 

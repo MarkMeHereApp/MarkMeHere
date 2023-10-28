@@ -31,7 +31,7 @@ export default async function SchoolLayout({
     throw new Error('No user found');
   }
 
-  const organization = await prisma.globalSiteSettings.findFirst({
+  const organization = await prisma.organization.findFirst({
     where: { uniqueCode: params.organizationCode }
   });
 

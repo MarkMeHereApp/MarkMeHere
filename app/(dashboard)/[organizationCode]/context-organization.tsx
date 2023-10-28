@@ -4,17 +4,17 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { createContext } from 'react';
-import { GlobalSiteSettings } from '@prisma/client';
+import { Organization } from '@prisma/client';
 
 type themeType = { light: string; dark: string };
 
 interface OrganizationContextType {
-  organization: GlobalSiteSettings;
-  setOrganization: React.Dispatch<React.SetStateAction<GlobalSiteSettings>>;
+  organization: Organization;
+  setOrganization: React.Dispatch<React.SetStateAction<Organization>>;
   organizationUrl: string;
 }
 
-const defaultOrganization: GlobalSiteSettings = {
+const defaultOrganization: Organization = {
   id: '',
   name: '',
   uniqueCode: '',
@@ -37,7 +37,7 @@ export default function OrganizationContextProvider({
   organization: initialOrganization
 }: {
   children?: React.ReactNode;
-  organization: GlobalSiteSettings;
+  organization: Organization;
 }) {
   const [organization, setOrganization] = useState(initialOrganization);
   const [organizationUrl] = useState(`/${organization.uniqueCode}`);

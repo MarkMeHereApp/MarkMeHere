@@ -17,7 +17,7 @@ export default async function CreateNewSchoolLayout({
   children: React.ReactNode;
   currentStep: number;
 }) {
-  const school = await prisma.globalSiteSettings.findFirst();
+  const organization = await prisma.organization.findFirst();
 
   return (
     <div className="flex justify-center items-center min-h-screen">
