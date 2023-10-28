@@ -193,6 +193,7 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
+                defaultValue="moderator"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
