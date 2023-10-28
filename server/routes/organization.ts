@@ -22,8 +22,7 @@ export const organizationRouter = router({
     .input(zCreateOrganization)
     .mutation(async (requestData) => {
       try {
-        console.log('Creating organization');
-        return await prisma.globalSiteSettings.create({
+        return await prisma.organization.create({
           data: {
             name: requestData.input.name,
             uniqueCode: requestData.input.uniqueCode.toLowerCase(),
@@ -47,9 +46,9 @@ export const organizationRouter = router({
       try {
         const organizationSettings = await getGlobalSiteSettings_Server();
         // Make sure there is only one organization settings.
-        const allSiteSettings = await prisma.globalSiteSettings.findMany({});
+        const allSiteSettings = await prisma.organization.findMany({});
         if (allSiteSettings.length > 1) {
-          await prisma.globalSiteSettings.deleteMany();
+          await prisma.organization.deleteMany();
           throw generateTypedError(
             new Error(
               'More than one organization settings found, this should never happen. Please try again!'
@@ -86,7 +85,7 @@ export const organizationRouter = router({
           lightTheme = requestData.input.lightTheme;
         }
 
-        const updated = await prisma.globalSiteSettings.updateMany({
+        const updated = await prisma.organization.updateMany({
           data: {
             googleMapsApiKey: googleMapsApiKey,
             allowModeratorsToUseGoogleMaps: allowedModeratorsToUseGoogleMaps,

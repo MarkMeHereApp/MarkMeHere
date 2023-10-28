@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import InitiallyCreateSchool from './create-new-school';
 export default async function HomePage() {
-  const organization = await prisma.globalSiteSettings.findFirst({});
+  const organization = await prisma.organization.findFirst({});
 
   if (organization) {
     redirect(`/${organization.uniqueCode}`);
