@@ -1,6 +1,6 @@
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import z from 'zod';
-import { GlobalSiteSettings } from '@prisma/client';
+import { Organization } from '@prisma/client';
 import { useTheme } from 'next-themes';
 
 export const attendanceTokenExpirationTime = 5 * 60 * 1000; // 5 minutes
@@ -26,7 +26,7 @@ export const demoAccounts: {
   { name: 'josef', role: zSiteRoles.enum.user }
 ];
 
-export const defaultSiteSettings: GlobalSiteSettings = {
+export const defaultSiteSettings: Organization = {
   id: 'default',
   name: 'test',
   uniqueCode: 'test',

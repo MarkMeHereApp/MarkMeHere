@@ -2,7 +2,7 @@ import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
 import crypto from 'crypto';
 import prisma from '@/prisma';
-import { Prisma, GlobalSiteSettings } from '@prisma/client';
+import { Prisma, Organization } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
 export function getPublicUrl(): string {
@@ -66,9 +66,9 @@ export function toastSuccess(
 }
 
 export const getGlobalSiteSettings_Server = async (
-  select?: Prisma.GlobalSiteSettingsSelect
-): Promise<GlobalSiteSettings> => {
-  const siteSettingsDB = await prisma.globalSiteSettings.findFirst({
+  select?: Prisma.OrganizationSelect
+): Promise<Organization> => {
+  const siteSettingsDB = await prisma.organization.findFirst({
     select: select
   });
 

@@ -165,7 +165,7 @@ model ProfessorLectureGeolocation {
   attendanceEntries AttendanceEntry[]
 }
 
-model GlobalSiteSettings {
+model Organization {
   id                              String        @id @default(cuid())
   name                            String        @db.VarChar(255)
   uniqueCode              String        @unique @db.VarChar(255)
