@@ -12,6 +12,7 @@ import { TRPCError } from '@trpc/server';
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
     courseCode: z.string(),
+    organizationCode: z.string(),
     name: z.string(),
     lmsId: z.string().optional(),
     lmsType: zLMSProvider

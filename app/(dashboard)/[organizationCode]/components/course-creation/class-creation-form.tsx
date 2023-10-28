@@ -79,7 +79,7 @@ export default function CreateCourseForm({
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const { setUserCourses, setUserCourseMembers, currentCourseUrl } =
     useCourseContext();
-  const { organizationUrl } = useOrganizationContext();
+  const { organizationUrl, organization } = useOrganizationContext();
   const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
 
@@ -128,6 +128,7 @@ export default function CreateCourseForm({
         newCourseData: {
           courseCode: courseform.courseCode,
           name: courseform.name,
+          organizationCode: organization.uniqueCode,
           lmsId: courseform.lmsId || undefined,
           lmsType: courseform.lmsType as zLMSProviderType
         },
