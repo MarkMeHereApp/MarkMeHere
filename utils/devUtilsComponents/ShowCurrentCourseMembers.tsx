@@ -1,6 +1,6 @@
 'use client';
 
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { Button } from 'components/ui/button';
 
 const ShowCurrentCourseMembers = () => {

@@ -75,18 +75,21 @@ model AttendanceEntry {
 }
 
 model Course {
-  id          String         @id @default(cuid())
-  courseCode  String         @unique @db.VarChar(255)
-  name        String         @db.VarChar(255)
-  lmsType     String         @db.VarChar(255)
-  lmsId       String?        @db.VarChar(255)
-  dateCreated DateTime       @default(now())
-  StartDate   DateTime?
-  EndDate     DateTime?
-  lectures    Lecture[]
-  qrCodes     qrcode[]
-  enrollments CourseMember[]
+  id                  String         @id @default(cuid())
+  courseCode          String         @db.VarChar(255)
+  organizationCode    String         @db.VarChar(255)
+  organization        Organization   @relation(fields: [organizationCode], references: [uniqueCode], onDelete: Cascade)
+  name                String         @db.VarChar(255)
+  lmsType             String         @db.VarChar(255)
+  lmsId               String?        @db.VarChar(255)
+  dateCreated         DateTime       @default(now())
+  StartDate           DateTime?
+  EndDate             DateTime?
+  lectures            Lecture[]
+  qrCodes             qrcode[]
+  enrollments         CourseMember[]
 
+  @@unique([organizationCode, courseCode])
   @@unique([lmsType, lmsId])
 }
 
@@ -165,12 +168,15 @@ model ProfessorLectureGeolocation {
   attendanceEntries AttendanceEntry[]
 }
 
-model GlobalSiteSettings {
-  id                String        @id
-  lightTheme        String        @db.VarChar(255)
-  darkTheme         String        @db.VarChar(255)
-  googleMapsApiKey  String        @db.VarChar(255)
-  hashEmails        Boolean
-  allowModeratorsToUseGoogleMaps Boolean 
-  allowUsersToUseGoogleMaps Boolean 
+model Organization {
+  id                              String        @id @default(cuid())
+  name                            String        @db.VarChar(255)
+  uniqueCode                      String        @unique @db.VarChar(255)
+  lightTheme                      String        @db.VarChar(255) @default("light_neutral")
+  darkTheme                       String        @db.VarChar(255) @default("dark_red")
+  googleMapsApiKey                String?        @db.VarChar(255) 
+  allowModeratorsToUseGoogleMaps  Boolean         @default(false)
+  allowUsersToUseGoogleMaps       Boolean         @default(false)
+  hashEmails                      Boolean
+  Courses                         Course[]
 }

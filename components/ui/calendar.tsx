@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { DayPicker, DayClickEventHandler } from 'react-day-picker';
-import { useLecturesContext } from '@/app/context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';

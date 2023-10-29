@@ -10,7 +10,7 @@ import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
 import { providerRouter } from './routes/provider';
 import { geolocationRouter } from './routes/geolocation';
-import { siteSettingsRouter } from './routes/siteSettings';
+import { organizationRouter } from './routes/organization';
 
 import { userRouter } from './routes/user';
 
@@ -29,7 +29,7 @@ export const appRouter = router({
   geolocation: geolocationRouter,
   user: userRouter,
   attendanceToken: attendanceTokenRouter,
-  siteSettings: siteSettingsRouter
+  organization: organizationRouter
 });
 
 export type AppRouter = typeof appRouter;
