@@ -6,7 +6,6 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { conforms } from 'lodash';
 
 export const zCreateUser = z.object({
   name: z.string(),
@@ -16,10 +15,10 @@ export const zCreateUser = z.object({
 });
 
 export const zUpdateUser = z.object({
-  userId: z.string(),
   name: z.string().optional(),
   email: z.string().optional(),
-  role: z.string().optional()
+  role: z.string().optional(),
+  optionalId: z.string().optional()
 });
 
 export const zDeleteUser = z.object({
@@ -80,21 +79,11 @@ export const userRouter = router({
   updateUser: publicProcedure
     .input(zUpdateUser)
     .mutation(async (requestData) => {
-      const { userId, name, email, role } = requestData.input;
-
-      if (!name && !email && !role) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'No updates provided'
-          })
-        );
-      }
+      const { email, name, role, optionalId } = requestData.input;
 
       const existingUser = await prisma.user.findUnique({
-        where: { id: userId }
+        where: { email: email }
       });
-
       if (!existingUser) {
         throw generateTypedError(
           new TRPCError({
@@ -105,11 +94,12 @@ export const userRouter = router({
       }
 
       const updatedUser = await prisma.user.update({
-        where: { id: userId },
+        where: { email: email },
         data: {
           name: name || existingUser.name,
           email: email || existingUser.email,
-          role: role || existingUser.role
+          role: role || existingUser.role,
+          optionalId: optionalId || existingUser.optionalId
         }
       });
 
@@ -151,9 +141,7 @@ export const userRouter = router({
           );
         }
 
-        console.log(requestData.input.email);
-
-        // Delete course members by their IDs
+        // Delete users by their IDs
         const deleteResponse = await prisma.user.deleteMany({
           where: {
             email: {
