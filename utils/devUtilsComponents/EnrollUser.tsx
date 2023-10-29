@@ -126,7 +126,7 @@ const EnrollUser = () => {
 
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             variant="default"
@@ -138,10 +138,7 @@ const EnrollUser = () => {
             <span className="whitespace-nowrap">Create Site User</span>
           </Button>
         </DialogTrigger>
-        <DialogContent
-          className="sm:max-w-[425px]"
-          onClose={() => setIsDialogOpen(false)}
-        >
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Create Site User</DialogTitle>
             <DialogDescription>

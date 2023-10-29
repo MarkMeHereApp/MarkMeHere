@@ -141,7 +141,7 @@ const EnrollCourseMemberButton = () => {
 
   return selectedCourseId ? (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             variant="default"
@@ -153,10 +153,7 @@ const EnrollCourseMemberButton = () => {
             <span className="whitespace-nowrap">Enroll</span>
           </Button>
         </DialogTrigger>
-        <DialogContent
-          className="sm:max-w-[425px]"
-          onClose={() => setIsDialogOpen(false)}
-        >
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Enroll Course Member</DialogTitle>
             <DialogDescription>
