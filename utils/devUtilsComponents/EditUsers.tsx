@@ -34,7 +34,7 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
-import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
+import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
 const EditUsers = ({ user }: { user: User }) => {

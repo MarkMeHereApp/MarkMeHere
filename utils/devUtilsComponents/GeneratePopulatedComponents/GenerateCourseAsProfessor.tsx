@@ -108,6 +108,7 @@ export default function GenerateCourseAsProfessor() {
       const handleCreateCourseResult = await createCourseMutation.mutateAsync({
         newCourseData: {
           courseCode: courseform.courseCode,
+          organizationCode: '',
           name: courseform.name,
           lmsId: courseform.lmsId || undefined,
           lmsType: courseform.lmsType
