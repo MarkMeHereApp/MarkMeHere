@@ -52,6 +52,7 @@ const EditUsers = ({ user }: { user: User }) => {
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   const handleDialogOpen = () => {
     form.reset();
@@ -62,6 +63,8 @@ const EditUsers = ({ user }: { user: User }) => {
     setIsDialogOpen(false);
   };
 >>>>>>> 3499647 (add update to users table)
+=======
+>>>>>>> 348a512 (update code with the new package)
 
   const zUsers = z.object({
     name: z
@@ -123,6 +126,7 @@ const EditUsers = ({ user }: { user: User }) => {
       setLoading(true);
       const response = await updateUser.mutateAsync({
         email: user.email,
+<<<<<<< HEAD
         name: data.name,
         role: data.role,
         optionalId: data.optionalId
@@ -145,26 +149,34 @@ const EditUsers = ({ user }: { user: User }) => {
       setLoading(true);
       const response = await updateUser.mutateAsync({
         origEmail: user.email,
+=======
+>>>>>>> 348a512 (update code with the new package)
         name: data.name,
-        email: data.email,
         role: data.role,
         optionalId: data.optionalId
       });
-      if (userData.users) {
-        setUserData({
-          ...userData,
-          users: [...userData.users, response.user]
-        });
-      } else {
-        setUserData({ ...userData, users: [response.user] });
-      }
+
+      setUserData((prevData) => ({
+        ...prevData,
+        users: prevData.users
+          ? prevData.users.map((user) =>
+              user.email === response.user.email ? response.user : user
+            )
+          : [response.user]
+      }));
+
       setLoading(false);
+<<<<<<< HEAD
       handleDialogClose();
 >>>>>>> 3499647 (add update to users table)
+=======
+      setIsDialogOpen(false);
+>>>>>>> 348a512 (update code with the new package)
     } catch (error) {
       setError(error as Error);
     }
   }
+<<<<<<< HEAD
 <<<<<<< HEAD
   return (
     <>
@@ -178,20 +190,27 @@ const EditUsers = ({ user }: { user: User }) => {
           <DialogHeader>
 =======
 
+=======
+>>>>>>> 348a512 (update code with the new package)
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="p-2" onClick={() => handleDialogOpen()}>
+          <Button className="p-2">
             <MdEdit />
           </Button>
         </DialogTrigger>
+<<<<<<< HEAD
         <DialogContent
           className="sm:max-w-[425px]"
           onClose={() => setIsDialogOpen(false)}
         >
           <DialogHeader onClick={handleDialogClose}>
 >>>>>>> 3499647 (add update to users table)
+=======
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+>>>>>>> 348a512 (update code with the new package)
             <DialogTitle>Modify Site User</DialogTitle>
             <DialogDescription>
               Modify the user and click submit when you're done.
@@ -206,9 +225,13 @@ const EditUsers = ({ user }: { user: User }) => {
                 control={form.control}
                 name="name"
 <<<<<<< HEAD
+<<<<<<< HEAD
                 key={'name'}
 =======
 >>>>>>> 3499647 (add update to users table)
+=======
+                key={'name'}
+>>>>>>> 348a512 (update code with the new package)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -216,9 +239,13 @@ const EditUsers = ({ user }: { user: User }) => {
                       <Input
                         className=""
 <<<<<<< HEAD
+<<<<<<< HEAD
                         key={'nameInput'}
 =======
 >>>>>>> 3499647 (add update to users table)
+=======
+                        key={'nameInput'}
+>>>>>>> 348a512 (update code with the new package)
                         defaultValue={user.name || ''}
                         {...field}
                       />
@@ -232,10 +259,15 @@ const EditUsers = ({ user }: { user: User }) => {
                   control={form.control}
                   name="email"
 <<<<<<< HEAD
+<<<<<<< HEAD
                   key={'email'}
                   disabled
 =======
 >>>>>>> 3499647 (add update to users table)
+=======
+                  key={'email'}
+                  disabled
+>>>>>>> 348a512 (update code with the new package)
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -255,9 +287,13 @@ const EditUsers = ({ user }: { user: User }) => {
                 control={form.control}
                 name="role"
 <<<<<<< HEAD
+<<<<<<< HEAD
                 key={'role'}
 =======
 >>>>>>> 3499647 (add update to users table)
+=======
+                key={'role'}
+>>>>>>> 348a512 (update code with the new package)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
