@@ -35,7 +35,7 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
-import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
+import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
 import React from 'react';
 const EnrollUser = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -190,6 +190,7 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
+                defaultValue="moderator"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>

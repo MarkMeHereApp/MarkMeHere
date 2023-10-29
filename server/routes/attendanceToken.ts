@@ -105,7 +105,7 @@ export const attendanceTokenRouter = router({
             }
             dist = Math.acos(dist);
             dist = dist * 180 / Math.PI;
-            dist = dist * 60 * 1.1515;
+            dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
             return dist;
           }
         };
@@ -129,7 +129,7 @@ export const attendanceTokenRouter = router({
 
        
 
-        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult };
+        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult, lectureLatitude: lectureLatitude, lectureLongtitude: lectureLongitude  };
       } catch (error) {
         throw error;
       }
