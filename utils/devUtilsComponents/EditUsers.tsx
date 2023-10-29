@@ -43,14 +43,6 @@ const EditUsers = ({ user }: { user: User }) => {
   const updateUser = trpc.user.updateUser.useMutation();
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
-  const handleDialogOpen = () => {
-    form.reset();
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
 
   const zUsers = z.object({
     name: z
@@ -104,40 +96,37 @@ const EditUsers = ({ user }: { user: User }) => {
     try {
       setLoading(true);
       const response = await updateUser.mutateAsync({
-        origEmail: user.email,
+        email: user.email,
         name: data.name,
-        email: data.email,
         role: data.role,
         optionalId: data.optionalId
       });
-      if (userData.users) {
-        setUserData({
-          ...userData,
-          users: [...userData.users, response.user]
-        });
-      } else {
-        setUserData({ ...userData, users: [response.user] });
-      }
+
+      setUserData((prevData) => ({
+        ...prevData,
+        users: prevData.users
+          ? prevData.users.map((user) =>
+              user.email === response.user.email ? response.user : user
+            )
+          : [response.user]
+      }));
+
       setLoading(false);
-      handleDialogClose();
+      setIsDialogOpen(false);
     } catch (error) {
       setError(error as Error);
     }
   }
-
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="p-2" onClick={() => handleDialogOpen()}>
+          <Button className="p-2">
             <MdEdit />
           </Button>
         </DialogTrigger>
-        <DialogContent
-          className="sm:max-w-[425px]"
-          onClose={() => setIsDialogOpen(false)}
-        >
-          <DialogHeader onClick={handleDialogClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
             <DialogTitle>Modify Site User</DialogTitle>
             <DialogDescription>
               Modify the user and click submit when you're done.
@@ -151,12 +140,14 @@ const EditUsers = ({ user }: { user: User }) => {
               <FormField
                 control={form.control}
                 name="name"
+                key={'name'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         className=""
+                        key={'nameInput'}
                         defaultValue={user.name || ''}
                         {...field}
                       />
@@ -169,6 +160,8 @@ const EditUsers = ({ user }: { user: User }) => {
                 <FormField
                   control={form.control}
                   name="email"
+                  key={'email'}
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -187,6 +180,7 @@ const EditUsers = ({ user }: { user: User }) => {
               <FormField
                 control={form.control}
                 name="role"
+                key={'role'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>

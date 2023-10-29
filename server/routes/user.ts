@@ -15,7 +15,6 @@ export const zCreateUser = z.object({
 });
 
 export const zUpdateUser = z.object({
-  origEmail: z.string(),
   name: z.string().optional(),
   email: z.string().optional(),
   role: z.string().optional(),
@@ -80,18 +79,10 @@ export const userRouter = router({
   updateUser: publicProcedure
     .input(zUpdateUser)
     .mutation(async (requestData) => {
-      const { origEmail, name, email, role, optionalId } = requestData.input;
-      if (!name && !email && !role && !optionalId) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'No updates provided'
-          })
-        );
-      }
+      const { email, name, role, optionalId } = requestData.input;
 
       const existingUser = await prisma.user.findUnique({
-        where: { email: origEmail }
+        where: { email: email }
       });
       if (!existingUser) {
         throw generateTypedError(
@@ -103,7 +94,7 @@ export const userRouter = router({
       }
 
       const updatedUser = await prisma.user.update({
-        where: { email: origEmail },
+        where: { email: email },
         data: {
           name: name || existingUser.name,
           email: email || existingUser.email,
