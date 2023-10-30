@@ -7,9 +7,10 @@ import { decrypt, getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
+import { findHashedUser } from '@/server/utils/hashedUserHelpers';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
-import { clientCallTypeToProcedureType } from '@trpc/client';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { findDefaultUser } from '@/server/utils/defaultUserHelpers';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -47,12 +48,12 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
 
   const settings = await getGlobalSiteSettings_Server({ hashEmails: true });
-  console.log(settings)
+  console.log(settings);
 
   const prismaAdapter = settings.hashEmails
     ? (prismaAdapterHashed(prisma) as Adapter)
     : (prismaAdapterDefault(prisma) as Adapter);
-    console.log(settings.hashEmails)
+  console.log(settings.hashEmails);
 
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);
@@ -74,9 +75,13 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //When JWT is created store user role in the token
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
-        const prismaUser = await prisma.user.findUnique({
-          where: { email: user.email }
+        const { hashEmails } = await getGlobalSiteSettings_Server({
+          hashEmails: true
         });
+
+        const prismaUser = hashEmails
+          ? await findHashedUser(user.email)
+          : await findDefaultUser(user.email);
 
         if (prismaUser) {
           return true;

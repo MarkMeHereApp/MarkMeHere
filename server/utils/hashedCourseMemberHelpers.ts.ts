@@ -3,7 +3,7 @@ import { CourseMember } from '@prisma/client';
 import { createHash } from 'crypto';
 import bcrypt from 'bcrypt';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
-import { hashEmail } from '@/utils/globalFunctions';
+import { hashEmail } from './hashedUserHelpers';
 
 /*************************************************************************************
 Search for user with matching course member email (bcrypt)

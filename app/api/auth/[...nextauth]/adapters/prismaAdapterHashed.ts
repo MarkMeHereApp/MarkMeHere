@@ -7,7 +7,7 @@ import { AdapterUser } from 'next-auth/adapters';
 import bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { hashEmail } from '@/utils/globalFunctions';
+import { hashEmail } from '@/server/utils/hashedUserHelpers';
 
 export default function prismaAdapterHashed(prisma: PrismaClient) {
   return {
