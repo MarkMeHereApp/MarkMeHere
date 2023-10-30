@@ -50,12 +50,10 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
 
   const settings = await getGlobalSiteSettings_Server({ hashEmails: true });
-  console.log(settings);
 
   const prismaAdapter = settings.hashEmails
     ? (prismaAdapterHashed(prisma) as Adapter)
     : (prismaAdapterDefault(prisma) as Adapter);
-  console.log(settings.hashEmails);
 
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);
@@ -90,14 +88,14 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         }
 
         const courseMember = hashEmails
-          ? await findDefaultCourseMember(user.email)
-          : await findHashedCourseMember(user.email);
+          ? await findHashedCourseMember(user.email)
+          : await findDefaultCourseMember(user.email);
 
         if (courseMember) {
           await prisma.user.create({
             data: {
               name: user.name,
-              email:courseMember.email,
+              email: courseMember.email,
               role: zSiteRoles.enum.user,
               image: user.image
             }

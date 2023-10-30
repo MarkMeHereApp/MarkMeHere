@@ -62,7 +62,7 @@ export async function findHashedCourseMember(email: string, courseId?: string) {
   const where = courseId
     ? { courseId, email: hashedEmail }
     : { email: hashedEmail };
-  return await prisma.user.findFirst({ where });
+  return await prisma.courseMember.findFirst({ where });
 }
 
 export type findHashedCourseMemberType = (
