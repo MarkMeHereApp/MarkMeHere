@@ -3,7 +3,7 @@ import { CourseMember } from '@prisma/client';
 import { createHash } from 'crypto';
 import bcrypt from 'bcrypt';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
-import { hashEmail } from './hashedUserHelpers';
+import { findHashedUser, hashEmail } from './hashedUserHelpers';
 
 /*************************************************************************************
 Search for user with matching course member email (bcrypt)
@@ -25,10 +25,8 @@ export async function createHashedCourseMember(
 ) {
   const { name, email } = courseMember;
   const hashedEmail = hashEmail(email);
-
-  const existingUser = await prisma.user.findUnique({
-    where: { email: hashedEmail }
-  });
+  const existingUser = await findHashedUser(hashedEmail);
+  console.log(existingUser);
 
   if (!existingUser) {
     await prisma.user.create({
@@ -58,10 +56,7 @@ Search for course member with matching hashed user email
 */
 
 export async function findHashedCourseMember(email: string, courseId?: string) {
-  const hashedEmail = hashEmail(email);
-  const where = courseId
-    ? { courseId, email: hashedEmail }
-    : { email: hashedEmail };
+  const where = courseId ? { courseId, email } : { email };
   return await prisma.courseMember.findFirst({ where });
 }
 

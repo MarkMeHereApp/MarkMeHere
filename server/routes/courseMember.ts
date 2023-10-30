@@ -110,6 +110,10 @@ export const courseMemberRouter = router({
         const { courseId, email, name, role } = requestData.input;
         const { settings } = requestData.ctx;
 
+        const createFunction = settings?.hashEmails
+          ? createHashedCourseMember
+          : createDefaultCourseMember;
+
         zCourseRoles.parse(role);
 
         if (!courseId || !email || !name || !role) {
@@ -121,11 +125,7 @@ export const courseMemberRouter = router({
           );
         }
 
-        return await createAndReturnCourseMember(
-          settings?.hashEmails
-            ? createHashedCourseMember
-            : createDefaultCourseMember
-        );
+        return await createAndReturnCourseMember(createFunction);
       } catch (error) {
         throw generateTypedError(error as Error);
       }
@@ -261,7 +261,6 @@ export const courseMemberRouter = router({
           : createDefaultCourseMember;
 
         for (const memberData of courseMembers) {
-
           const existingMember = await searchFunction(
             courseId,
             memberData.email

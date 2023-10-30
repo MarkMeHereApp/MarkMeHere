@@ -2,6 +2,7 @@ import prisma from '@/prisma';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
 import prismaAdapterDefault from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterDefault';
 import { CourseMember } from '@prisma/client';
+import { findDefaultUser } from './defaultUserHelpers';
 
 /*************************************************************************************
 Search for user with matching course member email 
@@ -22,9 +23,7 @@ export async function createDefaultCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
-  const defaultFunctions = prismaAdapterDefault(prisma);
-
-  const existingUser = await defaultFunctions.getUserByEmail(email);
+  const existingUser = await findDefaultUser(email);
 
   if (!existingUser) {
     await prisma.user.create({

@@ -51,7 +51,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
 
   const settings = await getGlobalSiteSettings_Server({ hashEmails: true });
 
-  const prismaAdapter = settings.hashEmails
+  const prismaAdapter = settings?.hashEmails
     ? (prismaAdapterHashed(prisma) as Adapter)
     : (prismaAdapterDefault(prisma) as Adapter);
 
@@ -75,11 +75,11 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //When JWT is created store user role in the token
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
-        const { hashEmails } = await getGlobalSiteSettings_Server({
+        const settings = await getGlobalSiteSettings_Server({
           hashEmails: true
         });
 
-        const prismaUser = hashEmails
+        const prismaUser = settings?.hashEmails
           ? await findHashedUser(user.email)
           : await findDefaultUser(user.email);
 
@@ -87,7 +87,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
 
-        const courseMember = hashEmails
+        const courseMember = settings?.hashEmails
           ? await findHashedCourseMember(user.email)
           : await findDefaultCourseMember(user.email);
 
