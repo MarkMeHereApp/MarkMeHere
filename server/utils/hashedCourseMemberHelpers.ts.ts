@@ -1,6 +1,6 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
-import crypto from 'crypto';
+import crypto, { createHash } from 'crypto';
 import prisma from '@/prisma';
 import bcrypt from 'bcrypt';
 import { Prisma, Organization, CourseMember } from '@prisma/client';
@@ -28,7 +28,7 @@ export async function createHashedCourseMember(
 ) {
   const { name, email } = courseMember;
   const hashFunctions = prismaAdapterHashed(prisma);
-  const hashedEmail = await bcrypt.hash(email, 10);
+  const hashedEmail = createHash('sha256').update(email).digest('hex');
   console.log(hashedEmail);
 
   const existingUser = await hashFunctions.getUserByEmail(email);
