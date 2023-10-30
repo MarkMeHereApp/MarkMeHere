@@ -7,13 +7,14 @@ import { AdapterUser } from 'next-auth/adapters';
 import bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { hashEmail } from '@/utils/globalFunctions';
 
 export default function prismaAdapterHashed(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: async (data: Omit<AdapterUser, 'id'>) => {
       const role = zSiteRoles.Enum.user;
-      const hashedEmail = await bcrypt.hash(data.email, 10);
+      const hashedEmail = hashEmail(data.email)
       return prisma.user.create({
         data: {
           name: data.name,
@@ -24,9 +25,6 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
       });
     },
 
-    /* 
-    Hash the email
-    */
     getUserByEmail: async (email: string) => {
       // const allUsers = await prisma.user.findMany();
 
@@ -37,7 +35,7 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
       //   }
       // }
 
-      const hashedEmail = createHash('sha256').update(email).digest('hex');
+      const hashedEmail = hashEmail(email)
       return await prisma.user.findUnique({ where: { email: hashedEmail } });
     }
   };

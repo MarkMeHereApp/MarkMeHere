@@ -3,18 +3,13 @@ import ZoomProvider from 'next-auth/providers/zoom';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { Adapter } from 'next-auth/adapters';
-import { decrypt } from '@/utils/globalFunctions';
+import { decrypt, getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
 import { clientCallTypeToProcedureType } from '@trpc/client';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-/* Check env to choose adapter */
-const prismaAdapter =
-  process.env.HASHEMAILS === 'true'
-    ? (prismaAdapterHashed(prisma) as Adapter)
-    : (prismaAdapterDefault(prisma) as Adapter);
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -50,6 +45,12 @@ const getBuiltInNextAuthProviders = async (): Promise<
 
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
+
+  const settings = await getGlobalSiteSettings_Server({ hashEmails: true });
+
+  const prismaAdapter = settings.hashEmails
+    ? (prismaAdapterHashed(prisma) as Adapter)
+    : (prismaAdapterDefault(prisma) as Adapter);
 
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);

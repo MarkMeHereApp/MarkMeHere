@@ -1,12 +1,9 @@
-import { toast } from '@/components/ui/use-toast';
-import { ToastActionElement } from '@/components/ui/toast';
-import crypto, { createHash } from 'crypto';
 import prisma from '@/prisma';
+import { CourseMember } from '@prisma/client';
+import { createHash } from 'crypto';
 import bcrypt from 'bcrypt';
-import { Prisma, Organization, CourseMember } from '@prisma/client';
-import { defaultSiteSettings } from '@/utils/globalVariables';
-import prismaAdapterHashed from '@/app/api/auth/[...nextauth]/adapters/prismaAdapterHashed';
 import { zCourseRolesType, zSiteRoles } from '@/types/sharedZodTypes';
+import { hashEmail } from '@/utils/globalFunctions';
 
 /*************************************************************************************
 Search for user with matching course member email (bcrypt)
@@ -27,11 +24,9 @@ export async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
-  const hashFunctions = prismaAdapterHashed(prisma);
-  const hashedEmail = createHash('sha256').update(email).digest('hex');
-  console.log(hashedEmail);
+  const hashedEmail = hashEmail(email)
 
-  const existingUser = await hashFunctions.getUserByEmail(email);
+  const existingUser = await prisma.user.findUnique({ where: { email: hashedEmail } });
 
   if (!existingUser) {
     await prisma.user.create({
@@ -46,7 +41,7 @@ export async function createHashedCourseMember(
   const resEnrollment = await prisma.courseMember.create({
     data: {
       ...courseMember,
-      email: existingUser?.email ?? hashedEmail
+      email: hashedEmail
     }
   });
   return resEnrollment;
