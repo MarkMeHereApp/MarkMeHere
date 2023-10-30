@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { firaSansFont } from '@/utils/fonts';
+import { firaSansLogo } from '@/utils/fonts';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -30,7 +30,7 @@ import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
 import Loading from '@/components/general/loading';
-import SettingsDisplayPage from './[organizationCode]/[courseCode]/(faculty)/user-settings/display/page';
+import SettingsDisplayPage from '../(dashboard)/[organizationCode]/[courseCode]/(faculty)/user-settings/display/page';
 
 export default function InitiallyCreateSchool() {
   const [displayingForm, setDisplayingForm] = useState(false);
@@ -86,7 +86,7 @@ export default function InitiallyCreateSchool() {
         <div className="flex justify-center items-center w-full h-full">
           <div className="flex flex-col items-center">
             <MarkMeHereClassAnimation />
-            <span className={firaSansFont.className}>
+            <span className={firaSansLogo.className}>
               <h2 className="text-3xl font-bold">Welcome To Mark Me Here!</h2>
             </span>
             <div className="mt-4">

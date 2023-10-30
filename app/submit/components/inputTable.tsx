@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'components/ui/use-toast';
 import { trpc } from '@/app/_trpc/client';
-import { firaSansFont } from '@/utils/fonts';
+import { firaSansLogo } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Icons } from '@/components/ui/icons';
 import Loading from '@/components/general/loading';
@@ -27,16 +27,14 @@ const InputTable = () => {
   const errorType = searchParams ? searchParams.get('error') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
-  const hasDisplayedQRError = useRef(false)
+  const hasDisplayedQRError = useRef(false);
 
   if (error) {
     throw error;
   }
 
-  const studentLatitude = useRef<number>(0)
-  const studentLongitude = useRef<number>(0)
-  
-
+  const studentLatitude = useRef<number>(0);
+  const studentLongitude = useRef<number>(0);
 
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
@@ -83,26 +81,23 @@ const InputTable = () => {
     trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
-    
+
     try {
       const res = await validateAndCreateToken.mutateAsync({
         code: inputValue
       });
 
-
       if (res.success && res.token) {
-        
-        if(res.location){
-          router.push(`/verification?attendanceTokenId=${res.token}`)
+        if (res.location) {
+          router.push(`/verification?attendanceTokenId=${res.token}`);
         }
 
-        if(!res.location){
+        if (!res.location) {
           router.push(`/student?attendanceTokenId=${res.token}`);
         }
       }
 
       if (!res.success) {
-        
         displayError(ErrorType.InvalidInput);
       }
     } catch (error) {
@@ -111,8 +106,6 @@ const InputTable = () => {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
     }
   };
-
-  
 
   //checking what error type have we recieved in the server through the URL.
   //after the error message being displayed, we replace the URL with /submit and stay on page.
@@ -123,7 +116,7 @@ const InputTable = () => {
     if (errorType && !hasDisplayedQRError.current) {
       if (errorType === 'qr-error') {
         displayError(ErrorType.InvalidQR);
-        hasDisplayedQRError.current = true
+        hasDisplayedQRError.current = true;
       }
     }
 
@@ -133,7 +126,7 @@ const InputTable = () => {
   return (
     <Card className=" min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
       <CardTitle className="text-2xl font-bold font-mono text-center">
-        <span className={firaSansFont.className}>Enter the Code</span>
+        <span className={firaSansLogo.className}>Enter the Code</span>
       </CardTitle>
 
       <Alert className="text-center text-red-500 border-0">

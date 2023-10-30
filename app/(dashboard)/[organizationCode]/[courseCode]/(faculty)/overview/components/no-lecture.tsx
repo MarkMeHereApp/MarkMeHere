@@ -1,6 +1,6 @@
 'use client';
 
-import { firaSansFont } from '@/utils/fonts';
+import { firaSansLogo } from '@/utils/fonts';
 import { Icons } from '@/components/ui/icons';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 
@@ -12,7 +12,7 @@ export const NoLecture = () => {
           className="wave-infinite primary-foreground"
           style={{ minWidth: '120px', height: 'auto' }}
         />
-        <span className={firaSansFont.className}>
+        <span className={firaSansLogo.className}>
           <div className="flex-col">
             <h2 className="text-4xl font-bold">
               Add course members to get started!
