@@ -36,6 +36,7 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
       // }
 
       const hashedEmail = hashEmail(email)
+      console.log(hashedEmail)
       return await prisma.user.findUnique({ where: { email: hashedEmail } });
     }
   };

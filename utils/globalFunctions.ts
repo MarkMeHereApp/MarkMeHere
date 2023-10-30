@@ -2,7 +2,7 @@ import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
 import crypto, { createHash } from 'crypto';
 import prisma from '@/prisma';
-import { Prisma, Organization } from '@prisma/client';
+import { Prisma, Organization, User } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
 export function getPublicUrl(): string {
@@ -127,4 +127,8 @@ export function decrypt(text: string, key?: string) {
 
 export function hashEmail(email: string): string {
   return createHash('sha256').update(email).digest('hex');
+}
+
+export async function findHashedUser(email: string): Promise<User | null> {
+  return await prisma.user.findUnique({where : {email: hashEmail(email)}})
 }
