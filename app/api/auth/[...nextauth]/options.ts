@@ -11,6 +11,8 @@ import { findHashedUser } from '@/server/utils/hashedUserHelpers';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { findDefaultUser } from '@/server/utils/defaultUserHelpers';
+import { findDefaultCourseMember } from '@/server/utils/defaultCourseMemberHelpers.ts';
+import { findHashedCourseMember } from '@/server/utils/hashedCourseMemberHelpers.ts';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -87,17 +89,15 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
 
-        const courseMember = await prisma.courseMember.findFirst({
-          where: {
-            email: user.email
-          }
-        });
+        const courseMember = hashEmails
+          ? await findDefaultCourseMember(user.email)
+          : await findHashedCourseMember(user.email);
 
         if (courseMember) {
           await prisma.user.create({
             data: {
               name: user.name,
-              email: user.email,
+              email:courseMember.email,
               role: zSiteRoles.enum.user,
               image: user.image
             }

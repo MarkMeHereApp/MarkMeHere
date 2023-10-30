@@ -24,9 +24,11 @@ export async function createHashedCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;
-  const hashedEmail = hashEmail(email)
+  const hashedEmail = hashEmail(email);
 
-  const existingUser = await prisma.user.findUnique({ where: { email: hashedEmail } });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: hashedEmail }
+  });
 
   if (!existingUser) {
     await prisma.user.create({
@@ -52,27 +54,18 @@ export type CreateHashedCourseMemberType = (
 ) => Promise<CourseMember>;
 
 /*************************************************************************************
-Grab all courseMembers 
-Iterate though coursemembers and find the coursemember with a matching hashed email
+Search for course member with matching hashed user email
 */
 
-export async function findHashedCourseMember(courseId: string, email: string) {
-  const members = await prisma.courseMember.findMany({
-    where: {
-      courseId
-    }
-  });
-
-  for (const courseMember of members) {
-    const isEmailMatch = await bcrypt.compare(email, courseMember.email ?? '');
-    if (isEmailMatch) {
-      return courseMember;
-    }
-  }
-  return null;
+export async function findHashedCourseMember(email: string, courseId?: string) {
+  const hashedEmail = hashEmail(email);
+  const where = courseId
+    ? { courseId, email: hashedEmail }
+    : { email: hashedEmail };
+  return await prisma.user.findFirst({ where });
 }
 
 export type findHashedCourseMemberType = (
-  courseId: string,
-  email: string
+  email: string,
+  courseId?: string
 ) => Promise<CourseMember | null>;

@@ -53,19 +53,19 @@ export type CreateDefaultCourseMemberType = (
 Search for course member with matching user email
 */
 
-export async function findDefaultCourseMember(courseId: string, email: string) {
-  const courseMember = await prisma.courseMember.findFirst({
-    where: {
-      courseId,
-      email
-    }
+export async function findDefaultCourseMember(
+  email: string,
+  courseId?: string
+) {
+  const where = courseId ? { courseId, email } : { email };
+  return await prisma.courseMember.findFirst({
+    where
   });
-  return courseMember;
 }
 
 export type findDefaultCourseMemberType = (
-  courseId: string,
-  email: string
+  email: string,
+  courseId?: string
 ) => Promise<CourseMember | null>;
 
 /*************************************************************************************
@@ -79,10 +79,7 @@ export type MemberData = {
   optionalId?: string;
 };
 
-export async function updateCourseMember(
-  id: string,
-  memberData: MemberData
-) {
+export async function updateCourseMember(id: string, memberData: MemberData) {
   const courseMember = await prisma.courseMember.update({
     where: { id },
     data: memberData
