@@ -7,12 +7,11 @@ import { decrypt, getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
-import { findHashedUser } from '@/server/utils/hashedUserHelpers';
+import { findUser, hashEmail } from '@/server/utils/userHelpers';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { findDefaultUser } from '@/server/utils/defaultUserHelpers';
-import { findDefaultCourseMember } from '@/server/utils/defaultCourseMemberHelpers.ts';
-import { findHashedCourseMember } from '@/server/utils/hashedCourseMemberHelpers.ts';
+import { findCourseMember } from '@/server/utils/courseMemberHelpers';
+import { findHashedCourseMember } from '@/server/utils/courseMemberHelpers';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -79,17 +78,16 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           hashEmails: true
         });
 
-        const prismaUser = settings?.hashEmails
-          ? await findHashedUser(user.email)
-          : await findDefaultUser(user.email);
+        let hashedEmail = null;
+        if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
+
+        const prismaUser = await findUser(hashedEmail ?? user.email);
 
         if (prismaUser) {
           return true;
         }
 
-        const courseMember = settings?.hashEmails
-          ? await findHashedCourseMember(user.email)
-          : await findDefaultCourseMember(user.email);
+        const courseMember = await findCourseMember(hashedEmail ?? user.email)
 
         if (courseMember) {
           await prisma.user.create({

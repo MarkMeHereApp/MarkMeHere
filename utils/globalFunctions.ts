@@ -67,14 +67,16 @@ export function toastSuccess(
 
 export const getGlobalSiteSettings_Server = async (
   select?: Prisma.OrganizationSelect
-): Promise<Organization | null> => {
+): Promise<Organization> => {
   const siteSettingsDB = await prisma.organization.findFirst({
     select: select
   });
 
-  return siteSettingsDB
+  if (siteSettingsDB) {
+    return siteSettingsDB;
+  }
 
-  // throw new Error('Organization not found');
+  throw new Error('Organization not found');
 };
 
 export function encrypt(text: string, key?: string) {

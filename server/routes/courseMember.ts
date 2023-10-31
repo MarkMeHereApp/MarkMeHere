@@ -14,14 +14,13 @@ import {
   createHashedCourseMember,
   CreateHashedCourseMemberType,
   findHashedCourseMember
-} from '../utils/hashedCourseMemberHelpers.ts';
+} from '../utils/courseMemberHelpers';
 import {
   createDefaultCourseMember,
   CourseMemberInput,
   CreateDefaultCourseMemberType,
-  findDefaultCourseMember,
   updateCourseMember
-} from '../utils/defaultCourseMemberHelpers.ts';
+} from '../utils/courseMemberHelpers';
 
 import { request } from 'http';
 export const zCourseMember = z.object({
@@ -109,12 +108,11 @@ export const courseMemberRouter = router({
 
         const { courseId, email, name, role } = requestData.input;
         const { settings } = requestData.ctx;
+        zCourseRoles.parse(role);
 
         const createFunction = settings?.hashEmails
           ? createHashedCourseMember
           : createDefaultCourseMember;
-
-        zCourseRoles.parse(role);
 
         if (!courseId || !email || !name || !role) {
           throw generateTypedError(
