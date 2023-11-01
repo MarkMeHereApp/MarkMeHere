@@ -12,6 +12,7 @@ import {
 } from '../trpc';
 import {
   createCourseMember,
+  findCourseMember,
   updateCourseMember
 } from '../utils/courseMemberHelpers';
 import { hashEmail } from '../utils/userHelpers';
@@ -87,30 +88,30 @@ account if it does not exist
 
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
-  .input(zCourseMember)
-  .mutation(async (requestData) => {
-    try {
-      const { courseId, email, name, role } = requestData.input;
-      zCourseRoles.parse(role);
+    .input(zCourseMember)
+    .mutation(async (requestData) => {
+      try {
+        const { courseId, email, name, role } = requestData.input;
+        zCourseRoles.parse(role);
 
-      if (!courseId || !email || !name || !role) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Missing required fields'
-          })
-        );
+        if (!courseId || !email || !name || !role) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing required fields'
+            })
+          );
+        }
+
+        const { hashEmails } = requestData.ctx.settings;
+        requestData.input.email = hashEmails ? hashEmail(email) : email;
+
+        const resEnrollment = await createCourseMember(requestData.input);
+        return { success: true, resEnrollment };
+      } catch (error) {
+        throw generateTypedError(error as Error);
       }
-
-      const { hashEmails } = requestData.ctx.settings;
-      requestData.input.email = hashEmails ? hashEmail(email) : email;
-
-      const resEnrollment = await createCourseMember(requestData.input);
-      return { success: true, resEnrollment };
-    } catch (error) {
-      throw generateTypedError(error as Error);
-    }
-  }),
+    }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
@@ -224,51 +225,44 @@ export const courseMemberRouter = router({
 
   // TODO: If there is duplicate data, overwrite the existing data.
   createMultipleCourseMembers: publicProcedure
-    .input(zCreateMultipleCourseMembers)
-    .mutation(async (requestData) => {
-      try {
-        const courseId = requestData.input.courseId;
-        const courseMembers = requestData.input.courseMembers;
-        const { settings } = requestData.ctx;
-        const updatedCourseMembers = [];
+  .input(zCreateMultipleCourseMembers)
+  .mutation(async (requestData) => {
+    try {
+      const {
+        input: { courseId, courseMembers },
+        ctx: { settings },
+      } = requestData;
+      const { hashEmails } = settings;
+      const updatedCourseMembers = [];
 
-        //Use the correct search function based off settings
-        const searchFunction = settings.hashEmails
-          ? findHashedCourseMember
-          : findDefaultCourseMember;
+      // Create an array to store promises for member creation or update
+      const memberPromises = courseMembers.map(async (memberData) => {
+        memberData.email = hashEmails
+          ? hashEmail(memberData.email)
+          : memberData.email;
 
-        const createFunction = settings.hashEmails
-          ? createHashedCourseMember
-          : createDefaultCourseMember;
+        const existingMember = await findCourseMember(memberData.email, courseId);
 
-        for (const memberData of courseMembers) {
-          const existingMember = await searchFunction(
-            courseId,
-            memberData.email
-          );
-
-          if (existingMember) {
-            //If the course member exists update the row
-            const updatedMember = await updateCourseMember(existingMember.id, {
-              ...memberData,
-              email: existingMember.email
-            });
-            updatedCourseMembers.push(updatedMember);
-          } else {
-            //If the course member does not exist create the courseMember along with the user
-            const createdMember = await createFunction({
-              ...memberData,
-              courseId
-            });
-            updatedCourseMembers.push(createdMember);
-          }
+        if (existingMember) {
+          // If the course member exists, update the row
+          return updateCourseMember(existingMember.id, memberData);
+        } else {
+          // If the course member does not exist, create the course member along with the user
+          return createCourseMember({ ...memberData, courseId });
         }
+      });
 
-        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    })
+      // Use Promise.all to execute all promises concurrently
+      const courseMemberResults = await Promise.all(memberPromises);
+
+      // Add the results to the updatedCourseMembers array
+      updatedCourseMembers.push(...courseMemberResults);
+
+      return { success: true, allCourseMembersOfClass: updatedCourseMembers };
+    } catch (error) {
+      throw generateTypedError(error as Error);
+    }
+  })
 });
 
 export type CourseMemberRouter = typeof courseMemberRouter;
