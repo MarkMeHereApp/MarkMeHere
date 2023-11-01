@@ -223,46 +223,49 @@ export const courseMemberRouter = router({
       }
     }),
 
-  // TODO: If there is duplicate data, overwrite the existing data.
+  /* 
+  Loop through all courseMembers and create an array of course 
+  member creation/update promises.
+  Either update existing course member or create a new one. 
+  Resolve all course member creation promises.
+   */
   createMultipleCourseMembers: publicProcedure
-  .input(zCreateMultipleCourseMembers)
-  .mutation(async (requestData) => {
-    try {
-      const {
-        input: { courseId, courseMembers },
-        ctx: { settings },
-      } = requestData;
-      const { hashEmails } = settings;
-      const updatedCourseMembers = [];
+    .input(zCreateMultipleCourseMembers)
+    .mutation(async (requestData) => {
+      try {
+        const {
+          input: { courseId, courseMembers },
+          ctx: { settings }
+        } = requestData;
+        const { hashEmails } = settings;
+        const updatedCourseMembers = [];
 
-      // Create an array to store promises for member creation or update
-      const memberPromises = courseMembers.map(async (memberData) => {
-        memberData.email = hashEmails
-          ? hashEmail(memberData.email)
-          : memberData.email;
+        // Create an array to store promises for member creation or update
+        const memberPromises = courseMembers.map(async (memberData) => {
+          memberData.email = hashEmails
+            ? hashEmail(memberData.email)
+            : memberData.email;
 
-        const existingMember = await findCourseMember(memberData.email, courseId);
+          const existingMember = await findCourseMember(
+            memberData.email,
+            courseId
+          );
 
-        if (existingMember) {
-          // If the course member exists, update the row
-          return updateCourseMember(existingMember.id, memberData);
-        } else {
-          // If the course member does not exist, create the course member along with the user
-          return createCourseMember({ ...memberData, courseId });
-        }
-      });
+          if (existingMember) {
+            return updateCourseMember(existingMember.id, memberData);
+          } else {
+            return createCourseMember({ ...memberData, courseId });
+          }
+        });
 
-      // Use Promise.all to execute all promises concurrently
-      const courseMemberResults = await Promise.all(memberPromises);
+        const courseMemberResults = await Promise.all(memberPromises);
+        updatedCourseMembers.push(...courseMemberResults);
 
-      // Add the results to the updatedCourseMembers array
-      updatedCourseMembers.push(...courseMemberResults);
-
-      return { success: true, allCourseMembersOfClass: updatedCourseMembers };
-    } catch (error) {
-      throw generateTypedError(error as Error);
-    }
-  })
+        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    })
 });
 
 export type CourseMemberRouter = typeof courseMemberRouter;
