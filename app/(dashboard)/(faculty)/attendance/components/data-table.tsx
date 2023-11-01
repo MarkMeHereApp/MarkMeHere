@@ -157,7 +157,7 @@ export function DataTable<TData, TValue>({
           ];
           setLectures(newLectures);
 
-          toast({
+          toast({ 
             title: 'Created New Lecture!',
             description: `Successfully created a new lecture for ${
               selectedAttendanceDate.toISOString().split('T')[0]
@@ -279,7 +279,7 @@ export function DataTable<TData, TValue>({
           <Card className="w-85 h-50">
             <CardHeader>
               <CardTitle>
-                There is no attendance data available for this date.
+                No attendance data available.
               </CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center">

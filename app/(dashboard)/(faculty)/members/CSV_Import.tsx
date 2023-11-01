@@ -286,8 +286,8 @@ const CSV_Import = () => {
           'bg-primary cursor-pointer text-primary-foreground text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
         }
       >
-        <MdUploadFile className="h-5 w-4 mr-2" />
-        Import CSV
+        <MdUploadFile className="h-5 w-4" />
+        <span className='hidden sm:flex ml-2'>Import CSV</span>
       </label>
       <Dialog open={isValidating}>
         <DialogContent className="sm:max-w-[425px]" onClose={closeDialog}>

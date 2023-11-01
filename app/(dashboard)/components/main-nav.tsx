@@ -66,7 +66,7 @@ export default function MainNav({
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
         <DropdownMenu>
-            <DropdownMenuTrigger  className='flex sm:hidden'>
+            <DropdownMenuTrigger className='flex sm:hidden'>
               <HamburgerMenuIcon className='h-5 w-5'/>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -75,21 +75,26 @@ export default function MainNav({
                         href="/overview" 
                         displayText="Overview" 
                     />
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <MainNavBarCustomLink
-                        href="/attendance"
-                        displayText="Attendance"
-                    />
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <MainNavBarCustomLink
-                        href="/members"
-                        displayText="Members"
-                    />
-                </DropdownMenuItem>
+                </DropdownMenuItem> 
+                {selectedCourseId && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <MainNavBarCustomLink
+                            href="/attendance"
+                            displayText="Attendance"
+                        />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <MainNavBarCustomLink
+                            href="/members"
+                            displayText="Members"
+                        />
+                    </DropdownMenuItem>
+                  </>
+                 )
+                }
             </DropdownMenuContent>
         </DropdownMenu>
       <div className='hidden sm:flex space-x-4'>

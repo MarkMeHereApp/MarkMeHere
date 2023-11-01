@@ -139,34 +139,38 @@ export function DataTableToolbar<TData>({
                 }}
                 className="h-8 w-[150px] lg:w-[250px]"
             />
-            {isSelected && (
-              <>
-                <AttendanceButtons
-                  status="Mark Present"
-                  onClick={() => handleCreateNewAttendanceEntries('here')}
-                />
-                <AttendanceButtons
-                  status="Mark Late"
-                  onClick={() => handleCreateNewAttendanceEntries('late')}
-                />
-                <AttendanceButtons
-                  status="Mark Excused"
-                  onClick={() => handleCreateNewAttendanceEntries('excused')}
-                />
-                <AttendanceButtons
-                  status="Mark Absent"
-                  onClick={() => handleCreateNewAttendanceEntries('absent')}
-                />
-              </>
-            )}
+            <div className="hidden sm:flex">
+                {isSelected && (
+                <>
+                    <AttendanceButtons
+                    status="Mark Present"
+                    onClick={() => handleCreateNewAttendanceEntries('here')}
+                    />
+                    <AttendanceButtons
+                    status="Mark Late"
+                    onClick={() => handleCreateNewAttendanceEntries('late')}
+                    />
+                    <AttendanceButtons
+                    status="Mark Excused"
+                    onClick={() => handleCreateNewAttendanceEntries('excused')}
+                    />
+                    <AttendanceButtons
+                    status="Mark Absent"
+                    onClick={() => handleCreateNewAttendanceEntries('absent')}
+                    />
+                </>
+                )}
+            </div>
             <DataTableViewOptions table={table} />
-            {table.getColumn('status') && (
-              <DataTableFacetedFilter
-                column={table.getColumn('status')}
-                title="Status"
-                options={statuses}
-              />
-            )}
+            <div className="hidden sm:flex">
+                {table.getColumn('status') && (
+                <DataTableFacetedFilter
+                    column={table.getColumn('status')}
+                    title="Status"
+                    options={statuses}
+                />
+                )}
+            </div>
             {isFiltered && (
               <Button
                 variant="ghost"
