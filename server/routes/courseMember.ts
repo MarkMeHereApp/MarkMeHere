@@ -11,19 +11,12 @@ import {
   router
 } from '../trpc';
 import {
-  createHashedCourseMember,
-  CreateHashedCourseMemberType,
-  findHashedCourseMember
-} from '../utils/hashedCourseMemberHelpers.ts';
-import {
-  createDefaultCourseMember,
-  CourseMemberInput,
-  CreateDefaultCourseMemberType,
-  findDefaultCourseMember,
+  createCourseMember,
+  findCourseMember,
   updateCourseMember
-} from '../utils/defaultCourseMemberHelpers.ts';
+} from '../utils/courseMemberHelpers';
+import { hashEmail } from '../utils/userHelpers';
 
-import { request } from 'http';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -98,18 +91,7 @@ export const courseMemberRouter = router({
     .input(zCourseMember)
     .mutation(async (requestData) => {
       try {
-        async function createAndReturnCourseMember(
-          createFunction:
-            | CreateDefaultCourseMemberType
-            | CreateHashedCourseMemberType
-        ) {
-          const resEnrollment = await createFunction(requestData.input);
-          return { success: true, resEnrollment };
-        }
-
         const { courseId, email, name, role } = requestData.input;
-        const { settings } = requestData.ctx;
-
         zCourseRoles.parse(role);
 
         if (!courseId || !email || !name || !role) {
@@ -121,11 +103,11 @@ export const courseMemberRouter = router({
           );
         }
 
-        return await createAndReturnCourseMember(
-          settings?.hashEmails
-            ? createHashedCourseMember
-            : createDefaultCourseMember
-        );
+        const { hashEmails } = requestData.ctx.settings;
+        requestData.input.email = hashEmails ? hashEmail(email) : email;
+
+        const resEnrollment = await createCourseMember(requestData.input);
+        return { success: true, resEnrollment };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
@@ -241,48 +223,43 @@ export const courseMemberRouter = router({
       }
     }),
 
-  // TODO: If there is duplicate data, overwrite the existing data.
+  /* 
+  Loop through all courseMembers and create an array of course 
+  member creation/update promises.
+  Either update existing course member or create a new one. 
+  Resolve all course member creation promises.
+   */
   createMultipleCourseMembers: publicProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
-        const courseId = requestData.input.courseId;
-        const courseMembers = requestData.input.courseMembers;
-        const { settings } = requestData.ctx;
+        const {
+          input: { courseId, courseMembers },
+          ctx: { settings }
+        } = requestData;
+        const { hashEmails } = settings;
         const updatedCourseMembers = [];
 
-        //Use the correct search function based off settings
-        const searchFunction = settings.hashEmails
-          ? findHashedCourseMember
-          : findDefaultCourseMember;
+        // Create an array to store promises for member creation or update
+        const memberPromises = courseMembers.map(async (memberData) => {
+          memberData.email = hashEmails
+            ? hashEmail(memberData.email)
+            : memberData.email;
 
-        const createFunction = settings.hashEmails
-          ? createHashedCourseMember
-          : createDefaultCourseMember;
-
-        for (const memberData of courseMembers) {
-
-          const existingMember = await searchFunction(
-            courseId,
-            memberData.email
+          const existingMember = await findCourseMember(
+            memberData.email,
+            courseId
           );
 
           if (existingMember) {
-            //If the course member exists update the row
-            const updatedMember = await updateCourseMember(existingMember.id, {
-              ...memberData,
-              email: existingMember.email
-            });
-            updatedCourseMembers.push(updatedMember);
+            return updateCourseMember(existingMember.id, memberData);
           } else {
-            //If the course member does not exist create the courseMember along with the user
-            const createdMember = await createFunction({
-              ...memberData,
-              courseId
-            });
-            updatedCourseMembers.push(createdMember);
+            return createCourseMember({ ...memberData, courseId });
           }
-        }
+        });
+
+        const courseMemberResults = await Promise.all(memberPromises);
+        updatedCourseMembers.push(...courseMemberResults);
 
         return { success: true, allCourseMembersOfClass: updatedCourseMembers };
       } catch (error) {

@@ -1,8 +1,8 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
-import crypto from 'crypto';
+import crypto, { createHash } from 'crypto';
 import prisma from '@/prisma';
-import { Prisma, Organization } from '@prisma/client';
+import { Prisma, Organization, User } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
 export function getPublicUrl(): string {

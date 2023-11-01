@@ -6,6 +6,7 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { hashEmail, createDefaultUser } from '../utils/userHelpers';
 
 export const zCreateUser = z.object({
   name: z.string(),
@@ -36,6 +37,8 @@ export const userRouter = router({
     .mutation(async (requestData) => {
       try {
         const { name, email, role, optionalId } = requestData.input;
+        const { hashEmails } = requestData.ctx.settings;
+
         zSiteRoles.parse(role);
         if (!name || !email || !role) {
           throw generateTypedError(
@@ -49,7 +52,7 @@ export const userRouter = router({
         const newUser = await prisma.user.create({
           data: {
             name,
-            email,
+            email: hashEmails ? hashEmail(email) : email,
             role,
             optionalId
           }
