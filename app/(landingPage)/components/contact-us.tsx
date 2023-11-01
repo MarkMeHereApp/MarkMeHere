@@ -39,7 +39,7 @@ const formSchema = z.object({
     })
 });
 
-export function WaitList() {
+export function ContactUs({ children }: { children: React.ReactNode }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   });
@@ -52,9 +52,7 @@ export function WaitList() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Get In Touch!</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Contact Us!</DialogTitle>

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 import { firaSansLogo } from '@/utils/fonts';
 import {
@@ -18,8 +17,16 @@ import { IoAnalyticsOutline } from 'react-icons/io5';
 import { BsPatchExclamation } from 'react-icons/bs';
 import { TbMessageChatbot } from 'react-icons/tb';
 import { ContinueButton } from '@/components/general/continue-button';
-import { WaitList } from './waitlist-form';
+import { ContactUs } from './contact-us';
 export default async function LandingPage() {
+  const DeployButton = () => {
+    return (
+      <Link href="/deploy">
+        <ContinueButton name="Join Our Alpha Now!" />
+      </Link>
+    );
+  };
+
   return (
     <>
       <section className="space-y-6 pt-6 py-12 md:pt-10 lg:py-24">
@@ -34,9 +41,7 @@ export default async function LandingPage() {
           </p>
 
           <div className="space-x-4">
-            <Link href="/create-school">
-              <ContinueButton name="Join Our Alpha Now!" />
-            </Link>
+            <DeployButton />
             <Link href="/create-school">
               <Button variant="outline">View Demo</Button>
             </Link>
@@ -103,9 +108,7 @@ export default async function LandingPage() {
                 </ul>
               </div>
               <div className="space-x-4">
-                <Link href="/create-school" className="ml-2">
-                  <ContinueButton name="Join our Alpha Now!" />
-                </Link>
+                <DeployButton />
               </div>
             </div>
           </div>
@@ -152,7 +155,9 @@ export default async function LandingPage() {
                 </div>
               </div>
               <div className="space-x-4 ml-2 my-6">
-                <WaitList />
+                <ContactUs>
+                  <Button variant={'outline'}>Contact Us</Button>
+                </ContactUs>
               </div>
             </div>
           </div>
