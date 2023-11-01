@@ -6,11 +6,22 @@ import { usePathname } from 'next/navigation'; // Import the useRouter hook
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 
+import isDevMode from '@/utils/isDevMode';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+
 export default function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { currentCourseUrl } = useCourseContext();
+  const { currentCourseUrl, selectedCourseId } = useCourseContext();
   const { organizationUrl } = useOrganizationContext();
   const pathname = usePathname(); // Use the hook
 
@@ -28,14 +39,14 @@ export default function MainNav({
   }
 
   const getLinkClassName = (path: string) => {
-    const commonClasses = 'flex text-md font-mediu n pb-0';
+    const commonClasses = 'flex text-md font-medium pb-0';
     const activeLinkStyles = `${commonClasses} text-primary`;
     const inactiveLinkStyles = `${commonClasses} text-muted-foreground hover:text-primary`;
     return isActive(path) ? activeLinkStyles : inactiveLinkStyles;
   };
 
   const getBorderClassName = (path: string) => {
-    const commonClasses = 'border-b-2 w-full p-3 pb-2 px-0';
+    const commonClasses = 'w-full p-3 pb-2 px-0';
     const activeBorderStyles = `${commonClasses} border-primary`;
     const inactiveBorderStyles = `${commonClasses} border-transparent hover:border-primary hover:border-solid`;
     return isActive(path) ? activeBorderStyles : inactiveBorderStyles;
@@ -57,42 +68,56 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/overview`}
-        displayText="Overview"
-      />
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex sm:hidden">
+          <HamburgerMenuIcon className="h-5 w-5" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            <MainNavBarCustomLink
+              href={`${currentCourseUrl}/overview`}
+              displayText="Overview"
+            />
+          </DropdownMenuItem>
 
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/mark-attendance-status`}
-        displayText="Mark Attendance Status"
-      />
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/manage-course-members`}
-        displayText="Course Members"
-      />
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/student`}
-        displayText="Student Dashboard"
-      />
-      {/* {selectedCourseRole == 'student' ? (
-              <MainNavBarCustomLink
-                href={`${currentCourseUrl}/student`}
-                displayText="Student Dashboard"
-              />
-            ) : (
-                null
-            )
-          } */}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <MainNavBarCustomLink
+              href={`${currentCourseUrl}/attendance`}
+              displayText="Attendance"
+            />
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <MainNavBarCustomLink
+              href={`${currentCourseUrl}/members`}
+              displayText="Members"
+            />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="hidden sm:flex space-x-4">
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/overview`}
+          displayText="Overview"
+        />
 
-      <MainNavBarCustomLink
-        href={`${organizationUrl}/admin-settings`}
-        displayText="Admin Dashboard"
-      />
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/attendance`}
+          displayText="Attendance"
+        />
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/members`}
+          displayText="Members"
+        />
 
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/testing-playground`}
-        displayText="Testing Playground"
-      />
+        {isDevMode && (
+          <MainNavBarCustomLink
+            href={`${currentCourseUrl}/testing-playground`}
+            displayText="Testing"
+          />
+        )}
+      </div>
     </nav>
   );
 }

@@ -5,12 +5,12 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { DataTableViewOptions } from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/mark-attendance-status/components/data-table-view-options';
+import { DataTableViewOptions } from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/attendance/components/data-table-view-options';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
-import { CalendarDateRangePicker } from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/components/date-picker';
+import { CalendarDateRangePicker } from '../../components/date-picker';
 import {
   zAttendanceStatus,
   zAttendanceStatusIcons,
@@ -18,8 +18,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
-import { useLecturesContext } from '../../../context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';
 import { AttendanceEntry } from '@prisma/client';
@@ -141,34 +140,38 @@ export function DataTableToolbar<TData>({
               }}
               className="h-8 w-[150px] lg:w-[250px]"
             />
-            {isSelected && (
-              <>
-                <AttendanceButtons
-                  status="Mark Present"
-                  onClick={() => handleCreateNewAttendanceEntries('here')}
-                />
-                <AttendanceButtons
-                  status="Mark Late"
-                  onClick={() => handleCreateNewAttendanceEntries('late')}
-                />
-                <AttendanceButtons
-                  status="Mark Excused"
-                  onClick={() => handleCreateNewAttendanceEntries('excused')}
-                />
-                <AttendanceButtons
-                  status="Mark Absent"
-                  onClick={() => handleCreateNewAttendanceEntries('absent')}
-                />
-              </>
-            )}
+            <div className="hidden sm:flex">
+              {isSelected && (
+                <>
+                  <AttendanceButtons
+                    status="Mark Present"
+                    onClick={() => handleCreateNewAttendanceEntries('here')}
+                  />
+                  <AttendanceButtons
+                    status="Mark Late"
+                    onClick={() => handleCreateNewAttendanceEntries('late')}
+                  />
+                  <AttendanceButtons
+                    status="Mark Excused"
+                    onClick={() => handleCreateNewAttendanceEntries('excused')}
+                  />
+                  <AttendanceButtons
+                    status="Mark Absent"
+                    onClick={() => handleCreateNewAttendanceEntries('absent')}
+                  />
+                </>
+              )}
+            </div>
             <DataTableViewOptions table={table} />
-            {table.getColumn('status') && (
-              <DataTableFacetedFilter
-                column={table.getColumn('status')}
-                title="Status"
-                options={statuses}
-              />
-            )}
+            <div className="hidden sm:flex">
+              {table.getColumn('status') && (
+                <DataTableFacetedFilter
+                  column={table.getColumn('status')}
+                  title="Status"
+                  options={statuses}
+                />
+              )}
+            </div>
             {isFiltered && (
               <Button
                 variant="ghost"

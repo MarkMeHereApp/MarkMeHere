@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 import { signOut } from 'next-auth/react';
+import { GearIcon } from '@radix-ui/react-icons';
 
 /*
  * @TODO - This should be a server component
@@ -22,7 +23,7 @@ import { signOut } from 'next-auth/react';
  */
 
 export default function UserNav() {
-  const { organization } = useOrganizationContext();
+  const { organizationUrl } = useOrganizationContext();
   const session = useSession();
   const name = session?.data?.user?.name || '';
   const userEmail = session?.data?.user?.email || '';
@@ -42,17 +43,17 @@ export default function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-muted-foreground pt-1">
               {userEmail}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          {' '}
-          <Link href={`/${organization.uniqueCode}/user-settings`}>
-            User Settings
-          </Link>
+        <DropdownMenuItem></DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="justify-between">
+          <Link href={`${organizationUrl}/admin-settings`}>Settings</Link>
+          <GearIcon />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

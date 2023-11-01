@@ -28,7 +28,6 @@ import { trpc } from '@/app/_trpc/client';
 import { useSession } from 'next-auth/react';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { CourseMember } from '@prisma/client';
-import { geolocationRouter } from '@/server/routes/geolocation';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 
@@ -40,7 +39,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const router = useRouter();
   const { courseMembersOfSelectedCourse, currentCourseUrl } =
     useCourseContext();
-
   const address = `${getPublicUrl()}`;
   const navigation = `${currentCourseUrl}/qr`;
 
@@ -64,12 +62,11 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const lectureLatitude = useRef<number>(0);
   const lectureLongitude = useRef<number>(0);
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
-
-  const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
   const [selectCourseMember, setSelectCourseMember] = useState<
     CourseMember | undefined
@@ -139,7 +136,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const createProfessorLectureGeolocation =
     trpc.geolocation.CreateProfessorLectureGeolocation.useMutation();
   const handleGenerateQRCode = async () => {
-    setIsLoadingSubmit(true)
+    setIsLoadingSubmit(true);
     const selectedCourseMember = getCourseMember();
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
@@ -150,48 +147,46 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
     );
 
-    
-    if(enableGeolocation){
-      const location = await getGeolocationData()
+    if (enableGeolocation) {
+      const location = await getGeolocationData();
 
-      if(location){
-        console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`);
+      if (location) {
+        console.log(
+          `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`
+        );
 
-        try{
-  
-          if(!selectedCourseMemberId){
-            return 
+        try {
+          if (!selectedCourseMemberId) {
+            return;
           }
 
-  
           const res = await createProfessorLectureGeolocation.mutateAsync({
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
             courseMemberId: selectedCourseMemberId
-          })
-          
-          professorGeolocationId.current = res.id
+          });
 
+          professorGeolocationId.current = res.id;
 
-          console.log(res)
-        }catch (error) {
-          console.log(error)
+          console.log(res);
+        } catch (error) {
+          console.log(error);
           // setError(error as Error);
-        }finally{
-            setIsLoadingSubmit(true)
-            console.log(
-              navigation +
-                parameters +
-                '&location=' +
-                professorGeolocationId.current
-            );
-            router.push(
-              navigation +
-                parameters +
-                '&location=' +
-                professorGeolocationId.current
-            );
+        } finally {
+          setIsLoadingSubmit(false);
+          console.log(
+            navigation +
+              parameters +
+              '&location=' +
+              professorGeolocationId.current
+          );
+          router.push(
+            navigation +
+              parameters +
+              '&location=' +
+              professorGeolocationId.current
+          );
         }
       } else {
         console.log('unable to locate');
@@ -326,8 +321,11 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
               </div>
 
               <div className="flex items-center space-x-2 pl-4">
-                <Button onClick={handleGenerateQRCode}>
-                  {isLoadingSubmit ? <Loading/> : 'Continue To QR Code'}
+                <Button
+                  onClick={handleGenerateQRCode}
+                  disabled={isLoadingSubmit}
+                >
+                  {isLoadingSubmit ? <Loading /> : 'Continue To QR Code'}
                 </Button>
               </div>
             </AlertDialogDescription>

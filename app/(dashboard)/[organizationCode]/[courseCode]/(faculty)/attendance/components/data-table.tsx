@@ -106,127 +106,32 @@ export function DataTable<TData, TValue>({
     }
   };
 
-  const findRangeProfessorStudent = trpc.geolocation.CalculateRangeProfessorStudent.useMutation()
-  const FindRangeProfessorStudent = async(ProfessorGeolocationId:string, studentLat:number, studentLon:number, lectureId:string) => {
-
-    try{
-
-      const res = await findRangeProfessorStudent.mutateAsync({
-        ProfessorGeolocationId: ProfessorGeolocationId,
-        studentLatitude: studentLat,
-        studentLongtitude: studentLon,
-        lectureId: lectureId
-      })
-
-      if(res){
-        console.log(res)
-        return res.distance
-      }
-
-      if(!res){
-        console.log('error')
-      }
-
-    }catch(error){
-      console.log(error)
-    }
-  }
-
   useEffect(() => {
-    const fetchExtendedCourseMembers = async () => {
-      if (lectures) {
-        const currentLecture = getCurrentLecture();
-        if (!currentLecture) return;
-  
-        const newExtendedCourseMembers: ExtendedCourseMember[] = await Promise.all(
-          (courseMembersOfSelectedCourse || []).map(async (member) => {
-            const attendanceEntry = currentLecture?.attendanceEntries.find(
-              (entry) => entry.courseMemberId === member.id
-            );
-  
-            let range: number | undefined = undefined;
-            if (
-              attendanceEntry?.ProfessorLectureGeolocationId &&
-              attendanceEntry.studentLatitude &&
-              attendanceEntry.studentLongtitude
-            ) {
-              range = await FindRangeProfessorStudent(
-                attendanceEntry?.ProfessorLectureGeolocationId,
-                attendanceEntry?.studentLatitude,
-                attendanceEntry?.studentLongtitude,
-                attendanceEntry?.lectureId
-              );
-            } else if (attendanceEntry) {
-              range = -1; //no location shared
-            }
-  
-            return {
-              ...member,
-              AttendanceEntry: attendanceEntry,
-              Range: range,
-            };
-          })
+    if (lectures) {
+      // We need this to refetch the attendance entries when the date is changed
+      const currentLecture = getCurrentLecture();
+      if (!currentLecture) return;
+
+      const newExtendedCourseMembers: ExtendedCourseMember[] = (
+        courseMembersOfSelectedCourse || []
+      )
+        ?.map((member) => {
+          // Find the corresponding attendance entry for the member
+          const attendanceEntry = currentLecture?.attendanceEntries.find(
+            (entry) => entry.courseMemberId === member.id
+          );
+          return {
+            ...member,
+            AttendanceEntry: attendanceEntry
+          };
+        })
+        .filter(
+          (member) =>
+            member.courseId === selectedCourseId && member.role === 'student'
         );
-  
-        setExtendedCourseMembers(
-          newExtendedCourseMembers.filter(
-            (member) =>
-              member.courseId === selectedCourseId && member.role === 'student'
-          )
-        );
-      }
-    };
-  
-    fetchExtendedCourseMembers();
+      setExtendedCourseMembers(newExtendedCourseMembers);
+    }
   }, [lectures, selectedAttendanceDate]);
-
-//   useEffect(() => {
-//   const fetchExtendedCourseMembers = async () => {
-//     if (lectures) {
-//       const currentLecture = getCurrentLecture();
-//       if (!currentLecture) return;
-
-//       const newExtendedCourseMembers: ExtendedCourseMember[] = await Promise.all(
-//         (courseMembersOfSelectedCourse || []).map(async (member) => {
-//           const attendanceEntry = currentLecture?.attendanceEntries.find(
-//             (entry) => entry.courseMemberId === member.id
-//           );
-
-//           let range = null;
-//           if (
-//             attendanceEntry?.ProfessorLectureGeolocationId &&
-//             attendanceEntry.studentLatitude &&
-//             attendanceEntry.studentLongtitude
-//           ) {
-//             range = await FindRangeProfessorStudent(
-//               attendanceEntry?.ProfessorLectureGeolocationId,
-//               attendanceEntry?.studentLatitude,
-//               attendanceEntry?.studentLongtitude,
-//               attendanceEntry?.lectureId
-//             );
-//           } else if (attendanceEntry) {
-//             range = -1; //no location shared
-//           }
-
-//           return {
-//             ...member,
-//             AttendanceEntry: attendanceEntry,
-//             Range: range,
-//           };
-//         })
-//       );
-
-//       setExtendedCourseMembers(
-//         newExtendedCourseMembers.filter(
-//           (member) =>
-//             member.courseId === selectedCourseId && member.role === 'student'
-//         )
-//       );
-//     }
-//   };
-
-//   fetchExtendedCourseMembers();
-// }, [lectures, selectedAttendanceDate]);
 
   const CreateNewLectureButton = () => {
     const createNewLectureMutation = trpc.lecture.CreateLecture.useMutation();
@@ -371,9 +276,7 @@ export function DataTable<TData, TValue>({
         <div className="pt-8 flex justify-center items-center">
           <Card className="w-85 h-50">
             <CardHeader>
-              <CardTitle>
-                There is no attendance data available for this date.
-              </CardTitle>
+              <CardTitle>No attendance data available.</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center">
               <CreateNewLectureButton />
