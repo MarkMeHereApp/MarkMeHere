@@ -19,7 +19,7 @@ export type CourseMemberInput = {
   optionalId?: string;
 };
 
-export async function createDefaultCourseMember(
+export async function createCourseMember(
   courseMember: CourseMemberInput
 ) {
   const { name, email } = courseMember;

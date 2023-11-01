@@ -11,18 +11,11 @@ import {
   router
 } from '../trpc';
 import {
-  createHashedCourseMember,
-  CreateHashedCourseMemberType,
-  findHashedCourseMember
-} from '../utils/courseMemberHelpers';
-import {
-  createDefaultCourseMember,
-  CourseMemberInput,
-  CreateDefaultCourseMemberType,
+  createCourseMember,
   updateCourseMember
 } from '../utils/courseMemberHelpers';
+import { hashEmail } from '../utils/userHelpers';
 
-import { request } from 'http';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -94,40 +87,30 @@ account if it does not exist
 
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
-    .input(zCourseMember)
-    .mutation(async (requestData) => {
-      try {
-        async function createAndReturnCourseMember(
-          createFunction:
-            | CreateDefaultCourseMemberType
-            | CreateHashedCourseMemberType
-        ) {
-          const resEnrollment = await createFunction(requestData.input);
-          return { success: true, resEnrollment };
-        }
+  .input(zCourseMember)
+  .mutation(async (requestData) => {
+    try {
+      const { courseId, email, name, role } = requestData.input;
+      zCourseRoles.parse(role);
 
-        const { courseId, email, name, role } = requestData.input;
-        const { settings } = requestData.ctx;
-        zCourseRoles.parse(role);
-
-        const createFunction = settings?.hashEmails
-          ? createHashedCourseMember
-          : createDefaultCourseMember;
-
-        if (!courseId || !email || !name || !role) {
-          throw generateTypedError(
-            new TRPCError({
-              code: 'BAD_REQUEST',
-              message: 'Missing required fields'
-            })
-          );
-        }
-
-        return await createAndReturnCourseMember(createFunction);
-      } catch (error) {
-        throw generateTypedError(error as Error);
+      if (!courseId || !email || !name || !role) {
+        throw generateTypedError(
+          new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Missing required fields'
+          })
+        );
       }
-    }),
+
+      const { hashEmails } = requestData.ctx.settings;
+      requestData.input.email = hashEmails ? hashEmail(email) : email;
+
+      const resEnrollment = await createCourseMember(requestData.input);
+      return { success: true, resEnrollment };
+    } catch (error) {
+      throw generateTypedError(error as Error);
+    }
+  }),
 
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
