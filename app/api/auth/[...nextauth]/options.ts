@@ -48,7 +48,8 @@ const getBuiltInNextAuthProviders = async (): Promise<
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
 
-  const settings = await getGlobalSiteSettings_Server({ hashEmails: true });
+  //Placeholder for now. Need to figure out how to grab user specific organization
+  const settings = await prisma.organization.findFirst()
 
   const prismaAdapter = settings?.hashEmails
     ? (prismaAdapterHashed(prisma) as Adapter)
@@ -74,9 +75,6 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //When JWT is created store user role in the token
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
-        const settings = await getGlobalSiteSettings_Server({
-          hashEmails: true
-        });
 
         let hashedEmail = null;
         if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
