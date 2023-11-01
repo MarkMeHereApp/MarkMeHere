@@ -63,11 +63,11 @@ const InputTable = () => {
       case ErrorType.InvalidGeolocation:
         break;
       default:
-        setErrorDisplay('Unexpected Error');
+        setErrorDisplay('Geolocation Error');
         toast({
-          title: 'Unexpected Error',
+          title: 'Unable to Verify You',
           description:
-            'Please contact your administrator. Insert Error Code Here',
+            'Unfortunately, we were not able to verify you. Please scan the QR code again or enter the code.',
           icon: 'error_for_destructive_toasts',
           variant: 'destructive'
         });
@@ -93,11 +93,11 @@ const InputTable = () => {
       if (res.success && res.token) {
         
         if(res.location){
-          router.push(`/verification?attendanceTokenId=${res.token}`)
+          router.push(`${res.course.organizationCode}/${res.course.courseCode}/verification?attendanceTokenId=${res.token}`)
         }
 
         if(!res.location){
-          router.push(`/student?attendanceTokenId=${res.token}`);
+          router.push(`/${res.course.organizationCode}/${res.course.courseCode}/student?attendanceTokenId=${res.token}`);
         }
       }
 
@@ -123,6 +123,10 @@ const InputTable = () => {
     if (errorType && !hasDisplayedQRError.current) {
       if (errorType === 'qr-error') {
         displayError(ErrorType.InvalidQR);
+        hasDisplayedQRError.current = true
+      }
+      if (errorType === 'unknown') {
+        displayError(ErrorType.InvalidGeolocation);
         hasDisplayedQRError.current = true
       }
     }

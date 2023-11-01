@@ -14,6 +14,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog"; 
+import VerificationDialog from "./verificationDialog";
+import { Check } from "lucide-react";
 
 enum WarningType {
   Info,
@@ -25,7 +27,7 @@ enum WarningType {
   DefaultError
 }
 
-const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
+const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode?: string }> = ({ code, orgCode, courseCode })=>{
   
   const [allowedRange,setAllowedRange] = React.useState<number>(50) //this will in the future serve as the professors ability to pick the range of the classroom 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false);
@@ -54,6 +56,22 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
     professorLatitude: professorLatitude.current, // Replace with actual value
     professorLongitude: professorLongitude.current, // Replace with actual value
   };
+
+  const [isOpen, setIsOpen] = useState(true)
+  const handleClose = () => {
+    console.log('pressed close')
+    console.log(isOpen)
+    setIsOpen(false)
+  }
+  const handleOpen = () => {
+    console.log('pressed open')
+    console.log(isOpen)
+    setIsOpen(true)
+  }
+
+
+  // console.log(courseCode)
+  // console.log(orgCode)
 
   const displayWarning = (warningType: WarningType, additionalInformation: any) => {
     switch (warningType) {
@@ -140,14 +158,15 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
   };
 
   const CheckGeolocation = () =>{
-
     setIsLoadingSubmit(true);
 
-    if (!isFirstClickVerified) {
-      //first warn the student that this step might result in this absence
-      //on second press
-      router.push(`/student?attendanceTokenId=${code}`)
-    }
+    // if (!isFirstClickVerified) {
+    //   //first warn the student that this step might result in this absence
+    //   //on second press
+    //   //router.push(`/student?attendanceTokenId=${code}`)
+    // }
+
+    console.log('geolocation triggered')
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
@@ -164,12 +183,17 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
               displayWarning(WarningType.LocationUnavailable, null)
             }
             console.error("Error occurred while getting geolocation", error);
+            
+
         });
+
     }
 
     
     else{
       console.log("Geolocation is not supported by this browser.");
+      // setIsLoadingSubmit(false);
+
     }
   }
 
@@ -191,25 +215,27 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
 
           professorLatitude.current = res.lectureLatitude
           professorLongitude.current = res.lectureLongtitude
-
+          
           if(res.distance){ // here we can add how far does the professor allow the students to be 
-            
+          
             const distanceRounded = parseFloat(res.distance.toFixed(2))
 
             if(distanceRounded > 50){
               rangeValidator.current = false
-              setIsFirstClickVerified(false)
+              //setIsFirstClickVerified(false)
               setProceedButtonText('INVALID')
               displayWarning(WarningType.InvalidLocation,distanceRounded)
             }
 
             if(distanceRounded <= 50){
               rangeValidator.current = true
-              setIsFirstClickVerified(false)
+              //setIsFirstClickVerified(false)
               setProceedButtonText('VALID')
               displayWarning(WarningType.ValidLocation,distanceRounded)
             }
-            range.current = res.distance // idk I need to trigger this somehow PLEASE ALDRICH         
+            // idk I need to trigger this somehow PLEASE ALDRICH         
+            range.current = distanceRounded 
+
           }        
         }
   
@@ -227,6 +253,33 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
       };    
     }
 
+    const ContinueWithDiscoveredLocation = () => {
+      
+      if(range.current > 250){
+        setProceedButtonText('INVALID')
+        displayWarning(WarningType.InvalidLocation,range.current)
+
+        if (isFirstClickVerified) {
+          setIsFirstClickVerified(false)
+          displayWarning(WarningType.NoLocation, null)
+        } 
+        if (!isFirstClickVerified) {
+          //first warn the student that this step might result in this absence
+          //on second press
+          console.log(code)
+          router.push(`/student?attendanceTokenId=${code}`)
+        }
+      }
+
+      if(range.current <= 250){
+        rangeValidator.current = true
+        setProceedButtonText('VALID')
+        displayWarning(WarningType.ValidLocation,range.current)
+        router.push(`/student?attendanceTokenId=${code}`)
+        
+      }
+      
+    }
 
     const ContinueNoLocation = () => {
       if (isFirstClickNoLocation) {
@@ -236,10 +289,13 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
       if (!isFirstClickNoLocation) {
         //first warn the student that this step might result in this absence
         //on second press
+        console.log(code)
         router.push(`/student?attendanceTokenId=${code}`)
       }
+      console.log('Clicked without Location')
     }
 
+    
 
     useEffect(()=>{
       if(infoTrigger.current){
@@ -259,34 +315,57 @@ const VerifiactionLoader: React.FC<{ code?: string }> = ({ code }) =>{
           
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
-            <Button 
-              className="flex w-[100%]"
-              disabled={isLoadingSubmit}
-              onClick={() => CheckGeolocation()} >
+            <Dialog>
+              <DialogTrigger asChild onClick={handleOpen}>
               
-              {isLoadingSubmit ? <Loading/> : 
-                <div>
-                  {isFirstClickVerified ? 'Verify My Location' : `Continue with ${proceedButtonText} Location`}
-                </div>}
 
+               <Button   
+                  className="flex w-full"
+                  disabled={isLoadingSubmit}
+                  onClick={() => {
+                    CheckGeolocation()
+                    
+                    }} >
+                       {isLoadingSubmit ? <Loading/> : 'Verify My location' }
+                </Button>
                 
-            </Button>
-
-            {!isLoadingSubmit && (
-                  
-              <Dialog>
-
-                <DialogTrigger>
-                <Button variant='outline' size='xs' className='pl-2 pr-2'>View Stats</Button>
-
                 </DialogTrigger>
-                  <DialogContent>
+                {!isLoadingSubmit && isOpen && (
+                  <DialogContent className="w-full">
                   <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
-                  </DialogContent>
-               
-              </Dialog>
+                    {!rangeValidator.current ? <Button 
+                        className="flex w-[100%] min-w-[100%]"
+                        disabled={isLoadingSubmit}
+                        onClick={() => {
+                            console.log('clicked continue with discovered location')
+                            ContinueWithDiscoveredLocation()
+                        }}
+                        variant="destructive">
+                      
+                        <div>{isFirstClickVerified ? `Continue with ${proceedButtonText} Location` : `Are you sure?`}</div>
+                    </Button> : 
+                    <Button 
+                    className="flex w-[100%] min-w-[100%]"
+                    disabled={isLoadingSubmit}
+                    onClick={() => {
+                        console.log('clicked continue with discovered location')
+                        ContinueWithDiscoveredLocation()
+                    }}>
                   
-            )}
+                    <div>
+                      {`Continue with ${proceedButtonText} Location`}
+                    </div>
+                  </Button>
+                    
+                    }
+                    
+
+                </DialogContent>
+                )}
+              
+
+            </Dialog>
+            
 
             <Button 
               className="flex w-[100%] min-w-[100%]"

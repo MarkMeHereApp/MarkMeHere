@@ -12,8 +12,9 @@ import { useCourseContext } from '../context-course';
 export default function MainBar() {
   const { currentCourseUrl } = useCourseContext();
   const isQRCodePage = usePathname() === `${currentCourseUrl}/qr`;
+  const isVerificationPage = usePathname() === `${currentCourseUrl}/verification`;
 
-  const divClassName = !isQRCodePage
+  const divClassName = !isQRCodePage && !isVerificationPage
     ? 'border-b flex-col'
     : 'border-b flex-col hover:opacity-100 opacity-0 transition-opacity duration-200 absolute w-full z-10 bg-background';
 
