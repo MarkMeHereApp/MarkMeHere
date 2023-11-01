@@ -1,7 +1,7 @@
 'use client';
 
 import { ModeToggle } from '@/app/(dashboard)/[organizationCode]/components/theme-toggle';
-import UserNav from '../../components/user-nav';
+import UserNav from './user-nav';
 import MainNav from './main-nav';
 import CourseSelection from './course-selection'; // Import the new component
 import Link from 'next/link';

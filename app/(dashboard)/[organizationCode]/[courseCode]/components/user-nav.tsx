@@ -23,7 +23,7 @@ import { GearIcon } from '@radix-ui/react-icons';
  */
 
 export default function UserNav() {
-  const { organization } = useOrganizationContext();
+  const { organizationUrl } = useOrganizationContext();
   const session = useSession();
   const name = session?.data?.user?.name || '';
   const userEmail = session?.data?.user?.email || '';
@@ -52,9 +52,7 @@ export default function UserNav() {
         <DropdownMenuItem></DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="justify-between">
-          <Link href={`/${organization.uniqueCode}/user-settings`}>
-            Settings
-          </Link>
+          <Link href={`${organizationUrl}/admin-settings`}>Settings</Link>
           <GearIcon />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
