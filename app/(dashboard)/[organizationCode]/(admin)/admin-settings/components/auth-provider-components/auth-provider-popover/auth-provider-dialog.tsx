@@ -193,7 +193,7 @@ export function ProviderSubmissionDialog({
         <Dialog open={isDisplaying} onOpenChange={resetForm}>
           <DialogContent
             className="sm:max-w-[550px] lg:max-w-[750px]"
-            onClose={() => {
+            onCloseAutoFocus={() => {
               setIsDisplaying(false);
               setTimeout(() => {
                 setShowingTestContent(false);

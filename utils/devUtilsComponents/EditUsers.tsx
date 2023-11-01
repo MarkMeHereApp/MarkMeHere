@@ -1,4 +1,3 @@
-import { AiOutlineUserAdd } from 'react-icons/ai';
 import { Button } from '../../components/ui/button';
 import {
   Dialog,
@@ -36,39 +35,32 @@ import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
 import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
-import React from 'react';
-const EnrollUser = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const createUser = trpc.user.createUser.useMutation();
+import { MdEdit } from 'react-icons/md';
+import { User } from 'next-auth';
+const EditUsers = ({ user }: { user: User }) => {
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const updateUser = trpc.user.updateUser.useMutation();
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
-  const [selectedFormRole, setSelectedFormRole] = useState('');
-
-  const handleDialogOpen = () => {
-    form.reset();
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
 
   const zUsers = z.object({
     name: z
       .string()
       .min(1)
       .max(255)
-      .refine((value) => value.trim() === value, {
+      .optional()
+      .refine((value) => value?.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
     email: z
       .string()
       .min(1)
-      .refine((value) => value.trim() === value, {
+      .optional()
+      .refine((value) => value?.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
-    role: zSiteRoles,
+    role: zSiteRoles.optional(),
     optionalId: z
       .string()
       .max(255)
@@ -81,9 +73,9 @@ const EnrollUser = () => {
       )
   });
 
-  type CourseMemberFormProps = z.infer<typeof zUsers>;
+  type UsersFormProps = z.infer<typeof zUsers>;
 
-  const form = useForm<CourseMemberFormProps>({
+  const form = useForm<UsersFormProps>({
     resolver: zodResolver(zUsers)
   });
 
@@ -100,50 +92,44 @@ const EnrollUser = () => {
     }
   }
 
-  async function onSubmit(data: CourseMemberFormProps) {
+  async function onSubmit(data: UsersFormProps) {
     try {
       setLoading(true);
-      const response = await createUser.mutateAsync({
+      const response = await updateUser.mutateAsync({
+        email: user.email,
         name: data.name,
-        email: data.email,
         role: data.role,
         optionalId: data.optionalId
       });
-      if (userData.users) {
-        setUserData({
-          ...userData,
-          users: [...userData.users, response.user]
-        });
-      } else {
-        setUserData({ ...userData, users: [response.user] });
-      }
+
+      setUserData((prevData) => ({
+        ...prevData,
+        users: prevData.users
+          ? prevData.users.map((user) =>
+              user.email === response.user.email ? response.user : user
+            )
+          : [response.user]
+      }));
+
       setLoading(false);
-      handleDialogClose();
+      setIsDialogOpen(false);
     } catch (error) {
       setError(error as Error);
     }
   }
-
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="default"
-            onClick={() => handleDialogOpen()}
-            className="flex items-center"
-            style={{ maxWidth: '100%' }}
-          >
-            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-            <span className="whitespace-nowrap">Create Site User</span>
+          <Button className="p-2">
+            <MdEdit />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader onClick={handleDialogClose}>
-            <DialogTitle>Create Site User</DialogTitle>
+          <DialogHeader>
+            <DialogTitle>Modify Site User</DialogTitle>
             <DialogDescription>
-              Fill in the site user&apos;s information below and click create
-              user when you&apos;re done.
+              Modify the user and click submit when you're done.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -154,13 +140,15 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="name"
+                key={'name'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         className=""
-                        placeholder="Richard Leinecker"
+                        key={'nameInput'}
+                        defaultValue={user.name || ''}
                         {...field}
                       />
                     </FormControl>
@@ -172,13 +160,15 @@ const EnrollUser = () => {
                 <FormField
                   control={form.control}
                   name="email"
+                  key={'email'}
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Richard.Leinecker@ucf.edu"
+                          defaultValue={user.email}
                           {...field}
                         />
                       </FormControl>
@@ -190,13 +180,13 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
-                defaultValue="moderator"
+                key={'role'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue="moderator"
+                      defaultValue={user.role}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -220,16 +210,12 @@ const EnrollUser = () => {
                 control={form.control}
                 name="optionalId"
                 key="optionalId"
-                defaultValue=""
+                defaultValue={user.optionalId || ''}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Optional ID</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="abc123"
-                        {...field}
-                        value={field.value || ''}
-                      />
+                      <Input {...field} value={field.value || ''} />
                     </FormControl>
                     <FormDescription>
                       This is an optional Id that can help identify the user
@@ -242,7 +228,7 @@ const EnrollUser = () => {
               />
               <DialogFooter>
                 <Button type="submit" disabled={loading}>
-                  {loading ? <Loading /> : 'Create User'}
+                  {loading ? <Loading /> : 'Submit'}
                 </Button>
               </DialogFooter>
             </form>
@@ -253,4 +239,4 @@ const EnrollUser = () => {
   );
 };
 
-export default EnrollUser;
+export default EditUsers;

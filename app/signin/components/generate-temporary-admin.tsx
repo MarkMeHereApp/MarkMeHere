@@ -71,14 +71,14 @@ const GenerateTemporaryAdmin = () => {
 
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => handleDialogOpen()}>
             <PiUserCircleGear className="mr-2 h-5 w-5" />
             Log Into Temp Admin
           </Button>
         </DialogTrigger>
-        <DialogContent onClose={() => setIsDialogOpen(false)}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Log Into Temporary Admin</DialogTitle>
           </DialogHeader>
