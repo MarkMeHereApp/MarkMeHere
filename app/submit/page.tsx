@@ -56,15 +56,8 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
   
     if(res){
       return res;
-    } else {
-
-    }
+    } 
   };
-
-
-  //Checking if the submit page was called via scanning a QR code or accessed by typing /submit
-  //If ?qr=XXXXX is included, we call handleToken(), which calls the validation endpoint.
-  
 
   if(searchParams.hasOwnProperty('qr')){
     console.log("QR Param included")

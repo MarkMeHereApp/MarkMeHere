@@ -5,17 +5,14 @@ import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'components/ui/use-toast';
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
 import Loading from '@/components/general/loading';
-import { info } from "console";
 import GoogleMapsComponent from "./googleMapsComponent";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog"; 
-import VerificationDialog from "./verificationDialog";
-import { Check } from "lucide-react";
+import { CheckCircledIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 
 enum WarningType {
   Info,
@@ -59,13 +56,9 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
 
   const [isOpen, setIsOpen] = useState(true)
   const handleClose = () => {
-    console.log('pressed close')
-    console.log(isOpen)
     setIsOpen(false)
   }
   const handleOpen = () => {
-    console.log('pressed open')
-    console.log(isOpen)
     setIsOpen(true)
   }
 
@@ -160,19 +153,10 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
   const CheckGeolocation = () =>{
     setIsLoadingSubmit(true);
 
-    // if (!isFirstClickVerified) {
-    //   //first warn the student that this step might result in this absence
-    //   //on second press
-    //   //router.push(`/student?attendanceTokenId=${code}`)
-    // }
-
-    console.log('geolocation triggered')
-
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           studentLatitude.current = position.coords.latitude;
           studentLongitude.current = position.coords.longitude;
-          console.log(`Latitude: ${studentLatitude.current}, Longitude: ${studentLongitude.current}`);
           await ValidateGeolocation(); // Call ValidateGeolocation after getting geolocation
         }, (error) => {
             if(error.code === error.PERMISSION_DENIED){
@@ -181,10 +165,7 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
 
             if(error.code === error.POSITION_UNAVAILABLE){
               displayWarning(WarningType.LocationUnavailable, null)
-            }
-            console.error("Error occurred while getting geolocation", error);
-            
-
+            }           
         });
 
     }
@@ -223,14 +204,14 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
             if(distanceRounded > 50){
               rangeValidator.current = false
               //setIsFirstClickVerified(false)
-              setProceedButtonText('INVALID')
+              setProceedButtonText('Unverified')
               displayWarning(WarningType.InvalidLocation,distanceRounded)
             }
 
             if(distanceRounded <= 50){
               rangeValidator.current = true
               //setIsFirstClickVerified(false)
-              setProceedButtonText('VALID')
+              setProceedButtonText('Verified')
               displayWarning(WarningType.ValidLocation,distanceRounded)
             }
             // idk I need to trigger this somehow PLEASE ALDRICH         
@@ -256,7 +237,7 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
     const ContinueWithDiscoveredLocation = () => {
       
       if(range.current > 250){
-        setProceedButtonText('INVALID')
+        setProceedButtonText('Unverified')
         displayWarning(WarningType.InvalidLocation,range.current)
 
         if (isFirstClickVerified) {
@@ -266,14 +247,13 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
         if (!isFirstClickVerified) {
           //first warn the student that this step might result in this absence
           //on second press
-          console.log(code)
           router.push(`/student?attendanceTokenId=${code}`)
         }
       }
 
       if(range.current <= 250){
         rangeValidator.current = true
-        setProceedButtonText('VALID')
+        setProceedButtonText('Verified')
         displayWarning(WarningType.ValidLocation,range.current)
         router.push(`/student?attendanceTokenId=${code}`)
         
@@ -289,7 +269,6 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
       if (!isFirstClickNoLocation) {
         //first warn the student that this step might result in this absence
         //on second press
-        console.log(code)
         router.push(`/student?attendanceTokenId=${code}`)
       }
       console.log('Clicked without Location')
@@ -308,16 +287,13 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
     
     return (
         <Card className=" min-w-[300px] w-[25%] mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
-          <CardTitle className="text-2xl font-bold font-mono text-center pb-[20px]">
+          <CardTitle className="text-2xl font-bold font-mono text-center">
             <span>Location Verification</span>
           </CardTitle>
-          
-          
 
           <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
             <Dialog>
               <DialogTrigger asChild onClick={handleOpen}>
-              
 
                <Button   
                   className="flex w-full"
@@ -333,54 +309,46 @@ const VerifiactionLoader: React.FC<{ code?: string, orgCode?: string, courseCode
                 {!isLoadingSubmit && isOpen && (
                   <DialogContent className="w-full">
                   <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
-                    {!rangeValidator.current ? <Button 
-                        className="flex w-[100%] min-w-[100%]"
-                        disabled={isLoadingSubmit}
-                        onClick={() => {
-                            console.log('clicked continue with discovered location')
-                            ContinueWithDiscoveredLocation()
-                        }}
-                        variant="destructive">
-                      
-                        <div>{isFirstClickVerified ? `Continue with ${proceedButtonText} Location` : `Are you sure?`}</div>
-                    </Button> : 
+                    {!rangeValidator.current ? 
                     <Button 
-                    className="flex w-[100%] min-w-[100%]"
-                    disabled={isLoadingSubmit}
-                    onClick={() => {
-                        console.log('clicked continue with discovered location')
-                        ContinueWithDiscoveredLocation()
-                    }}>
-                  
-                    <div>
-                      {`Continue with ${proceedButtonText} Location`}
-                    </div>
-                  </Button>
-                    
-                    }
-                    
-
-                </DialogContent>
-                )}
-              
-
+                      className="flex w-[100%] min-w-[100%]"
+                      disabled={isLoadingSubmit}
+                      onClick={() => {
+                          ContinueWithDiscoveredLocation()
+                      }}
+                      variant="destructive">
+                      <div className="mr-[5px]">
+                        {isFirstClickVerified ? `Continue ${proceedButtonText}` : `Are you sure?`}
+                      </div>
+                      <CrossCircledIcon/>
+                    </Button> 
+                    : 
+                    <Button 
+                      className="flex w-[100%] min-w-[100%]"
+                      disabled={isLoadingSubmit}
+                      onClick={() => {
+                          ContinueWithDiscoveredLocation()
+                      }}>                      
+                      <div className="mr-[5px]">
+                        {`Continue ${proceedButtonText}`}
+                      </div>
+                      <CheckCircledIcon/>
+                    </Button>}
+                </DialogContent>)}
             </Dialog>
             
-
             <Button 
               className="flex w-[100%] min-w-[100%]"
               disabled={isLoadingSubmit}
               onClick={() => ContinueNoLocation()}
               variant="destructive">
-              
-              
-            <div className="">{isFirstClickNoLocation ? 'Proceed Without Verification' : 'Are you sure?'}</div>
-            </Button>   
-          </div>
 
-               
-        </Card>
-        )
+              <div className="mr-[5px]">
+                {isFirstClickNoLocation ? 'Proceed Without Verification' : 'Are you sure?'}
+              </div>
+            </Button>   
+          </div>      
+        </Card>)
 }
 
 export default VerifiactionLoader
