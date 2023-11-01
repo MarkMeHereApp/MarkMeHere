@@ -3,8 +3,22 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
+<<<<<<< HEAD:app/(dashboard)/[organizationCode]/[courseCode]/components/main-nav.tsx
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+=======
+import { useCourseContext } from '@/app/context-course';
+import isDevMode from '@/utils/isDevMode';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+>>>>>>> sillygoofymobileview:app/(dashboard)/components/main-nav.tsx
 
 export default function MainNav({
   className,
@@ -28,14 +42,14 @@ export default function MainNav({
   }
 
   const getLinkClassName = (path: string) => {
-    const commonClasses = 'flex text-md font-mediu n pb-0';
+    const commonClasses = 'flex text-md font-medium pb-0';
     const activeLinkStyles = `${commonClasses} text-primary`;
     const inactiveLinkStyles = `${commonClasses} text-muted-foreground hover:text-primary`;
     return isActive(path) ? activeLinkStyles : inactiveLinkStyles;
   };
 
   const getBorderClassName = (path: string) => {
-    const commonClasses = 'border-b-2 w-full p-3 pb-2 px-0';
+    const commonClasses = 'w-full p-3 pb-2 px-0';
     const activeBorderStyles = `${commonClasses} border-primary`;
     const inactiveBorderStyles = `${commonClasses} border-transparent hover:border-primary hover:border-solid`;
     return isActive(path) ? activeBorderStyles : inactiveBorderStyles;
@@ -57,6 +71,7 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
+<<<<<<< HEAD:app/(dashboard)/[organizationCode]/[courseCode]/components/main-nav.tsx
       <MainNavBarCustomLink
         href={`${currentCourseUrl}/overview`}
         displayText="Overview"
@@ -93,6 +108,62 @@ export default function MainNav({
         href={`${currentCourseUrl}/testing-playground`}
         displayText="Testing Playground"
       />
+=======
+        <DropdownMenu>
+            <DropdownMenuTrigger className='flex sm:hidden'>
+              <HamburgerMenuIcon className='h-5 w-5'/>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem>
+                    <MainNavBarCustomLink 
+                        href="/overview" 
+                        displayText="Overview" 
+                    />
+                </DropdownMenuItem> 
+                {selectedCourseId && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <MainNavBarCustomLink
+                            href="/attendance"
+                            displayText="Attendance"
+                        />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <MainNavBarCustomLink
+                            href="/members"
+                            displayText="Members"
+                        />
+                    </DropdownMenuItem>
+                  </>
+                 )
+                }
+            </DropdownMenuContent>
+        </DropdownMenu>
+      <div className='hidden sm:flex space-x-4'>
+        <MainNavBarCustomLink href="/overview" displayText="Overview" />
+        {selectedCourseId ? (
+            <>
+            <MainNavBarCustomLink
+                href="/attendance"
+                displayText="Attendance"
+            />
+            <MainNavBarCustomLink
+                href="/members"
+                displayText="Members"
+            />
+            </>
+        ) : null}
+        {isDevMode && (
+            <MainNavBarCustomLink
+                href="/testing-playground"
+                displayText="Testing"
+            />
+        )
+        }
+      </div>
+>>>>>>> sillygoofymobileview:app/(dashboard)/components/main-nav.tsx
     </nav>
   );
 }

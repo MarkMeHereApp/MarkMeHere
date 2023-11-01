@@ -14,8 +14,20 @@ const OverviewAnalytics = () => {
   // After getting the data, pass it to the AttendanceOverTimeLineGraph component and let it handle the rest
   // Do the same for the top students
   return (
+<<<<<<< HEAD:app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/index.tsx
     <div className="flex h-full w-full">
       <div className="w-full h-full p-4">
+=======
+    <div className="flex h-full w-full flex-col">
+      <div className="w-full h-1/4">
+        <OverviewBar
+          selectedCourseName={selectedCourseName ?? ''}
+          lectures={lectures}
+          courseMembers={courseMembersOfSelectedCourse}
+        />
+      </div>
+      <div className="w-full h-3/4 pt-4">
+>>>>>>> sillygoofymobileview:app/(dashboard)/(faculty)/overview/analytics/index.tsx
         <AttendanceOverTimeLineGraph
           lectures={lectures}
           numStudents={studentsOfSelectedCourse?.length ?? 0}

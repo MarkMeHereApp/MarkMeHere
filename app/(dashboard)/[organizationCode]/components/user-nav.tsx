@@ -12,8 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+<<<<<<< HEAD:app/(dashboard)/[organizationCode]/components/user-nav.tsx
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+=======
+>>>>>>> sillygoofymobileview:app/(dashboard)/components/user-nav.tsx
 import { signOut } from 'next-auth/react';
+import { GearIcon } from '@radix-ui/react-icons';
 
 /*
  * @TODO - This should be a server component
@@ -42,7 +46,7 @@ export default function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-muted-foreground pt-1">
               {userEmail}
             </p>
           </div>
@@ -50,9 +54,19 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           {' '}
+<<<<<<< HEAD:app/(dashboard)/[organizationCode]/components/user-nav.tsx
           <Link href={`/${organization.uniqueCode}/user-settings`}>
             User Settings
           </Link>
+=======
+          <Link href="/manage-courses">Admin</Link>
+          </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className='justify-between' >
+          {' '}
+          <Link href="/user-settings">Settings</Link>
+          <GearIcon />
+>>>>>>> sillygoofymobileview:app/(dashboard)/components/user-nav.tsx
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

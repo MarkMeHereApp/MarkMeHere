@@ -21,7 +21,7 @@ export function ModeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" disabled={true}>
+      <Button variant="ghost" size="icon" disabled={true}>
         <Skeleton className="w-full h-full" />
       </Button>
     );
@@ -40,7 +40,7 @@ export function ModeToggle() {
 
   return (
     <>
-      <Button variant="outline" size="icon" onClick={toggleTheme}>
+      <Button variant="ghost" size="icon" onClick={toggleTheme}>
         {theme?.startsWith('light_') && (
           <Sun className="h-[1.2rem] w-[1.2rem] " />
         )}
