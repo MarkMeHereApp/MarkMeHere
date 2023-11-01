@@ -30,6 +30,7 @@ import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCo
 import { CourseMember } from '@prisma/client';
 import { geolocationRouter } from '@/server/routes/geolocation';
 import { getPublicUrl } from '@/utils/globalFunctions';
+import Loading from '@/components/general/loading';
 
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
@@ -67,6 +68,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
+
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
   const [selectCourseMember, setSelectCourseMember] = useState<
     CourseMember | undefined
@@ -136,6 +139,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const createProfessorLectureGeolocation =
     trpc.geolocation.CreateProfessorLectureGeolocation.useMutation();
   const handleGenerateQRCode = async () => {
+    setIsLoadingSubmit(true)
     const selectedCourseMember = getCourseMember();
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
@@ -146,49 +150,48 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
     );
 
-    if (enableGeolocation) {
-      const location = await getGeolocationData();
-    }
+    
+    if(enableGeolocation){
+      const location = await getGeolocationData()
 
-    if (enableGeolocation) {
-      const location = await getGeolocationData();
+      if(location){
+        console.log(`Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`);
 
-      if (location) {
-        console.log(
-          `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`
-        );
-
-        try {
-          if (!selectedCourseMemberId) {
-            return;
+        try{
+  
+          if(!selectedCourseMemberId){
+            return 
           }
 
+  
           const res = await createProfessorLectureGeolocation.mutateAsync({
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
             courseMemberId: selectedCourseMemberId
-          });
+          })
+          
+          professorGeolocationId.current = res.id
 
-          professorGeolocationId.current = res.id;
 
-          console.log(res);
-        } catch (error) {
-          console.log(error);
+          console.log(res)
+        }catch (error) {
+          console.log(error)
           // setError(error as Error);
-        } finally {
-          console.log(
-            navigation +
-              parameters +
-              '&location=' +
-              professorGeolocationId.current
-          );
-          router.push(
-            navigation +
-              parameters +
-              '&location=' +
-              professorGeolocationId.current
-          );
+        }finally{
+            setIsLoadingSubmit(true)
+            console.log(
+              navigation +
+                parameters +
+                '&location=' +
+                professorGeolocationId.current
+            );
+            router.push(
+              navigation +
+                parameters +
+                '&location=' +
+                professorGeolocationId.current
+            );
         }
       } else {
         console.log('unable to locate');
@@ -324,7 +327,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
               <div className="flex items-center space-x-2 pl-4">
                 <Button onClick={handleGenerateQRCode}>
-                  Continue To QR Code
+                  {isLoadingSubmit ? <Loading/> : 'Continue To QR Code'}
                 </Button>
               </div>
             </AlertDialogDescription>

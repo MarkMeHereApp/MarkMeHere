@@ -1,0 +1,10 @@
+@keyframes shine {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  .my-icon {
+    /* Other styles... */
+    animation: shine 2s infinite;
+  }
