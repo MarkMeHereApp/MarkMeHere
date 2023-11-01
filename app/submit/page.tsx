@@ -12,7 +12,11 @@ async function validateAndCreateToken(
     const qrResult = await prisma.qrcode.findUnique({
       where: {
         code: qrCode
+      },
+      include:{
+        course: true
       }
+      
     });
 
     console.log(qrResult + 'error')
@@ -32,7 +36,7 @@ async function validateAndCreateToken(
     });
 
     
-    return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId };
+    return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId, course: qrResult.course };
   } catch (error) {
     throw error;
   }
@@ -52,33 +56,27 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
   
     if(res){
       return res;
-    } else {
-
-    }
+    } 
   };
-
-
-  //Checking if the submit page was called via scanning a QR code or accessed by typing /submit
-  //If ?qr=XXXXX is included, we call handleToken(), which calls the validation endpoint.
-  
 
   if(searchParams.hasOwnProperty('qr')){
     console.log("QR Param included")
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
 
     const validateToken = await handleToken();
-    const location = validateToken?.location
-    const id = validateToken?.token
-
+    
     if(validateToken?.success){
+      const location = validateToken?.location
+      const id = validateToken?.token
+
       if(location && id){
         console.log('the token as location included: ' + location + 'token id: ' + id)
-        redirect(`/verification?attendanceTokenId=${id}`)
+        redirect(`${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`)
       }
       
       if(!location && id){
         console.log('location not included only token id: ' + id)
-        redirect(`/student?attendanceTokenId=${id}`)
+        redirect(`/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`)
       }
     }
 

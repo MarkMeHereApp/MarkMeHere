@@ -122,6 +122,37 @@ async function findAttendanceToken(
     });
   }
 
+  async function createAttendanceEntryWithoutStudentLocation(
+    lectureId: string,
+    courseMemberId: string,
+    ProfessorLectureGeolocationId: string,
+  ) {
+    return await prisma.attendanceEntry.create({
+      data: {
+        lectureId: lectureId,
+        courseMemberId: courseMemberId,
+        status: zAttendanceStatus.enum.here,
+        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+      }
+    });
+  }
+
+  async function updateAttendanceEntryWithoutStudentLocation(
+    id: string,
+    ProfessorLectureGeolocationId: string,
+    ) {
+    return await prisma.attendanceEntry.update({
+      where: {
+        id: id
+      },
+      data: {
+        status: zAttendanceStatus.enum.here,
+        dateMarked: new Date(Date.now()),
+        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+      }
+    });
+  }
+
 
 export default async function StudentPage ({
     searchParams
@@ -133,14 +164,14 @@ export default async function StudentPage ({
     };
 }) {
     const serverSession = await getServerSession();
-  
+
   
   
     const email: string | null = serverSession?.user?.email || null;
     const attendanceTokenId = searchParams.attendanceTokenId;
     
+    console.log(attendanceTokenId + 'Got to student page')
     
-  
     try {
 
       if(!attendanceTokenId) {
@@ -210,6 +241,7 @@ export default async function StudentPage ({
         courseMemberId
       );
 
+
       const ProfessorGeolocationId = tokenRow.ProfessorLectureGeolocationId
       const studentLatitude = tokenRow.attendanceStudentLatitude
       const studentLongitude = tokenRow.attendanceStudentLongtitude
@@ -220,7 +252,17 @@ export default async function StudentPage ({
       
 
       if(ProfessorGeolocationId){
-        
+        console.log('Entered with Geolocation ID')
+        if(!studentLatitude || !studentLongitude){
+          console.log('Create Entry without Location')
+
+          if (existingAttendanceEntry) {
+            attendanceEntry = await updateAttendanceEntryWithoutStudentLocation(existingAttendanceEntry.id, ProfessorGeolocationId);
+          } else {
+            attendanceEntry = await createAttendanceEntryWithoutStudentLocation(lectureId, courseMemberId, ProfessorGeolocationId)
+          }
+        }
+
         if(studentLatitude && studentLongitude){
         
           if (existingAttendanceEntry) {
