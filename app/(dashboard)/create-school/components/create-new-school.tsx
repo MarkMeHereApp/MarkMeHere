@@ -30,7 +30,6 @@ import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
 import Loading from '@/components/general/loading';
-import SettingsDisplayPage from '../(dashboard)/[organizationCode]/[courseCode]/(faculty)/user-settings/display/page';
 
 export default function InitiallyCreateSchool() {
   const [displayingForm, setDisplayingForm] = useState(false);
