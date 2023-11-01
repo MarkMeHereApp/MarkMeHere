@@ -35,7 +35,7 @@ const QR = () => {
   //Only Professors or TA's can access this page
   if (selectedCourseRole === 'student') {
     router.push(
-      `${currentCourseUrl}/mark-attendance-status?qr-warning=${encodeURIComponent(
+      `${currentCourseUrl}/attendance?qr-warning=${encodeURIComponent(
         'You must be a Professor or TA to generate QR codes for this course'
       )}`
     );
@@ -88,7 +88,7 @@ const QR = () => {
       const message = 'There is no lecture for selected date';
       const encodedMessage = encodeURIComponent(message);
       router.push(
-        `${currentCourseUrl}/mark-attendance-status?qr-warning=${encodedMessage}`
+        `${currentCourseUrl}/attendance?qr-warning=${encodedMessage}`
       );
       return;
     }

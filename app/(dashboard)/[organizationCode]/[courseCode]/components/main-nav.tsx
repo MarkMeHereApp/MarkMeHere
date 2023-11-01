@@ -3,28 +3,25 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation'; // Import the useRouter hook
-<<<<<<< HEAD:app/(dashboard)/[organizationCode]/[courseCode]/components/main-nav.tsx
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
-=======
-import { useCourseContext } from '@/app/context-course';
+
 import isDevMode from '@/utils/isDevMode';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
->>>>>>> sillygoofymobileview:app/(dashboard)/components/main-nav.tsx
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 export default function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { currentCourseUrl } = useCourseContext();
+  const { currentCourseUrl, selectedCourseId } = useCourseContext();
   const { organizationUrl } = useOrganizationContext();
   const pathname = usePathname(); // Use the hook
 
@@ -71,99 +68,56 @@ export default function MainNav({
 
   return (
     <nav className={cn('flex items-end space-x-4', className)} {...props}>
-<<<<<<< HEAD:app/(dashboard)/[organizationCode]/[courseCode]/components/main-nav.tsx
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/overview`}
-        displayText="Overview"
-      />
-
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/mark-attendance-status`}
-        displayText="Mark Attendance Status"
-      />
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/manage-course-members`}
-        displayText="Course Members"
-      />
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/student`}
-        displayText="Student Dashboard"
-      />
-      {/* {selectedCourseRole == 'student' ? (
-              <MainNavBarCustomLink
-                href={`${currentCourseUrl}/student`}
-                displayText="Student Dashboard"
-              />
-            ) : (
-                null
-            )
-          } */}
-
-      <MainNavBarCustomLink
-        href={`${organizationUrl}/admin-settings`}
-        displayText="Admin Dashboard"
-      />
-
-      <MainNavBarCustomLink
-        href={`${currentCourseUrl}/testing-playground`}
-        displayText="Testing Playground"
-      />
-=======
-        <DropdownMenu>
-            <DropdownMenuTrigger className='flex sm:hidden'>
-              <HamburgerMenuIcon className='h-5 w-5'/>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuItem>
-                    <MainNavBarCustomLink 
-                        href="/overview" 
-                        displayText="Overview" 
-                    />
-                </DropdownMenuItem> 
-                {selectedCourseId && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <MainNavBarCustomLink
-                            href="/attendance"
-                            displayText="Attendance"
-                        />
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <MainNavBarCustomLink
-                            href="/members"
-                            displayText="Members"
-                        />
-                    </DropdownMenuItem>
-                  </>
-                 )
-                }
-            </DropdownMenuContent>
-        </DropdownMenu>
-      <div className='hidden sm:flex space-x-4'>
-        <MainNavBarCustomLink href="/overview" displayText="Overview" />
-        {selectedCourseId ? (
-            <>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex sm:hidden">
+          <HamburgerMenuIcon className="h-5 w-5" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
             <MainNavBarCustomLink
-                href="/attendance"
-                displayText="Attendance"
+              href={`${currentCourseUrl}/overview`}
+              displayText="Overview"
             />
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
             <MainNavBarCustomLink
-                href="/members"
-                displayText="Members"
+              href={`${currentCourseUrl}/attendance`}
+              displayText="Attendance"
             />
-            </>
-        ) : null}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <MainNavBarCustomLink
+              href={`${currentCourseUrl}/members`}
+              displayText="Members"
+            />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="hidden sm:flex space-x-4">
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/overview`}
+          displayText="Overview"
+        />
+
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/attendance`}
+          displayText="Attendance"
+        />
+        <MainNavBarCustomLink
+          href={`${currentCourseUrl}/members`}
+          displayText="Members"
+        />
+
         {isDevMode && (
-            <MainNavBarCustomLink
-                href="/testing-playground"
-                displayText="Testing"
-            />
-        )
-        }
+          <MainNavBarCustomLink
+            href={`${currentCourseUrl}/testing-playground`}
+            displayText="Testing"
+          />
+        )}
       </div>
->>>>>>> sillygoofymobileview:app/(dashboard)/components/main-nav.tsx
     </nav>
   );
 }

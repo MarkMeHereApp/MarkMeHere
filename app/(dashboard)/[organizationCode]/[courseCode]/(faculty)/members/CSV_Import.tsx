@@ -1,5 +1,5 @@
 'use client';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';
@@ -287,10 +287,13 @@ const CSV_Import = () => {
         }
       >
         <MdUploadFile className="h-5 w-4" />
-        <span className='hidden sm:flex ml-2'>Import CSV</span>
+        <span className="hidden sm:flex ml-2">Import CSV</span>
       </label>
-      <Dialog open={isValidating}>
-        <DialogContent className="sm:max-w-[425px]" onClose={closeDialog}>
+      <Dialog
+        open={isValidating}
+        onOpenChange={(isOpen) => !isOpen && closeDialog}
+      >
+        <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">
             <p
               style={{
@@ -314,11 +317,11 @@ const CSV_Import = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Dialog open={isFileUploaded}>
-        <DialogContent
-          className="sm:max-w-[1000px] flex flex-col flex-grow"
-          onClose={closeDialog}
-        >
+      <Dialog
+        open={isFileUploaded}
+        onOpenChange={(isOpen) => !isOpen && closeDialog}
+      >
+        <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow">
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
@@ -387,8 +390,11 @@ const CSV_Import = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Dialog open={isConfirmationDialogOpen}>
-        <DialogContent onClose={() => setIsConfirmationDialogOpen(false)}>
+      <Dialog
+        open={isConfirmationDialogOpen}
+        onOpenChange={(isOpen) => !isOpen && setIsConfirmationDialogOpen(false)}
+      >
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirmation</DialogTitle>
           </DialogHeader>

@@ -5,12 +5,12 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { DataTableViewOptions } from '@/app/(dashboard)/(faculty)/attendance/components/data-table-view-options';
+import { DataTableViewOptions } from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/attendance/components/data-table-view-options';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import AttendanceButtons from '../AttendanceButtons';
-import { CalendarDateRangePicker } from '@/app/(dashboard)/(faculty)/components/date-picker';
+import { CalendarDateRangePicker } from '../../components/date-picker';
 import {
   zAttendanceStatus,
   zAttendanceStatusIcons,
@@ -18,8 +18,7 @@ import {
 } from '@/types/sharedZodTypes';
 import { formatString } from '@/utils/globalFunctions';
 import { toast } from '@/components/ui/use-toast';
-import { useCourseContext } from '@/app/context-course';
-import { useLecturesContext } from '../../../../context-lecture';
+import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { trpc } from '@/app/_trpc/client';
 import { CourseMember } from '@prisma/client';
 import { AttendanceEntry } from '@prisma/client';
@@ -37,8 +36,8 @@ export function DataTableToolbar<TData>({
     value: zAttendanceStatusType | 'unmarked';
     icon: React.ComponentType;
   };
-  const { selectedAttendanceDate } = useCourseContext();
-  const { lectures, setLectures } = useLecturesContext();
+  const { lectures, setLectures, selectedAttendanceDate } =
+    useLecturesContext();
 
   const isFiltered = table.getState().columnFilters.length > 0;
   const isSelected =
@@ -75,7 +74,9 @@ export function DataTableToolbar<TData>({
   const createNewAttendanceEntryMutation =
     trpc.attendance.createManyAttendanceRecords.useMutation();
 
-  const handleCreateNewAttendanceEntries = async (status: zAttendanceStatusType) => {
+  const handleCreateNewAttendanceEntries = async (
+    status: zAttendanceStatusType
+  ) => {
     const lecture = getCurrentLecture();
     const selectedRows = table.getSelectedRowModel().rows;
     const selectedCourseMembers: CourseMember[] = selectedRows.map(
@@ -131,45 +132,45 @@ export function DataTableToolbar<TData>({
         {getCurrentLecture() && (
           <>
             <Input
-                placeholder="Search for a student..."
-                value={'globalFilter' in table.getState() ? globalFilter : ''}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const searchString = event.target.value;
-                    table.setGlobalFilter(searchString);
-                }}
-                className="h-8 w-[150px] lg:w-[250px]"
+              placeholder="Search for a student..."
+              value={'globalFilter' in table.getState() ? globalFilter : ''}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const searchString = event.target.value;
+                table.setGlobalFilter(searchString);
+              }}
+              className="h-8 w-[150px] lg:w-[250px]"
             />
             <div className="hidden sm:flex">
-                {isSelected && (
+              {isSelected && (
                 <>
-                    <AttendanceButtons
+                  <AttendanceButtons
                     status="Mark Present"
                     onClick={() => handleCreateNewAttendanceEntries('here')}
-                    />
-                    <AttendanceButtons
+                  />
+                  <AttendanceButtons
                     status="Mark Late"
                     onClick={() => handleCreateNewAttendanceEntries('late')}
-                    />
-                    <AttendanceButtons
+                  />
+                  <AttendanceButtons
                     status="Mark Excused"
                     onClick={() => handleCreateNewAttendanceEntries('excused')}
-                    />
-                    <AttendanceButtons
+                  />
+                  <AttendanceButtons
                     status="Mark Absent"
                     onClick={() => handleCreateNewAttendanceEntries('absent')}
-                    />
+                  />
                 </>
-                )}
+              )}
             </div>
             <DataTableViewOptions table={table} />
             <div className="hidden sm:flex">
-                {table.getColumn('status') && (
+              {table.getColumn('status') && (
                 <DataTableFacetedFilter
-                    column={table.getColumn('status')}
-                    title="Status"
-                    options={statuses}
+                  column={table.getColumn('status')}
+                  title="Status"
+                  options={statuses}
                 />
-                )}
+              )}
             </div>
             {isFiltered && (
               <Button
@@ -184,7 +185,7 @@ export function DataTableToolbar<TData>({
           </>
         )}
       </div>
-      <div className='ml-2'>
+      <div className="ml-2">
         <CalendarDateRangePicker />
       </div>
     </div>
