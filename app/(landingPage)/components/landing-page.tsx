@@ -15,9 +15,8 @@ import { AiOutlineQrcode, AiOutlinePlus } from 'react-icons/ai';
 import { SlLocationPin } from 'react-icons/sl';
 import { IoAnalyticsOutline } from 'react-icons/io5';
 import { BsPatchExclamation } from 'react-icons/bs';
-import { TbMessageChatbot } from 'react-icons/tb';
 import { ContinueButton } from '@/components/general/continue-button';
-import { ContactUs } from './contact-us';
+import { ContactUsDialog } from './contact-us';
 export default async function LandingPage() {
   const DeployButton = () => {
     return (
@@ -93,7 +92,7 @@ export default async function LandingPage() {
                         <ClockIcon className="mr-2" />
                         <span>Calendar, Tasks, and Messaging</span>
                         <span>
-                          {' '}
+                          {/* 
                           <Link href="/create-school" className="ml-2">
                             <ContinueButton
                               size="xs"
@@ -101,6 +100,7 @@ export default async function LandingPage() {
                               name="Learn More"
                             />
                           </Link>
+                          */}
                         </span>
                       </li>
                     </ul>
@@ -155,9 +155,9 @@ export default async function LandingPage() {
                 </div>
               </div>
               <div className="space-x-4 ml-2 my-6">
-                <ContactUs>
+                <ContactUsDialog>
                   <Button variant={'outline'}>Contact Us</Button>
-                </ContactUs>
+                </ContactUsDialog>
               </div>
             </div>
           </div>
@@ -250,9 +250,11 @@ export default async function LandingPage() {
                     style={{ minWidth: '48px' }}
                   />
                   <div className="px-4">
+                    {/* 
                     <Link href="/create-school">
                       <ContinueButton size="sm" name="Learn More" />
                     </Link>
+                    */}
                   </div>
                 </div>
 

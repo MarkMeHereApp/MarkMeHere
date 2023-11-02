@@ -46,8 +46,8 @@ export function CopyableClipboard({ textToCopy }: { textToCopy: string }) {
                 <path
                   d={svgValue}
                   fill="currentColor"
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </Button>

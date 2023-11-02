@@ -5,10 +5,12 @@ export const ContinueButton = ({
   name = 'Continue',
   type,
   variant,
+  disabled,
   size,
   onClick
 }: {
   name?: string;
+  disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   variant?:
     | 'default'
@@ -22,6 +24,7 @@ export const ContinueButton = ({
 }) => {
   return (
     <Button
+      disabled={disabled}
       variant={variant}
       size={size}
       type={type}
