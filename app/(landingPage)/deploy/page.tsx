@@ -8,18 +8,11 @@ import { CopyableClipboard } from '@/components/general/copy-text';
 import { getPublicUrl } from '@/utils/globalFunctions';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ContinueButton } from '@/components/general/continue-button';
-import { Copy } from 'lucide-react';
 
 export default function UnauthorizedEmail() {
   const [boxChecked, setBoxChecked] = useState(false);
@@ -52,62 +45,58 @@ export default function UnauthorizedEmail() {
               ></ContinueButton>
             </Link>
           </div>
-          <CardDescription className="text-lg">
-            <div className="py-6">
-              For the Alpha we are using Vercel to host the app, but don't
-              worry, it only takes a few minutes to setup. If you have any
-              issues installing the app please{' '}
-              <ContactUsDialog>
-                <Button variant={'outline'} size={'xs'}>
-                  <b>Contact Us</b>
+          <div className="py-6">
+            For the Alpha we are using Vercel to host the app, but don't worry,
+            it only takes a few minutes to setup. If you have any issues
+            installing the app please{' '}
+            <ContactUsDialog>
+              <Button variant={'outline'} size={'xs'}>
+                <b>Contact Us</b>
+              </Button>
+            </ContactUsDialog>
+            .
+          </div>
+
+          <div className="pb-6">
+            <div className="pb-4">
+              You will need a 32 character random string to secure your data.
+              When Vercel asks for the <code>NEXTAUTH_SECRET</code>, you can use
+              this value:
+            </div>
+            <CopyableClipboard textToCopy={randomString} />
+            <code className="pl-6 text-sm">NEXTAUTH_SECRET</code>
+          </div>
+
+          <div className="flex items-center space-x-2 pb-6">
+            <Checkbox
+              id="terms"
+              onCheckedChange={(change) => {
+                if (typeof change === 'boolean') {
+                  setBoxChecked(change);
+                }
+              }}
+            />{' '}
+            <label
+              htmlFor="terms"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Please Accept the Terms and Conditions To Continue{' '}
+              <TermsOfServiceDialog>
+                <Button size={'xs'} className="ml-4">
+                  View Terms and Conditions
                 </Button>
-              </ContactUsDialog>
-              .
-            </div>
+              </TermsOfServiceDialog>
+            </label>
+          </div>
 
-            <div className="pb-6">
-              <div className="pb-4">
-                You will need a 32 character random string to secure your data.
-                When Vercel asks for the <code>NEXTAUTH_SECRET</code>, you can
-                use this value:
-              </div>
-              <CopyableClipboard textToCopy={randomString} />
-              <code className="pl-6 text-sm">NEXTAUTH_SECRET</code>
-            </div>
-
-            <div className="flex items-center space-x-2 pb-6">
-              <Checkbox
-                id="terms"
-                onCheckedChange={(change) => {
-                  if (typeof change === 'boolean') {
-                    setBoxChecked(change);
-                  }
-                }}
-              />{' '}
-              <label
-                htmlFor="terms"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Please Accept the Terms and Conditions To Continue{' '}
-                <TermsOfServiceDialog>
-                  <Button size={'xs'} className="ml-4">
-                    View Terms and Conditions
-                  </Button>
-                </TermsOfServiceDialog>
-              </label>
-            </div>
-
-            {link && (
-              <div>
-                <Link href={boxChecked ? link : '/deploy'}>
-                  <ContinueButton
-                    disabled={!boxChecked}
-                    name="Deploy Mark Me Here!"
-                  ></ContinueButton>
-                </Link>
-              </div>
-            )}
-          </CardDescription>
+          <div>
+            <Link href={boxChecked && link ? link : '/deploy'}>
+              <ContinueButton
+                disabled={!(boxChecked && link)}
+                name="Deploy Mark Me Here!"
+              ></ContinueButton>
+            </Link>
+          </div>
         </CardHeader>
       </Card>
     </div>

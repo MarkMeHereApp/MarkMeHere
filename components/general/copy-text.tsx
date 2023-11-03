@@ -32,27 +32,25 @@ export function CopyableClipboard({ textToCopy }: { textToCopy: string }) {
   return (
     <div className=" pl-4 ">
       <Card className="p-3">
-        <CardDescription>
-          <div className="flex justify-between ">
-            <div>{textToCopy}</div>
-            <Button variant="outline" size={'xs'} onClick={handleCopyUrl}>
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 15 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d={svgValue}
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </Button>
-          </div>
-        </CardDescription>
+        <div className="flex justify-between ">
+          <div>{textToCopy}</div>
+          <Button variant="outline" size={'xs'} onClick={handleCopyUrl}>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d={svgValue}
+                fill="currentColor"
+                fillRule="evenodd"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </Button>
+        </div>
       </Card>
     </div>
   );
