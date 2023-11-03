@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
+import { TRPCClientError } from '@trpc/client';
+import { TRPCError } from '@trpc/server';
 
 const zUpdateOrganization = z.object({
   googleMapsApiKey: z.string().optional(),
@@ -22,6 +24,18 @@ export const organizationRouter = router({
     .input(zCreateOrganization)
     .mutation(async (requestData) => {
       try {
+        const existingOrg = await prisma.organization.findFirst();
+
+        if (existingOrg) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message:
+                'An Organization already exists in the database. We do not support adding more than one organization at this time.'
+            })
+          );
+        }
+
         return await prisma.organization.create({
           data: {
             name: requestData.input.name,
