@@ -41,7 +41,7 @@ export default async function LandingPage() {
 
           <div className="space-x-4">
             <DeployButton />
-            <Link href="/create-school">
+            <Link href="/demo">
               <Button variant="outline">View Demo</Button>
             </Link>
           </div>

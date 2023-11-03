@@ -96,8 +96,8 @@ export default withAuth(
   //The route we redirect to
   // function middleware(req) {
   //   const role = req.nextauth.token?.role as string;
-    // const route = req.nextUrl.pathname;
-    // console.log(route)
+  // const route = req.nextUrl.pathname;
+  // console.log(route)
   //   const errorParams = req.nextUrl.searchParams.get('qr-warning');
   //   const allowedRoutes = roleToRoutes[role];
 
@@ -133,5 +133,5 @@ export default withAuth(
 export const config = {
   // Matches the entire project except for the routes between the | characters.
   matcher:
-    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email).*)'
+    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email|/).*)'
 };

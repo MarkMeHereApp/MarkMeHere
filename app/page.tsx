@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation';
 import LandingPage from './(landingPage)/components/landing-page';
 export default async function HomePage() {
   if (process.env.DEMO_MODE) {
-    // @ts-ignore
-    return <LandingPage />;
+    redirect(`/landing-page`);
   }
 
   const organization = await prisma.organization.findFirst({});
