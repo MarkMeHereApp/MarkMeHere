@@ -31,6 +31,11 @@ export const zCreateCourseRequest = z.object({
 });
 export type zCreateCourseRequestType = z.infer<typeof zCreateCourseRequest>;
 
+export const zDeleteCourseRequest = z.object({
+  courseId: z.string()
+});
+export type zDeleteCourseRequestType = z.infer<typeof zDeleteCourseRequest>;
+
 export const courseRouter = router({
   /*
   We will protect this using nextMiddleware (Only faculty and admin users
@@ -75,6 +80,31 @@ export const courseRouter = router({
         }
 
         return { success: true, resCourse, resEnrollment };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
+  deleteCourse: publicProcedure
+    .input(zDeleteCourseRequest)
+    .mutation(async (requestData) => {
+      try {
+        const resCourse = await prisma.course.delete({
+          where: {
+            id: requestData.input.courseId
+          }
+        });
+
+        if (!resCourse) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Course not found'
+            })
+          );
+        }
+
+        return { success: true };
       } catch (error) {
         throw generateTypedError(error as Error);
       }
