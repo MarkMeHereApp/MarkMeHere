@@ -93,7 +93,7 @@ export default async function LandingPage() {
                         <span>Calendar, Tasks, and Messaging</span>
                         <span>
                           {/* 
-                          <Link href="/create-school" className="ml-2">
+                          <Link href="/demo" className="ml-2">
                             <ContinueButton
                               size="xs"
                               variant="outline"
@@ -251,7 +251,7 @@ export default async function LandingPage() {
                   />
                   <div className="px-4">
                     {/* 
-                    <Link href="/create-school">
+                    <Link href="/demo">
                       <ContinueButton size="sm" name="Learn More" />
                     </Link>
                     */}

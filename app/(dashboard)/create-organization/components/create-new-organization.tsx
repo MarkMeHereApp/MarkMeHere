@@ -31,7 +31,7 @@ import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
 import Loading from '@/components/general/loading';
 
-export default function InitiallyCreateSchool() {
+export default function InitiallyCreateOrganization() {
   const [displayingForm, setDisplayingForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -43,13 +43,13 @@ export default function InitiallyCreateSchool() {
   }
 
   const formSchema = z.object({
-    schoolname: z.string().min(2, {
-      message: 'School name must be at least 2 characters.'
+    organizationname: z.string().min(2, {
+      message: 'Organization name must be at least 2 characters.'
     }),
     uniqueCode: z
       .string()
       .min(1, {
-        message: 'School abbreviation must be at least 1 character.'
+        message: 'Organization abbreviation must be at least 1 character.'
       })
       .refine((value) => /^[a-zA-Z-]+$/.test(value), {
         message: 'Only letters and "-" are allowed.'
@@ -64,13 +64,13 @@ export default function InitiallyCreateSchool() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const school = await createOrganization.mutateAsync({
+      const organization = await createOrganization.mutateAsync({
         uniqueCode: data.uniqueCode,
-        name: data.schoolname
+        name: data.organizationname
       });
 
-      if (school) {
-        redirect(`/${school.uniqueCode}`);
+      if (organization) {
+        redirect(`/${organization.uniqueCode}`);
       } else {
         setError(new Error('Something went wrong. Please try again.'));
       }
@@ -90,7 +90,7 @@ export default function InitiallyCreateSchool() {
             </span>
             <div className="mt-4">
               <ContinueButton
-                name="Create Your School"
+                name="Create Your Organization"
                 onClick={() => setDisplayingForm(true)}
               />
             </div>
@@ -108,10 +108,10 @@ export default function InitiallyCreateSchool() {
                   >
                     <FormField
                       control={form.control}
-                      name="schoolname"
+                      name="organizationname"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>School Name</FormLabel>
+                          <FormLabel>Organization Name</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="University Of Central Florida"
@@ -119,7 +119,7 @@ export default function InitiallyCreateSchool() {
                             />
                           </FormControl>
                           <FormDescription>
-                            This is your full School name. For Example:{' '}
+                            This is your full Organization name. For Example:{' '}
                             <b>University of Central Florida</b>
                           </FormDescription>
                           <FormMessage />
@@ -131,12 +131,12 @@ export default function InitiallyCreateSchool() {
                       name="uniqueCode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>School Abbreviation</FormLabel>
+                          <FormLabel>Organization Abbreviation</FormLabel>
                           <FormControl>
                             <Input placeholder="UCF" {...field} />
                           </FormControl>
                           <FormDescription>
-                            This is your unique School abbreviation. For
+                            This is your unique Organization abbreviation. For
                             Example: <b>UCF</b>
                           </FormDescription>
                           <FormMessage />
