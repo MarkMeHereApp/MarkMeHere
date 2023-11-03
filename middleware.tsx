@@ -1,7 +1,7 @@
 // export { default } from 'next-auth/middleware'; // This is the only line needed to apply next-auth to the entire project.
 import { withAuth } from 'next-auth/middleware';
 import { zSiteRoles } from './types/sharedZodTypes';
-
+import { NextResponse } from 'next/server';
 /* 
 We have two layers of middleware
 
@@ -85,6 +85,11 @@ const defaultRoutes: Record<string, string> = {
 };
 
 export default withAuth(
+  function middleware(req) {
+    return NextResponse.next();
+
+    // your existing middleware logic here...
+  },
   /* 
   Grab all allowed routes based on user role
   check if request route matches an allowed route
@@ -131,7 +136,7 @@ export default withAuth(
 
 //Our middleware needs to run over all routes besides signin/signup
 export const config = {
-  // Matches the entire project except for the routes between the | characters.
+  // Matches the entire project except for the routes between the | characters, also we ignore the base "/" route with "?!^/$".
   matcher:
-    '/((?!signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email|create-organization|landing-page).*)'
+    '/((?!^/$|signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email|create-organization|landing-page|get-random-secret|deploy|successful-deployment).+)'
 };
