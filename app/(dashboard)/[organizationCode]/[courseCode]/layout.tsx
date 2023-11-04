@@ -38,7 +38,7 @@ export default async function CourseLayout({
   );
 
   if (!courseEnrollment) {
-    redirect('/');
+    throw new Error('No Course Enrollment Found!');
   }
 
   return (

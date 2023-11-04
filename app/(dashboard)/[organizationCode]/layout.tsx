@@ -35,6 +35,10 @@ export default async function SchoolLayout({
     where: { uniqueCode: params.organizationCode }
   });
 
+  if (!organization) {
+    throw new Error('No organization found!');
+  }
+
   if (organization?.googleMapsApiKey) {
     const key = organization.googleMapsApiKey;
 
@@ -57,10 +61,6 @@ export default async function SchoolLayout({
     ) {
       organization.googleMapsApiKey = decrypt(key);
     }
-  }
-
-  if (!organization) {
-    redirect('/');
   }
 
   return (

@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { firaSansFont } from '@/utils/fonts';
+import { firaSansLogo } from '@/utils/fonts';
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
@@ -208,7 +208,7 @@ export default function SignInForm({
         <CardContent className="flex flex-col w-full">
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl font-bold font-mono">
-              <span className={firaSansFont.className}>
+              <span className={firaSansLogo.className}>
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>

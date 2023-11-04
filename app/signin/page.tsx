@@ -1,6 +1,7 @@
 import SignInForm from '@/app/signin/components/signInForm';
 import prisma from '@/prisma';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
+import { redirect } from 'next/navigation';
 
 export default async function SigninPage() {
   try {
@@ -19,6 +20,11 @@ export default async function SigninPage() {
     if (process.env.DEMO_MODE) {
       demoModeConfigured = true;
     }
+
+    // const organization = await prisma.organization.findFirst();
+    // if (!organization) {
+    //   redirect('/create-organization');
+    // }
 
     return (
       <>
