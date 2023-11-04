@@ -17,7 +17,7 @@ model User {
   image            String?   @db.VarChar(255)
   dateCreated      DateTime? @default(now())
   selectedCourseId String?   @db.VarChar(255)
-  //courseMembers     CourseMember[]  
+  courseMembers CourseMember[]
   accounts         Account[]
 }
 
@@ -106,9 +106,9 @@ model CourseMember {
   role                        String                        @db.VarChar(255)
   attendanceEntries           AttendanceEntry[]
   professorLectureGeolocation ProfessorLectureGeolocation[]
+  user User @relation(fields: [email], references: [email], onDelete: Cascade)
 
   @@unique([email, lmsId])
-  @@unique([email, optionalId])
   @@unique([email, courseId])
 }
 
