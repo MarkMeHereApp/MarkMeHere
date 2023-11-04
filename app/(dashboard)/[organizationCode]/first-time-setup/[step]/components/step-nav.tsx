@@ -17,10 +17,6 @@ const StepButton = ({
 }) => {
   const pathname = usePathname();
 
-  if (pathname === `/${organizationCode}/first-time-setup`) {
-    return <></>;
-  }
-
   //Get the step from the URL
   const currentlySelectedStep = Number(pathname.split('/').pop());
 
@@ -41,7 +37,7 @@ const StepButton = ({
   return (
     <>
       <div>
-        <Link href={stepLink}>
+        <Link href={step.toString()}>
           <Button
             variant={selected() ? 'default' : 'ghost'}
             size="icon"

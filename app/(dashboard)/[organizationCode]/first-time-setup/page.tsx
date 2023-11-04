@@ -7,5 +7,5 @@ export default async function Page({
 }: {
   params: { organizationCode: string };
 }) {
-  redirect(`/${params.organizationCode}/first-time-setup/1`);
+  redirect(`/${params.organizationCode}/first-time-setup/0`);
 }

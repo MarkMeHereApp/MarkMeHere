@@ -1,8 +1,6 @@
 import { Card, CardHeader } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import StepButton from './components/step-nav';
-import prisma from '@/prisma';
-import { MinusIcon } from '@radix-ui/react-icons';
+import { steps } from './components/steps';
 
 export default async function CreateNewSchoolLayout({
   children,
@@ -16,13 +14,14 @@ export default async function CreateNewSchoolLayout({
       <Card className="w-[600px]">
         <CardHeader>
           <div className="flex justify-between items-center w-full space-x-4">
-            <StepButton step={1} organizationCode={params.organizationCode} />
-            <StepButton step={2} organizationCode={params.organizationCode} />
-            <StepButton
-              step={3}
-              organizationCode={params.organizationCode}
-              lastStep={true}
-            />
+            {steps.map((step, index) => (
+              <StepButton
+                key={index}
+                step={index}
+                organizationCode={params.organizationCode}
+                lastStep={index === steps.length - 1}
+              />
+            ))}
           </div>
           {children}
         </CardHeader>
