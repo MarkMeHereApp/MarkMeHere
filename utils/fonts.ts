@@ -5,7 +5,13 @@ export const openSans = Open_Sans({
   variable: '--font-open-sans'
 });
 
-export const firaSansFont = Fira_Sans({
+export const firaSans = Fira_Sans({
+  subsets: ['latin-ext'],
+  weight: '400',
+  variable: '--font-logo'
+});
+
+export const firaSansLogo = Fira_Sans({
   subsets: ['latin-ext'],
   weight: '600',
   variable: '--font-logo'

@@ -58,7 +58,7 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            signOut();
+            signOut({ callbackUrl: `/` });
           }}
         >
           Log Out

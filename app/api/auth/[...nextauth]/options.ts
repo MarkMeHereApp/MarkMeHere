@@ -107,22 +107,6 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
 
-        // We need to allow demo logins through next-auth
-        if (
-          credentials?.demoLogin &&
-          process.env.DEMO_MODE?.toString() === 'true'
-        ) {
-          await prisma.user.create({
-            data: {
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              image: user.image
-            }
-          });
-          return true;
-        }
-
         return '/unauthorized-email?email=' + user.email;
       },
       jwt({ token, user }) {

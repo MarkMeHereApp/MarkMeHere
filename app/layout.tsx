@@ -9,7 +9,7 @@ import ProviderContextProvider from '@/app/context-auth-provider';
 import { getServerSession } from 'next-auth/next';
 import prisma from '@/prisma';
 
-import { openSans } from '@/utils/fonts';
+import { firaSans } from '@/utils/fonts';
 
 export const metadata = {
   title: 'Mark Me Here!',
@@ -39,7 +39,7 @@ export default async function RootLayout({
   }));
 
   return (
-    <html lang="en" className={openSans.className}>
+    <html lang="en" className={firaSans.className}>
       <body className="h-full" suppressHydrationWarning={true}>
         <Suspense fallback="...">{}</Suspense>
         <Providers>
