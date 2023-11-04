@@ -137,6 +137,7 @@ export default withAuth(
 //Our middleware needs to run over all routes besides signin/signup
 export const config = {
   // Matches the entire project except for the routes between the | characters, also we ignore the base "/" route with "?!^/$".
+  // @TODO there should be one trpc route for sessionless routes.
   matcher:
-    '/((?!^/$|signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|unauthorized-email|create-organization|landing-page|get-random-secret|deploy|successful-deployment).+)'
+    '/((?!^/$|signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|api/trpc/organization|unauthorized-email|create-organization|landing-page|get-random-secret|deploy|successful-deployment).+)'
 };
