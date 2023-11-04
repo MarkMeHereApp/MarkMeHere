@@ -1,31 +1,35 @@
-import { Card, CardHeader } from '@/components/ui/card';
-import StepButton from './components/step-nav';
-import { steps } from './components/steps';
+import { StepLayout } from '@/components/steps/step-layout';
+import { ForwardButton } from '@/components/steps/forward-button';
+import { BackwardButton } from '@/components/steps/backward-button';
+
+import { FirstTimeSteps } from './components/first-time-steps';
+import { FinishSetupButton } from './components/finish-setup-button';
 
 export default async function CreateNewSchoolLayout({
   children,
   params
 }: {
   children: React.ReactNode;
-  params: { organizationCode: string };
+  params: { step: string };
 }) {
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <Card className="w-[600px]">
-        <CardHeader>
-          <div className="flex justify-between items-center w-full space-x-4">
-            {steps.map((step, index) => (
-              <StepButton
-                key={index}
-                step={index}
-                organizationCode={params.organizationCode}
-                lastStep={index === steps.length - 1}
-              />
-            ))}
-          </div>
-          {children}
-        </CardHeader>
-      </Card>
-    </div>
+    <StepLayout
+      currentStep={Number(params.step)}
+      numSteps={FirstTimeSteps.length}
+    >
+      {children}
+      <div className="flex justify-end py-4">
+        {Number(params.step) !== 0 && (
+          <BackwardButton currentStep={Number(params.step)} />
+        )}
+        <div className="ml-auto">
+          {Number(params.step) === FirstTimeSteps.length - 1 ? (
+            <FinishSetupButton />
+          ) : (
+            <ForwardButton currentStep={Number(params.step)} />
+          )}
+        </div>
+      </div>
+    </StepLayout>
   );
 }

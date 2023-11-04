@@ -1,5 +1,5 @@
 import prisma from '@/prisma';
-import { steps } from './components/steps';
+import { FirstTimeSteps } from './components/first-time-steps';
 
 export default async function Step({
   params
@@ -14,7 +14,7 @@ export default async function Step({
     throw new Error('No organization found!');
   }
 
-  const stepFunction = steps[Number(params.step)];
+  const stepFunction = FirstTimeSteps[Number(params.step)];
   if (!stepFunction) {
     throw new Error('No Step Found');
   }

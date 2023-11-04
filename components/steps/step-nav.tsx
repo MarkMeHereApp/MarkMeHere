@@ -1,37 +1,26 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
-import { Separator } from '@radix-ui/react-dropdown-menu';
 import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Import the useRouter hook
 
 const StepButton = ({
   step,
-  organizationCode,
-  lastStep
+  numSteps,
+  currentStep
 }: {
   step: number;
-  organizationCode: string;
-  lastStep?: boolean;
+  numSteps: number;
+  currentStep: number;
 }) => {
-  const pathname = usePathname();
-
-  //Get the step from the URL
-  const currentlySelectedStep = Number(pathname.split('/').pop());
-
-  if (isNaN(currentlySelectedStep)) {
-    throw new Error('Current Step is not a number!');
-  }
-
-  const stepLink = `${organizationCode}/first-time-setup/${step.toString()}`;
-
   const stepPassed = () => {
-    return currentlySelectedStep > step;
+    return currentStep > step;
   };
 
   const selected = () => {
-    return step === currentlySelectedStep;
+    return step === currentStep;
+  };
+
+  const lastStep = () => {
+    return step === numSteps - 1;
   };
 
   return (
@@ -51,7 +40,7 @@ const StepButton = ({
           </Button>
         </Link>
       </div>
-      {!lastStep && (
+      {!lastStep() && (
         <hr
           className={`w-48 h-1 mx-auto my-4  border-0 rounded md:my-10 ${
             stepPassed() ? 'bg-primary' : 'bg-secondary'

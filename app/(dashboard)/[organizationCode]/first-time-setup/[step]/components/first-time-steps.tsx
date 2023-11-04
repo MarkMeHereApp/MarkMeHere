@@ -7,7 +7,7 @@ type StepFunction = ({
   organization: Organization;
 }) => JSX.Element;
 
-export const steps: StepFunction[] = [
+export const FirstTimeSteps: StepFunction[] = [
   ({ organization }: { organization: Organization }) => (
     <div className="space-y-6">
       <div>
