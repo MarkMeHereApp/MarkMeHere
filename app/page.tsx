@@ -12,5 +12,5 @@ export default async function HomePage() {
     redirect(`/${organization.uniqueCode}`);
   }
 
-  redirect(`/create-school`);
+  redirect(`/create-organization`);
 }

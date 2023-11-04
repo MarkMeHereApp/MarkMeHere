@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ContinueButton } from '@/components/general/continue-button';
 
+import crypto from 'crypto';
+
 export default function UnauthorizedEmail() {
   const [boxChecked, setBoxChecked] = useState(false);
 
@@ -21,7 +23,6 @@ export default function UnauthorizedEmail() {
   const [link, setLink] = useState('');
 
   useEffect(() => {
-    const crypto = require('crypto');
     const string = crypto.randomBytes(16).toString('hex');
     setRandomString(string);
     setLink(

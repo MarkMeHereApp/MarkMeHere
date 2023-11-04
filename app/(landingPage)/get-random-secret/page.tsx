@@ -5,9 +5,9 @@ import { CopyableClipboard } from '@/components/general/copy-text';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import crypto from 'crypto';
 
 export default function UnauthorizedEmail() {
-  const crypto = require('crypto');
   const string = crypto.randomBytes(16).toString('hex');
 
   return (
