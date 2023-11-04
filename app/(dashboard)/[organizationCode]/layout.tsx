@@ -28,7 +28,10 @@ export default async function SchoolLayout({
   });
 
   if (!user) {
-    throw new Error('No user found');
+    // @TODO this should return an error. Basically, the first time setup won't have a user in the database, but we still
+    // We should have another layout in a higher level, but atm I don't want to break everyone's git lol
+    // throw new Error ("No User Data!")
+    return <>{children}</>;
   }
 
   const organization = await prisma.organization.findFirst({
