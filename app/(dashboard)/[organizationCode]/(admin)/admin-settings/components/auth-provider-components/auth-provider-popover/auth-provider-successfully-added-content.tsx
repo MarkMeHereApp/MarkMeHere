@@ -10,9 +10,11 @@ import {
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
+import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 
 export function SuccessProviderContent() {
   const [isSigningOut, setSigningOut] = useState(false);
+  const { organizationUrl } = useOrganizationContext();
 
   return (
     <>
@@ -34,7 +36,7 @@ export function SuccessProviderContent() {
           disabled={isSigningOut}
           onClick={() => {
             setSigningOut(true);
-            signOut({ callbackUrl: '/admin-settings' });
+            signOut({ callbackUrl: `${organizationUrl}/admin-settings` });
           }}
         >
           {isSigningOut ? 'Signing Out...' : 'Sign Out'}

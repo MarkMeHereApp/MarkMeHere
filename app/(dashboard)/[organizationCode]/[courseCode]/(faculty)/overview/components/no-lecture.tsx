@@ -20,6 +20,7 @@ export const NoLecture = () => {
             <h2 className="mt-1 text-2xl font-bold">
               Analytics will appear here once you have attendance data.
             </h2>
+          </div>
         </span>
       </div>
     </div>
