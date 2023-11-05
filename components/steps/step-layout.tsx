@@ -11,7 +11,7 @@ export function StepLayout({
 }) {
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card className="w-[600px]">
+      <Card className="sm:w-[90v] lg:w-[850px] ">
         <CardHeader>
           <div className="flex justify-between items-center w-full space-x-4">
             {Array.from({ length: numSteps }, (_, index) => (

@@ -5,8 +5,11 @@ import { ContinueButton } from '@/components/general/continue-button';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
+import { useProviderContext } from '@/app/context-auth-provider';
 
 export const FinishSetupButton = () => {
+  const { activeProviders } = useProviderContext();
+
   const [loading, setLoading] = useState(false);
   return (
     <>
@@ -17,6 +20,7 @@ export const FinishSetupButton = () => {
       ) : (
         <ContinueButton
           name="Sign In To Finish Setup"
+          disabled={activeProviders.length === 0}
           onClick={() => {
             setLoading(true);
             signOut();

@@ -21,11 +21,6 @@ export default async function SigninPage() {
       demoModeConfigured = true;
     }
 
-    // const organization = await prisma.organization.findFirst();
-    // if (!organization) {
-    //   redirect('/create-organization');
-    // }
-
     return (
       <>
         <SignInForm

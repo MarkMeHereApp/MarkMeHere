@@ -62,7 +62,7 @@ const GenerateTemporaryAdmin = () => {
       setLoading(true);
       await signIn('credentials', {
         tempAdminKey: data.adminSecret,
-        callbackUrl: '/admin-settings'
+        callbackUrl: '/'
       });
     } catch (error) {
       setError(error as Error);

@@ -28,7 +28,9 @@ const StepButton = ({
       <div>
         <Link href={step.toString()}>
           <Button
-            variant={selected() ? 'default' : 'ghost'}
+            variant={
+              selected() ? 'secondary' : stepPassed() ? 'default' : 'ghost'
+            }
             size="icon"
             className={''}
           >
@@ -42,7 +44,7 @@ const StepButton = ({
       </div>
       {!lastStep() && (
         <hr
-          className={`w-48 h-1 mx-auto my-4  border-0 rounded md:my-10 ${
+          className={`w-full h-1 mx-auto my-4  border-0 rounded md:my-10 ${
             stepPassed() ? 'bg-primary' : 'bg-secondary'
           }`}
         />

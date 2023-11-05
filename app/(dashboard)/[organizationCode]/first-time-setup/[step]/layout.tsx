@@ -4,6 +4,8 @@ import { BackwardButton } from '@/components/steps/backward-button';
 
 import { FirstTimeSteps } from './components/first-time-steps';
 import { FinishSetupButton } from './components/finish-setup-button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProviderContext } from '@/app/context-auth-provider';
 
 export default async function CreateNewSchoolLayout({
   children,
@@ -17,7 +19,9 @@ export default async function CreateNewSchoolLayout({
       currentStep={Number(params.step)}
       numSteps={FirstTimeSteps.length}
     >
-      {children}
+      <ScrollArea className="w-full rounded-md  sm:h-full md:h-[400px] ">
+        {children}
+      </ScrollArea>
       <div className="flex justify-end py-4">
         {Number(params.step) !== 0 && (
           <BackwardButton currentStep={Number(params.step)} />
