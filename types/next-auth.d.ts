@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import { AdapterUser } from 'next-auth/adapters';
 import { User } from 'next-auth';
+import { zSiteRolesType } from './sharedZodTypes';
 
 /*
 Override the user type nextauth uses
@@ -9,7 +10,7 @@ declare module 'next-auth' {
   interface User {
     id: string;
     optionalId?: string | null;
-    role: string;
+    role: zSiteRolesType;
     name?: string | null;
     email: string;
     image?: string | null;
