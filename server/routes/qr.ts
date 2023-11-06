@@ -86,10 +86,9 @@ export const qrRouter = router({
               expiresAt: newExpiry
             }
             const qrKey = "qrCode:" + newCode
-            const setQr = redis.hset(qrKey, qrCodeObj);
-            const expireQr = redis.expire(qrKey, 15)
-
-            await Promise.all([setQr, expireQr])
+            const multi = redis.multi()
+            await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
+           
             //const data = await redis.hget("qrCode:" + newCode, 'name');
             // const returnCode = await prisma.qrcode.create({
             //   data: {
