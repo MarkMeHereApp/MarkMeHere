@@ -4,6 +4,7 @@ import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { kv as redis } from '@vercel/kv';
+import { zQrCodeType } from '@/types/sharedZodTypes';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -77,18 +78,19 @@ export const qrRouter = router({
             newExpiry.getSeconds() + input.secondsToExpireNewCode
           );
 
-          try {
+          const qrCodeObj: zQrCodeType = {
+            code: newCode,
+            lectureId,
+            courseId,
+            professorLectureGeolocationId: null,
+            expiresAt: newExpiry,
+          };
+          const qrKey = 'qrCode:' + newCode;
+          const multi = redis.multi();
 
-            const qrCodeObj = {
-              code: newCode,
-              lectureId,
-              courseId,
-              expiresAt: newExpiry
-            }
-            const qrKey = "qrCode:" + newCode
-            const multi = redis.multi()
+          try {
             await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
-           
+
             //const data = await redis.hget("qrCode:" + newCode, 'name');
             // const returnCode = await prisma.qrcode.create({
             //   data: {
@@ -99,13 +101,13 @@ export const qrRouter = router({
             //   }
             // });
 
-            await prisma.qrcode.deleteMany({
-              where: {
-                expiresAt: {
-                  lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
-                }
-              }
-            });
+            // await prisma.qrcode.deleteMany({
+            //   where: {
+            //     expiresAt: {
+            //       lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
+            //     }
+            //   }
+            // });
 
             return { success: true, qrCode: qrCodeObj };
           } catch (error) {
