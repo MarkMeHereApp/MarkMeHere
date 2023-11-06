@@ -78,14 +78,19 @@ export const qrRouter = router({
           );
 
           try {
-            await redis.hset("qrCode:" + newCode, { name: 'joe' });
-            //const data = await redis.hget("qrCode:" + newCode, 'name');
-            const qrCode = {
+
+            const qrCodeObj = {
               code: newCode,
               lectureId,
               courseId,
               expiresAt: newExpiry
             }
+            const qrKey = "qrCode:" + newCode
+            const setQr = redis.hset(qrKey, qrCodeObj);
+            const expireQr = redis.expire(qrKey, 15)
+
+            await Promise.all([setQr, expireQr])
+            //const data = await redis.hget("qrCode:" + newCode, 'name');
             // const returnCode = await prisma.qrcode.create({
             //   data: {
             //     code: newCode,
@@ -103,7 +108,7 @@ export const qrRouter = router({
               }
             });
 
-            return { success: true, qrCode };
+            return { success: true, qrCode: qrCodeObj };
           } catch (error) {
             throw error;
           }
