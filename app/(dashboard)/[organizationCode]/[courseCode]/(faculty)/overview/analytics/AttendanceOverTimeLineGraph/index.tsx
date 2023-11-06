@@ -29,7 +29,10 @@ const AttendanceOverTimeLineGraph: React.FC<
     lecture: { attendanceEntries: AttendanceEntry[] } & Lecture,
     numStudents: number
   ) => {
-    return (lecture.attendanceEntries.length / numStudents) * 100 ?? 0;
+    const presentEntries = lecture.attendanceEntries.filter((entry) => {
+      return entry.status === 'here';
+    });
+    return (presentEntries.length / numStudents) * 100 ?? 0;
   };
 
   const graphData: CoupledData[] = sortedLectures.map((lecture, index) => {
