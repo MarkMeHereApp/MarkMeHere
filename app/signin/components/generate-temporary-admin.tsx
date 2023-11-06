@@ -27,6 +27,7 @@ import { PiUserCircleGear } from 'react-icons/pi';
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { signIn } from 'next-auth/react';
+import TempAdminInfo from './info/temp-admin-info';
 
 const zAdminGeneratorForm = z.object({
   adminSecret: z.string().min(1).max(255).trim()
@@ -71,6 +72,7 @@ const GenerateTemporaryAdmin = () => {
 
   return (
     <>
+      <TempAdminInfo />
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => handleDialogOpen()}>

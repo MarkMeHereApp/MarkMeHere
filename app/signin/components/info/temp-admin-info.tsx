@@ -18,13 +18,6 @@ export default function TempAdminInfo() {
               prevent unauthorized access.
             </b>
           </span>
-          <br />
-          <br />
-          <b>
-            <a className="text-primary" href="https://markmehere.com">
-              Click here to visit the first time setup guide.
-            </a>
-          </b>
         </AlertDescription>
       </Alert>
     </div>

@@ -21,10 +21,16 @@ export default async function SigninPage() {
       demoModeConfigured = true;
     }
 
+    // When we have multiple organizations, we should check the organization on an individual basis.
+    const organization = await prisma.organization.findFirst({
+      where: { firstTimeSetupComplete: true }
+    });
+
     return (
       <>
         <SignInForm
           providers={providers}
+          bOrganizationFullyConfigured={!!organization}
           bHasTempAdminConfigured={bTempAdminSecretConfigured}
           bIsDemoMode={demoModeConfigured}
         />

@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import FirstTimeLogin from './first-time-login';
 
 import { demoAccounts } from '@/utils/globalVariables';
 
@@ -43,12 +44,14 @@ type TProvider = {
 
 interface SignInFormProps {
   providers: Array<TProvider>;
+  bOrganizationFullyConfigured: boolean;
   bHasTempAdminConfigured?: boolean;
   bIsDemoMode?: boolean;
 }
 
 export default function SignInForm({
   providers,
+  bOrganizationFullyConfigured,
   bHasTempAdminConfigured,
   bIsDemoMode
 }: SignInFormProps) {
@@ -248,10 +251,13 @@ export default function SignInForm({
                 </Select>
               </>
             )}
+            {!bOrganizationFullyConfigured && (
+              <FirstTimeLogin bHasProviderSetup={providers.length > 0} />
+            )}
 
             {bHasTempAdminConfigured && (
               <>
-                <TempAdminInfo /> <GenerateTemporaryAdmin />
+                <GenerateTemporaryAdmin />
               </>
             )}
 
