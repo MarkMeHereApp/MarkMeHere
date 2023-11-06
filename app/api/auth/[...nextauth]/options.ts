@@ -90,6 +90,13 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         ) {
           return true;
         }
+        const organization = await prisma.organization.findFirst({
+          where: { firstTimeSetupComplete: true }
+        });
+
+        if (!organization) {
+          return true;
+        }
 
         return '/unauthorized-email?email=' + user.email;
       },

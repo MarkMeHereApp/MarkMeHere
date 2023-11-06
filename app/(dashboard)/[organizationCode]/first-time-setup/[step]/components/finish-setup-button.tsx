@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Loading from '@/components/general/loading';
 import { useProviderContext } from '@/app/context-auth-provider';
 
-export const FinishSetupButton = () => {
+export const FinishFirstTimeSetup = () => {
   const { activeProviders } = useProviderContext();
 
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export const FinishSetupButton = () => {
         </Button>
       ) : (
         <ContinueButton
-          name="Sign In To Finish Setup"
+          name="Continue To App"
           disabled={activeProviders.length === 0}
           onClick={() => {
             setLoading(true);
@@ -31,4 +31,4 @@ export const FinishSetupButton = () => {
   );
 };
 
-export default FinishSetupButton;
+export default FinishFirstTimeSetup;

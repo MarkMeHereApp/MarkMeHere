@@ -1,5 +1,6 @@
 import prisma from '@/prisma';
-import { FirstTimeSteps } from './components/first-time-steps';
+import { FirstTimeSteps, StepSkeleton } from './components/first-time-steps';
+import { Suspense } from 'react';
 
 export default async function Step({
   params
@@ -14,9 +15,16 @@ export default async function Step({
     throw new Error('No organization found!');
   }
 
-  const stepFunction = FirstTimeSteps[Number(params.step)];
-  if (!stepFunction) {
+  const StepFunction = FirstTimeSteps[Number(params.step)];
+  if (!StepFunction) {
     throw new Error('No Step Found');
   }
-  return stepFunction({ organization });
+  return (
+    <Suspense fallback={<StepSkeleton />}>
+      <StepFunction
+        organizationCode={params.organizationCode}
+        currentStep={Number(params.step)}
+      />
+    </Suspense>
+  );
 }
