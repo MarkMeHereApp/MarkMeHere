@@ -41,6 +41,67 @@ const courseMemberInput = z.object({
   courseMemberId: z.string()
 });
 
+const isAdmin = trpc.middleware(
+  async ({ next, ctx, rawInput }) => {
+    const role = ctx.session?.role;
+    const result = lectureInput.safeParse(rawInput);
+
+    if (!email)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'TRPC Middleware: User does not have a valid JWT'
+        })
+      );
+
+    if (!result.success)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'BAD_REQUEST',
+          message:
+            'TRPC Middleware: isElevatedCourseMemberLecture requires a valid lectureId'
+        })
+      );
+
+    const lecture = await prisma.lecture.findFirst({
+      where: {
+        id: result.data.lectureId
+      }
+    });
+
+    if (!lecture)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'TRPC Middleware: Lecture Not found'
+        })
+      );
+
+    //Find the first courseMember who is either a teacher or TA
+    const courseMember = await prisma.courseMember.findFirst({
+      where: {
+        courseId: lecture.courseId,
+        email: email,
+        OR: [
+          { role: zCourseRoles.enum.teacher },
+          { role: zCourseRoles.enum.ta }
+        ]
+      }
+    });
+
+    if (!courseMember)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'UNAUTHORIZED',
+          message:
+            'TRPC Middleware: User either does not exist in course or does not have elevated priveleges'
+        })
+      );
+
+    return next();
+  }
+);
+
 /* 
 This middleware is meant for routes that use a lectureId
 1. Look up the lecture using lectureId.
