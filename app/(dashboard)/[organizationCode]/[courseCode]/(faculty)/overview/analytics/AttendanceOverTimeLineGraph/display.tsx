@@ -113,6 +113,7 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
               <Line
                 type="monotone"
                 dataKey="attendanceRate"
+                name="Attendance Rate"
                 strokeWidth={2}
                 activeDot={{
                   r: 8,
@@ -123,6 +124,7 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
               <Line
                 type="monotone"
                 dataKey="movingAverage"
+                name="Moving Average"
                 strokeWidth={2}
                 activeDot={{
                   r: 4,
