@@ -5,7 +5,7 @@ import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
 
-export const LogOutSetupButton = () => {
+export const SignOutButton = () => {
   const [loading, setLoading] = useState(false);
   return (
     <>
@@ -24,4 +24,4 @@ export const LogOutSetupButton = () => {
   );
 };
 
-export default LogOutSetupButton;
+export default SignOutButton;
