@@ -3,7 +3,7 @@
 import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-
+import { kv as redis } from '@vercel/kv';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -38,14 +38,14 @@ export const qrRouter = router({
 
         const lectureId = input.lectureId;
         const courseId = input.courseId;
-        const professorLectureGeolocationId = input.professorLectureGeolocationId;
-        console.log(professorLectureGeolocationId)
-        
-        
-        if(professorLectureGeolocationId){
+        const professorLectureGeolocationId =
+          input.professorLectureGeolocationId;
+        console.log(professorLectureGeolocationId);
+
+        if (professorLectureGeolocationId) {
           const newExpiry = new Date();
           newExpiry.setSeconds(
-          newExpiry.getSeconds() + input.secondsToExpireNewCode
+            newExpiry.getSeconds() + input.secondsToExpireNewCode
           );
 
           try {
@@ -71,23 +71,29 @@ export const qrRouter = router({
           } catch (error) {
             throw error;
           }
-        }
-
-        else{
+        } else {
           const newExpiry = new Date();
           newExpiry.setSeconds(
             newExpiry.getSeconds() + input.secondsToExpireNewCode
           );
 
           try {
-            const returnCode = await prisma.qrcode.create({
-              data: {
-                code: newCode,
-                lectureId: lectureId,
-                courseId: courseId,
-                expiresAt: newExpiry, 
-              }
-            });
+            await redis.hset("qrCode:" + newCode, { name: 'joe' });
+            //const data = await redis.hget("qrCode:" + newCode, 'name');
+            const qrCode = {
+              code: newCode,
+              lectureId,
+              courseId,
+              expiresAt: newExpiry
+            }
+            // const returnCode = await prisma.qrcode.create({
+            //   data: {
+            //     code: newCode,
+            //     lectureId: lectureId,
+            //     courseId: courseId,
+            //     expiresAt: newExpiry,
+            //   }
+            // });
 
             await prisma.qrcode.deleteMany({
               where: {
@@ -97,11 +103,11 @@ export const qrRouter = router({
               }
             });
 
-            return { success: true, qrCode: returnCode };
+            return { success: true, qrCode };
           } catch (error) {
             throw error;
           }
-        }        
+        }
       } catch (error) {
         throw error;
       }
