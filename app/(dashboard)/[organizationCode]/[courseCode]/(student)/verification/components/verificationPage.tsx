@@ -12,7 +12,7 @@ const VerifiactionLoaderPage: React.FC<{ code?: string, orgCode?: string, course
 
     const router = useRouter()
 
-
+    //making robust check that if the previous attendanceToken check was not succesfull, we give them error and return them back to /submit
     if(!courseCode || !orgCode){
         router.push(`/submit?error=unknown`)
     }
@@ -22,7 +22,7 @@ const VerifiactionLoaderPage: React.FC<{ code?: string, orgCode?: string, course
             <div className="absolute top-0 right-0 h-full w-full">
                 <Stars></Stars>
             </div>
-            <VerifiactionLoader code={code} orgCode={orgCode} courseCode={courseCode}></VerifiactionLoader>
+            <VerifiactionLoader code={code}></VerifiactionLoader>
         </>
         )
 }
