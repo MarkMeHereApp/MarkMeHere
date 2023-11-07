@@ -7,7 +7,7 @@ import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import { generateTypedError } from './errorTypes';
 import prisma from '@/prisma';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 
 export const trpc = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -41,32 +41,27 @@ const courseMemberInput = z.object({
   courseMemberId: z.string()
 });
 
-const isAdmin = trpc.middleware(
-  async ({ next, ctx }) => {
-    const role = ctx.session?.role;
+const isAdmin = trpc.middleware(async ({ next, ctx }) => {
+  const role = zSiteRoles.safeParse(ctx.session?.role);
 
-    if (!role)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'TRPC Middleware: User does not have a valid JWT'
-        })
-      );
+  if (!role.success)
+    throw generateTypedError(
+      new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'TRPC Middleware: User does not have a valid JWT'
+      })
+    );
 
-   
+  if (role.data !== zSiteRoles.enum.admin)
+    throw generateTypedError(
+      new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'TRPC Middleware: User does not have admin privileges'
+      })
+    );
 
-    if (role !== 'admin')
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message:
-            'TRPC Middleware: User either does not exist in course or does not have elevated priveleges'
-        })
-      );
-
-    return next();
-  }
-);
+  return next();
+});
 
 /* 
 This middleware is meant for routes that use a lectureId
@@ -252,6 +247,9 @@ const isElevatedCourseMemberForCourseMember = trpc.middleware(
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
+
+/* -------- Checks admin privileges using JWT -------- */
+export const adminProcedure = trpc.procedure.use(isAdmin);
 
 /* -------- Checks privileges using lectureId -------- */
 export const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
