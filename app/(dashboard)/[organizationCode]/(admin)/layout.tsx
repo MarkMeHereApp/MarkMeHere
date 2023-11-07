@@ -1,12 +1,8 @@
-import Image from 'next/image';
-
 import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from '@/components/general/sidebar-nav';
 import { getServerSession } from 'next-auth';
-import prisma from '@/prisma';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { redirect } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+
 import Link from 'next/link';
 import { ContinueButton } from '@/components/general/continue-button';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';

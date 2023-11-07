@@ -1,5 +1,5 @@
 'use client';
-
+import { revalidatePath } from 'next/cache';
 import { Button } from '@/components/ui/button';
 import { ContinueButton } from '@/components/general/continue-button';
 import { signOut } from 'next-auth/react';
@@ -30,7 +30,8 @@ export const FinishFirstTimeSetup = ({
       await finishSetupMutation.mutateAsync({
         uniqueCode: organizationCode
       });
-      redirect(`/${organizationCode}/create-first-course`);
+      //revalidatePath(`/(dashboard)/[organizationCode]`, 'page');
+      redirect(`/${organizationCode}`);
     } catch (error) {
       setError(error as Error);
     }
