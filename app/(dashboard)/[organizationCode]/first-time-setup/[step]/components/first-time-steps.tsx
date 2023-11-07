@@ -19,6 +19,25 @@ import { SkeletonButtonText } from '@/components/skeleton/skeleton-button';
 import { redirect } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import SignOutButton from './log-out-button';
+import { zSiteRoles } from '@/types/sharedZodTypes';
+import UsersContextProvider from '../../../(admin)/context-users';
+import UserTable from '../../../(admin)/manage-site-users/UserTable';
+import { columns } from '../../../(admin)/manage-site-users/columns';
+import ConfigureAdminNextButton from './admin-step-next-button';
+
+const EnsureAdminInDatabase = async (organizationCode: string) => {
+  // @TODO this needs to be a user in the organization
+  const user = await prisma.user.findFirst({
+    where: { role: zSiteRoles.enum.admin }
+  });
+
+  if (!user) {
+    throw new Error(
+      'There is no user in the database. You are on the wrong step.'
+    );
+  }
+  return;
+};
 
 export const StepSkeleton = () => {
   return (
@@ -168,28 +187,33 @@ export const FirstTimeSteps: StepFunction[] = [
   ),
   (props: StepFunctionProps) => (
     <>
-      <ScrollArea className="w-full rounded-md  sm:h-full md:h-[500px]">
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium">
-            Add Your First Admin Account. This can always be changed later in
-            the admin settings.
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Once you log in with this user, you will have full access to the
-            app!
-          </p>
-          <ManageSiteUsers />
+      <UsersContextProvider>
+        <ScrollArea className="w-full rounded-md  sm:h-full md:h-[500px]">
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium">
+              Add Your First Admin Account. This can always be changed later in
+              the admin settings.
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Once you log in with this user, you will have full access to the
+              app!
+            </p>
+            <UserTable columns={columns} />
+          </div>
+        </ScrollArea>
+        <div className="flex justify-end py-4">
+          <BackwardButton currentStep={props.currentStep} />
+          <div className="ml-auto">
+            <ConfigureAdminNextButton currentStep={props.currentStep} />
+          </div>
         </div>
-      </ScrollArea>
-      <div className="flex justify-end py-4">
-        <BackwardButton currentStep={props.currentStep} />
-        <div className="ml-auto">
-          <ForwardButton currentStep={props.currentStep} />
-        </div>
-      </div>
+      </UsersContextProvider>
     </>
   ),
   async (props: StepFunctionProps) => {
+    // Make sure the user added an admin from step 3
+    await EnsureAdminInDatabase(props.organizationCode);
+
     const session = await getServerSession();
 
     if (!session?.user?.email) {
@@ -254,6 +278,9 @@ export const FirstTimeSteps: StepFunction[] = [
     );
   },
   async (props: StepFunctionProps) => {
+    // Make sure the user added an admin from step 3
+    await EnsureAdminInDatabase(props.organizationCode);
+
     const session = await getServerSession();
 
     if (!session?.user?.email) {
@@ -265,10 +292,8 @@ export const FirstTimeSteps: StepFunction[] = [
     });
 
     if (!user) {
-      redirect(
-        `/${props.organizationCode}/first-time-setup/${(
-          props.currentStep - 1
-        ).toString()}`
+      throw new Error(
+        'There is no user in the database. You are on the wrong step.'
       );
     }
     return (
@@ -293,7 +318,7 @@ export const FirstTimeSteps: StepFunction[] = [
         <div className="flex justify-end py-4">
           <BackwardButton currentStep={props.currentStep} />`{' '}
           <div className="ml-auto">
-            <FinishFirstTimeSetup />
+            <FinishFirstTimeSetup organizationCode={props.organizationCode} />
           </div>
         </div>
       </>

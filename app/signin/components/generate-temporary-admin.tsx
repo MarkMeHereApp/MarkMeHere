@@ -82,17 +82,17 @@ const GenerateTemporaryAdmin = () => {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Log Into Temporary Admin</DialogTitle>
+            <DialogTitle>Log Into Recovery Admin</DialogTitle>
           </DialogHeader>
           <DialogDescription>
             <div>
-              <p>Please Enter the Admin Secret from you .env below.</p>
-              <p>For example if your secret was:</p>
-              <code>
-                ADMIN_GENERATOR_SECRET=8de1d54992c8bc0d66ffc21dea27d60b
-              </code>
               <p>
-                <b>You would enter: "8de1d54992c8bc0d66ffc21dea27d60b"</b>
+                Please Enter the Admin Recover Password from you .env below.
+              </p>
+              <p>For example if your secret was:</p>
+              <code>ADMIN_RECOVER_PASSWORD=password</code>
+              <p>
+                <b>You would enter: "password"</b>
               </p>
             </div>
           </DialogDescription>
@@ -106,7 +106,7 @@ const GenerateTemporaryAdmin = () => {
                 name="adminSecret"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Admin Secret</FormLabel>
+                    <FormLabel>Admin Recovery Password</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

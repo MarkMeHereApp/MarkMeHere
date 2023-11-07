@@ -28,7 +28,7 @@ export default CredentialsProvider({
       });
       if (
         !organization ||
-        tempAdminKey === process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD?.toString()
+        tempAdminKey === process.env.ADMIN_RECOVERY_PASSWORD?.toString()
       ) {
         const user: User = {
           id: 'TemporaryAdminId', // Provide a unique id

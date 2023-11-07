@@ -84,10 +84,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
           return true;
         }
         // We need to allow first time admin setups through next-auth
-        if (
-          credentials?.tempAdminKey &&
-          process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD
-        ) {
+        if (credentials?.tempAdminKey && process.env.ADMIN_RECOVERY_PASSWORD) {
           return true;
         }
         const organization = await prisma.organization.findFirst({
@@ -100,9 +97,15 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
 
         return '/unauthorized-email?email=' + user.email;
       },
-      jwt({ token, user }) {
+      async jwt({ token, user }) {
         if (user) token.role = user.role;
         return token;
+      },
+      async session({ session, token, user }) {
+        if (session.user) {
+          session.user.role = token.role as string;
+        }
+        return session;
       }
     },
     session: {

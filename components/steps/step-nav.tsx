@@ -26,13 +26,19 @@ const StepButton = ({
   return (
     <>
       <div>
-        <Link href={step.toString()}>
+        <Link
+          href={step.toString()}
+          style={{
+            pointerEvents: !stepPassed() ? 'none' : 'auto'
+          }}
+        >
           <Button
             variant={
               selected() ? 'secondary' : stepPassed() ? 'default' : 'ghost'
             }
             size="icon"
             className={''}
+            disabled={!stepPassed()}
           >
             {stepPassed() ? (
               <CheckCircledIcon className="w-5 h-5" />

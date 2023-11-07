@@ -2,6 +2,7 @@ import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import NoCourse from './components/no-course';
 import { getServerSession } from 'next-auth';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default async function Page({
   params
@@ -12,6 +13,10 @@ export default async function Page({
 
   if (!session?.user?.email) {
     throw new Error('No session found');
+  }
+
+  if (session.user.email === 'temporary@admin.com') {
+    redirect(`/${params.organizationCode}/first-time-setup`);
   }
 
   const organization = await prisma.organization.findFirst({
