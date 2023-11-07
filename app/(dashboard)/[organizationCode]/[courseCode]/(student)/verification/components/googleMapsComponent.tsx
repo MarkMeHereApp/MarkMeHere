@@ -3,16 +3,12 @@ import { GoogleMap, Marker, MarkerF, useLoadScript, CircleF, Polyline, PolygonF,
 import googleMapsDark from './googleMapsStyles/googleMapsDarkMode.json';
 import googleMapsLight from './googleMapsStyles/googleMapsLightMode.json'
 import { useTheme } from 'next-themes';
-import {
-    PiStudent,
-    PiChalkboardTeacher,
-    PiUserCircleGear,
-  } from 'react-icons/pi';
-
 import {MdMyLocation} from 'react-icons/md'
 import { IconContext } from "react-icons";
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useEffect, useState } from 'react';
+import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+
 
 const StudentSVG = renderToStaticMarkup(
   <IconContext.Provider value={{ 
@@ -39,32 +35,15 @@ interface GoogleMapsProps {
 
 const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
-    const [liveLocation, setLiveLocation] = useState({ lat: 0, lng: 0 });
     const studentSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(StudentSVG)}`;
 
-    // Function to update live location
-    const updateLiveLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                setLiveLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            });
-        }
-    };
+    const OrganizationContext = useOrganizationContext()
+    const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
+    
 
     function metersToFeet(meters: number){
         return meters * 3.28084
     }
-
-    // Use useEffect to call the update function at regular intervals
-    useEffect(() => {
-        const intervalId = setInterval(updateLiveLocation, 5000); // Update every 5 seconds
-
-        // Cleanup function to clear the interval when the component unmounts
-        return () => clearInterval(intervalId);
-    }, []);
 
     const mapStyles = {        
         height: "300px",
@@ -80,15 +59,12 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
     if (!postitonsData) {
         return null;
-    }
-
-    
+    }    
 
     const { studentLatitude, studentLongitude, professorLatitude, professorLongitude } = postitonsData;
 
     const professorLocation = {
          lat: professorLatitude, lng: professorLongitude
-        // lat: 28.4, lng: -81.1
     }
         
     const studentLocation = {
@@ -96,7 +72,7 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
     }
 
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+        googleMapsApiKey: GoogleMapsKey || '',
     });
             
     if (loadError) {
@@ -107,8 +83,6 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
         return <div>Loading Google Maps</div>;
     }
 
-    
-            
     return (
         <div className='pt-5'>
             <GoogleMap
@@ -133,6 +107,9 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
                     fillColor: '#FF0000',
                     fillOpacity: 0.35,
                 }}
+                />
+                <MarkerF 
+                    position={professorLocation} 
                 />
                 <MarkerF 
                     position={studentLocation} 
