@@ -56,7 +56,7 @@ export const providerFunctions: Provider[] = [
   {
     key: 'github',
     defaultDisplayName: 'GitHub',
-    docsLink: '',
+    docsLink: 'https://github.com/settings/developers',
     config: ({
       clientId,
       clientSecret,
@@ -73,7 +73,7 @@ export const providerFunctions: Provider[] = [
     key: 'githubedu',
     defaultDisplayName: 'GitHub Edu',
     CustomMessage: GitHubEduMessage,
-    docsLink: 'https://developers.zoom.us/docs/integrations/create/',
+    docsLink: 'https://github.com/settings/developers',
     config: ({
       clientId,
       clientSecret,
