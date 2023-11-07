@@ -29,91 +29,10 @@ export const trpc = initTRPC.context<Context>().create({
   }
 });
 
-const lectureInput = z.object({
-  lectureId: z.string()
-});
-
-const courseInput = z.object({
-  courseId: z.string()
-});
-
 const courseMemberInput = z.object({
   courseMemberId: z.string()
 });
 
-const isAdmin = trpc.middleware(async ({ next, ctx }) => {
-  const role = zSiteRoles.safeParse(ctx.session?.role);
-
-  if (!role.success)
-    throw generateTypedError(
-      new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'TRPC Middleware: User does not have a valid JWT'
-      })
-    );
-
-  if (role.data !== zSiteRoles.enum.admin)
-    throw generateTypedError(
-      new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'TRPC Middleware: User does not have admin privileges'
-      })
-    );
-
-  return next();
-});
-
-/* 
-This middleware is meant for routes that use a courseId
-1. Look up the courseMember using courseId. Verify they are either a teacher or ta
-2. If the courseMember is found the user has access.
-*/
-const isElevatedCourseMemberCourse = trpc.middleware(
-  async ({ next, ctx, rawInput }) => {
-    const email = ctx.session?.email;
-    const result = courseInput.safeParse(rawInput);
-
-    if (!email)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'TRPC Middleware: User does not have a valid JWT'
-        })
-      );
-
-    if (!result.success)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'BAD_REQUEST',
-          message:
-            'TRPC Middleware: isElevatedCourseMemberCourse requires a valid courseId'
-        })
-      );
-
-    //Find the first courseMember who is either a teacher or TA
-    const courseMember = await prisma.courseMember.findFirst({
-      where: {
-        courseId: result.data.courseId,
-        email: email,
-        OR: [
-          { role: zCourseRoles.enum.teacher },
-          { role: zCourseRoles.enum.ta }
-        ]
-      }
-    });
-
-    if (!courseMember)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message:
-            'TRPC Middleware: User either does not exist in course or does not have elevated priveleges'
-        })
-      );
-
-    return next();
-  }
-);
 
 const isElevatedCourseMemberForCourseMember = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
@@ -179,11 +98,6 @@ const isElevatedCourseMemberForCourseMember = trpc.middleware(
 
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
-
-/* -------- Checks privileges using courseId -------- */
-export const elevatedCourseMemberCourseProcedure = trpc.procedure.use(
-  isElevatedCourseMemberCourse
-);
 
 /* -------- Checks privileges using courseId -------- */
 export const elevatedCourseMemberForCourseMemberProcedure = trpc.procedure.use(

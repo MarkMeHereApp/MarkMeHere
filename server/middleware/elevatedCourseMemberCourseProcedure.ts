@@ -5,22 +5,19 @@ import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
 import { zCourseRoles } from '@/types/sharedZodTypes';
 
-/* 
-This middleware is meant for routes that use a lectureId
-1. Look up the lecture using lectureId.
-2. Look up the courseMember using courseId and user email. Verify they are either
-a teacher or TA.
-3. If the courseMember is found the user has access.
-*/
-
-const lectureInput = z.object({
-  lectureId: z.string()
+const courseInput = z.object({
+  courseId: z.string()
 });
 
-const isElevatedCourseMemberLecture = trpc.middleware(
+/* 
+This middleware is meant for routes that use a courseId
+1. Look up the courseMember using courseId. Verify they are either a teacher or ta
+2. If the courseMember is found the user has access.
+*/
+const isElevatedCourseMemberCourse = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
-    const result = lectureInput.safeParse(rawInput);
+    const result = courseInput.safeParse(rawInput);
 
     if (!email)
       throw generateTypedError(
@@ -35,28 +32,14 @@ const isElevatedCourseMemberLecture = trpc.middleware(
         new TRPCError({
           code: 'BAD_REQUEST',
           message:
-            'TRPC Middleware: isElevatedCourseMemberLecture requires a valid lectureId'
-        })
-      );
-
-    const lecture = await prisma.lecture.findFirst({
-      where: {
-        id: result.data.lectureId
-      }
-    });
-
-    if (!lecture)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'TRPC Middleware: Lecture Not found'
+            'TRPC Middleware: isElevatedCourseMemberCourse requires a valid courseId'
         })
       );
 
     //Find the first courseMember who is either a teacher or TA
     const courseMember = await prisma.courseMember.findFirst({
       where: {
-        courseId: lecture.courseId,
+        courseId: result.data.courseId,
         email: email,
         OR: [
           { role: zCourseRoles.enum.teacher },
@@ -78,8 +61,8 @@ const isElevatedCourseMemberLecture = trpc.middleware(
   }
 );
 
-/* -------- Checks privileges using lectureId -------- */
-const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
-  isElevatedCourseMemberLecture
+/* -------- Checks privileges using courseId -------- */
+const elevatedCourseMemberCourseProcedure = trpc.procedure.use(
+  isElevatedCourseMemberCourse
 );
-export default elevatedCourseMemberLectureProcedure;
+export default elevatedCourseMemberCourseProcedure;

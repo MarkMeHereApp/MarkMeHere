@@ -1,7 +1,7 @@
-import { zSiteRoles } from '@/types/sharedZodTypes';
 import { trpc } from '../trpc';
 import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 /* -------- Checks admin privileges using JWT -------- */
 
