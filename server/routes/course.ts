@@ -1,4 +1,5 @@
-/* -------- Only users with an Admin or Moderator site role can access these routes -------- */
+/* -------- Any site role can access these routes however only a user with 
+a course role of teacher can access them -------- */
 
 import { publicProcedure, router } from '../trpc';
 import { CourseMember } from '@prisma/client';
