@@ -12,11 +12,9 @@ import { WhoCanUseGoogleMaps } from './edit-who-can-use-googlemaps';
 
 export const EditGoogleMapsKey = ({
   bHasConfigured,
-  allowModeratorsGMaps,
   allowUsersGMaps
 }: {
   bHasConfigured: boolean;
-  allowModeratorsGMaps: boolean;
   allowUsersGMaps: boolean;
 }) => {
   const [isConfigured, setIsConfigured] = useState(bHasConfigured);
@@ -99,10 +97,7 @@ export const EditGoogleMapsKey = ({
               </AreYouSureDialog>
             </div>
           </Alert>
-          <WhoCanUseGoogleMaps
-            allowModeratorsGMaps={allowModeratorsGMaps}
-            allowUsersGMaps={allowUsersGMaps}
-          />
+          <WhoCanUseGoogleMaps allowUsersGMaps={allowUsersGMaps} />
         </>
       ) : (
         <InputStringDialog

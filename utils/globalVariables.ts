@@ -20,10 +20,10 @@ export const demoAccounts: {
 }[] = [
   { name: 'aldrich', role: zSiteRoles.enum.admin },
   { name: 'ben', role: zSiteRoles.enum.admin },
-  { name: 'nick', role: zSiteRoles.enum.moderator },
-  { name: 'jadyn', role: zSiteRoles.enum.moderator },
-  { name: 'sam', role: zSiteRoles.enum.user },
-  { name: 'josef', role: zSiteRoles.enum.user }
+  { name: 'nick', role: zSiteRoles.enum.admin },
+  { name: 'jadyn', role: zSiteRoles.enum.admin },
+  { name: 'sam', role: zSiteRoles.enum.admin },
+  { name: 'josef', role: zSiteRoles.enum.admin }
 ];
 
 export const defaultSiteSettings: Organization = {
@@ -35,6 +35,5 @@ export const defaultSiteSettings: Organization = {
   lightTheme: 'light_zinc',
   googleMapsApiKey: '',
   hashEmails: false,
-  allowModeratorsToUseGoogleMaps: true,
   allowUsersToUseGoogleMaps: true
 };

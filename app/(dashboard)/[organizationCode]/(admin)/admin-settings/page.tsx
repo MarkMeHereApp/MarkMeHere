@@ -5,15 +5,12 @@ import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { SelectTheme } from './components/theme-selector/theme-selector';
 export default async function SettingsAccountPage() {
   const globalSiteSettings = await getGlobalSiteSettings_Server({
-    allowModeratorsToUseGoogleMaps: true,
     allowUsersToUseGoogleMaps: true,
     googleMapsApiKey: true,
     darkTheme: true,
     lightTheme: true
   });
   const allowUsersGMaps = globalSiteSettings.allowUsersToUseGoogleMaps;
-  const allowModeratorsGMaps =
-    globalSiteSettings.allowModeratorsToUseGoogleMaps;
 
   const hasGoogleMapsKey = !!globalSiteSettings?.googleMapsApiKey;
 
@@ -44,7 +41,6 @@ export default async function SettingsAccountPage() {
         <EditGoogleMapsKey
           bHasConfigured={hasGoogleMapsKey}
           allowUsersGMaps={allowUsersGMaps}
-          allowModeratorsGMaps={allowModeratorsGMaps}
         />
       </div>
 

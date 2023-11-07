@@ -39,13 +39,6 @@ export default async function SchoolLayout({
     }
 
     if (
-      session.user.role === zSiteRoles.enum.moderator &&
-      organization.allowModeratorsToUseGoogleMaps
-    ) {
-      organization.googleMapsApiKey = decrypt(key);
-    }
-
-    if (
       session.user.role === zSiteRoles.enum.user &&
       organization.allowUsersToUseGoogleMaps
     ) {

@@ -190,13 +190,13 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
-                defaultValue="moderator"
+                defaultValue="admin"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue="moderator"
+                      defaultValue="admin"
                     >
                       <FormControl>
                         <SelectTrigger>

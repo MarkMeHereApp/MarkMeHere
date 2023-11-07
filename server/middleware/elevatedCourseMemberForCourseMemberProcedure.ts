@@ -46,15 +46,12 @@ const isElevatedCourseMemberForCourseMember = trpc.middleware(
         })
       );
 
-    //Find the first courseMember who is either a professor or TA
+    //Find the first courseMember who is a teacher
     const courseMember = await prisma.courseMember.findFirst({
       where: {
         courseId: ctxCourseMembership.courseId,
         email: email,
-        OR: [
-          { role: zCourseRoles.enum.teacher },
-          { role: zCourseRoles.enum.ta }
-        ]
+        role: zCourseRoles.enum.teacher
       }
     });
 

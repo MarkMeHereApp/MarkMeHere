@@ -8,7 +8,6 @@ import { TRPCError } from '@trpc/server';
 
 const zUpdateOrganization = z.object({
   googleMapsApiKey: z.string().optional(),
-  allowModeratorsToUseGoogleMaps: z.boolean().optional(),
   allowUsersToUseGoogleMaps: z.boolean().optional(),
   darkTheme: z.string().optional(),
   lightTheme: z.string().optional()
@@ -90,12 +89,7 @@ export const organizationRouter = router({
           googleMapsApiKey = encrypt(requestData.input.googleMapsApiKey);
         }
 
-        let allowedModeratorsToUseGoogleMaps =
-          organizationSettings.allowModeratorsToUseGoogleMaps;
-        if (requestData.input.allowModeratorsToUseGoogleMaps !== undefined) {
-          allowedModeratorsToUseGoogleMaps =
-            requestData.input.allowModeratorsToUseGoogleMaps;
-        }
+       
 
         let allowedUsersToUseGoogleMaps =
           organizationSettings.allowUsersToUseGoogleMaps;
@@ -117,7 +111,6 @@ export const organizationRouter = router({
         const updated = await prisma.organization.updateMany({
           data: {
             googleMapsApiKey: googleMapsApiKey,
-            allowModeratorsToUseGoogleMaps: allowedModeratorsToUseGoogleMaps,
             allowUsersToUseGoogleMaps: allowedUsersToUseGoogleMaps,
             lightTheme: lightTheme,
             darkTheme: darkTheme
