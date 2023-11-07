@@ -288,10 +288,7 @@ const CSV_Import = () => {
         <MdUploadFile className="h-5 w-4" />
         <span className="hidden sm:flex ml-2">Import CSV</span>
       </label>
-      <Dialog
-        open={isValidating}
-        onOpenChange={(isOpen) => !isOpen && closeDialog}
-      >
+      <Dialog open={isValidating} onOpenChange={setIsValidating}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">
             <p
@@ -316,10 +313,7 @@ const CSV_Import = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Dialog
-        open={isFileUploaded}
-        onOpenChange={(isOpen) => !isOpen && closeDialog}
-      >
+      <Dialog open={isFileUploaded} onOpenChange={setIsFileUploaded}>
         <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow">
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
