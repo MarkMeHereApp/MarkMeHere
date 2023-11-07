@@ -26,8 +26,8 @@ export default async function SettingsAccountPage() {
         <div>
           <h3 className="text-lg font-medium">Provider Setup</h3>
           <p className="text-sm text-muted-foreground">
-            Add custom OAuth providers on this page. Please read our
-            documentation for more info.
+            Add custom OAuth providers on this page. This will allow your users
+            to sign in using platforms like GitHub, Google, or Zoom.
           </p>
         </div>
         <Separator />

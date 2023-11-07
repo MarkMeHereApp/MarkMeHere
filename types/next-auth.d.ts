@@ -16,6 +16,14 @@ declare module 'next-auth' {
     dateCreated?: Date | null;
     selectedCourseId?: string | null;
   }
+  interface Session {
+    user: {
+      email: string;
+      name: string;
+      image: string;
+      role: string;
+    };
+  }
 }
 
 /*

@@ -21,7 +21,7 @@ export const CourseCreationSheet = () => {
   };
 
   return (
-    <Sheet open={showNewCourseSheet}>
+    <Sheet open={showNewCourseSheet} onOpenChange={setShowNewCourseSheet}>
       <SheetTrigger asChild onClick={toggleSheet}>
         <Button variant="outline" className="w-full">
           {' '}

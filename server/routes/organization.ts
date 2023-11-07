@@ -18,6 +18,10 @@ const zCreateOrganization = z.object({
   uniqueCode: z.string()
 });
 
+const zFinishOrganizationSetup = z.object({
+  uniqueCode: z.string()
+});
+
 export const organizationRouter = router({
   createOrganization: publicProcedure
     .input(zCreateOrganization)
@@ -53,6 +57,18 @@ export const organizationRouter = router({
       throw generateTypedError(error as Error);
     }
   }),
+  finishOrganizationSetup: publicProcedure
+    .input(zFinishOrganizationSetup)
+    .mutation(async (requestData) => {
+      try {
+        return await prisma.organization.update({
+          where: { uniqueCode: requestData.input.uniqueCode },
+          data: { firstTimeSetupComplete: true }
+        });
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
   updateOrganization: publicProcedure
     .input(zUpdateOrganization)
     .mutation(async (requestData) => {

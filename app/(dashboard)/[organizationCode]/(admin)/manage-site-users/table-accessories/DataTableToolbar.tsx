@@ -13,8 +13,9 @@ import { useUsersContext } from '../../context-users';
 import EnrollUser from '@/utils/devUtilsComponents/EnrollUser';
 import { User } from '@prisma/client';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
-import { toastSuccess } from '@/utils/globalFunctions';
+import { toastSuccess, toastWarning } from '@/utils/globalFunctions';
 import { useState } from 'react';
+import { demoAccounts } from '@/utils/globalVariables';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -49,6 +50,21 @@ export function DataTableToolbar<TData>({
         return member.email !== userEmail;
       });
       const filteredEmails = filteredUsers.map((user) => user.email);
+
+      if (process.env.NEXT_PUBLIC_DEMO_MODE) {
+        const demoUsers = demoAccounts.map(
+          (account) => account.name + '@demo.com'
+        );
+        const isDemoUser = filteredUsers.some((user) =>
+          demoUsers.includes(user.email)
+        );
+
+        if (isDemoUser) {
+          toastWarning(`You Cannot Delete A Demo Account!`);
+          return;
+        }
+      }
+
       const deletedUserEmails = await deleteUsers.mutateAsync({
         email: filteredEmails
       });
@@ -130,7 +146,7 @@ export function DataTableToolbar<TData>({
             >
               <Button variant="destructive" className="h-8 px-2 lg:px-3">
                 <TrashIcon className="mr-2 h-4 w-4" />
-                Delete Selected User(s)
+                Delete User(s)
               </Button>
             </AreYouSureDialog>
           </>

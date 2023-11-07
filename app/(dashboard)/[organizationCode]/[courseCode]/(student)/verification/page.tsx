@@ -55,6 +55,7 @@ export default async function VerificationPage({searchParams}: {searchParams: an
     let orgCode = ''
     let courseCode = ''
 
+    //verifying if the attendance token is assigned to any lecture -> course
     if(searchParams.hasOwnProperty('attendanceTokenId')){
         attendanceTokenId = searchParams.attendanceTokenId
         console.log(attendanceTokenId)
