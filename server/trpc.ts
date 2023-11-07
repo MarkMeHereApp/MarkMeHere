@@ -248,9 +248,6 @@ const isElevatedCourseMemberForCourseMember = trpc.middleware(
 export const router = trpc.router;
 export const publicProcedure = trpc.procedure;
 
-/* -------- Checks admin privileges using JWT -------- */
-export const adminProcedure = trpc.procedure.use(isAdmin);
-
 /* -------- Checks privileges using lectureId -------- */
 export const elevatedCourseMemberLectureProcedure = trpc.procedure.use(
   isElevatedCourseMemberLecture
