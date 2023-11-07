@@ -29,15 +29,19 @@ export default async function Step({
       throw new Error('No Step Found');
     }
     return (
-      <StepFunction
-        organizationCode={params.organizationCode}
-        currentStep={Number(params.step)}
-      />
+      <>
+        {/* @ts-expect-error -- This is needed to run npm run build ????*/}
+        <StepFunction
+          organizationCode={params.organizationCode}
+          currentStep={Number(params.step)}
+        />
+      </>
     );
   };
 
   return (
     <Suspense fallback={<StepSkeleton />}>
+      {/* @ts-expect-error -- This is needed to run npm run build ????*/}
       <GetStepFunction />
     </Suspense>
   );
