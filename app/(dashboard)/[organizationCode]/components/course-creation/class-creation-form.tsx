@@ -32,8 +32,7 @@ import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import Loading from '@/components/general/loading';
-import { redirect } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -82,6 +81,7 @@ export default function CreateCourseForm({
   const { organizationUrl, organization } = useOrganizationContext();
   const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
+  const router = useRouter();
 
   if (error) {
     setLoading(false);
@@ -172,7 +172,8 @@ export default function CreateCourseForm({
       utils.canvas.getCanvasCourses.invalidate();
       onSuccess();
       setLoading(false);
-      redirect(`${organizationUrl}/${newCourse.courseCode}`);
+      router.refresh();
+      router.push(`${organizationUrl}/${newCourse.courseCode}`);
 
       return;
     } catch (error) {
