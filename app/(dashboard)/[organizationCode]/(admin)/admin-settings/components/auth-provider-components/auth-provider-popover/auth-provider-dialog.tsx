@@ -190,7 +190,7 @@ export function ProviderSubmissionDialog({
   if (data?.key) {
     return (
       <>
-        <Dialog open={isDisplaying} onOpenChange={resetForm}>
+        <Dialog open={isDisplaying} onOpenChange={setIsDisplaying}>
           <DialogContent
             className="sm:max-w-[550px] lg:max-w-[750px]"
             onCloseAutoFocus={() => {
