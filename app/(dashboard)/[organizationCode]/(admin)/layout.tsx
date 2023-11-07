@@ -37,7 +37,7 @@ export default async function SchoolLayout({
   // the temp admin secret is only enabled during the first time setup.
   if (
     user?.role !== zSiteRoles.enum.admin &&
-    !process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD
+    !process.env.ADMIN_RECOVERY_PASSWORD
   ) {
     redirect('/');
     return <></>;

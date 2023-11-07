@@ -17,6 +17,7 @@ interface OrganizationContextType {
 const defaultOrganization: Organization = {
   id: '',
   name: '',
+  firstTimeSetupComplete: false,
   uniqueCode: '',
   lightTheme: '',
   darkTheme: '',

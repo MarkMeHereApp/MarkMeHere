@@ -130,7 +130,7 @@ export function DataTableToolbar<TData>({
             >
               <Button variant="destructive" className="h-8 px-2 lg:px-3">
                 <TrashIcon className="mr-2 h-4 w-4" />
-                Delete Selected User(s)
+                Delete User(s)
               </Button>
             </AreYouSureDialog>
           </>

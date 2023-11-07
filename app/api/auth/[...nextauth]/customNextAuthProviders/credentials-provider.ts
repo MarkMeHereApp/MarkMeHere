@@ -20,21 +20,28 @@ export default CredentialsProvider({
     const tempAdminKey: string = credentials?.tempAdminKey ?? '';
     const demoLogin: boolean = Boolean(credentials?.demoLogin) ?? false;
 
-    // Handle temporary admin login (first time setup logins)
-    if (
-      tempAdminKey === process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD?.toString()
-    ) {
-      const user: User = {
-        id: 'TemporaryAdminId', // Provide a unique id
-        email: 'temporary@admin.com',
-        name: 'Temporary Admin',
-        image: '',
-        role: zSiteRoles.Enum.admin,
-        optionalId: 'TempOptionalId',
-        dateCreated: new Date(), // Provide the current date
-        selectedCourseId: null // Set to null or provide a valid courseId
-      };
-      return user;
+    // Handle temporary and first-time admin login
+    if (tempAdminKey) {
+      // if we can't find an organization that has its first time setup complete, then we should just let them in.
+      const organization = await prisma.organization.findFirst({
+        where: { firstTimeSetupComplete: true }
+      });
+      if (
+        !organization ||
+        tempAdminKey === process.env.ADMIN_RECOVERY_PASSWORD?.toString()
+      ) {
+        const user: User = {
+          id: 'TemporaryAdminId', // Provide a unique id
+          email: 'temporary@admin.com',
+          name: 'Temporary Admin',
+          image: '',
+          role: zSiteRoles.Enum.admin,
+          optionalId: 'TempOptionalId',
+          dateCreated: new Date(), // Provide the current date
+          selectedCourseId: null // Set to null or provide a valid courseId
+        };
+        return user;
+      }
     }
 
     // Handle demo logins

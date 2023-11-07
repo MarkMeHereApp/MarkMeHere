@@ -12,7 +12,7 @@ export default async function SigninPage() {
       }
     });
     let bTempAdminSecretConfigured = false;
-    if (process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD) {
+    if (process.env.ADMIN_RECOVERY_PASSWORD) {
       bTempAdminSecretConfigured = true;
     }
 
@@ -21,15 +21,16 @@ export default async function SigninPage() {
       demoModeConfigured = true;
     }
 
-    // const organization = await prisma.organization.findFirst();
-    // if (!organization) {
-    //   redirect('/create-organization');
-    // }
+    // When we have multiple organizations, we should check the organization on an individual basis.
+    const organization = await prisma.organization.findFirst({
+      where: { firstTimeSetupComplete: true }
+    });
 
     return (
       <>
         <SignInForm
           providers={providers}
+          bOrganizationFullyConfigured={!!organization}
           bHasTempAdminConfigured={bTempAdminSecretConfigured}
           bIsDemoMode={demoModeConfigured}
         />

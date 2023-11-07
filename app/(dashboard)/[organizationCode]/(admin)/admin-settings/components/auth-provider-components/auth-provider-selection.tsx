@@ -30,7 +30,11 @@ import {
 } from '@/components/ui/hover-card';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 
-export default function AuthProviderSelector() {
+export default function AuthProviderSelector({
+  showSignOutTestConfirmation = true
+}: {
+  showSignOutTestConfirmation?: boolean;
+}) {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   const [providerData, setProviderData] = useState<Provider | undefined>(
@@ -59,6 +63,7 @@ export default function AuthProviderSelector() {
         isDisplaying={showProviderSubmissionDialog}
         setIsDisplaying={setShowProviderSubmissionDialog}
         data={providerData}
+        showSignOutTestConfirmation={showSignOutTestConfirmation}
       />
       <Popover>
         <PopoverTrigger asChild>
@@ -121,7 +126,7 @@ export default function AuthProviderSelector() {
         {activeProviders.length > 0 && (
           <>
             <p className="text-sm text-muted-foreground">
-              Iif you want to change the keys of a provider, please remove the
+              If you want to change the keys of a provider, please remove the
               provider and add it again.
             </p>
             {activeProviders.map((provider) => {

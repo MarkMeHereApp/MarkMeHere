@@ -17,18 +17,8 @@ export default async function SchoolLayout({
 
   const email = session?.user?.email;
 
-  if (!email) {
+  if (!session?.user?.email) {
     throw new Error('No email found in session');
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email
-    }
-  });
-
-  if (!user) {
-    throw new Error('No user found');
   }
 
   const organization = await prisma.organization.findFirst({
@@ -44,19 +34,19 @@ export default async function SchoolLayout({
 
     organization.googleMapsApiKey = '';
 
-    if (user.role === zSiteRoles.enum.admin) {
+    if (session.user.role === zSiteRoles.enum.admin) {
       organization.googleMapsApiKey = decrypt(key);
     }
 
     if (
-      user.role === zSiteRoles.enum.moderator &&
+      session.user.role === zSiteRoles.enum.moderator &&
       organization.allowModeratorsToUseGoogleMaps
     ) {
       organization.googleMapsApiKey = decrypt(key);
     }
 
     if (
-      user.role === zSiteRoles.enum.user &&
+      session.user.role === zSiteRoles.enum.user &&
       organization.allowUsersToUseGoogleMaps
     ) {
       organization.googleMapsApiKey = decrypt(key);
