@@ -1,6 +1,7 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+import FirstCourseCreation from './components/course-creation/first-course-creation';
 
 export default async function Page({
   params
@@ -35,10 +36,11 @@ export default async function Page({
       courseEnrollment.course.organizationCode === params.organizationCode
   );
 
-  if (!(coursesInOrganization.length === 0)) {
-    redirect(`/${params.organizationCode}/create-first-course`);
+  if (coursesInOrganization.length === 0) {
+    return <FirstCourseCreation />;
   }
 
+  console.log(coursesInOrganization[0]);
   const page =
     coursesInOrganization[0].role === 'student' ? '/student' : '/overview';
 
