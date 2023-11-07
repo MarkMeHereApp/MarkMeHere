@@ -23,7 +23,6 @@ const defaultOrganization: Organization = {
   darkTheme: '',
   hashEmails: false,
   googleMapsApiKey: null,
-  allowModeratorsToUseGoogleMaps: false,
   allowUsersToUseGoogleMaps: false
 };
 
