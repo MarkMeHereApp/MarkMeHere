@@ -25,7 +25,7 @@ export type zLMSProviderType = z.infer<typeof zLMSProvider>;
 // Admin: Can do anything
 // Moderator: Can create classes and are always enrolled in those classes. They can also delete their classes.
 // User: Can only view classes they are enrolled in.
-export const zSiteRoles = z.enum(['admin', 'moderator', 'user']);
+export const zSiteRoles = z.enum(['admin', 'user']);
 export type zSiteRolesType = z.infer<typeof zSiteRoles>;
 
 // Teacher: Can Add/Remove students from their course
