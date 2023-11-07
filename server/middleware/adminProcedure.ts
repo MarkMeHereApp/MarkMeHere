@@ -27,5 +27,6 @@ const isAdmin = trpc.middleware(async ({ next, ctx }) => {
   return next();
 });
 
+/* Checks admin privileges using JWT */
 const adminProcedure = trpc.procedure.use(isAdmin);
 export default adminProcedure;
