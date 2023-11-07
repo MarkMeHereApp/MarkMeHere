@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
-import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 
 const zUpdateOrganization = z.object({
