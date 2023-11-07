@@ -8,6 +8,7 @@ import Loading from '@/components/general/loading';
 import { useProviderContext } from '@/app/context-auth-provider';
 import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export const FinishFirstTimeSetup = ({
   organizationCode
@@ -15,6 +16,7 @@ export const FinishFirstTimeSetup = ({
   organizationCode: string;
 }) => {
   const { activeProviders } = useProviderContext();
+  const router = useRouter();
 
   const finishSetupMutation =
     trpc.organization.finishOrganizationSetup.useMutation();
@@ -31,7 +33,8 @@ export const FinishFirstTimeSetup = ({
         uniqueCode: organizationCode
       });
       //revalidatePath(`/(dashboard)/[organizationCode]`, 'page');
-      redirect(`/${organizationCode}`);
+      router.refresh();
+      router.replace(`/${organizationCode}`);
     } catch (error) {
       setError(error as Error);
     }
