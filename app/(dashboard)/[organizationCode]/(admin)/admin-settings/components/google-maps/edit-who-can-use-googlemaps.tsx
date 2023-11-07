@@ -16,15 +16,12 @@ import { toastSuccess, formatString } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 
 export function WhoCanUseGoogleMaps({
-  allowModeratorsGMaps,
   allowUsersGMaps
 }: {
-  allowModeratorsGMaps: boolean;
   allowUsersGMaps: boolean;
 }) {
   const [selectedValue, setSelectedValue] = React.useState(() => {
-    if (allowModeratorsGMaps && allowUsersGMaps) return 'everyone';
-    if (allowModeratorsGMaps) return 'onlyModeratorsAndAdmins';
+    if (allowUsersGMaps) return 'everyone';
     return 'onlyAdmins';
   });
   const [isLoading, setIsLoading] = React.useState(false);
