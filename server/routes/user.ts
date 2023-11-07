@@ -6,10 +6,7 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-<<<<<<< HEAD
 import { hashEmail, createDefaultUser } from '../utils/userHelpers';
-=======
->>>>>>> 87a6eb6 (more clean up)
 
 export const zCreateUser = z.object({
   name: z.string(),
