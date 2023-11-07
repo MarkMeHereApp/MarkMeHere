@@ -17,7 +17,8 @@ async function main() {
     data: {
       name: 'Demo Organization',
       uniqueCode: 'demo',
-      hashEmails: false
+      hashEmails: false,
+      firstTimeSetupComplete: true
     }
   });
 
