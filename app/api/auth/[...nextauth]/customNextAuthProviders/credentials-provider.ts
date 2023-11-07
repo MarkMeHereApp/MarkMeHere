@@ -45,7 +45,7 @@ export default CredentialsProvider({
     }
 
     // Handle demo logins
-    if (demoLogin && process.env.DEMO_MODE?.toString() === 'true') {
+    if (demoLogin && process.env.NEXT_PUBLIC_DEMO_MODE?.toString() === 'true') {
       const demoAccount = demoAccounts.find(
         (account) => account.name === username
       );

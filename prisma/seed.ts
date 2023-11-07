@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 This seeds the Demo Site with demo data. It shouldn't do anything if we have demo mode disabled.
 */
 async function main() {
-  if (!(process.env.DEMO_MODE?.toString() === 'true')) {
+  if (!(process.env.NEXT_PUBLIC_DEMO_MODE?.toString() === 'true')) {
     return;
   }
 

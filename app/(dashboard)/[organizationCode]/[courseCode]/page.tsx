@@ -1,6 +1,7 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 
 export default async function Page({
   params
@@ -29,7 +30,8 @@ export default async function Page({
     throw new Error('No course Membership found');
   }
 
-  const page = courseMember.role === 'student' ? '/student' : '/overview';
+  const page =
+    courseMember.role === zCourseRoles.Enum.student ? '/student' : '/overview';
 
   redirect(`/${params.organizationCode}/${course.courseCode}${page}`);
 }
