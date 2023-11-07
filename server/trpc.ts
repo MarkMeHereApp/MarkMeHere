@@ -42,11 +42,10 @@ const courseMemberInput = z.object({
 });
 
 const isAdmin = trpc.middleware(
-  async ({ next, ctx, rawInput }) => {
+  async ({ next, ctx }) => {
     const role = ctx.session?.role;
-    const result = lectureInput.safeParse(rawInput);
 
-    if (!email)
+    if (!role)
       throw generateTypedError(
         new TRPCError({
           code: 'UNAUTHORIZED',
@@ -54,42 +53,9 @@ const isAdmin = trpc.middleware(
         })
       );
 
-    if (!result.success)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'BAD_REQUEST',
-          message:
-            'TRPC Middleware: isElevatedCourseMemberLecture requires a valid lectureId'
-        })
-      );
+   
 
-    const lecture = await prisma.lecture.findFirst({
-      where: {
-        id: result.data.lectureId
-      }
-    });
-
-    if (!lecture)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'TRPC Middleware: Lecture Not found'
-        })
-      );
-
-    //Find the first courseMember who is either a teacher or TA
-    const courseMember = await prisma.courseMember.findFirst({
-      where: {
-        courseId: lecture.courseId,
-        email: email,
-        OR: [
-          { role: zCourseRoles.enum.teacher },
-          { role: zCourseRoles.enum.ta }
-        ]
-      }
-    });
-
-    if (!courseMember)
+    if (role !== 'admin')
       throw generateTypedError(
         new TRPCError({
           code: 'UNAUTHORIZED',

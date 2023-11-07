@@ -10,7 +10,7 @@ declare module 'next-auth' {
   interface User {
     id: string;
     optionalId?: string | null;
-    role: zSiteRolesType;
+    role: string;
     name?: string | null;
     email: string;
     image?: string | null;
