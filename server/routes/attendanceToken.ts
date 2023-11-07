@@ -5,18 +5,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const zActiveCode = z.object({
   code: z.string()
-})
-
+});
 
 export const zGeolocationVerification = z.object({
   studentLatitude: z.number(),
   studentLongtitude: z.number(),
   id: z.string()
-})
+});
 
 export const attendanceTokenRouter = router({
-
-    ValidateAndCreateAttendanceToken: publicProcedure
+  ValidateAndCreateAttendanceToken: publicProcedure
     .input(zActiveCode)
     .mutation(async ({ input }) => {
       try {
@@ -24,8 +22,8 @@ export const attendanceTokenRouter = router({
           where: {
             code: input.code
           },
-          include:{
-            course:true
+          include: {
+            course: true
           }
         });
 
@@ -33,114 +31,140 @@ export const attendanceTokenRouter = router({
           return { success: false };
         }
 
-        console.log(qrResult.ProfessorLectureGeolocationId)
+        console.log(qrResult.ProfessorLectureGeolocationId);
 
         const { id } = await prisma.attendanceToken.create({
           data: {
-            token:  uuidv4(),
+            token: uuidv4(),
             lectureId: qrResult.lectureId,
-            ProfessorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
+            ProfessorLectureGeolocationId:
+              qrResult.ProfessorLectureGeolocationId
           }
         });
 
-        return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId, course: qrResult.course  };
+        return {
+          success: true,
+          token: id,
+          location: qrResult.ProfessorLectureGeolocationId,
+          course: qrResult.course
+        };
       } catch (error) {
         throw error;
       }
     }),
 
-
-    ValidateGeolocation: publicProcedure
+  ValidateGeolocation: publicProcedure
     .input(zGeolocationVerification)
     .mutation(async ({ input }) => {
-      
-      console.log(input)
+      console.log(input);
 
       try {
         const lectureResult = await prisma.attendanceToken.findUnique({
-          where:{
-            id:input.id
-          },
-          
-        })
+          where: {
+            id: input.id
+          }
+        });
 
-        console.log('this is the lecture result fetch: ' + lectureResult?.ProfessorLectureGeolocationId)
+        console.log(
+          'this is the lecture result fetch: ' +
+            lectureResult?.ProfessorLectureGeolocationId
+        );
 
         if (lectureResult === null) {
           return { success: false };
         }
 
-        const geolocationId = lectureResult.ProfessorLectureGeolocationId
-        console.log(geolocationId)
+        const geolocationId = lectureResult.ProfessorLectureGeolocationId;
+        console.log(geolocationId);
 
-        if(!geolocationId){
-          throw new Error ('Geolocation ID not found!')
-        }
-       
-        const geolocationLectureResult = await prisma.professorLectureGeolocation.findMany({
-          where:{
-            id: geolocationId
-          }
-        });
-
-        if(!geolocationLectureResult){
-          throw new Error('Geolocation not found!')
+        if (!geolocationId) {
+          throw new Error('Geolocation ID not found!');
         }
 
-        console.log(geolocationLectureResult[0])
+        const geolocationLectureResult =
+          await prisma.professorLectureGeolocation.findMany({
+            where: {
+              id: geolocationId
+            }
+          });
 
-        const lectureLatitude = geolocationLectureResult[0].lectureLatitude
-        const lectureLongitude = geolocationLectureResult[0].lectureLongitude
+        if (!geolocationLectureResult) {
+          throw new Error('Geolocation not found!');
+        }
 
-        console.log('lecture latitude: '+ lectureLatitude + 'lecture longtitude: ' + lectureLongitude)
-        
+        console.log(geolocationLectureResult[0]);
 
-        const distanceBetween2Points = (profLat: number, profLong: number, studLat: number, studLong: number) => {
-          if ((profLat == studLat) && (profLong == studLong)) {
+        const lectureLatitude = geolocationLectureResult[0].lectureLatitude;
+        const lectureLongitude = geolocationLectureResult[0].lectureLongitude;
+
+        console.log(
+          'lecture latitude: ' +
+            lectureLatitude +
+            'lecture longtitude: ' +
+            lectureLongitude
+        );
+
+        const distanceBetween2Points = (
+          profLat: number,
+          profLong: number,
+          studLat: number,
+          studLong: number
+        ) => {
+          if (profLat == studLat && profLong == studLong) {
             return 0;
           } else {
-            const radlat1 = Math.PI * profLat / 180;
-            const radlat2 = Math.PI * studLat / 180;
+            const radlat1 = (Math.PI * profLat) / 180;
+            const radlat2 = (Math.PI * studLat) / 180;
             const theta = profLong - studLong;
-            const radtheta = Math.PI * theta / 180;
-            let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+            const radtheta = (Math.PI * theta) / 180;
+            let dist =
+              Math.sin(radlat1) * Math.sin(radlat2) +
+              Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
             if (dist > 1) {
               dist = 1;
             }
             dist = Math.acos(dist);
-            dist = dist * 180 / Math.PI;
+            dist = (dist * 180) / Math.PI;
             dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
             return dist;
           }
         };
 
-        const calculateDistance = distanceBetween2Points(lectureLatitude,lectureLongitude,input.studentLatitude,input.studentLongtitude)
-        
-        if(geolocationLectureResult && input){
+        const calculateDistance = distanceBetween2Points(
+          lectureLatitude,
+          lectureLongitude,
+          input.studentLatitude,
+          input.studentLongtitude
+        );
+
+        if (geolocationLectureResult && input) {
           //console.log('distance difference in miles:' + calculateDistance);
         }
 
         const attendanceTokenLocation = await prisma.attendanceToken.update({
-          where:{
+          where: {
             id: input.id
           },
-          data:{
+          data: {
             attendanceStudentLatitude: input.studentLatitude,
             attendanceStudentLongtitude: input.studentLongtitude,
             ProfessorLectureGeolocationId: geolocationId
           }
-        })
+        });
 
-       
-
-        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult, lectureLatitude: lectureLatitude, lectureLongtitude: lectureLongitude  };
+        return {
+          success: true,
+          id: input.id,
+          distance: calculateDistance,
+          geolocationInfo: geolocationLectureResult,
+          lectureLatitude: lectureLatitude,
+          lectureLongtitude: lectureLongitude
+        };
       } catch (error) {
         throw error;
       }
-    }),
+    })
 
-    // FindGeolocationLectureProfessor: publicProcedure
-    // .input(lectureId)
-})
-
-
+  // FindGeolocationLectureProfessor: publicProcedure
+  // .input(lectureId)
+});

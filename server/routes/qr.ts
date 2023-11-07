@@ -1,9 +1,9 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-
+import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -38,14 +38,14 @@ export const qrRouter = router({
 
         const lectureId = input.lectureId;
         const courseId = input.courseId;
-        const professorLectureGeolocationId = input.professorLectureGeolocationId;
-        console.log(professorLectureGeolocationId)
-        
-        
-        if(professorLectureGeolocationId){
+        const professorLectureGeolocationId =
+          input.professorLectureGeolocationId;
+        console.log(professorLectureGeolocationId);
+
+        if (professorLectureGeolocationId) {
           const newExpiry = new Date();
           newExpiry.setSeconds(
-          newExpiry.getSeconds() + input.secondsToExpireNewCode
+            newExpiry.getSeconds() + input.secondsToExpireNewCode
           );
 
           try {
@@ -71,9 +71,7 @@ export const qrRouter = router({
           } catch (error) {
             throw error;
           }
-        }
-
-        else{
+        } else {
           const newExpiry = new Date();
           newExpiry.setSeconds(
             newExpiry.getSeconds() + input.secondsToExpireNewCode
@@ -85,7 +83,7 @@ export const qrRouter = router({
                 code: newCode,
                 lectureId: lectureId,
                 courseId: courseId,
-                expiresAt: newExpiry, 
+                expiresAt: newExpiry
               }
             });
 
@@ -101,7 +99,7 @@ export const qrRouter = router({
           } catch (error) {
             throw error;
           }
-        }        
+        }
       } catch (error) {
         throw error;
       }
