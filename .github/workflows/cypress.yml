@@ -29,6 +29,21 @@ jobs:
         env:
           # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
           # in GitHub repo → Settings → Secrets → Actions
+          NEXTAUTH_SECRET: 3f4b89143110082260c1b89a7e9728981
+          FIRST_TIME_SETUP_ADMIN_PASSWORD: password
+
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
+          POSTGRES_PRISMA_URL: 'postgres://default:2JL8UNHutpZh@ep-divine-hall-75113084-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb?pgbouncer=true&connect_timeout=15'
+          POSTGRES_URL_NON_POOLING: 'postgres://default:2JL8UNHutpZh@ep-divine-hall-75113084.us-east-1.postgres.vercel-storage.com:5432/verceldb'
+
+          # These are temporary variables for testing purposes
+          CANVAS_DOMAIN: https://webcourses.ucf.edu/
+          CANVAS_API_TOKEN: 1158~c06gaXGNSTve8umxHXRWgVPiBQHF2ht4mg1tZwZ92TtUG5ZARG8A7zyXeteQ5c4c
+          NEXT_PUBLIC_CANVAS_ENABLED: true
+
+          DEMO_MODE: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
