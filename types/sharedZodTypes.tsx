@@ -30,7 +30,7 @@ export type zSiteRolesType = z.infer<typeof zSiteRoles>;
 // Teacher: Can Add/Remove students from their course
 // TA: Can Take Attendance
 // Student: Can view their attendance data
-export const zCourseRoles = z.enum(['teacher', 'ta', 'student']);
+export const zCourseRoles = z.enum(['teacher', 'student']);
 export type zCourseRolesType = z.infer<typeof zCourseRoles>;
 
 /////////////////////////////////////////////////////////////////////////////////
