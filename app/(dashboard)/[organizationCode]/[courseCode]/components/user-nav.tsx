@@ -14,7 +14,11 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 import { signOut } from 'next-auth/react';
-import { GearIcon } from '@radix-ui/react-icons';
+import { GearIcon, ExitIcon } from '@radix-ui/react-icons';
+import { zSiteRoles } from '@/types/sharedZodTypes';
+import { PiUserCircleGear } from 'react-icons/pi';
+import { useState } from 'react';
+import Loading from '@/components/general/loading';
 
 /*
  * @TODO - This should be a server component
@@ -24,10 +28,12 @@ import { GearIcon } from '@radix-ui/react-icons';
 
 export default function UserNav() {
   const { organizationUrl } = useOrganizationContext();
+  const [signingOut, setSigningOut] = useState(false);
   const session = useSession();
   const name = session?.data?.user?.name || '';
   const userEmail = session?.data?.user?.email || '';
   const avatar = session?.data?.user?.image || undefined;
+  const role = session?.data?.user?.role;
 
   return (
     <DropdownMenu>
@@ -49,20 +55,34 @@ export default function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem></DropdownMenuItem>
+
+        <Link href={`${organizationUrl}/user-settings`}>
+          <Button className="justify-between w-full" variant={'ghost'}>
+            Settings
+            <GearIcon />
+          </Button>
+        </Link>
+
+        {role === zSiteRoles.enum.admin && (
+          <Link href={`${organizationUrl}/admin-settings`}>
+            <Button className="justify-between w-full" variant={'ghost'}>
+              Admin Panel <PiUserCircleGear />
+            </Button>
+          </Link>
+        )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="justify-between">
-          <Link href={`${organizationUrl}/admin-settings`}>Settings</Link>
-          <GearIcon />
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
+        <Button
+          className="justify-between w-full"
+          variant={'ghost'}
+          disabled={signingOut}
           onClick={() => {
+            setSigningOut(true);
             signOut({ callbackUrl: `/` });
           }}
         >
-          Log Out
-        </DropdownMenuItem>
+          {signingOut ? <Loading name="Signing Out" /> : 'Sign Out'}
+          <ExitIcon />
+        </Button>
       </DropdownMenuContent>
     </DropdownMenu>
   );

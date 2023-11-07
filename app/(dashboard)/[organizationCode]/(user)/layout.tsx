@@ -1,17 +1,13 @@
-import Image from 'next/image';
-
 import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from '@/components/general/sidebar-nav';
 import { getServerSession } from 'next-auth';
-import prisma from '@/prisma';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-import { redirect } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+
 import Link from 'next/link';
 import { ContinueButton } from '@/components/general/continue-button';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 
-export default async function SchoolLayout({
+export default async function SettingLayout({
   children,
   params
 }: {
@@ -20,21 +16,10 @@ export default async function SchoolLayout({
 }) {
   const organizationCode = params.organizationCode;
 
-  const authOptions = await getAuthOptions();
-  const session = await getServerSession(authOptions);
-
-  if (session?.user.role !== zSiteRoles.enum.admin) {
-    throw new Error('You are Unauthorized to view this page!');
-  }
-
   const sidebarNavItems = [
     {
-      title: 'Manage Users',
-      href: `/${organizationCode}/manage-site-users`
-    },
-    {
-      title: 'Admin Settings',
-      href: `/${organizationCode}/admin-settings`
+      title: 'User Settings',
+      href: `/${organizationCode}/user-settings`
     }
   ];
 

@@ -17,7 +17,7 @@ export default async function SigninPage() {
     }
 
     let demoModeConfigured = false;
-    if (process.env.DEMO_MODE) {
+    if (process.env.NEXT_PUBLIC_DEMO_MODE) {
       demoModeConfigured = true;
     }
 
