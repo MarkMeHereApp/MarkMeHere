@@ -98,7 +98,9 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         return '/unauthorized-email?email=' + user.email;
       },
       async jwt({ token, user }) {
-        if (user) token.role = user.role;
+        if (user) {
+          token.role = user.role;
+        }
         return token;
       },
       async session({ session, token, user }) {

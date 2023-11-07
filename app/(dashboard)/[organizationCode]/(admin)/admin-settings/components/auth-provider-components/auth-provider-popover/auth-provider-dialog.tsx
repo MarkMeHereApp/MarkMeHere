@@ -62,13 +62,15 @@ const getDestructuredKeys = (func: Function) => {
 type ProviderSubmissionDialogProps = {
   isDisplaying: boolean;
   setIsDisplaying: Dispatch<SetStateAction<boolean>>;
+  showSignOutTestConfirmation?: boolean;
   data: Provider | undefined;
 };
 
 export function ProviderSubmissionDialog({
   isDisplaying,
   setIsDisplaying,
-  data
+  data,
+  showSignOutTestConfirmation = true
 }: ProviderSubmissionDialogProps) {
   let keys: string[] = [];
   const initialValues: { [key: string]: string } = {};
@@ -135,6 +137,11 @@ export function ProviderSubmissionDialog({
     form.resetField('allowAccountLinking');
   };
 
+  const closeDialog = () => {
+    resetForm();
+    setIsDisplaying(false);
+  };
+
   // Update form values when `data` changes, this is setting the default display name
   // This is because the default display name changes when accessing different providers
   useEffect(() => {
@@ -170,7 +177,11 @@ export function ProviderSubmissionDialog({
       }
 
       setLoading(false);
-      setShowingTestContent(true);
+      if (showSignOutTestConfirmation) {
+        setShowingTestContent(true);
+      } else {
+        closeDialog();
+      }
       toastSuccess(
         `Successfully added your ${inputForm.displayName} provider! Please test the provider to ensure it works by signing out.`
       );

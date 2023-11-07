@@ -17,21 +17,8 @@ export default async function SchoolLayout({
 
   const email = session?.user?.email;
 
-  if (!email) {
+  if (!session?.user?.email) {
     throw new Error('No email found in session');
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email
-    }
-  });
-
-  if (!user) {
-    // @TODO this should return an error. Basically, the first time setup won't have a user in the database, but we still
-    // We should have another layout in a higher level, but atm I don't want to break everyone's git lol
-    // throw new Error ("No User Data!")
-    return <>{children}</>;
   }
 
   const organization = await prisma.organization.findFirst({
@@ -47,19 +34,19 @@ export default async function SchoolLayout({
 
     organization.googleMapsApiKey = '';
 
-    if (user.role === zSiteRoles.enum.admin) {
+    if (session.user.role === zSiteRoles.enum.admin) {
       organization.googleMapsApiKey = decrypt(key);
     }
 
     if (
-      user.role === zSiteRoles.enum.moderator &&
+      session.user.role === zSiteRoles.enum.moderator &&
       organization.allowModeratorsToUseGoogleMaps
     ) {
       organization.googleMapsApiKey = decrypt(key);
     }
 
     if (
-      user.role === zSiteRoles.enum.user &&
+      session.user.role === zSiteRoles.enum.user &&
       organization.allowUsersToUseGoogleMaps
     ) {
       organization.googleMapsApiKey = decrypt(key);

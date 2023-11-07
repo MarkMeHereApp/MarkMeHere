@@ -257,7 +257,7 @@ export const FirstTimeSteps: StepFunction[] = [
               </p>
             </div>
             <Separator />
-            <AuthProviderSelector />
+            <AuthProviderSelector showSignOutTestConfirmation={false} />
           </div>
           {user && (
             <>
@@ -316,7 +316,7 @@ export const FirstTimeSteps: StepFunction[] = [
           </div>
         </ScrollArea>
         <div className="flex justify-end py-4">
-          <BackwardButton currentStep={props.currentStep} />`{' '}
+          <BackwardButton currentStep={props.currentStep} />
           <div className="ml-auto">
             <FinishFirstTimeSetup organizationCode={props.organizationCode} />
           </div>

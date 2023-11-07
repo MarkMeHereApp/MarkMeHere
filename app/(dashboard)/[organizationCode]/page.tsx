@@ -15,10 +15,6 @@ export default async function Page({
     throw new Error('No session found');
   }
 
-  if (session.user.email === 'temporary@admin.com') {
-    redirect(`/${params.organizationCode}/first-time-setup`);
-  }
-
   const organization = await prisma.organization.findFirst({
     where: { uniqueCode: params.organizationCode }
   });

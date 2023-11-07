@@ -21,9 +21,9 @@ export const LogOutSetupButton = (props: {
         onClick={() => {
           setLoading(true);
           signOut({
-            callbackUrl: `/${props.organizationCode}/first-time-setup/${
+            callbackUrl: `/${props.organizationCode}/first-time-setup/${(
               props.currentStep + 1
-            }`
+            ).toString()}`
           });
         }}
       >

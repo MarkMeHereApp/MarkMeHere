@@ -4,38 +4,41 @@ import { Suspense } from 'react';
 import { getServerSession } from 'next-auth';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import type { NextAuthOptions } from 'next-auth';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default async function Step({
   params
 }: {
   params: { organizationCode: string; step: string };
 }) {
-  const authOptions = await getAuthOptions();
-  const session = await getServerSession(authOptions);
+  const GetStepFunction = async () => {
+    const authOptions = await getAuthOptions();
 
-  if (!session?.user?.email) {
-    throw new Error('No session found');
-  }
+    const session = await getServerSession(authOptions);
 
-  const organization = await prisma.organization.findFirst({
-    where: { uniqueCode: params.organizationCode }
-  });
+    if (!session?.user?.email) {
+      throw new Error('No session found');
+    }
 
-  if (!organization) {
-    throw new Error('No organization found!');
-  }
+    if (!(session.user.role === zSiteRoles.enum.admin)) {
+      throw new Error('You are not authorized to visit this page!');
+    }
 
-  const StepFunction = FirstTimeSteps[Number(params.step)];
-  if (!StepFunction) {
-    throw new Error('No Step Found');
-  }
-  return (
-    <Suspense fallback={<StepSkeleton />}>
-      {JSON.stringify(session)}
+    const StepFunction = FirstTimeSteps[Number(params.step)];
+    if (!StepFunction) {
+      throw new Error('No Step Found');
+    }
+    return (
       <StepFunction
         organizationCode={params.organizationCode}
         currentStep={Number(params.step)}
       />
+    );
+  };
+
+  return (
+    <Suspense fallback={<StepSkeleton />}>
+      <GetStepFunction />
     </Suspense>
   );
 }

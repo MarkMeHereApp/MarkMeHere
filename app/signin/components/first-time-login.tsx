@@ -8,7 +8,11 @@ import { signIn } from 'next-auth/react';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const FirstTimeLogin = (bHasProvidersSetup: { bHasProviderSetup: boolean }) => {
+const FirstTimeLogin = ({
+  bHasProviderSetup
+}: {
+  bHasProviderSetup: boolean;
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -36,7 +40,7 @@ const FirstTimeLogin = (bHasProvidersSetup: { bHasProviderSetup: boolean }) => {
           <PiUserCircleGear className="w-5 h-5" />
 
           <AlertDescription className="text-left">
-            {bHasProvidersSetup ? (
+            {bHasProviderSetup ? (
               <>
                 Log to your configured sign-in method to finish the
                 first-time-setup.{' '}
@@ -63,7 +67,7 @@ const FirstTimeLogin = (bHasProvidersSetup: { bHasProviderSetup: boolean }) => {
       <Button
         onClick={() => onSubmit()}
         disabled={loading}
-        variant={bHasProvidersSetup ? 'outline' : 'default'}
+        variant={bHasProviderSetup ? 'outline' : 'default'}
       >
         <PiUserCircleGear className="mr-2 h-5 w-5" />
         First Time Setup Login
