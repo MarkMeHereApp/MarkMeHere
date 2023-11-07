@@ -5,14 +5,16 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { PrismaClient } from '@prisma/client';
 import { AdapterUser } from 'next-auth/adapters';
 import bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { hashEmail } from '@/server/utils/userHelpers';
 
 export default function prismaAdapterHashed(prisma: PrismaClient) {
   return {
     ...PrismaAdapter(prisma),
     createUser: async (data: Omit<AdapterUser, 'id'>) => {
       const role = zSiteRoles.Enum.user;
-      const hashedEmail = await bcrypt.hash(data.email, 10);
+      const hashedEmail = hashEmail(data.email)
       return prisma.user.create({
         data: {
           name: data.name,
@@ -23,22 +25,19 @@ export default function prismaAdapterHashed(prisma: PrismaClient) {
       });
     },
 
-    /* 
-      Iterate through all users and use bcrypt to check if the provided email matches 
-      any user's hashed email
-      */
     getUserByEmail: async (email: string) => {
-      const allUsers = await prisma.user.findMany();
+      // const allUsers = await prisma.user.findMany();
 
-      for (const user of allUsers) {
-        const isEmailMatch = await bcrypt.compare(email, user.email ?? '');
-        if (isEmailMatch) {
-          return user;
-        }
-      }
+      // for (const user of allUsers) {
+      //   const isEmailMatch = await bcrypt.compare(email, user.email ?? '');
+      //   if (isEmailMatch) {
+      //     return user;
+      //   }
+      // }
 
-      // Return null if no matching user is found
-      return null;
+      const hashedEmail = hashEmail(email)
+      console.log(hashedEmail)
+      return await prisma.user.findUnique({ where: { email: hashedEmail } });
     }
   };
 }

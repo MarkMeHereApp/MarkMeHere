@@ -12,6 +12,7 @@ import { TRPCError } from '@trpc/server';
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
     courseCode: z.string(),
+    organizationCode: z.string(),
     name: z.string(),
     lmsId: z.string().optional(),
     lmsType: zLMSProvider
@@ -29,6 +30,11 @@ export const zCreateCourseRequest = z.object({
     .optional()
 });
 export type zCreateCourseRequestType = z.infer<typeof zCreateCourseRequest>;
+
+export const zDeleteCourseRequest = z.object({
+  courseId: z.string()
+});
+export type zDeleteCourseRequestType = z.infer<typeof zDeleteCourseRequest>;
 
 export const courseRouter = router({
   /*
@@ -74,6 +80,31 @@ export const courseRouter = router({
         }
 
         return { success: true, resCourse, resEnrollment };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
+
+  deleteCourse: publicProcedure
+    .input(zDeleteCourseRequest)
+    .mutation(async (requestData) => {
+      try {
+        const resCourse = await prisma.course.delete({
+          where: {
+            id: requestData.input.courseId
+          }
+        });
+
+        if (!resCourse) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Course not found'
+            })
+          );
+        }
+
+        return { success: true };
       } catch (error) {
         throw generateTypedError(error as Error);
       }

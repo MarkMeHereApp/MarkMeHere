@@ -10,21 +10,14 @@ export default function TempAdminInfo() {
         <AlertDescription className="text-left">
           After logging into this temporary Admin account, please immediately
           create your admin account and link an Authentication Provider through
-          the Admin Settings. <br />
+          the first time setup page. <br />
           <span className="text-destructive">
             <b>
               After setting up an actual user, please remove the
-              FIRST_TIME_SETUP_ADMIN_PASSWORD value from your .env file to
-              prevent unauthorized access.
+              ADMIN_RECOVERY_PASSWORD value from your .env file to prevent
+              unauthorized access.
             </b>
           </span>
-          <br />
-          <br />
-          <b>
-            <a className="text-primary" href="https://markmehere.com">
-              Click here to visit the first time setup guide.
-            </a>
-          </b>
         </AlertDescription>
       </Alert>
     </div>

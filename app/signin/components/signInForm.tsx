@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 
-import { ModeToggle } from '@/components/theme/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { firaSansFont } from '@/utils/fonts';
+import { firaSansLogo } from '@/utils/fonts';
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
@@ -34,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import FirstTimeLogin from './first-time-login';
 
 import { demoAccounts } from '@/utils/globalVariables';
 
@@ -44,18 +44,16 @@ type TProvider = {
 
 interface SignInFormProps {
   providers: Array<TProvider>;
+  bOrganizationFullyConfigured: boolean;
   bHasTempAdminConfigured?: boolean;
   bIsDemoMode?: boolean;
-  lightTheme: string;
-  darkTheme: string;
 }
 
 export default function SignInForm({
   providers,
+  bOrganizationFullyConfigured,
   bHasTempAdminConfigured,
-  bIsDemoMode,
-  lightTheme,
-  darkTheme
+  bIsDemoMode
 }: SignInFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,7 +124,7 @@ export default function SignInForm({
 
   useEffect(() => {
     if (session && router) {
-      router.push('/overview');
+      router.push('/');
     }
   }, [session, router]);
 
@@ -213,11 +211,10 @@ export default function SignInForm({
         <CardContent className="flex flex-col w-full">
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl font-bold font-mono">
-              <span className={firaSansFont.className}>
+              <span className={firaSansLogo.className}>
                 Sign in to Mark Me Here!
               </span>
             </CardTitle>
-            <ModeToggle lightTheme={lightTheme} darkTheme={darkTheme} />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -254,10 +251,13 @@ export default function SignInForm({
                 </Select>
               </>
             )}
+            {!bOrganizationFullyConfigured && (
+              <FirstTimeLogin bHasProviderSetup={providers.length > 0} />
+            )}
 
             {bHasTempAdminConfigured && (
               <>
-                <TempAdminInfo /> <GenerateTemporaryAdmin />
+                <GenerateTemporaryAdmin />
               </>
             )}
 

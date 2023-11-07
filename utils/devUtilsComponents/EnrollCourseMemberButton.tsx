@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../components/ui/select';
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { trpc } from '@/app/_trpc/client';
 import { toastSuccess } from '../globalFunctions';
 import Loading from '@/components/general/loading';
@@ -141,7 +141,7 @@ const EnrollCourseMemberButton = () => {
 
   return selectedCourseId ? (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             variant="default"
@@ -149,14 +149,11 @@ const EnrollCourseMemberButton = () => {
             className="flex items-center"
             style={{ maxWidth: '100%' }}
           >
-            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-            <span className="whitespace-nowrap">Enroll</span>
+            <AiOutlineUserAdd className="h-4 w-4" />
+            <span className="whitespace-nowrap ml-2 hidden sm:flex">Enroll</span>
           </Button>
         </DialogTrigger>
-        <DialogContent
-          className="sm:max-w-[425px]"
-          onClose={() => setIsDialogOpen(false)}
-        >
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Enroll Course Member</DialogTitle>
             <DialogDescription>

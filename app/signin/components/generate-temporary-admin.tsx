@@ -27,6 +27,7 @@ import { PiUserCircleGear } from 'react-icons/pi';
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { signIn } from 'next-auth/react';
+import TempAdminInfo from './info/temp-admin-info';
 
 const zAdminGeneratorForm = z.object({
   adminSecret: z.string().min(1).max(255).trim()
@@ -62,7 +63,7 @@ const GenerateTemporaryAdmin = () => {
       setLoading(true);
       await signIn('credentials', {
         tempAdminKey: data.adminSecret,
-        callbackUrl: '/admin-settings'
+        callbackUrl: '/'
       });
     } catch (error) {
       setError(error as Error);
@@ -71,26 +72,27 @@ const GenerateTemporaryAdmin = () => {
 
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <TempAdminInfo />
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => handleDialogOpen()}>
             <PiUserCircleGear className="mr-2 h-5 w-5" />
             Log Into Temp Admin
           </Button>
         </DialogTrigger>
-        <DialogContent onClose={() => setIsDialogOpen(false)}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Log Into Temporary Admin</DialogTitle>
+            <DialogTitle>Log Into Recovery Admin</DialogTitle>
           </DialogHeader>
           <DialogDescription>
             <div>
-              <p>Please Enter the Admin Secret from you .env below.</p>
-              <p>For example if your secret was:</p>
-              <code>
-                ADMIN_GENERATOR_SECRET=8de1d54992c8bc0d66ffc21dea27d60b
-              </code>
               <p>
-                <b>You would enter: "8de1d54992c8bc0d66ffc21dea27d60b"</b>
+                Please Enter the Admin Recover Password from you .env below.
+              </p>
+              <p>For example if your secret was:</p>
+              <code>ADMIN_RECOVER_PASSWORD=password</code>
+              <p>
+                <b>You would enter: "password"</b>
               </p>
             </div>
           </DialogDescription>
@@ -104,7 +106,7 @@ const GenerateTemporaryAdmin = () => {
                 name="adminSecret"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Admin Secret</FormLabel>
+                    <FormLabel>Admin Recovery Password</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

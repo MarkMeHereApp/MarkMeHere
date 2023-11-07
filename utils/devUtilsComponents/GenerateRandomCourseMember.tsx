@@ -1,6 +1,6 @@
 'use client';
 
-import { useCourseContext } from '@/app/context-course';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { Button } from 'components/ui/button';
 import { CourseMember } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -14,12 +14,14 @@ type randomCourseMember = {
   role: zCourseRolesType;
 };
 
-const createRandomCourseMember = (selectedCourseId: string): randomCourseMember => ({
+const createRandomCourseMember = (
+  selectedCourseId: string
+): randomCourseMember => ({
   email: faker.internet.email(),
   name: faker.person.fullName(),
   courseId: selectedCourseId,
   role: 'student'
-}); 
+});
 
 const GenerateRandomCourseMember = () => {
   const { selectedCourseId, setCourseMembersOfSelectedCourse } =

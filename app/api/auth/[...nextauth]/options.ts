@@ -3,18 +3,15 @@ import ZoomProvider from 'next-auth/providers/zoom';
 import type { AuthOptions, NextAuthOptions } from 'next-auth';
 import prisma from '@/prisma';
 import { Adapter } from 'next-auth/adapters';
-import { decrypt } from '@/utils/globalFunctions';
+import { decrypt, getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { providerFunctions } from './built-in-next-auth-providers';
 import prismaAdapterDefault from './adapters/prismaAdapterDefault';
 import prismaAdapterHashed from './adapters/prismaAdapterHashed';
+import { findUser, hashEmail } from '@/server/utils/userHelpers';
 import CredentialsProvider from './customNextAuthProviders/credentials-provider';
-import { clientCallTypeToProcedureType } from '@trpc/client';
 import { zSiteRoles } from '@/types/sharedZodTypes';
-/* Check env to choose adapter */
-const prismaAdapter =
-  process.env.HASHEMAILS === 'true'
-    ? (prismaAdapterHashed(prisma) as Adapter)
-    : (prismaAdapterDefault(prisma) as Adapter);
+import { findCourseMember } from '@/server/utils/courseMemberHelpers';
+import { findHashedCourseMember } from '@/server/utils/courseMemberHelpers';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -51,6 +48,13 @@ const getBuiltInNextAuthProviders = async (): Promise<
 export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
 
+  //Placeholder for now. Need to figure out how to grab user specific organization
+  const settings = await prisma.organization.findFirst();
+
+  const prismaAdapter = settings?.hashEmails
+    ? (prismaAdapterHashed(prisma) as Adapter)
+    : (prismaAdapterDefault(prisma) as Adapter);
+
   const dbProviders = await getBuiltInNextAuthProviders();
   defaultProviders.push(...dbProviders);
   defaultProviders.push(CredentialsProvider);
@@ -71,61 +75,39 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //When JWT is created store user role in the token
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
-        const prismaUser = await prisma.user.findUnique({
-          where: { email: user.email }
-        });
+        let hashedEmail = null;
+        if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
+
+        const prismaUser = await findUser(hashedEmail ?? user.email);
 
         if (prismaUser) {
           return true;
         }
-
-        const courseMember = await prisma.courseMember.findFirst({
-          where: {
-            email: user.email
-          }
+        // We need to allow first time admin setups through next-auth
+        if (credentials?.tempAdminKey && process.env.ADMIN_RECOVERY_PASSWORD) {
+          return true;
+        }
+        const organization = await prisma.organization.findFirst({
+          where: { firstTimeSetupComplete: true }
         });
 
-        if (courseMember) {
-          await prisma.user.create({
-            data: {
-              name: user.name,
-              email: user.email,
-              role: zSiteRoles.enum.user,
-              image: user.image
-            }
-          });
-          return true;
-        }
-
-        // We need to allow first time admin setups through next-auth
-        if (
-          credentials?.tempAdminKey &&
-          process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD
-        ) {
-          return true;
-        }
-
-        // We need to allow demo logins through next-auth
-        if (
-          credentials?.demoLogin &&
-          process.env.DEMO_MODE?.toString() === 'true'
-        ) {
-          await prisma.user.create({
-            data: {
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              image: user.image
-            }
-          });
+        if (!organization) {
           return true;
         }
 
         return '/unauthorized-email?email=' + user.email;
       },
-      jwt({ token, user }) {
-        if (user) token.role = user.role;
+      async jwt({ token, user }) {
+        if (user) {
+          token.role = user.role;
+        }
         return token;
+      },
+      async session({ session, token, user }) {
+        if (session.user) {
+          session.user.role = token.role as string;
+        }
+        return session;
       }
     },
     session: {

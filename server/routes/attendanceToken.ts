@@ -23,6 +23,9 @@ export const attendanceTokenRouter = router({
         const qrResult = await prisma.qrcode.findUnique({
           where: {
             code: input.code
+          },
+          include:{
+            course:true
           }
         });
 
@@ -40,7 +43,7 @@ export const attendanceTokenRouter = router({
           }
         });
 
-        return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId };
+        return { success: true, token: id, location: qrResult.ProfessorLectureGeolocationId, course: qrResult.course  };
       } catch (error) {
         throw error;
       }
@@ -57,7 +60,8 @@ export const attendanceTokenRouter = router({
         const lectureResult = await prisma.attendanceToken.findUnique({
           where:{
             id:input.id
-          }
+          },
+          
         })
 
         console.log('this is the lecture result fetch: ' + lectureResult?.ProfessorLectureGeolocationId)
@@ -113,7 +117,7 @@ export const attendanceTokenRouter = router({
         const calculateDistance = distanceBetween2Points(lectureLatitude,lectureLongitude,input.studentLatitude,input.studentLongtitude)
         
         if(geolocationLectureResult && input){
-          console.log('distance difference in miles:' + calculateDistance);
+          //console.log('distance difference in miles:' + calculateDistance);
         }
 
         const attendanceTokenLocation = await prisma.attendanceToken.update({
@@ -129,7 +133,7 @@ export const attendanceTokenRouter = router({
 
        
 
-        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult };
+        return { success: true, id: input.id, distance: calculateDistance, geolocationInfo: geolocationLectureResult, lectureLatitude: lectureLatitude, lectureLongtitude: lectureLongitude  };
       } catch (error) {
         throw error;
       }

@@ -1,8 +1,8 @@
 import { toast } from '@/components/ui/use-toast';
 import { ToastActionElement } from '@/components/ui/toast';
-import crypto from 'crypto';
+import crypto, { createHash } from 'crypto';
 import prisma from '@/prisma';
-import { Prisma, GlobalSiteSettings } from '@prisma/client';
+import { Prisma, Organization, User } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
 export function getPublicUrl(): string {
@@ -66,9 +66,9 @@ export function toastSuccess(
 }
 
 export const getGlobalSiteSettings_Server = async (
-  select?: Prisma.GlobalSiteSettingsSelect
-): Promise<GlobalSiteSettings> => {
-  const siteSettingsDB = await prisma.globalSiteSettings.findFirst({
+  select?: Prisma.OrganizationSelect
+): Promise<Organization> => {
+  const siteSettingsDB = await prisma.organization.findFirst({
     select: select
   });
 
@@ -76,19 +76,7 @@ export const getGlobalSiteSettings_Server = async (
     return siteSettingsDB;
   }
 
-  await prisma.globalSiteSettings.create({
-    data: defaultSiteSettings
-  });
-
-  const newSiteSettings = await prisma.globalSiteSettings.findFirst({
-    select: select
-  });
-
-  if (!newSiteSettings) {
-    throw new Error('Failed to create initial site settings');
-  }
-
-  return newSiteSettings;
+  throw new Error('Organization not found');
 };
 
 export function encrypt(text: string, key?: string) {

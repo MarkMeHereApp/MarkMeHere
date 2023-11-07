@@ -1,6 +1,7 @@
 import SignInForm from '@/app/signin/components/signInForm';
 import prisma from '@/prisma';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
+import { redirect } from 'next/navigation';
 
 export default async function SigninPage() {
   try {
@@ -11,30 +12,27 @@ export default async function SigninPage() {
       }
     });
     let bTempAdminSecretConfigured = false;
-    if (process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD) {
+    if (process.env.ADMIN_RECOVERY_PASSWORD) {
       bTempAdminSecretConfigured = true;
     }
 
     let demoModeConfigured = false;
-    if (process.env.DEMO_MODE) {
+    if (process.env.NEXT_PUBLIC_DEMO_MODE) {
       demoModeConfigured = true;
     }
 
-    const globalSiteSettings = await getGlobalSiteSettings_Server({
-      darkTheme: true,
-      lightTheme: true
+    // When we have multiple organizations, we should check the organization on an individual basis.
+    const organization = await prisma.organization.findFirst({
+      where: { firstTimeSetupComplete: true }
     });
-    const darkTheme = globalSiteSettings.darkTheme;
-    const lightTheme = globalSiteSettings.lightTheme;
 
     return (
       <>
         <SignInForm
           providers={providers}
+          bOrganizationFullyConfigured={!!organization}
           bHasTempAdminConfigured={bTempAdminSecretConfigured}
           bIsDemoMode={demoModeConfigured}
-          darkTheme={darkTheme}
-          lightTheme={lightTheme}
         />
       </>
     );

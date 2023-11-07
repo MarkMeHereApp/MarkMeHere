@@ -35,7 +35,7 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
-import { useUsersContext } from '@/app/(dashboard)/(admin)/context-users';
+import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
 import React from 'react';
 const EnrollUser = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -126,7 +126,7 @@ const EnrollUser = () => {
 
   return (
     <>
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             variant="default"
@@ -138,10 +138,7 @@ const EnrollUser = () => {
             <span className="whitespace-nowrap">Create Site User</span>
           </Button>
         </DialogTrigger>
-        <DialogContent
-          className="sm:max-w-[425px]"
-          onClose={() => setIsDialogOpen(false)}
-        >
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader onClick={handleDialogClose}>
             <DialogTitle>Create Site User</DialogTitle>
             <DialogDescription>
@@ -193,6 +190,7 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
+                defaultValue="moderator"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
