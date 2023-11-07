@@ -1,8 +1,6 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
-import NoCourse from './components/no-course';
 import { getServerSession } from 'next-auth';
-import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default async function Page({
   params
@@ -27,18 +25,24 @@ export default async function Page({
     redirect(`/${params.organizationCode}/first-time-setup`);
   }
 
-  const firstCourse = await prisma.courseMember.findFirst({
+  const courses = await prisma.courseMember.findMany({
     where: { email: session.user.email },
     include: { course: true }
   });
 
-  if (!firstCourse) {
-    return <NoCourse />;
+  const coursesInOrganization = courses.filter(
+    (courseEnrollment) =>
+      courseEnrollment.course.organizationCode === params.organizationCode
+  );
+
+  if (!(coursesInOrganization.length === 0)) {
+    redirect(`/${params.organizationCode}/create-first-course`);
   }
 
-  const page = firstCourse.role === 'student' ? '/student' : '/overview';
+  const page =
+    coursesInOrganization[0].role === 'student' ? '/student' : '/overview';
 
   redirect(
-    `/${params.organizationCode}/${firstCourse.course.courseCode}${page}`
+    `/${params.organizationCode}/${coursesInOrganization[0].course.courseCode}${page}`
   );
 }

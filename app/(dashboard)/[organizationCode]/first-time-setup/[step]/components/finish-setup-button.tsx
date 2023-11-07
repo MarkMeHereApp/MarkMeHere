@@ -30,7 +30,7 @@ export const FinishFirstTimeSetup = ({
       await finishSetupMutation.mutateAsync({
         uniqueCode: organizationCode
       });
-      redirect(`/${organizationCode}`);
+      redirect(`/${organizationCode}/create-first-course`);
     } catch (error) {
       setError(error as Error);
     }
