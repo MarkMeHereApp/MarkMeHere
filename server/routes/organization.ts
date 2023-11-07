@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
-import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 
 const zUpdateOrganization = z.object({
@@ -16,6 +15,10 @@ const zUpdateOrganization = z.object({
 });
 const zCreateOrganization = z.object({
   name: z.string(),
+  uniqueCode: z.string()
+});
+
+const zFinishOrganizationSetup = z.object({
   uniqueCode: z.string()
 });
 
@@ -54,6 +57,18 @@ export const organizationRouter = router({
       throw generateTypedError(error as Error);
     }
   }),
+  finishOrganizationSetup: publicProcedure
+    .input(zFinishOrganizationSetup)
+    .mutation(async (requestData) => {
+      try {
+        return await prisma.organization.update({
+          where: { uniqueCode: requestData.input.uniqueCode },
+          data: { firstTimeSetupComplete: true }
+        });
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
   updateOrganization: publicProcedure
     .input(zUpdateOrganization)
     .mutation(async (requestData) => {

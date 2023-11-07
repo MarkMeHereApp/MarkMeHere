@@ -49,7 +49,7 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
   const defaultProviders: AuthOptions['providers'] = [];
 
   //Placeholder for now. Need to figure out how to grab user specific organization
-  const settings = await prisma.organization.findFirst()
+  const settings = await prisma.organization.findFirst();
 
   const prismaAdapter = settings?.hashEmails
     ? (prismaAdapterHashed(prisma) as Adapter)
@@ -75,7 +75,6 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     //When JWT is created store user role in the token
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
-
         let hashedEmail = null;
         if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
 
@@ -84,34 +83,31 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
         if (prismaUser) {
           return true;
         }
-
-        const courseMember = await findCourseMember(hashedEmail ?? user.email)
-
-        if (courseMember) {
-          await prisma.user.create({
-            data: {
-              name: user.name,
-              email: courseMember.email,
-              role: zSiteRoles.enum.user,
-              image: user.image
-            }
-          });
+        // We need to allow first time admin setups through next-auth
+        if (credentials?.tempAdminKey && process.env.ADMIN_RECOVERY_PASSWORD) {
           return true;
         }
+        const organization = await prisma.organization.findFirst({
+          where: { firstTimeSetupComplete: true }
+        });
 
-        // We need to allow first time admin setups through next-auth
-        if (
-          credentials?.tempAdminKey &&
-          process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD
-        ) {
+        if (!organization) {
           return true;
         }
 
         return '/unauthorized-email?email=' + user.email;
       },
-      jwt({ token, user }) {
-        if (user) token.role = user.role;
+      async jwt({ token, user }) {
+        if (user) {
+          token.role = user.role;
+        }
         return token;
+      },
+      async session({ session, token, user }) {
+        if (session.user) {
+          session.user.role = token.role as string;
+        }
+        return session;
       }
     },
     session: {

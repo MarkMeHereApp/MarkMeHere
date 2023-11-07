@@ -1,10 +1,11 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { elevatedCourseMemberCourseProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { kv as redis } from '@vercel/kv';
 import { zQrCodeType } from '@/types/sharedZodTypes';
+import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),

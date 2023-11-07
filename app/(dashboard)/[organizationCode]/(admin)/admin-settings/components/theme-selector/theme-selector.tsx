@@ -126,6 +126,14 @@ export function SelectTheme({
           </div>
         </PopoverContent>
       </Popover>
+      <div className="text-xs pt-2 px-4">
+        Current {formatString(currentThemeType)} Theme:{' '}
+        <b>
+          {formatString(
+            selectedTheme.replace('dark_', '').replace('light_', '')
+          )}
+        </b>
+      </div>
     </div>
   );
 }

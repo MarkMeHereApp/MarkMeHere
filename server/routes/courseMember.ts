@@ -5,17 +5,14 @@ import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zCourseRoles } from '@/types/sharedZodTypes';
-import {
-  elevatedCourseMemberCourseProcedure,
-  publicProcedure,
-  router
-} from '../trpc';
+import { publicProcedure, router } from '../trpc';
 import {
   createCourseMember,
   findCourseMember,
   updateCourseMember
 } from '../utils/courseMemberHelpers';
 import { hashEmail } from '../utils/userHelpers';
+import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
 
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),

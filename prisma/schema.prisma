@@ -170,6 +170,7 @@ model ProfessorLectureGeolocation {
 
 model Organization {
   id                              String        @id @default(cuid())
+  firstTimeSetupComplete          Boolean       @default(false)
   name                            String        @db.VarChar(255)
   uniqueCode                      String        @unique @db.VarChar(255)
   lightTheme                      String        @db.VarChar(255) @default("light_neutral")

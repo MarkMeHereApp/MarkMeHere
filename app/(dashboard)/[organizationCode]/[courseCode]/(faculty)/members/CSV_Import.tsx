@@ -47,11 +47,8 @@ const CSV_Import = () => {
   }
 
   const closeDialog = () => {
-    if (fileInputRef.current) {
-      setIsFileUploaded(false);
-      setIsValidating(false);
-      fileInputRef.current.value = '';
-    }
+    setIsFileUploaded(false);
+    setIsValidating(false);
   };
   const openConfirmationDialog = () => {
     setIsConfirmationDialogOpen(true);
@@ -139,6 +136,7 @@ const CSV_Import = () => {
       setValidationProgress(0);
       setValidationMessage('' + error);
       await delay(10000);
+      setIsValidating(false);
       closeDialog();
     }
   };
@@ -216,7 +214,7 @@ const CSV_Import = () => {
         courseId: data.selectedCourseId,
         courseMembers: transformedTableValues
       });
-      closeDialog();
+
       if (newMembers.success) {
         toast({
           title: 'Imported CSV successfully',
@@ -226,13 +224,14 @@ const CSV_Import = () => {
         data.setCourseMembersOfSelectedCourse(
           newMembers.allCourseMembersOfClass
         );
+        closeDialog();
       } else {
         setIsImporting(false);
         toast({
           variant: 'destructive',
           title: 'Importing CSV failed. Try Again. '
         });
-
+        closeDialog();
         throw new Error('Unable to add new members');
       }
     } catch (error: unknown) {
@@ -289,10 +288,7 @@ const CSV_Import = () => {
         <MdUploadFile className="h-5 w-4" />
         <span className="hidden sm:flex ml-2">Import CSV</span>
       </label>
-      <Dialog
-        open={isValidating}
-        onOpenChange={(isOpen) => !isOpen && closeDialog}
-      >
+      <Dialog open={isValidating} onOpenChange={setIsValidating}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">
             <p
@@ -317,10 +313,7 @@ const CSV_Import = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Dialog
-        open={isFileUploaded}
-        onOpenChange={(isOpen) => !isOpen && closeDialog}
-      >
+      <Dialog open={isFileUploaded} onOpenChange={setIsFileUploaded}>
         <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow">
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
@@ -369,24 +362,17 @@ const CSV_Import = () => {
             <CSV_Preview data={tableValues} existingMembers={existedMembers} />
           </div>
           <DialogFooter>
-            <DialogTrigger asChild>
-              <Button type="button" variant="secondary" onClick={closeDialog}>
-                Cancel
-              </Button>
-            </DialogTrigger>
-            <DialogTrigger>
-              <Button
-                type="submit"
-                onClick={handleImport}
-                disabled={isImporting}
-              >
-                {isImporting && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {!isImporting && <BsUpload className="h-5 w-4 mr-2" />}
-                Import
-              </Button>
-            </DialogTrigger>
+            <Button type="button" variant="secondary" onClick={closeDialog}>
+              Cancel
+            </Button>
+
+            <Button type="submit" onClick={handleImport} disabled={isImporting}>
+              {isImporting && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {!isImporting && <BsUpload className="h-5 w-4 mr-2" />}
+              Import
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -43,6 +43,14 @@ const EditUsers = ({ user }: { user: User }) => {
   const updateUser = trpc.user.updateUser.useMutation();
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
+  const handleDialogOpen = () => {
+    form.reset();
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
 
   const zUsers = z.object({
     name: z

@@ -28,6 +28,7 @@ export const demoAccounts: {
 
 export const defaultSiteSettings: Organization = {
   id: 'default',
+  firstTimeSetupComplete: false,
   name: 'test',
   uniqueCode: 'test',
   darkTheme: 'dark_blue',

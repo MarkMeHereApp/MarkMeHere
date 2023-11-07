@@ -1,15 +1,12 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import {
-  elevatedCourseMemberLectureProcedure,
-  publicProcedure,
-  router
-} from '../trpc';
+import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { zAttendanceStatus } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { AttendanceEntry } from '@prisma/client';
+import elevatedCourseMemberLectureProcedure from '../middleware/elevatedCourseMemberLectureProcedure';
 
 export const zCreateNewManyAttendanceRequest = z.object({
   lectureId: z.string(),

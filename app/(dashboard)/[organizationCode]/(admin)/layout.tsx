@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { ContinueButton } from '@/components/general/continue-button';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export default async function SchoolLayout({
   children,
@@ -19,28 +20,11 @@ export default async function SchoolLayout({
 }) {
   const organizationCode = params.organizationCode;
 
-  const session = await getServerSession();
+  const authOptions = await getAuthOptions();
+  const session = await getServerSession(authOptions);
 
-  const email = session?.user?.email;
-
-  if (!email) {
-    signOut();
-    return <></>;
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: email
-    }
-  });
-
-  // the temp admin secret is only enabled during the first time setup.
-  if (
-    user?.role !== zSiteRoles.enum.admin &&
-    !process.env.FIRST_TIME_SETUP_ADMIN_PASSWORD
-  ) {
-    redirect('/');
-    return <></>;
+  if (session?.user.role !== zSiteRoles.enum.admin) {
+    throw new Error('You are Unauthorized to view this page!');
   }
 
   const sidebarNavItems = [
