@@ -1,14 +1,14 @@
-import { PiChalkboardTeacher, PiUserCircleGear } from 'react-icons/pi';
+import { PiUser, PiUserCircleGear } from 'react-icons/pi';
 
 export const roles = [
   {
-    value: 'admin',
-    label: 'Admin',
-    icon: PiChalkboardTeacher
-  },
-  {
     value: 'user',
     label: 'User',
+    icon: PiUser
+  },
+  {
+    value: 'admin',
+    label: 'Admin',
     icon: PiUserCircleGear
   }
 ];
