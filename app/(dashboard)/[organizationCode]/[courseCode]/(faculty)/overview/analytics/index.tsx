@@ -9,8 +9,7 @@ const OverviewAnalytics = () => {
   // This gets the lectures from the current course already
   // lectures is an array of objects, where each object consists of a lecture and its attendance entries
 
-  const { courseMembersOfSelectedCourse, selectedCourseEnrollment } =
-    useCourseContext();
+  const { courseMembersOfSelectedCourse, selectedCourse } = useCourseContext();
   const studentsOfSelectedCourse = courseMembersOfSelectedCourse?.filter(
     (member) => member.role === 'student'
   );
@@ -20,7 +19,7 @@ const OverviewAnalytics = () => {
     <div className="flex h-full w-full flex-col">
       <div className="w-full h-1/4">
         <OverviewBar
-          selectedCourseName={selectedCourseEnrollment.course.name ?? ''}
+          selectedCourseName={selectedCourse.name ?? ''}
           lectures={lectures}
           courseMembers={courseMembersOfSelectedCourse}
         />

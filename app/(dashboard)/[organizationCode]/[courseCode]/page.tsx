@@ -1,14 +1,17 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export default async function Page({
   params
 }: {
   params: { organizationCode: string; courseCode: string };
 }) {
-  const session = await getServerSession();
+  const authOptions = await getAuthOptions();
+
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     throw new Error('No session found');
@@ -27,6 +30,9 @@ export default async function Page({
   });
 
   if (!courseMember) {
+    if (session.user.role === zSiteRoles.Enum.admin) {
+      redirect(`/${params.organizationCode}/${course.courseCode}/overview`);
+    }
     throw new Error('No course Membership found');
   }
 

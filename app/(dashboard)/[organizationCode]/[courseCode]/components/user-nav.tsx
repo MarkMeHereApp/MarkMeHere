@@ -19,6 +19,7 @@ import { zSiteRoles } from '@/types/sharedZodTypes';
 import { PiUserCircleGear } from 'react-icons/pi';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
+import { formatString } from '@/utils/globalFunctions';
 
 /*
  * @TODO - This should be a server component
@@ -51,6 +52,7 @@ export default function UserNav() {
             <p className="text-sm font-medium leading-none">{name}</p>
             <p className="text-xs leading-none text-muted-foreground pt-1">
               {userEmail}
+              <div className="pt-2">{formatString(role || '')}</div>
             </p>
           </div>
         </DropdownMenuLabel>

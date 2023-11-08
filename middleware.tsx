@@ -69,7 +69,6 @@ const roleToRoutes: Record<string, string[]> = {
     '/api/trpc/attendance.createManyAttendanceRecords',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
-    '/api/trpc/attendance.getCourseMemberAttendanceEntriesOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.createCourseMember',
     '/api/trpc/courseMember.deleteAllStudents',

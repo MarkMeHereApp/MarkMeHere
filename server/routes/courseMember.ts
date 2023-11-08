@@ -4,7 +4,7 @@ import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 import { publicProcedure, router } from '../trpc';
 import {
   createCourseMember,
@@ -174,6 +174,13 @@ export const courseMemberRouter = router({
             })
           );
 
+        const roleParseResult = zSiteRoles.safeParse(
+          requestData.ctx.session?.role
+        );
+        const isAdmin =
+          roleParseResult.success &&
+          roleParseResult.data === zSiteRoles.enum.admin;
+
         const courseMembership = await prisma.courseMember.findFirst({
           where: {
             courseId: requestData.input.courseId,
@@ -181,24 +188,24 @@ export const courseMemberRouter = router({
           }
         });
 
-        if (!courseMembership) {
-          throw generateTypedError(
-            new TRPCError({
-              code: 'INTERNAL_SERVER_ERROR',
-              message: 'No course membership found for this user in this course'
-            })
-          );
-        }
+        if (!isAdmin) {
+          if (!courseMembership) {
+            throw generateTypedError(
+              new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message:
+                  'No course membership found for this user in this course'
+              })
+            );
+          }
 
-        // @TODO check if user is admin
-        const isAdmin = false;
-
-        if (courseMembership.role === zCourseRoles.enum.student && !isAdmin) {
-          return {
-            success: true,
-            courseMembers: [courseMembership],
-            courseMembership: courseMembership
-          };
+          if (courseMembership.role !== zCourseRoles.enum.teacher) {
+            return {
+              success: true,
+              courseMembers: [courseMembership],
+              courseMembership: courseMembership
+            };
+          }
         }
 
         const courseMembers = await prisma.courseMember.findMany({
