@@ -224,7 +224,7 @@ export const courseMemberRouter = router({
   Either update existing course member or create a new one. 
   Resolve all course member creation promises.
    */
-  createMultipleCourseMembers: publicProcedure
+  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
@@ -266,14 +266,6 @@ export const courseMemberRouter = router({
             success: true,
             allCourseMembersOfClass: updatedCourseMembers
           };
-        } else {
-          // Handle the case where session is null or session.user is of an unexpected type
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message: 'Invalid session or user data'
-            })
-          );
         }
       } catch (error) {
         throw generateTypedError(error as Error);
