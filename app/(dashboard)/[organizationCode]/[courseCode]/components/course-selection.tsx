@@ -25,8 +25,12 @@ import { useOrganizationContext } from '../../context-organization';
 import { formatString } from '@/utils/globalFunctions';
 import Link from 'next/link';
 import { Course } from '@prisma/client';
+import { useSession } from 'next-auth/react';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default function CourseSelection() {
+  const session = useSession();
+
   const {
     selectedCourseId,
     courseMembersOfSelectedCourse,
@@ -153,7 +157,9 @@ export default function CourseSelection() {
               </CommandList>
               <CommandSeparator />
             </Command>
-            <CourseCreationSheet />
+            {session.data?.user.role === zSiteRoles.enum.admin && (
+              <CourseCreationSheet />
+            )}
           </PopoverContent>
         </>
       </Popover>

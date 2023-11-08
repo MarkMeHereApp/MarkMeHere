@@ -1,24 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation'; // Import the useRouter hook
-import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
-import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 import { Icons } from '@/components/ui/icons';
 import { ModeToggle } from '@/app/(dashboard)/[organizationCode]/components/theme-toggle';
 import UserNav from './user-nav';
-import isDevMode from '@/utils/isDevMode';
-import { HamburgerMenuIcon } from '@radix-ui/react-icons';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { useSession } from 'next-auth/react';
 
 export default function MainNav({
   className,

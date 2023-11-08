@@ -78,7 +78,7 @@ const InputTable = () => {
   //if success, we redirect straight to the markAttendance, with the specific attendanceTokenId (currently uid)
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
-    trpc.attendanceToken.ValidateAndCreateAttendanceToken.useMutation();
+    trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
 
@@ -88,13 +88,16 @@ const InputTable = () => {
       });
 
       if (res.success && res.token) {
-        
-        if(res.location){
-          router.push(`${res.course.organizationCode}/${res.course.courseCode}/verification?attendanceTokenId=${res.token}`)
+        if (res.location) {
+          router.push(
+            `${res.course.organizationCode}/${res.course.courseCode}/verification?attendanceTokenId=${res.token}`
+          );
         }
 
-        if(!res.location){
-          router.push(`/${res.course.organizationCode}/${res.course.courseCode}/student?attendanceTokenId=${res.token}`);
+        if (!res.location) {
+          router.push(
+            `/${res.course.organizationCode}/${res.course.courseCode}/student?attendanceTokenId=${res.token}`
+          );
         }
       }
 
@@ -121,7 +124,7 @@ const InputTable = () => {
       }
       if (errorType === 'unknown') {
         displayError(ErrorType.InvalidGeolocation);
-        hasDisplayedQRError.current = true
+        hasDisplayedQRError.current = true;
       }
     }
 

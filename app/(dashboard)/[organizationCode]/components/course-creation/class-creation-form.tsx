@@ -283,10 +283,7 @@ export default function CreateCourseForm({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Auto Enroll into class as Professor.</FormLabel>
-                <FormDescription>
-                  @TODO This option should only be visible for admins
-                </FormDescription>
+                <FormLabel>Auto Enroll into class as a Teacher.</FormLabel>
               </div>
             </FormItem>
           )}
