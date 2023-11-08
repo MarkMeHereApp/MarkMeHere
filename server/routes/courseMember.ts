@@ -13,7 +13,6 @@ import {
 } from '../utils/courseMemberHelpers';
 import { hashEmail } from '../utils/userHelpers';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
-import { getServerSession } from 'next-auth';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -84,63 +83,6 @@ account if it does not exist
 */
 
 export const courseMemberRouter = router({
-  createMultipleCourseMembers: publicProcedure
-    .input(zCreateMultipleCourseMembers)
-    .mutation(async (requestData) => {
-      try {
-        const {
-          input: { courseId, courseMembers },
-          ctx: { settings, session }
-        } = requestData;
-        const { hashEmails } = settings;
-        const updatedCourseMembers = [];
-
-        if (session && typeof session.user === 'string') {
-          // Filter out the course members with email matching session.user
-          const filteredCourseMembers = courseMembers.filter(
-            (memberData) => memberData.email !== session.user
-          );
-          console.log(filteredCourseMembers);
-          // Create an array to store promises for member creation or update
-          const memberPromises = filteredCourseMembers.map(
-            async (memberData) => {
-              memberData.email = hashEmails
-                ? hashEmail(memberData.email)
-                : memberData.email;
-
-              const existingMember = await findCourseMember(
-                memberData.email,
-                courseId
-              );
-
-              if (existingMember) {
-                return updateCourseMember(existingMember.id, memberData);
-              } else {
-                return createCourseMember({ ...memberData, courseId });
-              }
-            }
-          );
-
-          const courseMemberResults = await Promise.all(memberPromises);
-          updatedCourseMembers.push(...courseMemberResults);
-
-          return {
-            success: true,
-            allCourseMembersOfClass: updatedCourseMembers
-          };
-        } else {
-          // Handle the case where session is null or session.user is of an unexpected type
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message: 'Invalid session or user data'
-            })
-          );
-        }
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
@@ -263,33 +205,51 @@ export const courseMemberRouter = router({
       try {
         const {
           input: { courseId, courseMembers },
-          ctx: { settings }
+          ctx: { settings, session }
         } = requestData;
         const { hashEmails } = settings;
         const updatedCourseMembers = [];
+        if (session && typeof session.email === 'string') {
+          // Filter out the course members with email matching session.user
+          const filteredCourseMembers = courseMembers.filter(
+            (memberData) => memberData.email !== session.email
+          );
+          // Create an array to store promises for member creation or update
+          const memberPromises = filteredCourseMembers.map(
+            async (memberData) => {
+              memberData.email = hashEmails
+                ? hashEmail(memberData.email)
+                : memberData.email;
 
-        // Create an array to store promises for member creation or update
-        const memberPromises = courseMembers.map(async (memberData) => {
-          memberData.email = hashEmails
-            ? hashEmail(memberData.email)
-            : memberData.email;
+              const existingMember = await findCourseMember(
+                memberData.email,
+                courseId
+              );
 
-          const existingMember = await findCourseMember(
-            memberData.email,
-            courseId
+              if (existingMember) {
+                return updateCourseMember(existingMember.id, memberData);
+              } else {
+                return createCourseMember({ ...memberData, courseId });
+              }
+            }
           );
 
-          if (existingMember) {
-            return updateCourseMember(existingMember.id, memberData);
-          } else {
-            return createCourseMember({ ...memberData, courseId });
-          }
-        });
+          const courseMemberResults = await Promise.all(memberPromises);
+          updatedCourseMembers.push(...courseMemberResults);
 
-        const courseMemberResults = await Promise.all(memberPromises);
-        updatedCourseMembers.push(...courseMemberResults);
-
-        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
+          return {
+            success: true,
+            allCourseMembersOfClass: updatedCourseMembers
+          };
+        } else {
+          // Handle the case where session is null or session.user is of an unexpected type
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'Invalid session or user data'
+            })
+          );
+        }
       } catch (error) {
         throw generateTypedError(error as Error);
       }
