@@ -83,6 +83,31 @@ account if it does not exist
 */
 
 export const courseMemberRouter = router({
+  createCourseMember: elevatedCourseMemberCourseProcedure
+    .input(zCourseMember)
+    .mutation(async (requestData) => {
+      try {
+        const { courseId, email, name, role } = requestData.input;
+        zCourseRoles.parse(role);
+
+        if (!courseId || !email || !name || !role) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Missing required fields'
+            })
+          );
+        }
+
+        const { hashEmails } = requestData.ctx.settings;
+        requestData.input.email = hashEmails ? hashEmail(email) : email;
+
+        const resEnrollment = await createCourseMember(requestData.input);
+        return { success: true, resEnrollment };
+      } catch (error) {
+        throw generateTypedError(error as Error);
+      }
+    }),
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
