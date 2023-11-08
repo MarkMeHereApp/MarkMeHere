@@ -1,8 +1,4 @@
-import {
-  PiStudent,
-  PiChalkboardTeacher,
-  PiUserCircleGear
-} from 'react-icons/pi';
+import { PiChalkboardTeacher, PiUserCircleGear } from 'react-icons/pi';
 
 export const roles = [
   {
