@@ -53,10 +53,12 @@ export const SelectedLecturesProvider: React.FC<
     if (!lectures || lectures.length === 0) {
       return;
     }
-
+    if (selectedDateRange.from === selectedDateRange.to) {
+      return;
+    }
     const newSelectedLectures = lectures.filter((lecture) => {
-      const fromDate = selectedDateRange?.from?.getTime() ?? new Date();
-      const toDate = selectedDateRange?.to?.getTime() ?? new Date();
+      const fromDate = selectedDateRange?.from ?? new Date();
+      const toDate = selectedDateRange?.to ?? new Date();
       return lecture.lectureDate >= fromDate && lecture.lectureDate <= toDate;
     });
     setSelectedLectures(newSelectedLectures);
