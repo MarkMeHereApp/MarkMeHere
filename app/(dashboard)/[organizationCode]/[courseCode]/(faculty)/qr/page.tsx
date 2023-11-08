@@ -19,6 +19,7 @@ import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
+import { zQrCodeType } from '@/types/sharedZodTypes';
 
 const QR = () => {
   const [progress, setProgress] = React.useState(0);
@@ -136,14 +137,12 @@ const QR = () => {
     }
   }, [mode]);
 
-  const initialCode: qrcode = {
-    id: 'LOADING',
+  const initialCode: zQrCodeType = {
     code: 'LOADING',
     lectureId: 'LOADING',
     courseId: 'LOADING',
-    createdAt: new Date(),
     expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
-    ProfessorLectureGeolocationId: locationId || null
+    professorLectureGeolocationId: locationId || null
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
