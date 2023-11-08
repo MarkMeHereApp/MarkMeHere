@@ -42,7 +42,6 @@ export const qrRouter = router({
         const courseId = input.courseId;
         const professorLectureGeolocationId =
           input.professorLectureGeolocationId;
-        console.log(professorLectureGeolocationId);
 
         const newExpiry = new Date();
         newExpiry.setSeconds(
@@ -53,7 +52,7 @@ export const qrRouter = router({
           code: newCode,
           lectureId,
           courseId,
-          professorLectureGeolocationId: null,
+          professorLectureGeolocationId,
           expiresAt: newExpiry
         };
         const qrKey = 'qrCode:' + newCode;
@@ -61,25 +60,26 @@ export const qrRouter = router({
 
         if (professorLectureGeolocationId) {
           try {
-            const returnCode = await prisma.qrcode.create({
-              data: {
-                code: newCode,
-                lectureId: lectureId,
-                courseId: courseId,
-                expiresAt: newExpiry,
-                ProfessorLectureGeolocationId: professorLectureGeolocationId
-              }
-            });
+            await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
+            // const returnCode = await prisma.qrcode.create({
+            //   data: {
+            //     code: newCode,
+            //     lectureId: lectureId,
+            //     courseId: courseId,
+            //     expiresAt: newExpiry,
+            //     ProfessorLectureGeolocationId: professorLectureGeolocationId
+            //   }
+            // });
 
-            await prisma.qrcode.deleteMany({
-              where: {
-                expiresAt: {
-                  lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
-                }
-              }
-            });
+            // await prisma.qrcode.deleteMany({
+            //   where: {
+            //     expiresAt: {
+            //       lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
+            //     }
+            //   }
+            // });
 
-            return { success: true, qrCode: returnCode };
+            return { success: true, qrCode: qrCodeObj };
           } catch (error) {
             throw error;
           }
