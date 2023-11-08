@@ -48,6 +48,8 @@ export const qrRouter = router({
           newExpiry.getSeconds() + input.secondsToExpireNewCode
         );
 
+        console.log('qrCode: ' + newCode + ' expiry: ' + newExpiry.getSeconds());
+
         const qrCodeObj: zQrCodeType = {
           code: newCode,
           lectureId,
@@ -60,7 +62,7 @@ export const qrRouter = router({
 
         if (professorLectureGeolocationId) {
           try {
-            await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
+            await multi.hset(qrKey, qrCodeObj).expire(qrKey, newExpiry.getSeconds()).exec();
             // const returnCode = await prisma.qrcode.create({
             //   data: {
             //     code: newCode,
@@ -90,7 +92,7 @@ export const qrRouter = router({
             We no longer need to delete old codes as Redis will
             delete them for us after 15 seconds
             */
-            await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
+            await multi.hset(qrKey, qrCodeObj).expire(qrKey, newExpiry.getSeconds()).exec();
 
             //const data = await redis.hget("qrCode:" + newCode, 'name');
             // const returnCode = await prisma.qrcode.create({

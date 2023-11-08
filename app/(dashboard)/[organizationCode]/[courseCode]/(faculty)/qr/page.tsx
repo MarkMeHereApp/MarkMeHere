@@ -153,6 +153,7 @@ const QR = () => {
   // Then it will fetch a new buffer code asynchronously.
   // We do this so that we don't have to "wait" for a code to be fetched.
   const updateCodes = async () => {
+    console.log("HIT UPDATE CODES")
     setActiveCode(bufferCodeRef.current.code);
     activeCodeRef.current = bufferCodeRef.current;
     try {
@@ -233,10 +234,13 @@ const QR = () => {
         if (bIsFetchingInitCodes.current) {
           return 0;
         }
+        console.log()
 
         // If the user is not on the page, reset the code
         if (document.hidden) {
           initCodes();
+          console.log("activeCodeInit: ", activeCode)
+          console.log("bufferCodeInit: ", bufferCodeRef.current.code)
           return 0;
         }
 
@@ -249,7 +253,12 @@ const QR = () => {
         if (oldProgress >= 100) {
           setProgress(0);
           updateCodes();
+          // console.log("activeCode: ", activeCode)
+          // console.log("bufferCode: ", bufferCodeRef.current.code)
         }
+
+        console.log("activeCode: ", activeCodeRef.current.code)
+        console.log("bufferCode: ", bufferCodeRef.current.code)
 
         const secondsLeft =
           (activeCodeRef.current.expiresAt.getTime() - Date.now()) / 1000;
