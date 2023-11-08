@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"; 
 import { CheckCircledIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
+import { AreYouSureDialog } from "@/components/general/are-you-sure-alert-dialog";
 
 enum WarningType {
   Info,
@@ -237,40 +238,13 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
     }
 
     //handles the dialoge 
-    const ContinueWithDiscoveredLocation = () => {
-      if(!rangeValidator.current){
-        if(range.current > 250){
-  
-          if (isFirstClickVerified) {
-            setIsFirstClickVerified(false)
-            displayWarning(WarningType.NoLocation, null)
-          } 
-          if (!isFirstClickVerified) {
-            router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`)
-          }
-        }
-        else{
-          displayWarning(WarningType.DefaultError, null)
-        }
-      }   
-
-      if(range.current <= 250){
-        rangeValidator.current = true
-        setProceedButtonText('Verified')
-        router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`)
-      }        
+    const ContinueWithDiscoveredLocation = async () => {
+      router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`)
     }
 
     //handles proceed without geolocation
-    const ContinueNoLocation = () => {
-      if (isFirstClickNoLocation) {
-        setIsFirstClickNoLocation(false);
-        displayWarning(WarningType.NoLocation, null)
-      } 
-      if (!isFirstClickNoLocation) {
-        //first warn the student that this step might result in this absence
-        router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`)
-      }
+    const ContinueNoLocation = async() => {
+      router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`)
     }
 
     useEffect(()=>{
@@ -306,18 +280,16 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
                 (<DialogContent className="w-full">
                   <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
                     {!rangeValidator.current ? 
-                      <Button 
-                        className="flex w-[100%] min-w-[100%]"
-                        disabled={isLoadingSubmit}
-                        onClick={() => {
-                            ContinueWithDiscoveredLocation()
-                        }}
-                        variant="destructive">
-                        <div className="mr-[5px]">
-                          {isFirstClickVerified ? `Continue ${proceedButtonText}` : `Are you sure?`}
-                        </div>
-                        <CrossCircledIcon/>
-                      </Button> 
+                      <AreYouSureDialog 
+                      title={`You are far away from your lecture`}
+                      onConfirm={ContinueWithDiscoveredLocation}
+                      buttonText='Proceed anyways!'
+                      bDestructive ={true}
+                      >
+                      <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.InvalidLocation, null)}>
+                        <b>Proceed With Invalid Location</b>
+                      </Button>
+                    </AreYouSureDialog> 
                       : 
                       <Button 
                         className="flex w-[100%] min-w-[100%]"
@@ -329,20 +301,23 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
                           {`Continue ${proceedButtonText}`}
                         </div>
                         <CheckCircledIcon/>
-                      </Button>}
+                      </Button>
+                      
+                      }
                 </DialogContent>)}
             </Dialog>
-            
-            <Button 
-              className="flex w-[100%] min-w-[100%]"
-              disabled={isLoadingSubmit}
-              onClick={() => ContinueNoLocation()}
-              variant="destructive">
 
-              <div className="mr-[5px]">
-                {isFirstClickNoLocation ? 'Proceed Without Verification' : 'Are you sure?'}
-              </div>
-            </Button>   
+            <AreYouSureDialog 
+              title={`Proceeding without location verification might result in absence`}
+              onConfirm={ContinueNoLocation}
+              buttonText='Proceed'
+              bDestructive ={true}
+              >
+              <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.NoLocation, null)}>
+                <b>Proceed Without Verifying</b>
+              </Button>
+            </AreYouSureDialog>
+
           </div>      
         </Card>)
 }
