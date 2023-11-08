@@ -311,8 +311,10 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
                       <AreYouSureDialog 
                       title={`You are far away from your lecture`}
                       onConfirm={ContinueWithDiscoveredLocation}
-                      buttonText='Proceed anyways!'
+                      buttonText='Proceed Anyways!'
                       bDestructive ={true}
+                      AlertDescriptionComponent={()=>AlertDescription(MessageType.InvalidLocation)}            
+
                       >
                       <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.InvalidLocation, null)}>
                         <b>Proceed With Invalid Location</b>
@@ -338,8 +340,9 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
             <AreYouSureDialog 
               title={`Proceeding without location verification might result in absence`}
               onConfirm={ContinueNoLocation}
-              buttonText='Proceed'
+              buttonText='Proceed Anyways!'
               bDestructive ={true}
+              AlertDescriptionComponent={()=>AlertDescription(MessageType.NoLocation)}            
               >
               <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.NoLocation, null)}>
                 <b>Proceed Without Verifying</b>
