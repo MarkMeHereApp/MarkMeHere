@@ -26,6 +26,11 @@ enum WarningType {
   DefaultError
 }
 
+enum MessageType {
+  InvalidLocation,
+  NoLocation
+}
+
 const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
   
   //displaying toasts based on specific resuts
@@ -113,7 +118,33 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
     }
   };
 
-  const [allowedRange,setAllowedRange] = React.useState<number>(50) //this will in the future serve as the professors ability to pick the range of the classroom 
+  const AlertDescription = (messageType: MessageType) => {
+    switch (messageType) {
+      case MessageType.NoLocation:
+        return(
+          <div>
+            <strong>{`This action might result in your absence. `}</strong>
+            {`The class you are enrolled to, requires location verification. Skipping this step might result in absence. 
+              Your attendance record will be stored, however, the professor will be informed, that your location was not verified.
+              Scan your location, or proceed without it!`}
+          </div>
+        )
+      case MessageType.InvalidLocation:
+        return(
+          <div>
+            <strong>{`Get closer to your classroom. `}</strong>
+            {`The class you are enrolled to, requires you to be present in the class. 
+            You are too far away from your professor. You can still proceed, however, the professor will be informed, that you were not present at the class. 
+            Get closer to your classroom and verify again, or proceed with invalid location. `}
+          </div>
+        )
+    }
+  }
+
+  
+
+
+  const [allowedRange,setAllowedRange] = React.useState<number>(150) //this will in the future serve as the professors ability to pick the range of the classroom 
   const [isLoadingSubmit, setIsLoadingSubmit] = React.useState<boolean>(false); //loader trigger
   const router = useRouter()//router init
 
@@ -129,9 +160,6 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
 
   const [warningDisplay, setWarningDisplay] = useState<string | null>(null); //error message that is being displayed if either QR code is not valid or the input code is not valid
   const infoTrigger = useRef<boolean>(true)//initial info about range that should be displayed
-
-  const [isFirstClickNoLocation, setIsFirstClickNoLocation] = useState<boolean>(true);//handling double clicks for proceed without Location
-  const [isFirstClickVerified, setIsFirstClickVerified] = useState<boolean>(true);//handling double clicks for Verified - unsucessful verification
 
   const [proceedButtonText, setProceedButtonText] = useState<string>('Continue')
 
@@ -278,13 +306,14 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
                 </DialogTrigger>
                 {!isLoadingSubmit && isOpen && 
                 (<DialogContent className="w-full">
-                  <GoogleMapsComponent postitonsData={locationData}></GoogleMapsComponent>
+                  <GoogleMapsComponent postitonsData={locationData}/>
                     {!rangeValidator.current ? 
                       <AreYouSureDialog 
                       title={`You are far away from your lecture`}
                       onConfirm={ContinueWithDiscoveredLocation}
                       buttonText='Proceed anyways!'
                       bDestructive ={true}
+                      AlertDescriptionComponent={()=>AlertDescription(MessageType.InvalidLocation)}
                       >
                       <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.InvalidLocation, null)}>
                         <b>Proceed With Invalid Location</b>
@@ -308,10 +337,11 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
             </Dialog>
 
             <AreYouSureDialog 
-              title={`Proceeding without location verification might result in absence`}
+              title={`You are about to proceed without verification`}
               onConfirm={ContinueNoLocation}
               buttonText='Proceed'
               bDestructive ={true}
+              AlertDescriptionComponent={() => AlertDescription(MessageType.NoLocation)}
               >
               <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.NoLocation, null)}>
                 <b>Proceed Without Verifying</b>
