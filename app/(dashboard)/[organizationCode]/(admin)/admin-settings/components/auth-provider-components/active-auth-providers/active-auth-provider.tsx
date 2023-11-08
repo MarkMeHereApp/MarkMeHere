@@ -63,13 +63,13 @@ export const ActiveAuthProvider = ({
           {defaultDisplayName !== displayName && (
             <i className="mr-2">{`(${defaultDisplayName})`}</i>
           )}
-          <span className="overflow-ellipsis overflow-hidden">
+          {/* <span className="overflow-ellipsis overflow-hidden">
             Configured <b>{accountLinkingEnabled ? 'With' : 'Without'}</b>{' '}
             Account Linking
           </span>
           <div className="ml-1">
             <AccountLinkingInfoHover />
-          </div>
+          </div> */}
         </div>
         <AreYouSureDialog
           title={`Are you sure you want to delete the ${displayName} OAuth provider?`}
