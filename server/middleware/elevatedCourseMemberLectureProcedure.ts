@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { trpc } from '../trpc';
 import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 
 /* 
 This middleware is meant for routes that use a lectureId
@@ -21,6 +21,18 @@ const isElevatedCourseMemberLecture = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
     const result = lectureInput.safeParse(rawInput);
+
+    const role = zSiteRoles.safeParse(ctx.session?.role);
+
+    if (!role.success)
+      throw generateTypedError(
+        new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'TRPC Middleware: User does not have a valid JWT'
+        })
+      );
+
+    if (role.data === zSiteRoles.enum.admin) return next();
 
     if (!email)
       throw generateTypedError(

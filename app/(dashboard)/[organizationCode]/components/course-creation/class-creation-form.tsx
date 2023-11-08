@@ -208,7 +208,9 @@ export default function CreateCourseForm({
     }
   }, [getLMSSelectedCourse]);
 
-  return (
+  return session.status === 'loading' ? (
+    <Loading />
+  ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {process.env.NEXT_PUBLIC_CANVAS_ENABLED && (
@@ -248,13 +250,11 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="lmsType"
           render={({ field }) => <FormItem />}
         />
-
         <FormField
           control={form.control}
           name="lmsId"
@@ -271,7 +271,6 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="autoEnroll"
@@ -284,10 +283,7 @@ export default function CreateCourseForm({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Auto Enroll into class as Professor.</FormLabel>
-                <FormDescription>
-                  @TODO This option should only be visible for admins
-                </FormDescription>
+                <FormLabel>Auto Enroll into class as a Teacher.</FormLabel>
               </div>
             </FormItem>
           )}

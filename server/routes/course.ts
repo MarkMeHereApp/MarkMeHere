@@ -9,6 +9,7 @@ import { zCourseRoles } from '@/types/sharedZodTypes';
 import { zLMSProvider } from '@/types/sharedZodTypes';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
+import adminProcedure from '../middleware/adminProcedure';
 
 export const zCreateCourseRequest = z.object({
   newCourseData: z.object({
@@ -42,7 +43,7 @@ export const courseRouter = router({
   We will protect this using nextMiddleware (Only faculty and admin users
   have permission to create courses)
   */
-  createCourse: publicProcedure
+  createCourse: adminProcedure
     .input(zCreateCourseRequest)
 
     .mutation(async (requestData) => {
@@ -86,7 +87,7 @@ export const courseRouter = router({
       }
     }),
 
-  deleteCourse: publicProcedure
+  deleteCourse: adminProcedure
     .input(zDeleteCourseRequest)
     .mutation(async (requestData) => {
       try {
@@ -109,16 +110,7 @@ export const courseRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
-
-  getAllCourses: publicProcedure.query(async () => {
-    try {
-      const courses = await prisma.course.findMany({});
-      return { success: true, courses };
-    } catch (error) {
-      throw generateTypedError(error as Error);
-    }
-  })
+    })
 });
 
 export type CourseRouter = typeof courseRouter;

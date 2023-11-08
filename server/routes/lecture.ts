@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
+import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 
 export const zGetLecturesOfCourse = z.object({
   courseId: z.string()
@@ -22,12 +23,52 @@ export const lectureRouter = router({
 
     .query(async (requestData) => {
       try {
+        const siteRole = requestData.ctx.session?.role;
+        const email = requestData.ctx.session?.email;
+
+        if (!siteRole || !email)
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message:
+                'getAllLecturesAndAttendance: User does not have a valid JWT'
+            })
+          );
+
+        const courseMembership = await prisma.courseMember.findFirst({
+          where: {
+            courseId: requestData.input.courseId,
+            email: email
+          }
+        });
+
+        if (!courseMembership && siteRole !== zSiteRoles.enum.admin) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message:
+                'getAllLecturesAndAttendance: User does not have a valid JWT'
+            })
+          );
+        }
+
+        const canAccessAllAttendanceEntries =
+          siteRole === zSiteRoles.enum.admin ||
+          (courseMembership &&
+            courseMembership.role === zCourseRoles.enum.teacher);
+
         const lectures = await prisma.lecture.findMany({
           where: {
             courseId: requestData.input.courseId
           },
           include: {
-            attendanceEntries: true
+            attendanceEntries: canAccessAllAttendanceEntries
+              ? true
+              : {
+                  where: {
+                    courseMemberId: courseMembership?.id
+                  }
+                }
           }
         });
         return { success: true, lectures };

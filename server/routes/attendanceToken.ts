@@ -1,11 +1,6 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
-
-export const zActiveCode = z.object({
-  code: z.string()
-});
 
 export const zGeolocationVerification = z.object({
   studentLatitude: z.number(),
@@ -14,45 +9,6 @@ export const zGeolocationVerification = z.object({
 });
 
 export const attendanceTokenRouter = router({
-  ValidateAndCreateAttendanceToken: publicProcedure
-    .input(zActiveCode)
-    .mutation(async ({ input }) => {
-      try {
-        const qrResult = await prisma.qrcode.findUnique({
-          where: {
-            code: input.code
-          },
-          include: {
-            course: true
-          }
-        });
-
-        if (qrResult === null) {
-          return { success: false };
-        }
-
-        console.log(qrResult.ProfessorLectureGeolocationId);
-
-        const { id } = await prisma.attendanceToken.create({
-          data: {
-            token: uuidv4(),
-            lectureId: qrResult.lectureId,
-            ProfessorLectureGeolocationId:
-              qrResult.ProfessorLectureGeolocationId
-          }
-        });
-
-        return {
-          success: true,
-          token: id,
-          location: qrResult.ProfessorLectureGeolocationId,
-          course: qrResult.course
-        };
-      } catch (error) {
-        throw error;
-      }
-    }),
-
   ValidateGeolocation: publicProcedure
     .input(zGeolocationVerification)
     .mutation(async ({ input }) => {

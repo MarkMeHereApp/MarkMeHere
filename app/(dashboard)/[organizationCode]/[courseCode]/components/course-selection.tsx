@@ -23,50 +23,45 @@ import { CourseCreationSheet } from './course-creation-sheet';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import { useOrganizationContext } from '../../context-organization';
 import { formatString } from '@/utils/globalFunctions';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { Course } from '@prisma/client';
+import { useSession } from 'next-auth/react';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default function CourseSelection() {
+  const session = useSession();
+
   const {
     selectedCourseId,
     courseMembersOfSelectedCourse,
     userCourses,
     userCourseMembers,
-    currentCourseUrl
+    selectedCourse
   } = useCourseContext();
 
   const { organizationUrl } = useOrganizationContext();
 
   const [open, setOpen] = React.useState(false);
 
-  const showCourses = () => {
-    return (
-      selectedCourseId &&
-      userCourses &&
-      userCourseMembers &&
-      userCourses.length === 0
-    );
-  };
-
-  const selectedCourse = userCourses?.find(
-    (userCourse) => userCourse.id === selectedCourseId
-  );
-
-  const selectedCourseMembership = userCourseMembers?.find(
-    (userCourseMember) => userCourseMember.courseId === selectedCourseId
-  );
-
   const uniqueRoles = [...new Set(userCourseMembers?.map((item) => item.role))]
     .sort()
     .reverse();
 
-  if (
-    !selectedCourse ||
-    !userCourses ||
-    !userCourseMembers ||
-    !selectedCourseMembership ||
-    userCourses.length === 0
-  ) {
+  const coursesWithKeys: { key: string; courses: Course[] }[] = uniqueRoles
+    .concat('Not Enrolled')
+    .map((role: string) => {
+      const courses = userCourses.filter((course: Course) => {
+        const courseMember = userCourseMembers.find(
+          (member) => member.courseId === course.id
+        );
+        return courseMember
+          ? courseMember.role === role
+          : role === 'Not Enrolled';
+      });
+      return { key: role, courses };
+    });
+
+  if (!selectedCourse) {
     return (
       <Button variant="outline" className="max-w-2xl" disabled={true}>
         <Skeleton className="h-5 w-[250px] rounded-full" />
@@ -109,51 +104,62 @@ export default function CourseSelection() {
               <CommandList>
                 <CommandInput placeholder="Search Course..." />
                 <CommandEmpty>No Course found.</CommandEmpty>
-                {uniqueRoles.map((role) => (
-                  <CommandGroup key={role} heading={formatString(role)}>
-                    {userCourses?.map((course) => (
-                      <Link
-                        key={course.id}
-                        href={`${organizationUrl}/${course.courseCode}`}
+                {coursesWithKeys.map((uniqueRole) => {
+                  if (uniqueRole.courses.length > 0) {
+                    return (
+                      <CommandGroup
+                        key={uniqueRole.key}
+                        heading={formatString(uniqueRole.key)}
                       >
-                        <CommandItem
-                          key={course.id}
-                          onSelect={() => {
-                            setOpen(false);
-                          }}
-                          className="text-sm"
-                        >
-                          <Avatar className="mr-2 h-5 w-5">
-                            <AvatarImage
-                              src={`https://avatar.vercel.sh/${course.courseCode}.png`}
-                              alt={course.courseCode}
-                              className="grayscale"
-                            />
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                          </Avatar>
-                          <span
-                            className="overflow-ellipsis overflow-hidden max-w-85 whitespace-nowrap"
-                            style={{ maxWidth: '85%' }}
-                          >
-                            {course.name}
-                          </span>
-                          <CheckIcon
-                            className={cn(
-                              'ml-auto h-4 w-4',
-                              selectedCourseId === course.id
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            )}
-                          />
-                        </CommandItem>
-                      </Link>
-                    ))}
-                  </CommandGroup>
-                ))}
+                        {uniqueRole.courses.map((course) => {
+                          return (
+                            <Link
+                              key={course.id}
+                              href={`${organizationUrl}/${course.courseCode}`}
+                            >
+                              <CommandItem
+                                key={course.id}
+                                onSelect={() => {
+                                  setOpen(false);
+                                }}
+                                className="text-sm"
+                              >
+                                <Avatar className="mr-2 h-5 w-5">
+                                  <AvatarImage
+                                    src={`https://avatar.vercel.sh/${course.courseCode}.png`}
+                                    alt={course.courseCode}
+                                    className="grayscale"
+                                  />
+                                  <Skeleton className="h-5 w-5 rounded-full" />
+                                </Avatar>
+                                <span
+                                  className="overflow-ellipsis overflow-hidden max-w-85 whitespace-nowrap"
+                                  style={{ maxWidth: '85%' }}
+                                >
+                                  {course.name}
+                                </span>
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    selectedCourseId === course.id
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                              </CommandItem>
+                            </Link>
+                          );
+                        })}
+                      </CommandGroup>
+                    );
+                  }
+                })}
               </CommandList>
               <CommandSeparator />
             </Command>
-            <CourseCreationSheet />
+            {session.data?.user.role === zSiteRoles.enum.admin && (
+              <CourseCreationSheet />
+            )}
           </PopoverContent>
         </>
       </Popover>

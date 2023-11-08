@@ -1,13 +1,10 @@
 'use client';
-import { revalidatePath } from 'next/cache';
 import { Button } from '@/components/ui/button';
 import { ContinueButton } from '@/components/general/continue-button';
-import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
 import { useProviderContext } from '@/app/context-auth-provider';
 import { trpc } from '@/app/_trpc/client';
-import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 export const FinishFirstTimeSetup = ({
@@ -32,7 +29,7 @@ export const FinishFirstTimeSetup = ({
       await finishSetupMutation.mutateAsync({
         uniqueCode: organizationCode
       });
-      //revalidatePath(`/(dashboard)/[organizationCode]`, 'page');
+
       router.refresh();
       router.replace(`/${organizationCode}`);
     } catch (error) {

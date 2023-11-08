@@ -15,8 +15,8 @@ interface CourseContextType {
   userCourseMembers: CourseMember[];
   setUserCourseMembers: React.Dispatch<React.SetStateAction<CourseMember[]>>;
   selectedCourseId: string;
-  selectedCourseRole: string;
-  selectedCourseEnrollment: { course: Course } & CourseMember;
+  selectedCourse: Course;
+  selectedCourseEnrollment: CourseMember | undefined;
   currentCourseUrl: string;
   courseMembersOfSelectedCourse: CourseMember[] | null;
   setCourseMembersOfSelectedCourse: React.Dispatch<
@@ -25,26 +25,16 @@ interface CourseContextType {
 }
 
 // This should never be used, but it's here to prevent errors
-const defaultCourseEnrollment: { course: Course } & CourseMember = {
+const defaultCourse: Course = {
   id: '',
-  optionalId: null,
-  lmsId: null,
-  email: '',
+  courseCode: '',
+  organizationCode: '',
   name: '',
-  courseId: '',
-  dateEnrolled: new Date(),
-  role: '',
-  course: {
-    id: '',
-    courseCode: '',
-    name: '',
-    lmsType: '',
-    organizationCode: '',
-    lmsId: null,
-    dateCreated: new Date(),
-    StartDate: null,
-    EndDate: null
-  }
+  lmsType: '',
+  lmsId: null,
+  dateCreated: new Date(),
+  StartDate: null,
+  EndDate: null
 };
 
 const CourseContext = createContext<CourseContextType>({
@@ -53,8 +43,8 @@ const CourseContext = createContext<CourseContextType>({
   userCourseMembers: [],
   setUserCourseMembers: () => {},
   selectedCourseId: '',
-  selectedCourseRole: '',
-  selectedCourseEnrollment: defaultCourseEnrollment,
+  selectedCourse: defaultCourse,
+  selectedCourseEnrollment: undefined,
   currentCourseUrl: '',
   courseMembersOfSelectedCourse: [],
   setCourseMembersOfSelectedCourse: () => {}
@@ -63,12 +53,14 @@ const CourseContext = createContext<CourseContextType>({
 export default function CoursesContext({
   userCourses: initialUserCourses,
   userCourseMembers: initialUserCourseMembers,
+  selectedCourse: initialSelectedCourse,
   selectedCourseEnrollment: initialSelectedCourseEnrollment,
   children
 }: {
   userCourses: Course[];
   userCourseMembers: CourseMember[];
-  selectedCourseEnrollment: { course: Course } & CourseMember;
+  selectedCourse: Course;
+  selectedCourseEnrollment: CourseMember | undefined;
   children?: React.ReactNode;
 }) {
   const { organization } = useOrganizationContext();
@@ -78,32 +70,28 @@ export default function CoursesContext({
     initialUserCourseMembers
   );
 
-  const [selectedCourseEnrollment] = useState<
-    {
-      course: Course;
-    } & CourseMember
-  >(initialSelectedCourseEnrollment);
+  const [selectedCourse] = useState<Course>(initialSelectedCourse);
 
-  const [currentCourseUrl] = useState<string>(
-    `/${organization.uniqueCode}/${selectedCourseEnrollment.course.courseCode}`
+  const [selectedCourseEnrollment] = useState<CourseMember | undefined>(
+    initialSelectedCourseEnrollment
   );
 
-  if (!selectedCourseEnrollment || selectedCourseEnrollment.course.id === '') {
+  const [currentCourseUrl] = useState<string>(
+    `/${organization.uniqueCode}/${selectedCourse.courseCode}`
+  );
+
+  if (!selectedCourse || selectedCourse.id === '') {
     throw new Error('No course found');
   }
 
-  const [selectedCourseId] = useState<string>(
-    selectedCourseEnrollment.course.id
-  );
-
-  const [selectedCourseRole] = useState<string>(selectedCourseEnrollment.role);
+  const [selectedCourseId] = useState<string>(selectedCourse.id);
 
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
     useState<CourseMember[] | null>(null);
 
   const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
     {
-      courseId: selectedCourseEnrollment.course.id
+      courseId: selectedCourse.id
     },
     {
       onSuccess: (data) => {
@@ -125,7 +113,7 @@ export default function CoursesContext({
         userCourseMembers,
         setUserCourseMembers,
         selectedCourseId,
-        selectedCourseRole,
+        selectedCourse,
         selectedCourseEnrollment,
         currentCourseUrl,
         courseMembersOfSelectedCourse,

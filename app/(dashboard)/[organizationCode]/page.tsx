@@ -2,13 +2,18 @@ import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import FirstCourseCreation from './components/course-creation/first-course-creation';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
+import NoCoursesAndUser from './components/no-courses-and-user';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default async function Page({
   params
 }: {
   params: { organizationCode: string };
 }) {
-  const session = await getServerSession();
+  const authOptions = await getAuthOptions();
+
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     throw new Error('No session found');
@@ -31,20 +36,29 @@ export default async function Page({
     include: { course: true }
   });
 
-  const coursesInOrganization = courses.filter(
+  const coursesEnrollments = courses.filter(
     (courseEnrollment) =>
       courseEnrollment.course.organizationCode === params.organizationCode
   );
 
-  if (coursesInOrganization.length === 0) {
-    return <FirstCourseCreation />;
+  if (coursesEnrollments.length === 0) {
+    if (session.user.role !== zSiteRoles.enum.admin) {
+      return <NoCoursesAndUser />;
+    }
+
+    const foundCourse = await prisma.course.findFirst();
+
+    if (!foundCourse) {
+      return <FirstCourseCreation />;
+    }
+
+    redirect(`/${params.organizationCode}/${foundCourse.courseCode}/overview`);
   }
 
-  console.log(coursesInOrganization[0]);
   const page =
-    coursesInOrganization[0].role === 'student' ? '/student' : '/overview';
+    coursesEnrollments[0].role === 'student' ? '/student' : '/overview';
 
   redirect(
-    `/${params.organizationCode}/${coursesInOrganization[0].course.courseCode}${page}`
+    `/${params.organizationCode}/${coursesEnrollments[0].course.courseCode}${page}`
   );
 }

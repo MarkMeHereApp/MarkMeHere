@@ -11,10 +11,9 @@ import { utilsRouter } from './routes/utils';
 import { providerRouter } from './routes/provider';
 import { geolocationRouter } from './routes/geolocation';
 import { organizationRouter } from './routes/organization';
-
 import { userRouter } from './routes/user';
-
 import { attendanceTokenRouter } from './routes/attendanceToken';
+import { sessionlessRouter } from './routes/sessionless';
 
 export const appRouter = router({
   course: courseRouter,
@@ -29,7 +28,8 @@ export const appRouter = router({
   geolocation: geolocationRouter,
   user: userRouter,
   attendanceToken: attendanceTokenRouter,
-  organization: organizationRouter
+  organization: organizationRouter,
+  sessionless: sessionlessRouter
 });
 
 export type AppRouter = typeof appRouter;
