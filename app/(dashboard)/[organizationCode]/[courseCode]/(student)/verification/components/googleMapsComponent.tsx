@@ -39,7 +39,7 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
-    
+    console.log(GoogleMapsKey)
 
     function metersToFeet(meters: number){
         return meters * 3.28084
@@ -71,20 +71,9 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
         lat: studentLatitude, lng: studentLongitude
     }
 
-    const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: GoogleMapsKey || '',
-    });
-            
-    if (loadError) {
-        return <div>Error loading Google Maps</div>;
-    }
-            
-    if (!isLoaded) {
-        return <div>Loading Google Maps</div>;
-    }
+    const MapComponent = () => {
 
-    return (
-        <div className='pt-5'>
+        return(
             <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={16}
@@ -128,8 +117,39 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
                 />
                 
             </GoogleMap>
-        </div>
-    );
+        )
+    }
+
+    if(GoogleMapsKey){
+        const { isLoaded, loadError } = useLoadScript({
+            googleMapsApiKey: GoogleMapsKey || '',
+        });
+
+        if (loadError) {
+            return <div>Error loading Google Maps</div>;
+        }
+                
+        if (!isLoaded) {
+            return <div>Loading Google Maps</div>;
+        }
+    }
+            
+    if(GoogleMapsKey){
+        return (
+            <MapComponent></MapComponent>
+        );
+    }
+
+    else{
+        return(
+            <div className='pt-5'>
+                <div className='text-center'>Your location has been found!</div>
+            </div>
+        )
+            
+    }
+
+
 }
 
 export default GoogleMapsComponent;

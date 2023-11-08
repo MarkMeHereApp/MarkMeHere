@@ -148,7 +148,6 @@ export const FirstTimeSteps: StepFunction[] = [
             <EditGoogleMapsKey
               bHasConfigured={!!organization.googleMapsApiKey}
               allowUsersGMaps={organization.allowUsersToUseGoogleMaps}
-              allowModeratorsGMaps={organization.allowModeratorsToUseGoogleMaps}
             />
           </div>
         </ScrollArea>

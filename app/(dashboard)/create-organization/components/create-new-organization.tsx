@@ -35,7 +35,7 @@ export default function InitiallyCreateOrganization() {
   const [displayingForm, setDisplayingForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const createOrganization = trpc.organization.createOrganization.useMutation();
+  const createOrganization = trpc.sessionless.createOrganization.useMutation();
 
   if (error) {
     setLoading(false);

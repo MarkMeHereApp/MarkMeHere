@@ -1,13 +1,11 @@
 'use client';
-
 import { Button } from '@/components/ui/button';
 import { ContinueButton } from '@/components/general/continue-button';
-import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
 import { useProviderContext } from '@/app/context-auth-provider';
 import { trpc } from '@/app/_trpc/client';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export const FinishFirstTimeSetup = ({
   organizationCode
@@ -15,6 +13,7 @@ export const FinishFirstTimeSetup = ({
   organizationCode: string;
 }) => {
   const { activeProviders } = useProviderContext();
+  const router = useRouter();
 
   const finishSetupMutation =
     trpc.organization.finishOrganizationSetup.useMutation();
@@ -30,7 +29,9 @@ export const FinishFirstTimeSetup = ({
       await finishSetupMutation.mutateAsync({
         uniqueCode: organizationCode
       });
-      redirect(`/${organizationCode}`);
+
+      router.refresh();
+      router.replace(`/${organizationCode}`);
     } catch (error) {
       setError(error as Error);
     }

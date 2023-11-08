@@ -16,15 +16,12 @@ import { toastSuccess, formatString } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 
 export function WhoCanUseGoogleMaps({
-  allowModeratorsGMaps,
   allowUsersGMaps
 }: {
-  allowModeratorsGMaps: boolean;
   allowUsersGMaps: boolean;
 }) {
   const [selectedValue, setSelectedValue] = React.useState(() => {
-    if (allowModeratorsGMaps && allowUsersGMaps) return 'everyone';
-    if (allowModeratorsGMaps) return 'onlyModeratorsAndAdmins';
+    if (allowUsersGMaps) return 'everyone';
     return 'onlyAdmins';
   });
   const [isLoading, setIsLoading] = React.useState(false);
@@ -36,13 +33,9 @@ export function WhoCanUseGoogleMaps({
     setSelectedValue(value);
     try {
       setIsLoading(true);
-
-      const allowModeratorsGMaps =
-        value === 'everyone' || value === 'onlyModeratorsAndAdmins';
       const allowUsersGMaps = value === 'everyone';
 
       const updatedSiteSettings = await updateSiteSettings.mutateAsync({
-        allowModeratorsToUseGoogleMaps: allowModeratorsGMaps,
         allowUsersToUseGoogleMaps: allowUsersGMaps
       });
       toastSuccess(`Now ${formatString(value)} can use Google Maps!`);
@@ -78,7 +71,6 @@ export function WhoCanUseGoogleMaps({
         <SelectContent>
           <SelectGroup>
             <SelectMode text="everyone" />
-            <SelectMode text="onlyModeratorsAndAdmins" />
             <SelectMode text="onlyAdmins" />
           </SelectGroup>
         </SelectContent>

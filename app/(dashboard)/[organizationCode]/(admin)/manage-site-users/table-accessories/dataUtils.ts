@@ -1,8 +1,7 @@
 import {
   PiStudent,
   PiChalkboardTeacher,
-  PiUserCircleGear,
-  PiUserSquareDuotone
+  PiUserCircleGear
 } from 'react-icons/pi';
 
 export const roles = [
@@ -20,10 +19,5 @@ export const roles = [
     value: 'admin',
     label: 'Admin',
     icon: PiUserCircleGear
-  },
-  {
-    value: 'moderator',
-    label: 'Moderator',
-    icon: PiUserSquareDuotone
   }
 ];

@@ -1,7 +1,9 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
-import NoCourse from './components/no-course';
 import { getServerSession } from 'next-auth';
+import FirstCourseCreation from './components/course-creation/first-course-creation';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
+import NoCoursesAndUser from './components/no-courses-and-user';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export default async function Page({
@@ -9,7 +11,9 @@ export default async function Page({
 }: {
   params: { organizationCode: string };
 }) {
-  const session = await getServerSession();
+  const authOptions = await getAuthOptions();
+
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     throw new Error('No session found');
@@ -27,18 +31,34 @@ export default async function Page({
     redirect(`/${params.organizationCode}/first-time-setup`);
   }
 
-  const firstCourse = await prisma.courseMember.findFirst({
+  const courses = await prisma.courseMember.findMany({
     where: { email: session.user.email },
     include: { course: true }
   });
 
-  if (!firstCourse) {
-    return <NoCourse />;
+  const coursesEnrollments = courses.filter(
+    (courseEnrollment) =>
+      courseEnrollment.course.organizationCode === params.organizationCode
+  );
+
+  if (coursesEnrollments.length === 0) {
+    if (session.user.role !== zSiteRoles.enum.admin) {
+      return <NoCoursesAndUser />;
+    }
+
+    const foundCourse = await prisma.course.findFirst();
+
+    if (!foundCourse) {
+      return <FirstCourseCreation />;
+    }
+
+    redirect(`/${params.organizationCode}/${foundCourse.courseCode}/overview`);
   }
 
-  const page = firstCourse.role === 'student' ? '/student' : '/overview';
+  const page =
+    coursesEnrollments[0].role === 'student' ? '/student' : '/overview';
 
   redirect(
-    `/${params.organizationCode}/${firstCourse.course.courseCode}${page}`
+    `/${params.organizationCode}/${coursesEnrollments[0].course.courseCode}${page}`
   );
 }

@@ -1,4 +1,4 @@
-/* -------- Only users with an Admin or Moderator site role can access these routes -------- */
+/* -------- Only users with an Admin site role can access these routes -------- */
 
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
@@ -64,7 +64,6 @@ export const userRouter = router({
       }
     }),
 
-  // get All Users
   getAllUsers: publicProcedure.query(async () => {
     try {
       const users = await prisma.user.findMany();
@@ -78,7 +77,6 @@ export const userRouter = router({
     }
   }),
 
-  // Update User
   updateUser: publicProcedure
     .input(zUpdateUser)
     .mutation(async (requestData) => {

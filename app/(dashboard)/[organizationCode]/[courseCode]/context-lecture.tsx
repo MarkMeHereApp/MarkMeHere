@@ -45,7 +45,7 @@ export default function LecturesContextProvider({
     new Date(new Date().setHours(0, 0, 0, 0))
   );
 
-  const { selectedCourseId, selectedCourseRole } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
+  const { selectedCourseId } = useCourseContext(); // Retrieve selectedCourseId from CourseContext
 
   const newLectureData = trpc.lecture.getAllLecturesAndAttendance.useQuery(
     {

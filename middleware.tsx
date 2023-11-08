@@ -69,7 +69,6 @@ const roleToRoutes: Record<string, string[]> = {
     '/api/trpc/attendance.createManyAttendanceRecords',
     '/api/trpc/lecture.getAllLecturesAndAttendance,courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse,lecture.getAllLecturesAndAttendance',
-    '/api/trpc/attendance.getCourseMemberAttendanceEntriesOfCourse',
     '/api/trpc/courseMember.getCourseMembersOfCourse',
     '/api/trpc/courseMember.createCourseMember',
     '/api/trpc/courseMember.deleteAllStudents',
@@ -139,5 +138,5 @@ export const config = {
   // Matches the entire project except for the routes between the | characters, also we ignore the base "/" route with "?!^/$".
   // @TODO there should be one trpc route for sessionless routes.
   matcher:
-    '/((?!^/$|signin|submit|_next/static|_next/image|favicon.ico|api/trpc/attendanceToken|api/trpc/organization|unauthorized-email|create-organization|landing-page|get-random-secret|deploy|successful-deployment).+)'
+    '/((?!^/$|signin|submit|_next/static|_next/image|favicon.ico|api/trpc/sessionless|unauthorized-email|create-organization|landing-page|get-random-secret|deploy|successful-deployment).+)'
 };

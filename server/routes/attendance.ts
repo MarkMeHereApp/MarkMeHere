@@ -129,21 +129,6 @@ export const attendanceRouter = router({
       } catch (error) {
         throw generateTypedError(error as Error);
       }
-    }),
-  // @TODO: Make sure if you are a studet we don't send data about other students
-  getCourseMemberAttendanceEntriesOfCourse: publicProcedure
-    .input(zGetCourseMemberAttendance)
-    .query(async (requestData) => {
-      try {
-        const attendanceEntries = await prisma.attendanceEntry.findMany({
-          where: {
-            courseMemberId: requestData.input.courseMemberId
-          }
-        });
-        return { success: true, attendanceEntries };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
     })
 });
 

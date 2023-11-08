@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import OrganizationContextProvider from './context-organization';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { decrypt } from '@/utils/globalFunctions';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export default async function SchoolLayout({
   children,
@@ -13,9 +14,9 @@ export default async function SchoolLayout({
   children: React.ReactNode;
   params: { organizationCode: string };
 }) {
-  const session = await getServerSession();
+  const authOptions = await getAuthOptions();
 
-  const email = session?.user?.email;
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     throw new Error('No email found in session');
@@ -35,13 +36,6 @@ export default async function SchoolLayout({
     organization.googleMapsApiKey = '';
 
     if (session.user.role === zSiteRoles.enum.admin) {
-      organization.googleMapsApiKey = decrypt(key);
-    }
-
-    if (
-      session.user.role === zSiteRoles.enum.moderator &&
-      organization.allowModeratorsToUseGoogleMaps
-    ) {
       organization.googleMapsApiKey = decrypt(key);
     }
 

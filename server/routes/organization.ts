@@ -5,10 +5,10 @@ import { generateTypedError } from '@/server/errorTypes';
 import { encrypt, decrypt } from '@/utils/globalFunctions';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { TRPCError } from '@trpc/server';
+import adminProcedure from '../middleware/adminProcedure';
 
 const zUpdateOrganization = z.object({
   googleMapsApiKey: z.string().optional(),
-  allowModeratorsToUseGoogleMaps: z.boolean().optional(),
   allowUsersToUseGoogleMaps: z.boolean().optional(),
   darkTheme: z.string().optional(),
   lightTheme: z.string().optional()
@@ -23,41 +23,7 @@ const zFinishOrganizationSetup = z.object({
 });
 
 export const organizationRouter = router({
-  createOrganization: publicProcedure
-    .input(zCreateOrganization)
-    .mutation(async (requestData) => {
-      try {
-        const existingOrg = await prisma.organization.findFirst();
-
-        if (existingOrg) {
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message:
-                'An Organization already exists in the database. We do not support adding more than one organization at this time.'
-            })
-          );
-        }
-
-        return await prisma.organization.create({
-          data: {
-            name: requestData.input.name,
-            uniqueCode: requestData.input.uniqueCode.toLowerCase(),
-            hashEmails: false
-          }
-        });
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
-  getOrganization: publicProcedure.input(z.object({})).query(async () => {
-    try {
-      return await getGlobalSiteSettings_Server();
-    } catch (error) {
-      throw generateTypedError(error as Error);
-    }
-  }),
-  finishOrganizationSetup: publicProcedure
+  finishOrganizationSetup: adminProcedure
     .input(zFinishOrganizationSetup)
     .mutation(async (requestData) => {
       try {
@@ -69,7 +35,7 @@ export const organizationRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-  updateOrganization: publicProcedure
+  updateOrganization: adminProcedure
     .input(zUpdateOrganization)
     .mutation(async (requestData) => {
       try {
@@ -88,13 +54,6 @@ export const organizationRouter = router({
         let googleMapsApiKey = organizationSettings.googleMapsApiKey;
         if (requestData.input.googleMapsApiKey !== undefined) {
           googleMapsApiKey = encrypt(requestData.input.googleMapsApiKey);
-        }
-
-        let allowedModeratorsToUseGoogleMaps =
-          organizationSettings.allowModeratorsToUseGoogleMaps;
-        if (requestData.input.allowModeratorsToUseGoogleMaps !== undefined) {
-          allowedModeratorsToUseGoogleMaps =
-            requestData.input.allowModeratorsToUseGoogleMaps;
         }
 
         let allowedUsersToUseGoogleMaps =
@@ -117,7 +76,6 @@ export const organizationRouter = router({
         const updated = await prisma.organization.updateMany({
           data: {
             googleMapsApiKey: googleMapsApiKey,
-            allowModeratorsToUseGoogleMaps: allowedModeratorsToUseGoogleMaps,
             allowUsersToUseGoogleMaps: allowedUsersToUseGoogleMaps,
             lightTheme: lightTheme,
             darkTheme: darkTheme

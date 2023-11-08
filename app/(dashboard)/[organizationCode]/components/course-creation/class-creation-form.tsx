@@ -32,8 +32,7 @@ import { useEffect } from 'react';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import Loading from '@/components/general/loading';
-import { redirect } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -82,6 +81,7 @@ export default function CreateCourseForm({
   const { organizationUrl, organization } = useOrganizationContext();
   const [error, setError] = useState<Error | null>(null);
   const utils = trpc.useContext();
+  const router = useRouter();
 
   if (error) {
     setLoading(false);
@@ -172,7 +172,8 @@ export default function CreateCourseForm({
       utils.canvas.getCanvasCourses.invalidate();
       onSuccess();
       setLoading(false);
-      redirect(`${organizationUrl}/${newCourse.courseCode}`);
+      router.refresh();
+      router.push(`${organizationUrl}/${newCourse.courseCode}`);
 
       return;
     } catch (error) {
@@ -207,7 +208,9 @@ export default function CreateCourseForm({
     }
   }, [getLMSSelectedCourse]);
 
-  return (
+  return session.status === 'loading' ? (
+    <Loading />
+  ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {process.env.NEXT_PUBLIC_CANVAS_ENABLED && (
@@ -247,13 +250,11 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="lmsType"
           render={({ field }) => <FormItem />}
         />
-
         <FormField
           control={form.control}
           name="lmsId"
@@ -270,7 +271,6 @@ export default function CreateCourseForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="autoEnroll"
@@ -283,10 +283,7 @@ export default function CreateCourseForm({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Auto Enroll into class as Professor.</FormLabel>
-                <FormDescription>
-                  @TODO This option should only be visible for admins
-                </FormDescription>
+                <FormLabel>Auto Enroll into class as a Teacher.</FormLabel>
               </div>
             </FormItem>
           )}
