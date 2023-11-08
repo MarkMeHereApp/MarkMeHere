@@ -23,11 +23,14 @@ export const qrRouter = router({
         for (let i = 0; i < 10; i++) {
           newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-          const existingCode = await prisma.qrcode.findUnique({
-            where: {
-              code: newCode
-            }
-          });
+          //Replace this with Redis code
+          // const existingCode = await prisma.qrcode.findUnique({
+          //   where: {
+          //     code: newCode
+          //   }
+          // });
+
+          const existingCode = await redis.hget("qrCode:" + newCode, "code")
 
           if (existingCode === null) {
             break;
@@ -94,7 +97,6 @@ export const qrRouter = router({
             */
             await multi.hset(qrKey, qrCodeObj).expire(qrKey, newExpiry.getSeconds()).exec();
 
-            //const data = await redis.hget("qrCode:" + newCode, 'name');
             // const returnCode = await prisma.qrcode.create({
             //   data: {
             //     code: newCode,

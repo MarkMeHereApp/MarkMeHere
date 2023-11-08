@@ -1,7 +1,7 @@
 import InputPage from './components/inputPage';
-import { GetServerSidePropsContext } from 'next';
 import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
+import { kv as redis } from '@vercel/kv';
 import { redirect } from 'next/navigation';
 
 async function validateAndCreateToken(qrCode: string) {
@@ -10,6 +10,9 @@ async function validateAndCreateToken(qrCode: string) {
     Find our qr code in Redis here 
     If we successfully find the matchign qr code then 
     create an attendance token in redis
+
+    When we validate teh token we should also look up the course 
+    associated with it to grab the organization id
     */
     const qrResult = await prisma.qrcode.findUnique({
       where: {
@@ -20,9 +23,11 @@ async function validateAndCreateToken(qrCode: string) {
       }
     });
 
+     //const qrResult = await redis.hgetall("qrCode:" + qrCode);
+
     console.log(qrResult + 'error');
 
-    if (qrResult === null) {
+    if (!qrResult) {
       return { success: false };
     }
 
@@ -55,19 +60,20 @@ export default async function SubmitPage({
   let qrCode = '';
   let error = '';
 
-  const handleToken = async () => {
-    const res = await validateAndCreateToken(qrCode);
+  // const handleToken = async () => {
+  //   const res = await validateAndCreateToken(qrCode);
 
-    if (res) {
-      return res;
-    }
-  };
+  //   if (res) {
+  //     return res;
+  //   }
+  // };
 
   if (searchParams.hasOwnProperty('qr')) {
     console.log('QR Param included');
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
 
-    const validateToken = await handleToken();
+    const validateToken = await validateAndCreateToken(qrCode);
+  
 
     if (validateToken?.success) {
       const location = validateToken?.location;
