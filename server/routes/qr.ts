@@ -44,12 +44,22 @@ export const qrRouter = router({
           input.professorLectureGeolocationId;
         console.log(professorLectureGeolocationId);
 
-        if (professorLectureGeolocationId) {
-          const newExpiry = new Date();
-          newExpiry.setSeconds(
-            newExpiry.getSeconds() + input.secondsToExpireNewCode
-          );
+        const newExpiry = new Date();
+        newExpiry.setSeconds(
+          newExpiry.getSeconds() + input.secondsToExpireNewCode
+        );
 
+        const qrCodeObj: zQrCodeType = {
+          code: newCode,
+          lectureId,
+          courseId,
+          professorLectureGeolocationId: null,
+          expiresAt: newExpiry
+        };
+        const qrKey = 'qrCode:' + newCode;
+        const multi = redis.multi();
+
+        if (professorLectureGeolocationId) {
           try {
             const returnCode = await prisma.qrcode.create({
               data: {
@@ -74,22 +84,12 @@ export const qrRouter = router({
             throw error;
           }
         } else {
-          const newExpiry = new Date();
-          newExpiry.setSeconds(
-            newExpiry.getSeconds() + input.secondsToExpireNewCode
-          );
-
-          const qrCodeObj: zQrCodeType = {
-            code: newCode,
-            lectureId,
-            courseId,
-            professorLectureGeolocationId: null,
-            expiresAt: newExpiry,
-          };
-          const qrKey = 'qrCode:' + newCode;
-          const multi = redis.multi();
-
           try {
+            /*
+            Store qr code in Redis
+            We no longer need to delete old codes as Redis will
+            delete them for us after 15 seconds
+            */
             await multi.hset(qrKey, qrCodeObj).expire(qrKey, 15).exec();
 
             //const data = await redis.hget("qrCode:" + newCode, 'name');
