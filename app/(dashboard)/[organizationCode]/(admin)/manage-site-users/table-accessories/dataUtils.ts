@@ -6,18 +6,13 @@ import {
 
 export const roles = [
   {
-    value: 'student',
-    label: 'Student',
-    icon: PiStudent
-  },
-  {
-    value: 'professor',
-    label: 'Professor',
+    value: 'admin',
+    label: 'Admin',
     icon: PiChalkboardTeacher
   },
   {
-    value: 'admin',
-    label: 'Admin',
+    value: 'user',
+    label: 'User',
     icon: PiUserCircleGear
   }
 ];
