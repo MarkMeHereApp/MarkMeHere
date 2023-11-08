@@ -164,8 +164,7 @@ export function ProviderSubmissionDialog({
         displayName: inputForm.displayName,
         clientId: inputForm.keys['clientId'],
         clientSecret: inputForm.keys['clientSecret'],
-        allowDangerousEmailAccountLinking:
-          inputForm.allowAccountLinking || false,
+        allowDangerousEmailAccountLinking: true,
         issuer: inputForm.keys['issuer'],
         tenantId: inputForm.keys['tenantId']
       });
