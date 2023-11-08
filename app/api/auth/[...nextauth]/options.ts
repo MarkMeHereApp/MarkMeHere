@@ -76,9 +76,17 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
         let hashedEmail = null;
-        if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
+        /*
+        If the type of user is adapterUser we know the adapter
+        found our existing user in the database (meaning the email is hashed already)
+        If its of type user we have received the user account from an OAuth provider
+        */
+        // const userEmail =
+        //   'adapterUser' in user ? user.email : hashEmail(user.email);
+        //if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
+        console.log(email)
 
-        const prismaUser = await findUser(hashedEmail ?? user.email);
+        const prismaUser = await findUser(user.email);
 
         if (prismaUser) {
           return true;
