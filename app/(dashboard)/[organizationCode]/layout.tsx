@@ -47,8 +47,6 @@ export default async function SchoolLayout({
     }
   }
 
-  console.log(organization);
-
   return (
     <>
       <OrganizationContextProvider organization={organization}>

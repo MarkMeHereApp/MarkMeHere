@@ -28,18 +28,8 @@ const QR = () => {
   const timerUpdateRate = 50; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
-  const { userCourses, selectedCourseRole, currentCourseUrl } =
-    useCourseContext();
+  const { userCourses, currentCourseUrl } = useCourseContext();
   const { lectures, selectedAttendanceDate } = useLecturesContext();
-
-  //Only Professors or TA's can access this page
-  if (selectedCourseRole === 'student') {
-    router.push(
-      `${currentCourseUrl}/attendance?qr-warning=${encodeURIComponent(
-        'You must be a Professor or TA to generate QR codes for this course'
-      )}`
-    );
-  }
 
   //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
