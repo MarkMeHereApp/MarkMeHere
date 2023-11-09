@@ -38,7 +38,7 @@ const isElevatedCourseMemberForCourseMember = trpc.middleware(
     if (!result.success)
       throw generateTypedError(
         new TRPCError({
-          code: 'BAD_REQUEST',
+          code: 'PARSE_ERROR',
           message:
             'TRPC Middleware: isElevatedCourseMemberForCourseMember requires a valid courseMemberId'
         })
