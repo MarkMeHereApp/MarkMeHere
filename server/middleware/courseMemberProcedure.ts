@@ -2,13 +2,18 @@ import { trpc } from '../trpc';
 import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { z } from 'zod';
 
-/* -------- Checks  -------- */
+/* -------- Checks if current user is enrolled in the course -------- */
 
-const isCourseMember = trpc.middleware(async ({ next, ctx }) => {
-  const role = zSiteRoles.safeParse(ctx.session?.role);
+const courseInput = z.object({
+    courseId: z.string()
+  });
 
-  if (!role.success)
+const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
+  const courseId = courseInput.safeParse(rawInput);
+
+  if (!courseId)
     throw generateTypedError(
       new TRPCError({
         code: 'UNAUTHORIZED',
@@ -16,13 +21,13 @@ const isCourseMember = trpc.middleware(async ({ next, ctx }) => {
       })
     );
 
-  if (role.data !== zSiteRoles.enum.admin)
-    throw generateTypedError(
-      new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'TRPC Middleware: User does not have admin privileges'
-      })
-    );
+//   if (role.data !== zSiteRoles.enum.admin)
+//     throw generateTypedError(
+//       new TRPCError({
+//         code: 'UNAUTHORIZED',
+//         message: 'TRPC Middleware: User does not have admin privileges'
+//       })
+//     );
 
   return next();
 });
