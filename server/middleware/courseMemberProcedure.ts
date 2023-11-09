@@ -7,8 +7,8 @@ import { z } from 'zod';
 /* -------- Checks if current user is enrolled in the course -------- */
 
 const courseInput = z.object({
-    courseId: z.string()
-  });
+  courseId: z.string()
+});
 
 const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
   const courseId = courseInput.safeParse(rawInput);
@@ -21,17 +21,17 @@ const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
       })
     );
 
-//   if (role.data !== zSiteRoles.enum.admin)
-//     throw generateTypedError(
-//       new TRPCError({
-//         code: 'UNAUTHORIZED',
-//         message: 'TRPC Middleware: User does not have admin privileges'
-//       })
-//     );
+  //   if (role.data !== zSiteRoles.enum.admin)
+  //     throw generateTypedError(
+  //       new TRPCError({
+  //         code: 'UNAUTHORIZED',
+  //         message: 'TRPC Middleware: User does not have admin privileges'
+  //       })
+  //     );
 
   return next();
 });
 
-/* Checks admin privileges using JWT */
+/* Checks course enrollment using courseId */
 const courseMemberProcedure = trpc.procedure.use(isCourseMember);
 export default courseMemberProcedure;
