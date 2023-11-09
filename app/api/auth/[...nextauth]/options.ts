@@ -12,6 +12,7 @@ import CredentialsProvider from './customNextAuthProviders/credentials-provider'
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { findCourseMember } from '@/server/utils/courseMemberHelpers';
 import { findHashedCourseMember } from '@/server/utils/courseMemberHelpers';
+import { AdapterUser } from 'next-auth/adapters';
 
 const getBuiltInNextAuthProviders = async (): Promise<
   AuthOptions['providers']
@@ -76,17 +77,20 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
         let hashedEmail = null;
+        console.log(user)
         /*
         If the type of user is adapterUser we know the adapter
         found our existing user in the database (meaning the email is hashed already)
         If its of type user we have received the user account from an OAuth provider
         */
-        // const userEmail =
-        //   'adapterUser' in user ? user.email : hashEmail(user.email);
-        //if (settings?.hashEmails) hashedEmail = hashEmail(user.email);
-        console.log(email)
+       //If dateCreated is in user we know its the user row from our database 
+       //and it is already hashed
+        if (settings?.hashEmails) {
+          hashedEmail =
+            ('dateCreated' in user) ? user.email : hashEmail(user.email);
+        }
 
-        const prismaUser = await findUser(user.email);
+        const prismaUser = await findUser(hashedEmail ?? user.email);
 
         if (prismaUser) {
           return true;
