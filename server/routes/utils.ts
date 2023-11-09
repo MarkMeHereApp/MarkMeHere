@@ -1,8 +1,9 @@
+import adminProcedure from '../middleware/adminProcedure';
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
 
 export const utilsRouter = router({
-  deleteDatabase: publicProcedure.mutation(async () => {
+  deleteDatabase: adminProcedure.mutation(async () => {
     // Delete data from tables with foreign key relationships first
     await prisma.$executeRaw`DELETE FROM "AttendanceEntry"`;
     await prisma.$executeRaw`DELETE FROM "CourseMember"`;

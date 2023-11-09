@@ -3,9 +3,7 @@
 import UsersContextProvider from '../context-users';
 import { columns } from './columns';
 import UserTable from './UserTable';
-import Loading from '@/components/general/loading';
 import { useUsersContext } from '../context-users';
-import { useEffect } from 'react';
 const ManageSiteUsers = () => {
   const { userData, setUserData } = useUsersContext();
 
