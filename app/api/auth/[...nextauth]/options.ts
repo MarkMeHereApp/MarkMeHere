@@ -77,17 +77,16 @@ export const getAuthOptions = async (): Promise<NextAuthOptions> => {
     callbacks: {
       async signIn({ user, account, profile, email, credentials }) {
         let hashedEmail = null;
-        console.log(user)
+
         /*
-        If the type of user is adapterUser we know the adapter
-        found our existing user in the database (meaning the email is hashed already)
-        If its of type user we have received the user account from an OAuth provider
-        */
-       //If dateCreated is in user we know its the user row from our database 
-       //and it is already hashed
+        We can receive two types of user objects AdapterUser or User
+        User comes from the provider, AdapterUser comes from the database
+        If dateCreated is in user we know its the user row from our database 
+        and it is already hashed (user from provider does not have dateCreated as an attribute)
+       */
         if (settings?.hashEmails) {
           hashedEmail =
-            ('dateCreated' in user) ? user.email : hashEmail(user.email);
+            'dateCreated' in user ? user.email : hashEmail(user.email);
         }
 
         const prismaUser = await findUser(hashedEmail ?? user.email);
