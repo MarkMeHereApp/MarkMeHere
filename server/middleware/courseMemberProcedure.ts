@@ -1,7 +1,6 @@
 import { trpc } from '../trpc';
 import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
-import { zSiteRoles } from '@/types/sharedZodTypes';
 import { z } from 'zod';
 import { findCourseMember } from '../utils/courseMemberHelpers';
 
