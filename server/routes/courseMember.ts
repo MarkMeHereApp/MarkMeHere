@@ -13,7 +13,6 @@ import {
 } from '../utils/courseMemberHelpers';
 import { hashEmail } from '../utils/userHelpers';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
-
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -109,7 +108,6 @@ export const courseMemberRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
@@ -233,39 +231,49 @@ export const courseMemberRouter = router({
   Either update existing course member or create a new one. 
   Resolve all course member creation promises.
    */
-  createMultipleCourseMembers: publicProcedure
+  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
         const {
           input: { courseId, courseMembers },
-          ctx: { settings }
+          ctx: { settings, session }
         } = requestData;
         const { hashEmails } = settings;
         const updatedCourseMembers = [];
+        if (session && typeof session.email === 'string') {
+          // Filter out the course members with email matching session.user
+          const filteredCourseMembers = courseMembers.filter(
+            (memberData) => memberData.email !== session.email
+          );
+          // Create an array to store promises for member creation or update
+          const memberPromises = filteredCourseMembers.map(
+            async (memberData) => {
+              memberData.email = hashEmails
+                ? hashEmail(memberData.email)
+                : memberData.email;
 
-        // Create an array to store promises for member creation or update
-        const memberPromises = courseMembers.map(async (memberData) => {
-          memberData.email = hashEmails
-            ? hashEmail(memberData.email)
-            : memberData.email;
+              const existingMember = await findCourseMember(
+                memberData.email,
+                courseId
+              );
 
-          const existingMember = await findCourseMember(
-            memberData.email,
-            courseId
+              if (existingMember) {
+                return updateCourseMember(existingMember.id, memberData);
+              } else {
+                return createCourseMember({ ...memberData, courseId });
+              }
+            }
           );
 
-          if (existingMember) {
-            return updateCourseMember(existingMember.id, memberData);
-          } else {
-            return createCourseMember({ ...memberData, courseId });
-          }
-        });
+          const courseMemberResults = await Promise.all(memberPromises);
+          updatedCourseMembers.push(...courseMemberResults);
 
-        const courseMemberResults = await Promise.all(memberPromises);
-        updatedCourseMembers.push(...courseMemberResults);
-
-        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
+          return {
+            success: true,
+            allCourseMembersOfClass: updatedCourseMembers
+          };
+        }
       } catch (error) {
         throw generateTypedError(error as Error);
       }

@@ -215,7 +215,7 @@ const CSV_Import = () => {
         courseMembers: transformedTableValues
       });
 
-      if (newMembers.success) {
+      if (newMembers?.success) {
         toast({
           title: 'Imported CSV successfully',
           icon: 'success',

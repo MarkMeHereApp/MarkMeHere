@@ -37,20 +37,15 @@ import { formatString, toastError } from '../globalFunctions';
 import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
+import { useSession } from 'next-auth/react';
+
 const EditUsers = ({ user }: { user: User }) => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const updateUser = trpc.user.updateUser.useMutation();
   const { userData, setUserData } = useUsersContext();
   const [error, setError] = useState<Error | null>(null);
-  const handleDialogOpen = () => {
-    form.reset();
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
+  const { data: session, status } = useSession();
 
   const zUsers = z.object({
     name: z
@@ -192,28 +187,39 @@ const EditUsers = ({ user }: { user: User }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={user.role}
-                    >
+                    {session?.user.email === user.email ||
+                    process.env.NEXT_PUBLIC_DEMO_MODE ? (
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
+                        <Input
+                          disabled
+                          type="text"
+                          value={user.role}
+                          readOnly
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {zSiteRoles.options.map((role) => (
-                          <SelectItem value={role}>
-                            {formatString(role)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    ) : (
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={user.role}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {zSiteRoles.options.map((role) => (
+                            <SelectItem value={role}>
+                              {formatString(role)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="optionalId"
