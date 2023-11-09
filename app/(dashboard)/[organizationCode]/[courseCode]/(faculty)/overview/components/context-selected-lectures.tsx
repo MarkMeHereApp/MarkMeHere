@@ -34,10 +34,14 @@ export const SelectedLecturesProvider: React.FC<
   SelectedLecturesProviderProps
 > = ({ children }) => {
   const { lectures } = useLecturesContext();
+
   lectures?.sort((a, b) => a.lectureDate.getTime() - b.lectureDate.getTime());
   const [selectedLectures, setSelectedLectures] = useState(lectures);
 
-  const defaultFrom = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // milliseconds in one week
+  const getDefaultFromDate = () => new Date(Date.now() - ONE_WEEK);
+
+  const defaultFrom = getDefaultFromDate();
   const defaultTo = new Date();
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(() => {
     if (lectures && lectures.length > 0) {
