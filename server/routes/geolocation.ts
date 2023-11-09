@@ -1,4 +1,4 @@
-import { publicProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import elevatedCourseMemberLectureProcedure from '../middleware/elevatedCourseMemberLectureProcedure';

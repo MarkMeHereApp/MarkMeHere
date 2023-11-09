@@ -1,5 +1,5 @@
 import adminProcedure from '../middleware/adminProcedure';
-import { publicProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import prisma from '@/prisma';
 
 export const utilsRouter = router({

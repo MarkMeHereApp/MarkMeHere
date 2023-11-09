@@ -1,6 +1,6 @@
 /* -------- Only Professors or TA's can access these routes -------- */
 
-import { publicProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import prisma from '@/prisma';
 import { z } from 'zod';
 import { zAttendanceStatus } from '@/types/sharedZodTypes';
