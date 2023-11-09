@@ -11,15 +11,16 @@ const courseInput = z.object({
 });
 
 const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
-  const courseId = courseInput.safeParse(rawInput);
+  const result = courseInput.safeParse(rawInput);
 
-  if (!courseId)
+  if (!result.success)
     throw generateTypedError(
       new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'TRPC Middleware: User does not have a valid JWT'
+        message: 'TRPC Middleware: isCourseMember requires a valid courseId'
       })
     );
+    console.log(result.data.courseId)
 
   //   if (role.data !== zSiteRoles.enum.admin)
   //     throw generateTypedError(
