@@ -60,6 +60,7 @@ const TopStudents: React.FC<TopStudentsProps> = ({
       : numPresent / numTotal;
     // Use member.id as key and store the rest of the information as an object
     studentMap.set(member.id, {
+      id: member.id,
       name: member.name,
       email: member.email,
       lmsId: member.lmsId ?? '',
