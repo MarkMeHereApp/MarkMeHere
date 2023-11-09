@@ -87,7 +87,7 @@ const TopStudents: React.FC<TopStudentsProps> = ({
   // Dynamically create a div for each top student with TailwindCSS classes
   const studentCards = topStudents.map((student) => (
     <div
-      key={student.memberId}
+      key={student.id}
       className="bg-white shadow rounded-lg p-4 flex items-center justify-between"
     >
       <span className="font-semibold truncate">{student.name}</span>
