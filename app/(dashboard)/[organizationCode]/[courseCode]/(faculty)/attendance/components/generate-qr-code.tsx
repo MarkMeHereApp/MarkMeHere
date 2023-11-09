@@ -54,8 +54,9 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const [parameters, setParameters] = useState(firstParam);
 
-  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(false);
+  // const [enableGeolocation, setEnableGeolocation] = useState<boolean>(false);
   const [geolocationSettings, setGeolcationSettings] = useState<boolean>(false)
+  const enableGeolocation = useRef<boolean>(false)
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -78,9 +79,9 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   };
 
   const handleGeolocationChange = async () => {
-    setEnableGeolocation(!enableGeolocation);
-    console.log(!enableGeolocation);
-    if (enableGeolocation) {
+    enableGeolocation.current = !enableGeolocation.current
+    console.log(!enableGeolocation.current);
+    if (enableGeolocation.current) {
       setIsDialogOpen(true);
     }
   };
@@ -377,7 +378,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                       </TooltipTrigger>
                       <div className="flex items-center space-x-2">
                         <Switch
-                          checked={enableGeolocation}
+                          checked={enableGeolocation.current}
                           onClick={() => {
                             handleGeolocationChange();
                             fetchGeolocation()
