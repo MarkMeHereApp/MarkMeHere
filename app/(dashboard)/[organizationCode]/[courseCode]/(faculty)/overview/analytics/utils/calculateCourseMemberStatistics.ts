@@ -33,12 +33,23 @@ export default function calculateCourseMemberStatistics(
   member: CourseMember,
   lectures: lecturesType
 ): CourseMemberStatistics {
+  if (!lectures || lectures?.length === 0) {
+    return {
+      numPresent: 0,
+      numAbsent: 0,
+      numLate: 0,
+      numExcused: 0,
+      numTotal: 0,
+      attendanceGrade: 0
+    };
+  }
+
   const numPresent = countAttendanceStatus('here', member, lectures);
   const numAbsent = countAttendanceStatus('absent', member, lectures);
   const numLate = countAttendanceStatus('late', member, lectures);
   const numExcused = countAttendanceStatus('excused', member, lectures);
-  const numTotal = numPresent + numAbsent + numLate - numExcused;
-  const attendanceGrade = numPresent / numTotal;
+  const numTotal = lectures.length - numExcused;
+  const attendanceGrade = numTotal > 0 ? numPresent / numTotal : 0;
   return {
     numPresent,
     numAbsent,

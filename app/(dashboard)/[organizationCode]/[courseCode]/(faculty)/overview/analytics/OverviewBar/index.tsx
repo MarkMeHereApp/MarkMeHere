@@ -123,10 +123,20 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
   return (
     <>
       <Card>
-        <CardContent className="flex p-4 gap-4">
-          <CalendarDateRangePicker />
-          <Button onClick={() => onClickExportJSON()}>Export to JSON</Button>
-          <Button onClick={() => onClickExportCSV()}>Export to CSV</Button>
+        <CardContent className="flex flex-col sm:flex-row p-4 gap-4">
+          <CalendarDateRangePicker className="w-full sm:w-auto" />
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => onClickExportJSON()}
+          >
+            Export to JSON
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => onClickExportCSV()}
+          >
+            Export to CSV
+          </Button>
         </CardContent>
       </Card>
     </>

@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription
+} from '@/components/ui/card';
 import { CourseMember } from '@prisma/client';
 import { lecturesType } from '../../../../context-lecture';
 import calculateCourseMemberStatistics from '../utils/calculateCourseMemberStatistics';
@@ -63,12 +69,17 @@ const SupportList: React.FC<SupportListProps> = ({
   // Dynamically create a div for each top student with TailwindCSS classes
   const studentCards = topStudents.map((student) => (
     <div
-      key={student.id}
+      key="{student.id}"
       className="shadow rounded-lg p-4 flex items-center justify-between bg-card text-foreground border-border"
     >
-      <span className="font-semibold truncate text-secondary-foreground">
-        {student.name}
-      </span>
+      <div>
+        <span className="font-semibold truncate text-secondary-foreground">
+          {student.name}
+        </span>
+        <span className="block text-xs text-muted-foreground">
+          {student.email}
+        </span>
+      </div>
       <span className="text-sm font-medium text-secondary-foreground">
         {(100 * student.attendanceGrade).toFixed(2) + '%'}
       </span>
@@ -79,8 +90,11 @@ const SupportList: React.FC<SupportListProps> = ({
     <Card className="h-full">
       <CardHeader>
         <CardTitle>Attendance Support List</CardTitle>
+        <CardDescription>
+          These students may be in need of support.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col h-full space-y-2 p-4">
+      <CardContent className="flex flex-col h-full space-y-2 p-4 ">
         {studentCards}
       </CardContent>
     </Card>
