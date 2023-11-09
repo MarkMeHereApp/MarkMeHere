@@ -194,10 +194,7 @@ const EnrollUser = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue="admin"
-                    >
+                    <Select onValueChange={field.onChange} defaultValue="admin">
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
@@ -205,7 +202,7 @@ const EnrollUser = () => {
                       </FormControl>
                       <SelectContent>
                         {zSiteRoles.options.map((role) => (
-                          <SelectItem value={role}>
+                          <SelectItem value={role} key={role}>
                             {formatString(role)}
                           </SelectItem>
                         ))}
