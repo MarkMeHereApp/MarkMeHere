@@ -60,8 +60,10 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
 
-    function metersToFeet(meters: number){
-        return meters * 3.28084
+    function feetToMeter(feet: number){
+        console.log
+
+        return feet / 3.28084
     }
 
     const mapStyles = {        
@@ -103,7 +105,7 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
 
                 <CircleF 
                 center={professorLocation}
-                radius={metersToFeet(50)} // radius in meters
+                radius={feetToMeter(range)} // radius in meters
                 options={{
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,
@@ -143,46 +145,61 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
     if(GoogleMapsKey){
         return (
             <div>
-                <AlertDialogHeader>Hello</AlertDialogHeader>
+                <AlertDialogHeader></AlertDialogHeader>
                 <MapComponent></MapComponent>
                 <AlertDialogTitle>
-                    Select the size of your classroom and verify your location
+                    
                 </AlertDialogTitle>
                 <div className='pt-[10px]'>
-                <RadioGroup defaultValue = {'medium'} className='flex flex-col '>
-                    <div className='flex flex-col'>
-                    <div className='flex items-center'>
-                        <RadioGroupItem
-                            onClick={() => newRangeSettings(100)}
-                            value='small'
-                        />
-                        <AlertDialogDescription className='pl-[10px]'>
-                            Small - 100ft
-                        </AlertDialogDescription>
+                <RadioGroup defaultValue = {'medium'} className='flex flex-col gap-2'>
+                    <div className='flex justify-between'>
+                        <div>
+                            <div className='flex items-center'>
+                                <RadioGroupItem
+                                    onClick={() => newRangeSettings(50)}
+                                    value='small'
+                                />
+                                <AlertDialogDescription className='pl-[10px]'>
+                                    Small - 50ft
+                                </AlertDialogDescription>
+                                
+                            </div>
+                            <div className='flex items-center'>
+                                <RadioGroupItem
+                                    onClick={() => newRangeSettings(150)}
+                                    value='medium'
+                                />
+                                <AlertDialogDescription className='pl-[10px]'>
+                                    Medium - 150ft
+                                </AlertDialogDescription>
+                                
+                            </div>
+                            <div className='flex items-center'>
+                                <RadioGroupItem
+                                    onClick={() => newRangeSettings(250)}
+                                    value='large'
+                                />
+                                <AlertDialogDescription className='pl-[10px]'>
+                                    Large - 250ft
+                                </AlertDialogDescription>
+                            </div>  
                         
+                            
+                        </div>
+
+                        <div>
+                            <div className='flex items-center'>
+                                <RadioGroupItem
+                                    onClick={() => newRangeSettings(2500)}
+                                    value='campus'
+                                />
+                                <AlertDialogDescription className='pl-[10px]'>
+                                    Campus - 2500ft
+                                </AlertDialogDescription>
+                        </div>  
+                        </div>
                     </div>
-                    <div className='flex items-center'>
-                        <RadioGroupItem
-                            onClick={() => newRangeSettings(200)}
-                            value='medium'
-                        />
-                        <AlertDialogDescription className='pl-[10px]'>
-                            Medium - 200ft
-                        </AlertDialogDescription>
-                        
-                    </div>
-                    <div className='flex items-center'>
-                        <RadioGroupItem
-                            onClick={() => newRangeSettings(300)}
-                            value='large'
-                        />
-                        <AlertDialogDescription className='pl-[10px]'                        
->
-                            Large - 300ft
-                        </AlertDialogDescription> 
-                        
-                    </div>
-                    </div>
+
                 </RadioGroup>           
                 </div>
             </div>            
@@ -192,7 +209,7 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
     else{
         return(
             <div className='pt-5'>
-                <div className='text-center'>Your location has been found!</div>
+                <div className='text-center'></div>
             </div>
         )
             

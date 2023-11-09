@@ -227,7 +227,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
       return(
         <AlertDialogContent>
-          <AlertDialogHeader>Hello</AlertDialogHeader>
+          <AlertDialogHeader className='flex justify-center items-center'>Select the size of your classroom and confirm your location</AlertDialogHeader>
             <AlertDialogDescription>
               <GoogleMapComponentAttendance postitonsData={locationData}></GoogleMapComponentAttendance>
 
