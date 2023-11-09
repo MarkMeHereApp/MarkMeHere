@@ -148,7 +148,14 @@ export default function GenerateCourseAsProfessor() {
         listStudents.push(createRandomCourseMember(newCourse.id));
       }
       const resStudents = await generateCourseMembers(listStudents);
-      setCourseMembersOfSelectedCourse(resStudents.allCourseMembersOfClass);
+      if (resStudents) {
+        setCourseMembersOfSelectedCourse(resStudents.allCourseMembersOfClass);
+        toast({ title: 'Created ' + numStudents + ' New Students!' });
+      } else {
+        // Handle the case where resStudents is undefined
+        console.error('resStudents is undefined');
+      }
+
       toast({ title: 'Created ' + numStudents + ' New Students!' });
 
       // Populate with random lecture data
@@ -198,7 +205,9 @@ export default function GenerateCourseAsProfessor() {
         });
 
         // Shuffle the array
-        const shuffledMembers = [...resStudents.allCourseMembersOfClass];
+        const shuffledMembers = [
+          ...(resStudents?.allCourseMembersOfClass || [])
+        ];
         for (let i = shuffledMembers.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [shuffledMembers[i], shuffledMembers[j]] = [
