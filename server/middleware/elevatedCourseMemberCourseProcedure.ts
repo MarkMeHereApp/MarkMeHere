@@ -18,7 +18,6 @@ const isElevatedCourseMemberCourse = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
     const result = courseInput.safeParse(rawInput);
-
     const role = zSiteRoles.safeParse(ctx.session?.role);
 
     if (!role.success)
@@ -42,7 +41,7 @@ const isElevatedCourseMemberCourse = trpc.middleware(
     if (!result.success)
       throw generateTypedError(
         new TRPCError({
-          code: 'BAD_REQUEST',
+          code: 'PARSE_ERROR',
           message:
             'TRPC Middleware: isElevatedCourseMemberCourse requires a valid courseId'
         })

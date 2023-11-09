@@ -18,7 +18,7 @@ const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
   if (!result.success)
     throw generateTypedError(
       new TRPCError({
-        code: 'UNAUTHORIZED',
+        code: 'PARSE_ERROR',
         message: 'TRPC Middleware: isCourseMember requires a valid courseId'
       })
     );
@@ -33,13 +33,13 @@ const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
 
   const courseMember = await findCourseMember(email, result.data.courseId);
 
-    if (!courseMember)
-      throw generateTypedError(
-        new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'TRPC Middleware: User is not enrolled in the selected course'
-        })
-      );
+  if (!courseMember)
+    throw generateTypedError(
+      new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'TRPC Middleware: User is not enrolled in the selected course'
+      })
+    );
 
   return next();
 });
