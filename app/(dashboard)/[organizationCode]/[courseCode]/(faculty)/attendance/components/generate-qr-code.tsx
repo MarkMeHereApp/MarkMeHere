@@ -30,6 +30,15 @@ import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCo
 import { CourseMember } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
+import { Slider } from '@/components/ui/slider';
+import { 
+  Dialog,
+  DialogDescription, 
+  DialogHeader, 
+  DialogTrigger,
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { DialogContent } from '@radix-ui/react-dialog';
 
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
@@ -53,11 +62,21 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const [parameters, setParameters] = useState(firstParam);
 
-  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true);
+  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(false);
+  const [geolocationSettings, setGeolcationSettings] = useState<boolean>(false)
 
-  const handleGeolocationChange = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleGeolocationSettings = async () => {
+    setGeolcationSettings(!geolocationSettings)
+  }
+  
+  const handleGeolocationChange = async () => {
     setEnableGeolocation(!enableGeolocation);
     console.log(!enableGeolocation);
+    if (enableGeolocation) {
+      setIsDialogOpen(true);
+    }
   };
 
   const lectureLatitude = useRef<number>(0);
@@ -204,6 +223,21 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
 
+  const GeolocationSettingsDialog = () => {  
+    if(enableGeolocation){
+      return(
+        <AlertDialogContent>
+          <AlertDialogHeader>Hello</AlertDialogHeader>
+          <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>Cancel</AlertDialogCancel>
+        </AlertDialogContent>                
+      )
+    }
+
+    else{
+      return null
+    }
+  }
+
   return (
     <div>
       <AlertDialog>
@@ -216,6 +250,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             Generate QR Code
           </Button>
         </AlertDialogTrigger>
+        
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Display QR Code</AlertDialogTitle>
@@ -296,14 +331,25 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="flex items-center space-x-2">
-                          <Switch
-                            checked={enableGeolocation}
-                            onClick={handleGeolocationChange}
-                          ></Switch>
-                          <Label htmlFor="r3">Location Checker</Label>
-                        </div>
+                        
+                        
                       </TooltipTrigger>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={enableGeolocation}
+                          onClick={() => {
+                            handleGeolocationChange();
+                            
+                          }}
+                        />
+                        <Label htmlFor="r3">Location Checker</Label>
+                        <AlertDialog
+                          open={isDialogOpen}>
+                          <GeolocationSettingsDialog/>
+                        </AlertDialog>
+                      </div>
+                      
+                      
                       <TooltipContent>
                         <p>
                           This option displays only the QR code in a simplified
@@ -328,6 +374,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                   {isLoadingSubmit ? <Loading /> : 'Continue To QR Code'}
                 </Button>
               </div>
+              
+              
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
