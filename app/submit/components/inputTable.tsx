@@ -114,11 +114,6 @@ const InputTable = () => {
     }
   };
 
-  const submitAttempt = () =>{
-    console.log(inputValue)
-    router.refresh()
-    router.push(`/submit?qr=${inputValue}`)
-  }
 
   //checking what error type have we recieved in the server through the URL.
   //after the error message being displayed, we replace the URL with /submit and stay on page.
@@ -160,7 +155,6 @@ const InputTable = () => {
           onChange={(event) => setInputValue(event.target.value)}
           disabled={isLoadingSubmit}
         />
-{/* submitCode() */}
         <Button
           onClick={() => submitCode()}
           className=" flex w-[100%]"
