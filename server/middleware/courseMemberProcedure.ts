@@ -4,7 +4,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { findCourseMember } from '../utils/courseMemberHelpers';
 
-/* -------- Checks if current user is enrolled in the course -------- */
+/* -------- Checks if current user is enrolled in the course -------- */ 
 
 const courseInput = z.object({
   courseId: z.string()
