@@ -40,7 +40,6 @@ export const qrRouter = router({
         const courseId = input.courseId;
         const professorLectureGeolocationId =
           input.professorLectureGeolocationId;
-        console.log(professorLectureGeolocationId);
 
         if (professorLectureGeolocationId) {
           const newExpiry = new Date();
