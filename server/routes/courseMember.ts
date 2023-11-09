@@ -114,7 +114,7 @@ export const courseMemberRouter = router({
       }
     }
   ),
-  getCourseMembersOfCourse: publicProcedure
+  getCourseMembersOfCourse: courseMemberProcedure
     .input(zGetCourseMembersOfCourse)
     .query(async (requestData) => {
       try {
