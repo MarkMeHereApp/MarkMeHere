@@ -11,6 +11,7 @@ import {
 } from '@/types/sharedZodTypes';
 const prisma = new PrismaClient();
 import { TRPCError } from '@trpc/server';
+import adminProcedure from '../middleware/adminProcedure';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
@@ -28,7 +29,7 @@ const zCanvasCourseSchema = z.object({
 });
 
 export const canvasRouter = router({
-  getCanvasCourses: publicProcedure
+  getCanvasCourses: adminProcedure
     .input(z.object({ userEmail: z.string().optional() }))
     .query(async (requestData) => {
       if (!CANVAS_API_TOKEN || !CANVAS_DOMAIN) {
