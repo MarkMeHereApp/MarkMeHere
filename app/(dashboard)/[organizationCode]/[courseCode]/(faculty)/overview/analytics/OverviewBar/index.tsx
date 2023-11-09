@@ -1,11 +1,12 @@
 import { lecturesType } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Course, CourseMember } from '@prisma/client';
+import { CourseMember } from '@prisma/client';
 import { saveAs } from 'file-saver';
 import { CalendarDateRangePicker } from './date-rangepicker';
-import { number } from 'zod';
 import { useSelectedLectureContext } from '../../components/context-selected-lectures';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export interface OverviewBarProps {
   selectedCourseName: string;
@@ -72,7 +73,7 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
         'Late Entries',
         'Absent Entries',
         'Total Entries',
-        'Attendance Rate',
+        'Attendance Grade',
         'Number of Lectures in Date Range'
       ]
     ];
@@ -81,7 +82,10 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
       const numAbsent = countAttendanceStatus('absent', member, lectures);
       const numLate = countAttendanceStatus('late', member, lectures);
       const numExcused = countAttendanceStatus('excused', member, lectures);
-      const numTotal = numPresent + numAbsent + numLate + numExcused;
+      const numTotal = numPresent + numAbsent + numLate - numExcused;
+      const attendanceGrade = Number.isNaN(numPresent / numTotal)
+        ? 0
+        : numPresent / numTotal;
       csvData.push([
         member.name,
         member.email,
@@ -94,7 +98,7 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
         numLate.toString(),
         numAbsent.toString(),
         numTotal.toString(),
-        (numPresent / numTotal).toString(),
+        attendanceGrade.toString(),
         sortedLectures.length.toString()
       ]);
     });
