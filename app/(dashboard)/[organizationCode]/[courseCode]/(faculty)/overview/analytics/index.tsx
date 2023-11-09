@@ -32,7 +32,11 @@ const OverviewAnalytics = () => {
           />
         </div>
         <div className="col-span-1">
-          <TopStudents />
+          <TopStudents
+            selectedCourseName={selectedCourse.name ?? ''}
+            lectures={selectedLectures}
+            courseMembers={courseMembersOfSelectedCourse}
+          />
         </div>
       </div>
     </div>

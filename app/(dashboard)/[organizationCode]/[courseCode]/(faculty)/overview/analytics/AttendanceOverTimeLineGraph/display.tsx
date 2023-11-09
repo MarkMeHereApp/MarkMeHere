@@ -49,7 +49,8 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
       <CardHeader>
         <CardTitle>Course Attendance</CardTitle>
         <CardDescription>
-          Your average attendance rate is: {averageAttendanceRate.toFixed(2)}%
+          Your average class attendance rate is:{' '}
+          {averageAttendanceRate.toFixed(2)}%
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-4">
