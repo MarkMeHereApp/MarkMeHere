@@ -31,15 +31,7 @@ import { CourseMember } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 import { Slider } from '@/components/ui/slider';
-import { 
-  Dialog,
-  DialogDescription, 
-  DialogHeader, 
-  DialogTrigger,
-  DialogTitle 
-} from '@/components/ui/dialog';
-import { DialogContent } from '@radix-ui/react-dialog';
-
+import GoogleMapComponentAttendance from './google-map-component';
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
 }
@@ -67,22 +59,10 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleGeolocationSettings = async () => {
-    setGeolcationSettings(!geolocationSettings)
-  }
-  
-  const handleGeolocationChange = async () => {
-    setEnableGeolocation(!enableGeolocation);
-    console.log(!enableGeolocation);
-    if (enableGeolocation) {
-      setIsDialogOpen(true);
-    }
-  };
-
   const lectureLatitude = useRef<number>(0);
   const lectureLongitude = useRef<number>(0);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
-
+  //const [isLoadingMap, setIsLoadingMap] = useState<boolean>(false)
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
@@ -91,6 +71,19 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     CourseMember | undefined
   >();
   const [error, setError] = useState<Error | null>(null);
+
+  const locationData = {
+    professorLatitude: lectureLatitude.current,
+    professorLongitude: lectureLongitude.current,
+  };
+
+  const handleGeolocationChange = async () => {
+    setEnableGeolocation(!enableGeolocation);
+    console.log(!enableGeolocation);
+    if (enableGeolocation) {
+      setIsDialogOpen(true);
+    }
+  };
 
   useEffect(() => {
     if (isCopied) {
@@ -124,6 +117,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   };
 
   const getGeolocationData = () => {
+    setIsLoadingSubmit(true)
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -141,6 +135,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             resolve(false);
           }
         );
+
       } else {
         console.log('Geolocation is not supported by this browser.');
         resolve(false);
@@ -222,13 +217,51 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     setParameters(newSetting);
     Cookies.set('qrSettings', newSetting);
   };
+  
+  const [sliderValue, setSliderValue] = useState(150);
 
   const GeolocationSettingsDialog = () => {  
-    if(enableGeolocation){
+    if(enableGeolocation && !isLoadingSubmit){
+
+      const sliderValueOperator = (value:number) =>{
+        setSliderValue(value)
+      }
+
       return(
         <AlertDialogContent>
           <AlertDialogHeader>Hello</AlertDialogHeader>
-          <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>Cancel</AlertDialogCancel>
+            <GoogleMapComponentAttendance postitonsData={locationData}></GoogleMapComponentAttendance>
+            <AlertDialogTitle>
+                Pick the size of your classroom
+            </AlertDialogTitle>
+            <div className='pt-[15px]'>
+              <div className='flex justify-between'> 
+                <div>
+                <AlertDialogDescription>
+                    Min: 30ft
+                </AlertDialogDescription>
+                </div>
+                <div>
+                <AlertDialogDescription>
+                  Max: 500ft
+                </AlertDialogDescription> 
+                </div>
+                         
+              </div>
+                      
+              <Slider
+                defaultValue={[150]}
+                max = {500}
+                min = {30}
+                step = {15}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => sliderValueOperator(Number(event.target.value))}
+              />
+              <p>
+                {sliderValue} ft
+              </p>             
+            </div>
+            
+          <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>Save</AlertDialogCancel>
         </AlertDialogContent>                
       )
     }
@@ -238,8 +271,16 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     }
   }
 
+  const fetchGeolocation = async () =>{
+    const fetchedLocation = await getGeolocationData();
+    setIsLoadingSubmit(false)
+    console.log(fetchedLocation)
+  }
+
+
   return (
     <div>
+      
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
@@ -339,10 +380,11 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                           checked={enableGeolocation}
                           onClick={() => {
                             handleGeolocationChange();
-                            
+                            fetchGeolocation()
                           }}
                         />
                         <Label htmlFor="r3">Location Checker</Label>
+
                         <AlertDialog
                           open={isDialogOpen}>
                           <GeolocationSettingsDialog/>
