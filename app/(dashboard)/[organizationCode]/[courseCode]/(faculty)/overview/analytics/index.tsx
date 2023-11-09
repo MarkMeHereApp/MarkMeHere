@@ -1,7 +1,7 @@
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import AttendanceOverTimeLineGraph from './AttendanceOverTimeLineGraph';
 import OverviewBar from './OverviewBar';
-import TopStudents from './TopStudents';
+import SupportList from './SupportList';
 import { useSelectedLectureContext } from '../components/context-selected-lectures';
 
 const OverviewAnalytics = () => {
@@ -32,7 +32,7 @@ const OverviewAnalytics = () => {
           />
         </div>
         <div className="col-span-1">
-          <TopStudents
+          <SupportList
             selectedCourseName={selectedCourse.name ?? ''}
             lectures={selectedLectures}
             courseMembers={courseMembersOfSelectedCourse}
