@@ -8,6 +8,20 @@ import { IconContext } from "react-icons";
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useEffect, useState } from 'react';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+  } from '@/components/ui/alert-dialog';
+import { Slider } from '@/components/ui/slider';
+import { TemperatureSelector } from './range-slider';
+import { SliderProps } from "@radix-ui/react-slider"
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 const StudentSVG = renderToStaticMarkup(
@@ -31,14 +45,20 @@ interface GoogleMapsProps {
     postitonsData?: PositionData;
 }
 
+
 const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
     console.log(postitonsData)
-    const studentSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(StudentSVG)}`;
+    const [sliderValue, setSliderValue] = useState<number>(150);
+
+    const [range, setRange] = useState<number>(200)
+
+    const newRangeSettings = (newSetting: number) =>{
+        setRange(newSetting);
+    }
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
-    console.log(GoogleMapsKey)
 
     function metersToFeet(meters: number){
         return meters * 3.28084
@@ -114,10 +134,58 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
             return <div>Loading Google Maps</div>;
         }
     }
+
+    // const defaultRange = 'medium';
+    // const activeRange = defaultRange
+    
+
             
     if(GoogleMapsKey){
         return (
-            <MapComponent></MapComponent>
+            <div>
+                <AlertDialogHeader>Hello</AlertDialogHeader>
+                <MapComponent></MapComponent>
+                <AlertDialogTitle>
+                    Select the size of your classroom and verify your location
+                </AlertDialogTitle>
+                <div className='pt-[10px]'>
+                <RadioGroup defaultValue = {'medium'} className='flex flex-col '>
+                    <div className='flex flex-col'>
+                    <div className='flex items-center'>
+                        <RadioGroupItem
+                            onClick={() => newRangeSettings(100)}
+                            value='small'
+                        />
+                        <AlertDialogDescription className='pl-[10px]'>
+                            Small - 100ft
+                        </AlertDialogDescription>
+                        
+                    </div>
+                    <div className='flex items-center'>
+                        <RadioGroupItem
+                            onClick={() => newRangeSettings(200)}
+                            value='medium'
+                        />
+                        <AlertDialogDescription className='pl-[10px]'>
+                            Medium - 200ft
+                        </AlertDialogDescription>
+                        
+                    </div>
+                    <div className='flex items-center'>
+                        <RadioGroupItem
+                            onClick={() => newRangeSettings(300)}
+                            value='large'
+                        />
+                        <AlertDialogDescription className='pl-[10px]'                        
+>
+                            Large - 300ft
+                        </AlertDialogDescription> 
+                        
+                    </div>
+                    </div>
+                </RadioGroup>           
+                </div>
+            </div>            
         );
     }
 

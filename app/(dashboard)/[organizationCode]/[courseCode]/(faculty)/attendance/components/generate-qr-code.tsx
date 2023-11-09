@@ -219,50 +219,24 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
   
-  const [sliderValue, setSliderValue] = useState(150);
 
   const GeolocationSettingsDialog = () => {  
     if(enableGeolocation && !isLoadingSubmit){
 
-      const sliderValueOperator = (value:number) =>{
-        setSliderValue(value)
-      }
+      
 
       return(
         <AlertDialogContent>
           <AlertDialogHeader>Hello</AlertDialogHeader>
-            <GoogleMapComponentAttendance postitonsData={locationData}></GoogleMapComponentAttendance>
-            <AlertDialogTitle>
-                Pick the size of your classroom
-            </AlertDialogTitle>
-            <div className='pt-[15px]'>
-              <div className='flex justify-between'> 
-                <div>
-                <AlertDialogDescription>
-                    Min: 30ft
-                </AlertDialogDescription>
-                </div>
-                <div>
-                <AlertDialogDescription>
-                  Max: 500ft
-                </AlertDialogDescription> 
-                </div>
-                         
-              </div>
-                      
-              <Slider
-                defaultValue={[150]}
-                max = {500}
-                min = {30}
-                step = {15}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => sliderValueOperator(Number(event.target.value))}
-              />
-              <p>
-                {sliderValue} ft
-              </p>             
-            </div>
+            <AlertDialogDescription>
+              <GoogleMapComponentAttendance postitonsData={locationData}></GoogleMapComponentAttendance>
+
+            </AlertDialogDescription>
             
-          <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>Save</AlertDialogCancel>
+            
+          <AlertDialogCancel className='pt-[10px]'onClick={() => setIsDialogOpen(false)}>
+            Save
+          </AlertDialogCancel>
         </AlertDialogContent>                
       )
     }
