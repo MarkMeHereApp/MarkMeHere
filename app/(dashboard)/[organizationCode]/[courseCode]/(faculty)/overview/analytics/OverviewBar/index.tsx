@@ -83,7 +83,7 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
       const numLate = countAttendanceStatus('late', member, lectures);
       const numExcused = countAttendanceStatus('excused', member, lectures);
       const numTotal = numPresent + numAbsent + numLate - numExcused;
-      const attendanceGrade = Number.isNaN(numPresent / numTotal)
+      const attendanceGrade = Number.isFinite(numPresent / numTotal)
         ? 0
         : numPresent / numTotal;
       csvData.push([

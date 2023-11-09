@@ -55,7 +55,7 @@ const TopStudents: React.FC<TopStudentsProps> = ({
     const numLate = countAttendanceStatus('late', member, lectures);
     const numExcused = countAttendanceStatus('excused', member, lectures);
     const numTotal = numPresent + numAbsent + numLate - numExcused;
-    const attendanceGrade = Number.isNaN(numPresent / numTotal)
+    const attendanceGrade = Number.isFinite(numPresent / numTotal)
       ? 0
       : numPresent / numTotal;
     // Use member.id as key and store the rest of the information as an object
