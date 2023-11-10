@@ -7,7 +7,8 @@ export const zCreateProfessorLectureGeolocation = z.object({
   lectureLatitude: z.number(),
   lectureLongitude: z.number(),
   lectureId: z.string(),
-  courseMemberId: z.string()
+  courseMemberId: z.string(),
+  lectureRange: z.number()
 });
 
 export const zGetRangeProfessorStudent = z.object({

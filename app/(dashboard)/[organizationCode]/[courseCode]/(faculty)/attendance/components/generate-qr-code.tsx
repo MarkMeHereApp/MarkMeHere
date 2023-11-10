@@ -156,19 +156,11 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
       : undefined;
-    console.log(lectureId);
-    console.log(selectedCourseMemberId);
-    console.log(
-      `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
-    );
 
-    if (enableGeolocation) {
+    if (enableGeolocation.current) {
       const location = await getGeolocationData();
 
       if (location) {
-        console.log(
-          `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`
-        );
 
         try {
           if (!selectedCourseMemberId) {
@@ -179,7 +171,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
-            courseMemberId: selectedCourseMemberId
+            courseMemberId: selectedCourseMemberId,
+            lectureRange: range
           });
 
           professorGeolocationId.current = res.id;
@@ -208,7 +201,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       }
     }
 
-    if (!enableGeolocation) {
+    if (!enableGeolocation.current) {
       console.log('location is disabled');
       router.push(navigation + parameters);
     }
@@ -219,7 +212,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
 
-  const [range, setRange] = useState(200);
+  const [range, setRange] = useState(150);
 
   const handleRangeSettings = (newRange:number) => {
     setRange(newRange)
@@ -234,22 +227,12 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     setIsLoadingSubmit(false)
     console.log(fetchedLocation)
   }
-
-  const printDataToSend = () => {
-    console.log('range: ' + range)
-    console.log('lecture lat: ' + lectureLatitude.current)
-    console.log('lecture lon: ' + lectureLongitude.current)
-  }
   
 
   const GeolocationSettingsDialog = () => {  
     if(enableGeolocation && !isLoadingSubmit){
-
-      
-
       return(
         <AlertDialogContent>
-          <AlertDialogHeader className='flex justify-center items-center'>Select the size of your classroom and confirm your location</AlertDialogHeader>
             <AlertDialogDescription>
               <GoogleMapComponentAttendance postitonsData={locationData} onRangeChange={handleRangeSettings} isDialogOpen={handleDialogComponent}></GoogleMapComponentAttendance>
             </AlertDialogDescription>
