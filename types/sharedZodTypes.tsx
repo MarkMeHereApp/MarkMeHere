@@ -92,8 +92,8 @@ export const zAttendanceToken = z.object({
   token: z.string(),
   lectureId: z.string(),
   professorLectureGeolocationId: z.union([z.string(), z.null()]),
-  attendanceStudentLatitude: z.number(),
-  attendanceStudentLongitude: z.number(),
+  attendanceStudentLatitude: z.union([z.number(), z.null()]),
+  attendanceStudentLongitude: z.union([z.number(), z.null()]),
   createdAt: z.date()
 });
 

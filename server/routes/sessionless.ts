@@ -5,6 +5,9 @@ import { generateTypedError } from '@/server/errorTypes';
 
 import { TRPCError } from '@trpc/server';
 import { v4 as uuidv4 } from 'uuid';
+import { kv as redis } from '@vercel/kv';
+import { zAttendanceTokenType, zQrCodeType } from '@/types/sharedZodTypes';
+import { redisAttendanceKey, redisQrCodeKey } from '@/utils/globalFunctions';
 
 const zCreateOrganization = z.object({
   name: z.string(),
@@ -47,33 +50,50 @@ export const sessionlessRouter = router({
     .input(zActiveCode)
     .mutation(async ({ input }) => {
       try {
+        //Find qrCode
+        const { code } = input;
 
-        const qrResult = await prisma.qrcode.findUnique({
+        const qrResult: zQrCodeType | null = await redis.hgetall(
+          redisQrCodeKey(code)
+        );
+
+        if (!qrResult) return { success: false };
+
+        //Find course
+        const course = await prisma.course.findUnique({
           where: {
-            code: input.code
-          },
-          include: {
-            course: true
+            id: qrResult.courseId
           }
         });
-        if (qrResult === null) {
-          return { success: false };
-        }
 
-        const { id } = await prisma.attendanceToken.create({
-          data: {
-            token: uuidv4(),
-            lectureId: qrResult.lectureId,
-            professorLectureGeolocationId:
-              qrResult.professorLectureGeolocationId
-          }
-        });
+        if (!course) return { success: false };
+
+        const attendanceToken = uuidv4();
+        const attendanceTokenId = uuidv4();
+        const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
+
+        //Create attendance token
+        const attendanceTokenObj: zAttendanceTokenType = {
+          token: attendanceToken,
+          lectureId: qrResult.lectureId,
+          professorLectureGeolocationId: qrResult.professorLectureGeolocationId,
+          attendanceStudentLatitude: null,
+          attendanceStudentLongitude: null,
+          createdAt: new Date()
+        };
+
+        await redis
+          .multi()
+          .hset(redisAttendanceKey(attendanceTokenId), attendanceTokenObj)
+          .expire(attendanceTokenKey, 300)
+          .exec();
 
         return {
           success: true,
-          token: id,
+          token: attendanceTokenId,
           location: qrResult.professorLectureGeolocationId,
-          course: qrResult.course
+          organizationCode: course.organizationCode,
+          courseCode: course.courseCode
         };
       } catch (error) {
         throw error;

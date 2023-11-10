@@ -88,18 +88,18 @@ const InputTable = () => {
         code: inputValue.toUpperCase()
       });
 
-      console.log(res)
+      console.log(res);
 
       if (res.success && res.token) {
         if (res.location) {
           router.push(
-            `${res.course.organizationCode}/${res.course.courseCode}/verification?attendanceTokenId=${res.token}`
+            `${res.organizationCode}/${res.courseCode}/verification?attendanceTokenId=${res.token}`
           );
         }
 
         if (!res.location) {
           router.push(
-            `/${res.course.organizationCode}/${res.course.courseCode}/student?attendanceTokenId=${res.token}`
+            `/${res.organizationCode}/${res.courseCode}/student?attendanceTokenId=${res.token}`
           );
         }
       }
@@ -113,7 +113,6 @@ const InputTable = () => {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
     }
   };
-
 
   //checking what error type have we recieved in the server through the URL.
   //after the error message being displayed, we replace the URL with /submit and stay on page.
