@@ -141,8 +141,8 @@ const QR = () => {
     code: 'LOADING',
     lectureId: 'LOADING',
     courseId: 'LOADING',
-    expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
     professorLectureGeolocationId: locationId || null,
+    expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
     lengthOfTime: expirationTime
   };
 
@@ -154,7 +154,6 @@ const QR = () => {
   // Then it will fetch a new buffer code asynchronously.
   // We do this so that we don't have to "wait" for a code to be fetched.
   const updateCodes = async () => {
-    console.log('HIT UPDATE CODES');
     setActiveCode(bufferCodeRef.current.code);
     activeCodeRef.current = bufferCodeRef.current;
     try {
@@ -241,12 +240,11 @@ const QR = () => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         // If the codes are loading for the first time, we want to "suspend" the progress bar.
-        if (bIsFetchingInitCodes.current) {
-          return 0;
-        }
-
-        // If the user is not on the page, reset the code
-        if (document.hidden) {
+        if (
+          bIsFetchingInitCodes.current ||
+          document.hidden ||
+          !activeCodeRef.current.lengthOfTime
+        ) {
           return 0;
         }
 
@@ -258,9 +256,7 @@ const QR = () => {
         const secondsLeft =
           (activeCodeRef.current.expiresAt.getTime() - Date.now()) / 1000;
 
-        if (secondsLeft <= 0) {
-          return 100;
-        }
+        if (secondsLeft <= 0) return 100;
 
         const newProgress =
           oldProgress +

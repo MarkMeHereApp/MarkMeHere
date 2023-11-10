@@ -41,8 +41,7 @@ export const qrRouter = router({
           throw new Error('Could not create a duplicate QR code.');
         }
 
-        const lectureId = input.lectureId;
-        const courseId = input.courseId;
+        const {lectureId, courseId} = input;
         const professorLectureGeolocationId =
           input.professorLectureGeolocationId;
 
@@ -58,7 +57,8 @@ export const qrRouter = router({
           lectureId,
           courseId,
           professorLectureGeolocationId,
-          expiresAt: newExpiry
+          expiresAt: newExpiry,
+          lengthOfTime: null
         };
         const qrKey = 'qrCode:' + newCode;
         const multi = redis.multi();
