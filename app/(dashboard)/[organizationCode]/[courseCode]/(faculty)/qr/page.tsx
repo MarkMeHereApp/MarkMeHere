@@ -313,7 +313,6 @@ const QR = () => {
           className="w-[100%]"
           style={{ visibility: 'hidden' }}
         />
-        )}
       </>
     );
   };
