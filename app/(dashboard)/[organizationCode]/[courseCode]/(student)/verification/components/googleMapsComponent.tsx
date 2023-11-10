@@ -39,7 +39,6 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
-    console.log(GoogleMapsKey)
 
     function feetToMeters(meters: number){
         return meters / 3.28084

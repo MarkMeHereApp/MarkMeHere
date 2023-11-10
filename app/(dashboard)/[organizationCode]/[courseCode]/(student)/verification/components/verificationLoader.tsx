@@ -231,16 +231,16 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
             
             //rounding to two decimal nums
             const distanceRounded = parseFloat(res.distance.toFixed(2))
-
+            const lectureRange = res.lectureRange
             //if distance is more than allowed range
-            if(distanceRounded > 250){
+            if(distanceRounded > lectureRange){
               rangeValidator.current = false
               setProceedButtonText('Unverified')
               displayWarning(WarningType.InvalidLocation,distanceRounded)
             }
 
             //if distance is less or equal to allowed range
-            if(distanceRounded <= 250){
+            if(distanceRounded <= lectureRange){
               rangeValidator.current = true
               setProceedButtonText('Verified')
               displayWarning(WarningType.ValidLocation,distanceRounded)
@@ -256,7 +256,6 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
         }
 
         }catch (error) {
-          console.log(error);
           displayWarning(WarningType.DefaultError, null)
 
         }finally {
@@ -319,6 +318,7 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
                       <Button className="flex w-[100%] min-w-[100%]" variant="destructive" onClick={() => displayWarning(WarningType.InvalidLocation, null)}>
                         <b>Proceed With Invalid Location</b>
                       </Button>
+                      <CrossCircledIcon/>
                     </AreYouSureDialog> 
                       : 
                       <Button 

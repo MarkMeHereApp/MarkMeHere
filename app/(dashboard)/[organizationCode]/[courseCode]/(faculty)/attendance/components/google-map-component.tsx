@@ -46,13 +46,7 @@ interface GoogleMapsProps {
 
 const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRange:number) => void, isDialogOpen: (newBoolean: boolean) => void}> = ({ postitonsData, onRangeChange, isDialogOpen }) => {
 
-    console.log(postitonsData)
-
     const [range, setRange] = useState<number>(200)
-
-    const newRangeSettings = (newSetting: number) =>{
-        setRange(newSetting);
-    }
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
@@ -87,6 +81,11 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRan
 
     const setDefaultValue = (defaultValue: string) => {
         setDefaultValueRadio(defaultValue)
+    }
+
+    const calculateZoomLevel = (rangeInFeet:number) => {
+        const rangeInKm = rangeInFeet * 0.0003048; // convert feet to kilometers
+        return Math.round(13 - Math.log(rangeInKm) / Math.LN2);
     }
 
     const RangePicker = () => {
@@ -158,30 +157,24 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRan
                                             isDialogOpen(false)
                                             onRangeChange(range)}}>
                                             Save
-                                    </Button>
-                                    
-                                </DialogFooter>    
-                                    
+                                    </Button>    
+                                </DialogFooter>           
                             </div>
                         </div>
-    
-                    </RadioGroup>
-    
-                    
+                    </RadioGroup>    
                 </div>
             </div>
-            
-
         )
     }
 
    
     const MapComponent = () => {
+        const zoomLevel = calculateZoomLevel(range);
 
         return(
             <GoogleMap
                 mapContainerStyle={mapStyles}
-                zoom={16}
+                zoom={zoomLevel}
                 center={professorLocation}
                 options={{
                     styles: mapTheme.styles,
@@ -201,10 +194,7 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRan
                     fillColor: '#FF0000',
                     fillOpacity: 0.35,
                 }}
-                />
-                
-                
-                
+                />   
             </GoogleMap>
         )
     }

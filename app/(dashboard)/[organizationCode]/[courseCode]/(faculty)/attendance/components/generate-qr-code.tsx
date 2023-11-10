@@ -80,7 +80,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const handleGeolocationChange = async () => {
     enableGeolocation.current = !enableGeolocation.current
-    console.log(!enableGeolocation.current);
     if (enableGeolocation.current) {
       setIsDialogOpen(true);
     }
@@ -102,8 +101,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   }, [isCopied]);
 
   const getCourseMember = () => {
-    console.log(courseMembersOfSelectedCourse);
-
     if (courseMembersOfSelectedCourse) {
       const selectedCourseMember: CourseMember | undefined =
         courseMembersOfSelectedCourse.find(
@@ -138,7 +135,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
         );
 
       } else {
-        console.log('Geolocation is not supported by this browser.');
         resolve(false);
       }
     });
@@ -177,18 +173,10 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
           professorGeolocationId.current = res.id;
 
-          console.log(res);
         } catch (error) {
-          console.log(error);
           // setError(error as Error);
         } finally {
           setIsLoadingSubmit(false);
-          console.log(
-            navigation +
-              parameters +
-              '&location=' +
-              professorGeolocationId.current
-          );
           router.push(
             navigation +
               parameters +
@@ -197,12 +185,10 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
           );
         }
       } else {
-        console.log('unable to locate');
       }
     }
 
     if (!enableGeolocation.current) {
-      console.log('location is disabled');
       router.push(navigation + parameters);
     }
   };
@@ -225,7 +211,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const fetchGeolocation = async () =>{
     const fetchedLocation = await getGeolocationData();
     setIsLoadingSubmit(false)
-    console.log(fetchedLocation)
   }
   
 
