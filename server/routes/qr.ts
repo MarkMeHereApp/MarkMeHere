@@ -11,7 +11,7 @@ export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
   lectureId: z.string(),
   courseId: z.string(),
-  professorLectureGeolocationId: z.string()
+  professorLectureGeolocationId: z.union([z.string(), z.null()]),
 });
 
 export const qrRouter = router({
@@ -22,15 +22,7 @@ export const qrRouter = router({
         let newCode: string | null = null;
         for (let i = 0; i < 10; i++) {
           newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-          //Replace this with Redis code
-          // const existingCode = await prisma.qrcode.findUnique({
-          //   where: {
-          //     code: newCode
-          //   }
-          // });
-
-          const existingCode = await redis.hget("qrCode:" + newCode, "code")
+          const existingCode = await redis.hget('qrCode:' + newCode, 'code');
 
           if (existingCode === null) {
             break;
@@ -41,16 +33,16 @@ export const qrRouter = router({
           throw new Error('Could not create a duplicate QR code.');
         }
 
-        const {lectureId, courseId} = input;
-        const professorLectureGeolocationId =
-          input.professorLectureGeolocationId;
-
+        const { lectureId, courseId, professorLectureGeolocationId } = input;
+        const gracePeriod = 15;
         const newExpiry = new Date();
         newExpiry.setSeconds(
           newExpiry.getSeconds() + input.secondsToExpireNewCode
         );
 
-        console.log('qrCode: ' + newCode + ' expiry: ' + newExpiry.getSeconds());
+        console.log(
+          'qrCode: ' + newCode + ' expiry: ' + newExpiry.getSeconds()
+        );
 
         const qrCodeObj: zQrCodeType = {
           code: newCode,
@@ -65,24 +57,10 @@ export const qrRouter = router({
 
         if (professorLectureGeolocationId) {
           try {
-            await multi.hset(qrKey, qrCodeObj).expire(qrKey, newExpiry.getSeconds()).exec();
-            // const returnCode = await prisma.qrcode.create({
-            //   data: {
-            //     code: newCode,
-            //     lectureId: lectureId,
-            //     courseId: courseId,
-            //     expiresAt: newExpiry,
-            //     ProfessorLectureGeolocationId: professorLectureGeolocationId
-            //   }
-            // });
-
-            // await prisma.qrcode.deleteMany({
-            //   where: {
-            //     expiresAt: {
-            //       lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
-            //     }
-            //   }
-            // });
+            await multi
+              .hset(qrKey, qrCodeObj)
+              .expire(qrKey, newExpiry.getSeconds() + gracePeriod)
+              .exec();
 
             return { success: true, qrCode: qrCodeObj };
           } catch (error) {
@@ -93,26 +71,12 @@ export const qrRouter = router({
             /*
             Store qr code in Redis
             We no longer need to delete old codes as Redis will
-            delete them for us after 15 seconds
+            delete them 
             */
-            await multi.hset(qrKey, qrCodeObj).expire(qrKey, newExpiry.getSeconds()).exec();
-
-            // const returnCode = await prisma.qrcode.create({
-            //   data: {
-            //     code: newCode,
-            //     lectureId: lectureId,
-            //     courseId: courseId,
-            //     expiresAt: newExpiry,
-            //   }
-            // });
-
-            // await prisma.qrcode.deleteMany({
-            //   where: {
-            //     expiresAt: {
-            //       lte: new Date(new Date().getTime() - 15 * 1000) // 15 seconds ago
-            //     }
-            //   }
-            // });
+            await multi
+              .hset(qrKey, qrCodeObj)
+              .expire(qrKey, newExpiry.getSeconds() + gracePeriod)
+              .exec();
 
             return { success: true, qrCode: qrCodeObj };
           } catch (error) {

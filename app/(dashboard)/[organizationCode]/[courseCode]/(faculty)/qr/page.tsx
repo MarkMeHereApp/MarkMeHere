@@ -98,7 +98,7 @@ const QR = () => {
   const locationId =
     searchParams && searchParams.get('location')
       ? searchParams.get('location')
-      : false;
+      : null;
 
   const [Stars, setStars] = React.useState<React.ComponentType | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
@@ -141,7 +141,7 @@ const QR = () => {
     code: 'LOADING',
     lectureId: 'LOADING',
     courseId: 'LOADING',
-    professorLectureGeolocationId: locationId || null,
+    professorLectureGeolocationId: locationId ?? null,
     expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
     lengthOfTime: expirationTime
   };
@@ -165,7 +165,7 @@ const QR = () => {
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
         lectureId: currentLectureRef.current.id,
         courseId: currentLectureRef.current.courseId,
-        professorLectureGeolocationId: locationId || ''
+        professorLectureGeolocationId: locationId ?? null
       });
       if (!currentLectureRef.current) {
         return;
@@ -199,13 +199,13 @@ const QR = () => {
           secondsToExpireNewCode: expirationTime,
           lectureId: currentLectureRef.current.id,
           courseId: currentLectureRef.current.courseId,
-          professorLectureGeolocationId: locationId || ''
+          professorLectureGeolocationId: locationId ?? null
         }),
         createQRMutator.mutateAsync({
           secondsToExpireNewCode: expirationTime * 2, //* 2.5 (to account for the buffer and the initial fetch time)
           lectureId: currentLectureRef.current.id,
           courseId: currentLectureRef.current.courseId,
-          professorLectureGeolocationId: locationId || ''
+          professorLectureGeolocationId: locationId ?? null
         })
       ]);
 
