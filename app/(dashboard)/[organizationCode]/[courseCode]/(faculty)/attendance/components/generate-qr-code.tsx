@@ -162,7 +162,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
     );
 
-    if (enableGeolocation) {
+    if (enableGeolocation.current) {
       const location = await getGeolocationData();
 
       if (location) {
@@ -209,7 +209,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       }
     }
 
-    if (!enableGeolocation) {
+    if (!enableGeolocation.current) {
       console.log('location is disabled');
       router.push(navigation + parameters);
     }
@@ -220,7 +220,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
 
-  const [range, setRange] = useState(200);
+  const [range, setRange] = useState(150);
 
   const handleRangeSettings = (newRange:number) => {
     setRange(newRange)
