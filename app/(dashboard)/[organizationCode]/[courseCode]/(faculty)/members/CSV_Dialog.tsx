@@ -30,7 +30,8 @@ export function CSV_Dialog() {
     <Dialog open={dOpen} onOpenChange={setDOpen}>
       <DialogTrigger asChild>
         <Button>
-          <MdUploadFile className="h-5 w-4 mr-2" /> Import CSV
+          <MdUploadFile className="h-5 w-4" />
+          <span className="hidden sm:flex ml-2">Import CSV</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
