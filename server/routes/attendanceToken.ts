@@ -49,7 +49,8 @@ export const attendanceTokenRouter = router({
         }
 
         console.log(geolocationLectureResult[0]);
-
+        
+        const lectureRange = geolocationLectureResult[0].lectureRange
         const lectureLatitude = geolocationLectureResult[0].lectureLatitude;
         const lectureLongitude = geolocationLectureResult[0].lectureLongitude;
 
@@ -114,7 +115,8 @@ export const attendanceTokenRouter = router({
           distance: calculateDistance,
           geolocationInfo: geolocationLectureResult,
           lectureLatitude: lectureLatitude,
-          lectureLongtitude: lectureLongitude
+          lectureLongtitude: lectureLongitude,
+          lectureRange: lectureRange
         };
       } catch (error) {
         throw error;
