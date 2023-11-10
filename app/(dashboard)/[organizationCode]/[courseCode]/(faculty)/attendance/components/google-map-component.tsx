@@ -46,13 +46,7 @@ interface GoogleMapsProps {
 
 const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRange:number) => void, isDialogOpen: (newBoolean: boolean) => void}> = ({ postitonsData, onRangeChange, isDialogOpen }) => {
 
-    console.log(postitonsData)
-
     const [range, setRange] = useState<number>(200)
-
-    const newRangeSettings = (newSetting: number) =>{
-        setRange(newSetting);
-    }
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
