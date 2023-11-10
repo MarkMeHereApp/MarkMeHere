@@ -34,20 +34,27 @@ async function validateAndCreateToken(qrCode: string) {
     const course = await prisma.course.findUnique({
       where: {
         id: qrResult.courseId
-      },
+      }
     });
 
     if (!course) return { success: false };
 
+    const attendanceToken = uuidv4();
+    const attendanceTokenId = uuidv4();
+    const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
+    
     //Create attendance token
     const attendanceTokenObj = {
-      token: uuidv4(),
+      token: attendanceToken,
       lectureId: qrResult.lectureId,
       professorLectureGeolocationId: qrResult.professorLectureGeolocationId
     };
-    const attendanceTokenKey = "attendanceToken:" + attendanceTokenObj.token
 
-    const attendanceToken = await redis.multi().hset(attendanceTokenKey, attendanceTokenObj).expire(attendanceTokenKey, 300).exec();
+    await redis
+      .multi()
+      .hset(attendanceTokenKey, attendanceTokenObj)
+      .expire(attendanceTokenKey, 300)
+      .exec();
 
     // const { id } = await prisma.attendanceToken.create({
     //   data: {
@@ -59,10 +66,10 @@ async function validateAndCreateToken(qrCode: string) {
 
     return {
       success: true,
-      token: attendanceTokenKey,
+      token: attendanceTokenId,
       location: qrResult.professorLectureGeolocationId,
-       organizationCode: 1,
-       courseCode: 2,
+      organizationCode: course.organizationCode,
+      courseCode: course.courseCode
     };
   } catch (error) {
     throw error;
