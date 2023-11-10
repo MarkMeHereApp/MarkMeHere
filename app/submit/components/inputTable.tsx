@@ -88,7 +88,6 @@ const InputTable = () => {
         code: inputValue.toUpperCase()
       });
 
-      console.log(res)
 
       if (res.success && res.token) {
         if (res.location) {
@@ -119,7 +118,6 @@ const InputTable = () => {
   //after the error message being displayed, we replace the URL with /submit and stay on page.
   //if we check more things than just qr-error, it will be added as another if statement.
   useEffect(() => {
-    console.log('useEffect triggered', errorType);
 
     if (errorType && !hasDisplayedQRError.current) {
       if (errorType === 'qr-error') {

@@ -22,7 +22,6 @@ export const geolocationRouter = router({
   CreateProfessorLectureGeolocation: elevatedCourseMemberLectureProcedure
     .input(zCreateProfessorLectureGeolocation)
     .mutation(async (requestData) => {
-      console.log('got here');
       try {
         const resGeolocation = await prisma.professorLectureGeolocation.create({
           data: {
@@ -39,7 +38,6 @@ export const geolocationRouter = router({
   CalculateRangeProfessorStudent: elevatedCourseMemberLectureProcedure
     .input(zGetRangeProfessorStudent)
     .mutation(async (requestData) => {
-      console.log('got here 1');
       try {
         const professorGeolocatinCoordinates =
           await prisma.professorLectureGeolocation.findUnique({
@@ -61,6 +59,7 @@ export const geolocationRouter = router({
           professorGeolocatinCoordinates.lectureLongitude;
         const studentLatitude = requestData.input.studentLatitude;
         const studentLongtitude = requestData.input.studentLongtitude;
+        const lectureRange = professorGeolocatinCoordinates.lectureRange
 
         const distanceBetween2Points = (
           profLat: number,
@@ -95,9 +94,7 @@ export const geolocationRouter = router({
           studentLongtitude
         );
 
-        console.log('Got here!');
-
-        return { success: true, distance: calculateDistance };
+        return { success: true, distance: calculateDistance,  lectureRange: lectureRange, profLat: professorLatitude, profLon: professorLongtitude, studentLat: studentLatitude, studentLon: studentLongtitude };
       } catch (error) {
         throw error;
       }

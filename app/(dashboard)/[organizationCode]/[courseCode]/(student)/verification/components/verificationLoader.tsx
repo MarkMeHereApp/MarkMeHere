@@ -203,7 +203,7 @@ const VerifiactionLoader: React.FC<{ code?: string}> = ({code})=>{
 
     
     else{
-      console.log("Geolocation is not supported by this browser.");
+      new Error('There might be an issue with your browser, please scan and try to verify again!')
     }
   }
 
