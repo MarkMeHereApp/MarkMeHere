@@ -117,13 +117,15 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
         <DataTableViewOptions table={table} />
-        {table.getColumn('role') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('role')}
-            title="Roles"
-            options={roles}
-          />
-        )}
+        <div className="hidden sm:flex">
+          {table.getColumn('role') && (
+            <DataTableFacetedFilter
+              column={table.getColumn('role')}
+              title="Roles"
+              options={roles}
+            />
+          )}
+        </div>
         {isFiltered && (
           <Button
             variant="ghost"
