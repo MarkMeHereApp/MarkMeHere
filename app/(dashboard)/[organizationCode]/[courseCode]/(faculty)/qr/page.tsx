@@ -137,8 +137,7 @@ const QR = () => {
     }
   }, [mode]);
 
-  const initialCode: zQrCodeType & { lengthOfTime: number } = {
-   
+  const initialCode: zQrCodeType = {
     code: 'LOADING',
     lectureId: 'LOADING',
     courseId: 'LOADING',
@@ -155,7 +154,7 @@ const QR = () => {
   // Then it will fetch a new buffer code asynchronously.
   // We do this so that we don't have to "wait" for a code to be fetched.
   const updateCodes = async () => {
-    console.log("HIT UPDATE CODES")
+    console.log('HIT UPDATE CODES');
     setActiveCode(bufferCodeRef.current.code);
     activeCodeRef.current = bufferCodeRef.current;
     try {

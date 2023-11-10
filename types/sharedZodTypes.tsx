@@ -78,7 +78,8 @@ export const zQrCode = z.object({
   lectureId: z.string(),
   courseId: z.string(),
   professorLectureGeolocationId: z.union([z.string(), z.null()]),
-  expiresAt: z.date()
+  expiresAt: z.date(),
+  lengthOfTime: z.number()
 })
 
 export type zQrCodeType = z.infer<typeof zQrCode>;
