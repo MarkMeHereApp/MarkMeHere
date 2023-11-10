@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { CourseMember } from '@prisma/client';
@@ -23,7 +23,11 @@ import { BsUpload } from 'react-icons/bs';
 import { MdUploadFile } from 'react-icons/md';
 import { zCourseRoles } from '@/types/sharedZodTypes';
 
-const CSV_Import = () => {
+interface CSVImportProps {
+  onClose: () => void;
+}
+
+export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
   const data = useCourseContext();
   const currentMembers = useCourseContext().courseMembersOfSelectedCourse;
   const createManyCourseMembers =
@@ -33,6 +37,7 @@ const CSV_Import = () => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
+  const [isDisabled, setIsdiabled] = useState(false);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
   const { toast } = useToast();
@@ -41,14 +46,21 @@ const CSV_Import = () => {
   const [validationMessage, setValidationMessage] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // useEffect(() => {
+  //   setIsdiabled(disabledCsv);
+  // }, [disabledCsv]);
 
   interface CSVData {
     [key: string]: string;
   }
+  const handleImportButtonClick = () => {
+    onClose();
+  };
 
   const closeDialog = () => {
     setIsFileUploaded(false);
     setIsValidating(false);
+    onClose();
   };
   const openConfirmationDialog = () => {
     setIsConfirmationDialogOpen(true);
@@ -186,7 +198,6 @@ const CSV_Import = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const selectedFile = event.target.files?.[0];
-
     if (selectedFile) {
       parseCSV(selectedFile);
     }
@@ -277,13 +288,17 @@ const CSV_Import = () => {
         onChange={handleFileChange}
         style={{ display: 'none' }}
         ref={fileInputRef}
+        //disabled={isDisabled}
         id="csv"
       />
       <label
         htmlFor="csv"
-        className={
-          'bg-primary cursor-pointer text-primary-foreground text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center '
-        }
+        className={`bg-primary cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center 
+    ${
+      isDisabled
+        ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
+        : 'text-primary-foreground text-primary'
+    }`}
       >
         <MdUploadFile className="h-5 w-4" />
         <span className="hidden sm:flex ml-2">Import CSV</span>
