@@ -64,15 +64,15 @@ export const sessionlessRouter = router({
           data: {
             token: uuidv4(),
             lectureId: qrResult.lectureId,
-            ProfessorLectureGeolocationId:
-              qrResult.ProfessorLectureGeolocationId
+            professorLectureGeolocationId:
+              qrResult.professorLectureGeolocationId
           }
         });
 
         return {
           success: true,
           token: id,
-          location: qrResult.ProfessorLectureGeolocationId,
+          location: qrResult.professorLectureGeolocationId,
           course: qrResult.course
         };
       } catch (error) {

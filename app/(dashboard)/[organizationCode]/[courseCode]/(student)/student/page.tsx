@@ -95,7 +95,7 @@ async function findAttendanceToken(
         lectureId: lectureId,
         courseMemberId: courseMemberId,
         status: zAttendanceStatus.enum.here,
-        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+        professorLectureGeolocationId: ProfessorLectureGeolocationId,
         studentLatitude: studentLatitude,
         studentLongtitude: studentLongitude
       }
@@ -115,7 +115,7 @@ async function findAttendanceToken(
       data: {
         status: zAttendanceStatus.enum.here,
         dateMarked: new Date(Date.now()),
-        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+        professorLectureGeolocationId: ProfessorLectureGeolocationId,
         studentLatitude: studentLatitude,
         studentLongtitude: studentLongitude
       }
@@ -132,7 +132,7 @@ async function findAttendanceToken(
         lectureId: lectureId,
         courseMemberId: courseMemberId,
         status: zAttendanceStatus.enum.here,
-        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+        professorLectureGeolocationId: ProfessorLectureGeolocationId,
       }
     });
   }
@@ -148,7 +148,7 @@ async function findAttendanceToken(
       data: {
         status: zAttendanceStatus.enum.here,
         dateMarked: new Date(Date.now()),
-        ProfessorLectureGeolocationId: ProfessorLectureGeolocationId,
+        professorLectureGeolocationId: ProfessorLectureGeolocationId,
       }
     });
   }
@@ -242,7 +242,7 @@ export default async function StudentPage ({
       );
 
 
-      const ProfessorGeolocationId = tokenRow.ProfessorLectureGeolocationId
+      const ProfessorGeolocationId = tokenRow.professorLectureGeolocationId
       const studentLatitude = tokenRow.attendanceStudentLatitude
       const studentLongitude = tokenRow.attendanceStudentLongtitude
 

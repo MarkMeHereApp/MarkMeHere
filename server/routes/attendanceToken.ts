@@ -23,14 +23,14 @@ export const attendanceTokenRouter = router({
 
         console.log(
           'this is the lecture result fetch: ' +
-            lectureResult?.ProfessorLectureGeolocationId
+            lectureResult?.professorLectureGeolocationId
         );
 
         if (lectureResult === null) {
           return { success: false };
         }
 
-        const geolocationId = lectureResult.ProfessorLectureGeolocationId;
+        const geolocationId = lectureResult.professorLectureGeolocationId;
         console.log(geolocationId);
 
         if (!geolocationId) {
@@ -105,7 +105,7 @@ export const attendanceTokenRouter = router({
           data: {
             attendanceStudentLatitude: input.studentLatitude,
             attendanceStudentLongtitude: input.studentLongtitude,
-            ProfessorLectureGeolocationId: geolocationId
+            professorLectureGeolocationId: geolocationId
           }
         });
 

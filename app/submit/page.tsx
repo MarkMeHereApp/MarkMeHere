@@ -43,7 +43,7 @@ async function validateAndCreateToken(qrCode: string) {
     const attendanceTokenObj = {
       token: uuidv4(),
       lectureId: qrResult.lectureId,
-      professorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
+      professorLectureGeolocationId: qrResult.professorLectureGeolocationId
     };
     const attendanceTokenKey = "attendanceToken:" + attendanceTokenObj.token
 
@@ -59,11 +59,10 @@ async function validateAndCreateToken(qrCode: string) {
 
     return {
       success: true,
-      token: id,
-      location: qrResult.ProfessorLectureGeolocationId,
-      course: qrResult.course
-      organizationCode: ,
-      courseCode: ,
+      token: attendanceTokenKey,
+      location: qrResult.professorLectureGeolocationId,
+       organizationCode: 1,
+       courseCode: 2,
     };
   } catch (error) {
     throw error;
@@ -85,13 +84,13 @@ export default async function SubmitPage({
 
       if (location && id) {
         redirect(
-          `${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`
+          `${validateToken.organizationCode}/${validateToken.courseCode}/verification?attendanceTokenId=${id}`
         );
       }
 
       if (!location && id) {
         redirect(
-          `/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`
+          `/${validateToken.organizationCode}/${validateToken.courseCode}/student?attendanceTokenId=${id}`
         );
       }
     } else {

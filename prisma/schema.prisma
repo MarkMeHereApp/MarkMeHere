@@ -119,8 +119,8 @@ model qrcode {
   courseId                      String
   course                        Course                       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   code                          String                       @unique // More work to do to make this code truly unique
-  ProfessorLectureGeolocationId String?
-  ProfessorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [ProfessorLectureGeolocationId], references: [id], onDelete: Cascade)
+  professorLectureGeolocationId String?
+  professorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [professorLectureGeolocationId], references: [id], onDelete: Cascade)
   createdAt                     DateTime                     @default(now())
   expiresAt                     DateTime
 }
