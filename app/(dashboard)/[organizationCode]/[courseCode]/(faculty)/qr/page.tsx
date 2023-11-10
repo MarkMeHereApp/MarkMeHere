@@ -165,7 +165,7 @@ const QR = () => {
         secondsToExpireNewCode: expirationTime * 2, // 5 seconds * 2 (to account for the buffer the buffer)
         lectureId: currentLectureRef.current.id,
         courseId: currentLectureRef.current.courseId,
-        professorLectureGeolocationId: locationId ?? null
+        professorLectureGeolocationId: locationId
       });
       if (!currentLectureRef.current) {
         return;
@@ -199,13 +199,13 @@ const QR = () => {
           secondsToExpireNewCode: expirationTime,
           lectureId: currentLectureRef.current.id,
           courseId: currentLectureRef.current.courseId,
-          professorLectureGeolocationId: locationId ?? null
+          professorLectureGeolocationId: locationId
         }),
         createQRMutator.mutateAsync({
           secondsToExpireNewCode: expirationTime * 2, //* 2.5 (to account for the buffer and the initial fetch time)
           lectureId: currentLectureRef.current.id,
           courseId: currentLectureRef.current.courseId,
-          professorLectureGeolocationId: locationId ?? null
+          professorLectureGeolocationId: locationId
         })
       ]);
 
