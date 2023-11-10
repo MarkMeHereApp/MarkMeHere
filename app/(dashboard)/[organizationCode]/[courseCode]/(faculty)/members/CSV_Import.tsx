@@ -74,7 +74,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
       setValidationProgress(25);
       const firstObjectKeys = Object.keys(values[0]);
 
-      const expectedHeaders = ['name', 'id', 'email'];
+      const expectedHeaders = ['email'];
 
       const headersMatch = expectedHeaders.every((expectedHeader) =>
         firstObjectKeys.some(
@@ -85,7 +85,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
 
       if (!headersMatch) {
         throw new Error(
-          `CSV file is invalid. Make sure CSV includes headers: 'Name', 'ID', 'Email'.`
+          `CSV file is invalid. Make sure CSV includes headers: 'name', 'id', 'email'.`
         );
       }
 
