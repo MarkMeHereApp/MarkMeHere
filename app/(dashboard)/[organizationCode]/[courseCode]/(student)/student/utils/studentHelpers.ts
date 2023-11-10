@@ -5,11 +5,12 @@ import {
   zAttendanceStatusType,
   zAttendanceTokenType
 } from '@/types/sharedZodTypes';
+import { redisAttendanceKey } from '@/utils/globalFunctions';
 
 export async function findAttendanceToken(
   attendanceTokenId: string
 ): Promise<zAttendanceTokenType | null> {
-  const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
+  const attendanceTokenKey = redisAttendanceKey(attendanceTokenId)
   return await redis.hgetall(attendanceTokenKey);
 }
 

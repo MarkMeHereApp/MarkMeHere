@@ -1,32 +1,30 @@
 import { GetServerSidePropsContext } from 'next';
 import prisma from '@/prisma';
-import { v4 as uuidv4 } from 'uuid';
-import { redirect } from "next/navigation";
+import { kv as redis } from '@vercel/kv';
 import VerifiactionPage from './components/verificationPage';
+import { redisAttendanceKey } from '@/utils/globalFunctions';
+import { findAttendanceToken } from '../student/utils/studentHelpers';
 
 async function getCourse(
     attendanceTokenId: string,
 ){
     try{
-        const lectureId = await prisma.attendanceToken.findUnique({
-            where:{
-                id: attendanceTokenId
-            }
-        })
+        const attendanceToken = await findAttendanceToken(attendanceTokenId)
+        // const lectureId = await prisma.attendanceToken.findUnique({
+        //     where:{
+        //         id: attendanceTokenId
+        //     }
+        // })
 
-        if(!lectureId){
+        if(!attendanceToken){
             throw new Error ('This Attendance Token is Invalid, please scan or input the code again')
-        }
-
-        if(lectureId === null){
-            return { success: false}
         }
 
         const course = await prisma.course.findFirst({
             where: {
                 lectures: {
                     some: {
-                        id: lectureId?.lectureId
+                        id: attendanceToken.lectureId
                     }
                 }
             },

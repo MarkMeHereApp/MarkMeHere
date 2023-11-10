@@ -124,3 +124,15 @@ export function decrypt(text: string, key?: string) {
 
   return decrypted.toString();
 }
+
+export function redisAttendanceKey(
+ id: string
+) {
+  return "attendanceToken:" + id
+}
+
+export function redisQrCodeKey(
+  id: string
+ ) {
+   return "qrCode:" + id
+ }
