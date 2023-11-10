@@ -80,7 +80,7 @@ export function AreYouSureDialog({
         </AlertDialogHeader>
         {proceedText && (
           <div>
-            <AlertDialogDescription className="pb-4">
+            <AlertDialogDescription className="pb-2">
               <b>
                 If you want to proceed type '
                 <span className="whitespace-pre inline">{proceedText}</span>'.

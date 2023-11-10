@@ -6,6 +6,7 @@ import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCo
 import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
 import { CSV_Dialog } from './CSV_Dialog';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
+import DeleteCourseButton from '@/utils/devUtilsComponents/DeleteCourseButton';
 
 const ManageCourseMembers = () => {
   const { selectedCourseId } = useCourseContext();
@@ -19,6 +20,7 @@ const ManageCourseMembers = () => {
             <div className="flex items-center space-x-2">
               <EnrollCourseMemberButton />
               <CSV_Dialog />
+              <DeleteCourseButton />
             </div>
           )}
         </div>
