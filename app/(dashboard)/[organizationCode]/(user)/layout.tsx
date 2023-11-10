@@ -30,7 +30,7 @@ export default async function SettingLayout({
           <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
 
           <Link href={`/${organizationCode}`}>
-            <ContinueButton name="Go Back To App" />
+            <ContinueButton name="Go to App" />
           </Link>
         </div>
         <Separator className="my-6" />

@@ -32,8 +32,8 @@ export const ContinueButton = ({
       onClick={onClick}
     >
       <div className="flex items-center">
-        <span>{name}</span>
-        <ArrowRight className="w-4 h-4 transition-transform duration-500 ease-in-out transform translate-x-1 group-hover:translate-x-2 mx-1" />
+        <span className='hidden sm:flex mr-2'>{name}</span>
+        <ArrowRight className="w-4 h-4 transition-transform duration-500 ease-in-out transform" />
       </div>
     </Button>
   );

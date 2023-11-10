@@ -1,4 +1,3 @@
-import { AiOutlineUserAdd } from 'react-icons/ai';
 import { Button } from '../../components/ui/button';
 import {
   Dialog,
@@ -12,13 +11,12 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zSiteRoles } from '@/types/sharedZodTypes';
+import { zCourseRoles } from '@/types/sharedZodTypes';
 import { z } from 'zod';
 import { Input } from '../../components/ui/input';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,56 +33,40 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import Loading from '@/components/general/loading';
 import { formatString, toastError } from '../globalFunctions';
-import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/context-users';
-import React from 'react';
-const EnrollUser = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const createUser = trpc.user.createUser.useMutation();
+import { MdEdit } from 'react-icons/md';
+import { CourseMember } from '@prisma/client';
+import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
+
+const EditCourseMember = ({ courseMember }: { courseMember: CourseMember }) => {
   const [loading, setLoading] = useState(false);
-  const { userData, setUserData } = useUsersContext();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const updateMember = trpc.courseMember.updateCourseMember.useMutation();
+  const { setCourseMembersOfSelectedCourse } = useCourseContext();
   const [error, setError] = useState<Error | null>(null);
-  const [selectedFormRole, setSelectedFormRole] = useState('');
 
-  const handleDialogOpen = () => {
-    form.reset();
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
-
-  const zUsers = z.object({
+  const zCourseMember = z.object({
     name: z
       .string()
       .min(1)
       .max(255)
-      .refine((value) => value.trim() === value, {
+      .optional()
+      .refine((value) => value?.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
     email: z
       .string()
       .min(1)
-      .refine((value) => value.trim() === value, {
+      .optional()
+      .refine((value) => value?.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
-    role: zSiteRoles,
-    optionalId: z
-      .string()
-      .max(255)
-      .optional()
-      .refine(
-        (value) => value === '' || (value ? value.trim() === value : true),
-        {
-          message: 'Value must not have leading or trailing spaces'
-        }
-      )
+    role: zCourseRoles.optional()
   });
 
-  type CourseMemberFormProps = z.infer<typeof zUsers>;
+  type CourseMemberFormProps = z.infer<typeof zCourseMember>;
 
   const form = useForm<CourseMemberFormProps>({
-    resolver: zodResolver(zUsers)
+    resolver: zodResolver(zCourseMember)
   });
 
   if (error) {
@@ -103,47 +85,40 @@ const EnrollUser = () => {
   async function onSubmit(data: CourseMemberFormProps) {
     try {
       setLoading(true);
-      const response = await createUser.mutateAsync({
+      const response = await updateMember.mutateAsync({
+        id: courseMember.id,
+        email: courseMember.email,
         name: data.name,
-        email: data.email,
-        role: data.role,
-        optionalId: data.optionalId
+        role: data.role
       });
-      if (userData.users) {
-        setUserData({
-          ...userData,
-          users: [...userData.users, response.user]
-        });
-      } else {
-        setUserData({ ...userData, users: [response.user] });
-      }
+
+      setCourseMembersOfSelectedCourse((prevData) =>
+        prevData
+          ? prevData.map((user) =>
+              user.id === response.member.id ? response.member : user
+            )
+          : [response.member]
+      );
+
       setLoading(false);
-      handleDialogClose();
+      setIsDialogOpen(false);
     } catch (error) {
       setError(error as Error);
     }
   }
-
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="default"
-            onClick={() => handleDialogOpen()}
-            className="flex items-center"
-            style={{ maxWidth: '100%' }}
-          >
-            <AiOutlineUserAdd className="h-4 w-4" />
-            <span className="hidden sm:flex ml-2">Create Site User</span>
+          <Button className="p-2">
+            <MdEdit />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader onClick={handleDialogClose}>
-            <DialogTitle>Create Site User</DialogTitle>
+          <DialogHeader>
+            <DialogTitle>Modify Course Member</DialogTitle>
             <DialogDescription>
-              Fill in the site user&apos;s information below and click create
-              user when you&apos;re done.
+              Modify the course member and click submit when you're done.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -154,13 +129,15 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="name"
+                key={'name'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         className=""
-                        placeholder="Richard Leinecker"
+                        key={'nameInput'}
+                        defaultValue={courseMember.name || ''}
                         {...field}
                       />
                     </FormControl>
@@ -172,13 +149,15 @@ const EnrollUser = () => {
                 <FormField
                   control={form.control}
                   name="email"
+                  key={'email'}
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="Richard.Leinecker@ucf.edu"
+                          defaultValue={courseMember.email}
                           {...field}
                         />
                       </FormControl>
@@ -190,19 +169,22 @@ const EnrollUser = () => {
               <FormField
                 control={form.control}
                 name="role"
-                defaultValue="admin"
+                key={'role'}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue="admin">
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={courseMember.role}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {zSiteRoles.options.map((role) => (
-                          <SelectItem value={role} key={role}>
+                        {zCourseRoles.options.map((role) => (
+                          <SelectItem value={role}>
                             {formatString(role)}
                           </SelectItem>
                         ))}
@@ -212,34 +194,9 @@ const EnrollUser = () => {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="optionalId"
-                key="optionalId"
-                defaultValue=""
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Optional ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="abc123"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      This is an optional Id that can help identify the user
-                      with an ID other than their email. This is recommended
-                      especially if emails are hashed.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <DialogFooter>
                 <Button type="submit" disabled={loading}>
-                  {loading ? <Loading /> : 'Create User'}
+                  {loading ? <Loading /> : 'Submit'}
                 </Button>
               </DialogFooter>
             </form>
@@ -250,4 +207,4 @@ const EnrollUser = () => {
   );
 };
 
-export default EnrollUser;
+export default EditCourseMember;

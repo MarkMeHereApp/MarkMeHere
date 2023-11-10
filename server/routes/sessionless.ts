@@ -47,6 +47,7 @@ export const sessionlessRouter = router({
     .input(zActiveCode)
     .mutation(async ({ input }) => {
       try {
+
         const qrResult = await prisma.qrcode.findUnique({
           where: {
             code: input.code
@@ -55,12 +56,9 @@ export const sessionlessRouter = router({
             course: true
           }
         });
-
         if (qrResult === null) {
           return { success: false };
         }
-
-        console.log(qrResult.ProfessorLectureGeolocationId);
 
         const { id } = await prisma.attendanceToken.create({
           data: {

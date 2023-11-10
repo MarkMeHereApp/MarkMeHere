@@ -12,7 +12,6 @@ export const attendanceTokenRouter = router({
   ValidateGeolocation: publicProcedure
     .input(zGeolocationVerification)
     .mutation(async ({ input }) => {
-      console.log(input);
 
       try {
         const lectureResult = await prisma.attendanceToken.findUnique({
@@ -21,17 +20,12 @@ export const attendanceTokenRouter = router({
           }
         });
 
-        console.log(
-          'this is the lecture result fetch: ' +
-            lectureResult?.ProfessorLectureGeolocationId
-        );
 
         if (lectureResult === null) {
           return { success: false };
         }
 
         const geolocationId = lectureResult.ProfessorLectureGeolocationId;
-        console.log(geolocationId);
 
         if (!geolocationId) {
           throw new Error('Geolocation ID not found!');
@@ -47,18 +41,10 @@ export const attendanceTokenRouter = router({
         if (!geolocationLectureResult) {
           throw new Error('Geolocation not found!');
         }
-
-        console.log(geolocationLectureResult[0]);
-
+        
+        const lectureRange = geolocationLectureResult[0].lectureRange
         const lectureLatitude = geolocationLectureResult[0].lectureLatitude;
         const lectureLongitude = geolocationLectureResult[0].lectureLongitude;
-
-        console.log(
-          'lecture latitude: ' +
-            lectureLatitude +
-            'lecture longtitude: ' +
-            lectureLongitude
-        );
 
         const distanceBetween2Points = (
           profLat: number,
@@ -93,10 +79,6 @@ export const attendanceTokenRouter = router({
           input.studentLongtitude
         );
 
-        if (geolocationLectureResult && input) {
-          //console.log('distance difference in miles:' + calculateDistance);
-        }
-
         const attendanceTokenLocation = await prisma.attendanceToken.update({
           where: {
             id: input.id
@@ -114,7 +96,8 @@ export const attendanceTokenRouter = router({
           distance: calculateDistance,
           geolocationInfo: geolocationLectureResult,
           lectureLatitude: lectureLatitude,
-          lectureLongtitude: lectureLongitude
+          lectureLongtitude: lectureLongitude,
+          lectureRange: lectureRange
         };
       } catch (error) {
         throw error;

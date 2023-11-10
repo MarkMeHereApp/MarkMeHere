@@ -136,14 +136,15 @@ const QR = () => {
     }
   }, [mode]);
 
-  const initialCode: qrcode = {
+  const initialCode: qrcode & { lengthOfTime: number } = {
     id: 'LOADING',
     code: 'LOADING',
     lectureId: 'LOADING',
     courseId: 'LOADING',
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 3153600000000), // This will expire in 100 year, so it will never expire...or will it ?
-    ProfessorLectureGeolocationId: locationId || null
+    ProfessorLectureGeolocationId: locationId || null,
+    lengthOfTime: expirationTime
   };
 
   const bufferCodeRef = React.useRef(initialCode); //code in buffer
@@ -171,7 +172,12 @@ const QR = () => {
         return;
       }
       if (newBufferCode.success) {
-        bufferCodeRef.current = newBufferCode.qrCode;
+        bufferCodeRef.current = {
+          ...newBufferCode.qrCode,
+          lengthOfTime:
+            newBufferCode.qrCode.expiresAt.getTime() -
+            activeCodeRef.current.expiresAt.getTime()
+        };
       }
     } catch (error) {
       setError(error as Error);
@@ -189,24 +195,20 @@ const QR = () => {
         return;
       }
       const lectureAtStartOfFunction = currentLectureRef.current;
-      const newActiveCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime * 1.25, // * 1.25 to account for the initial fetch time
-        lectureId: currentLectureRef.current.id,
-        courseId: currentLectureRef.current.courseId,
-        professorLectureGeolocationId: locationId || ''
-      });
-
-      // This happens if between the codes being initialized, the lecture was changed.
-      if (lectureAtStartOfFunction !== currentLectureRef.current) {
-        return;
-      }
-
-      const newBufferCode = await createQRMutator.mutateAsync({
-        secondsToExpireNewCode: expirationTime * 2.5, //* 2.5 (to account for the buffer and the initial fetch time)
-        lectureId: currentLectureRef.current.id,
-        courseId: currentLectureRef.current.courseId,
-        professorLectureGeolocationId: locationId || ''
-      });
+      const [newActiveCode, newBufferCode] = await Promise.all([
+        createQRMutator.mutateAsync({
+          secondsToExpireNewCode: expirationTime,
+          lectureId: currentLectureRef.current.id,
+          courseId: currentLectureRef.current.courseId,
+          professorLectureGeolocationId: locationId || ''
+        }),
+        createQRMutator.mutateAsync({
+          secondsToExpireNewCode: expirationTime * 2, //* 2.5 (to account for the buffer and the initial fetch time)
+          lectureId: currentLectureRef.current.id,
+          courseId: currentLectureRef.current.courseId,
+          professorLectureGeolocationId: locationId || ''
+        })
+      ]);
 
       // This happens if between the codes being initialized, the lecture was changed.
       if (lectureAtStartOfFunction !== currentLectureRef.current) {
@@ -214,9 +216,17 @@ const QR = () => {
       }
 
       if (newActiveCode.success && newBufferCode.success) {
-        activeCodeRef.current = newActiveCode.qrCode;
+        activeCodeRef.current = {
+          ...newActiveCode.qrCode,
+          lengthOfTime: newActiveCode.qrCode.expiresAt.getTime() - Date.now()
+        };
         setActiveCode(activeCodeRef.current.code);
-        bufferCodeRef.current = newBufferCode.qrCode;
+        bufferCodeRef.current = {
+          ...newBufferCode.qrCode,
+          lengthOfTime:
+            newBufferCode.qrCode.expiresAt.getTime() -
+            activeCodeRef.current.expiresAt.getTime()
+        };
         bIsFetchingInitCodes.current = false;
         return;
       }
@@ -237,13 +247,6 @@ const QR = () => {
 
         // If the user is not on the page, reset the code
         if (document.hidden) {
-          initCodes();
-          return 0;
-        }
-
-        // If the code is expired, reset the code
-        if (activeCodeRef.current.expiresAt.getTime() <= Date.now()) {
-          initCodes();
           return 0;
         }
 
@@ -259,7 +262,10 @@ const QR = () => {
           return 100;
         }
 
-        const newProgress = oldProgress + timerUpdateRate / (secondsLeft * 10); // Increase progress by timerLength / timerUpdateRate each step
+        const newProgress =
+          oldProgress +
+          timerUpdateRate / (activeCodeRef.current.lengthOfTime / 100); // Increase progress by timerLength / timerUpdateRate each step
+
         return newProgress;
       });
     }, timerUpdateRate);

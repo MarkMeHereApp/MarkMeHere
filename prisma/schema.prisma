@@ -9,15 +9,15 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  optionalId       String?   @db.VarChar(255)
-  role             String    @db.VarChar(10)
-  name             String?   @db.VarChar(255)
-  email            String    @unique @db.VarChar(255)
-  image            String?   @db.VarChar(255)
-  dateCreated      DateTime? @default(now())
-  selectedCourseId String?   @db.VarChar(255)
-  courseMembers CourseMember[]
+  id               String         @id @default(cuid())
+  optionalId       String?        @db.VarChar(255)
+  role             String         @db.VarChar(10)
+  name             String?        @db.VarChar(255)
+  email            String         @unique @db.VarChar(255)
+  image            String?        @db.VarChar(255)
+  dateCreated      DateTime?      @default(now())
+  selectedCourseId String?        @db.VarChar(255)
+  courseMembers    CourseMember[]
   accounts         Account[]
 }
 
@@ -75,19 +75,19 @@ model AttendanceEntry {
 }
 
 model Course {
-  id                  String         @id @default(cuid())
-  courseCode          String         @db.VarChar(255)
-  organizationCode    String         @db.VarChar(255)
-  organization        Organization   @relation(fields: [organizationCode], references: [uniqueCode], onDelete: Cascade)
-  name                String         @db.VarChar(255)
-  lmsType             String         @db.VarChar(255)
-  lmsId               String?        @db.VarChar(255)
-  dateCreated         DateTime       @default(now())
-  StartDate           DateTime?
-  EndDate             DateTime?
-  lectures            Lecture[]
-  qrCodes             qrcode[]
-  enrollments         CourseMember[]
+  id               String         @id @default(cuid())
+  courseCode       String         @db.VarChar(255)
+  organizationCode String         @db.VarChar(255)
+  organization     Organization   @relation(fields: [organizationCode], references: [uniqueCode], onDelete: Cascade)
+  name             String         @db.VarChar(255)
+  lmsType          String         @db.VarChar(255)
+  lmsId            String?        @db.VarChar(255)
+  dateCreated      DateTime       @default(now())
+  StartDate        DateTime?
+  EndDate          DateTime?
+  lectures         Lecture[]
+  qrCodes          qrcode[]
+  enrollments      CourseMember[]
 
   @@unique([organizationCode, courseCode])
   @@unique([lmsType, lmsId])
@@ -105,7 +105,7 @@ model CourseMember {
   role                        String                        @db.VarChar(255)
   attendanceEntries           AttendanceEntry[]
   professorLectureGeolocation ProfessorLectureGeolocation[]
-  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+  user                        User                          @relation(fields: [email], references: [email], onDelete: Cascade)
 
   @@unique([email, lmsId])
   @@unique([email, courseId])
@@ -162,20 +162,21 @@ model ProfessorLectureGeolocation {
   createdAt         DateTime          @default(now())
   lectureLatitude   Float
   lectureLongitude  Float
+  lectureRange      Int
   qrCodes           qrcode[]
   attendanceTokens  AttendanceToken[]
   attendanceEntries AttendanceEntry[]
 }
 
 model Organization {
-  id                              String        @id @default(cuid())
-  firstTimeSetupComplete          Boolean       @default(false)
-  name                            String        @db.VarChar(255)
-  uniqueCode                      String        @unique @db.VarChar(255)
-  lightTheme                      String        @db.VarChar(255) @default("light_neutral")
-  darkTheme                       String        @db.VarChar(255) @default("dark_red")
-  googleMapsApiKey                String?        @db.VarChar(255) 
-  allowUsersToUseGoogleMaps       Boolean         @default(false)
-  hashEmails                      Boolean
-  Courses                         Course[]
+  id                        String   @id @default(cuid())
+  firstTimeSetupComplete    Boolean  @default(false)
+  name                      String   @db.VarChar(255)
+  uniqueCode                String   @unique @db.VarChar(255)
+  lightTheme                String   @default("light_neutral") @db.VarChar(255)
+  darkTheme                 String   @default("dark_red") @db.VarChar(255)
+  googleMapsApiKey          String?  @db.VarChar(255)
+  allowUsersToUseGoogleMaps Boolean  @default(false)
+  hashEmails                Boolean
+  Courses                   Course[]
 }

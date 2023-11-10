@@ -89,9 +89,9 @@ export default function CourseSelection() {
                 <Skeleton className="h-5 w-5 rounded-full" />
               </Avatar>
               <span
-                className={`pr-4 whitespace-nowrap overflow-hidden overflow-ellipsis ${
+                className={`pr-4 max-w-[72px] md:max-w-[118px] xl:max-w-[144px] whitespace-nowrap overflow-hidden overflow-ellipsis ${
                   courseMembersOfSelectedCourse ? '' : 'opacity-50'
-                }`}
+                } transition-all`}
               >
                 {selectedCourse.name}
               </span>

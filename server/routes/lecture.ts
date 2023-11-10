@@ -62,6 +62,7 @@ export const lectureRouter = router({
             courseId: requestData.input.courseId
           },
           include: {
+            professorLectureGeolocation: true,
             attendanceEntries: canAccessAllAttendanceEntries
               ? true
               : {

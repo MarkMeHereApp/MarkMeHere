@@ -40,7 +40,7 @@ export default function UnauthorizedEmail({
 
         <CardFooter className="flex justify-end">
           <Link href={callbackUrl?.value || '/signin'}>
-            <Button>Go Back To Sign In</Button>
+            <Button>Back To Sign In</Button>
           </Link>
         </CardFooter>
       </Card>

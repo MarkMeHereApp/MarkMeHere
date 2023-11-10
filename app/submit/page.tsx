@@ -19,13 +19,9 @@ async function validateAndCreateToken(
       
     });
 
-    console.log(qrResult + 'error')
-
     if (qrResult === null) {
       return { success: false };
     }
-
-    console.log(qrResult.ProfessorLectureGeolocationId)
 
     const { id } = await prisma.attendanceToken.create({
       data: {
@@ -60,7 +56,6 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
   };
 
   if(searchParams.hasOwnProperty('qr')){
-    console.log("QR Param included")
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
 
     const validateToken = await handleToken();
@@ -70,12 +65,10 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
       const id = validateToken?.token
 
       if(location && id){
-        console.log('the token as location included: ' + location + 'token id: ' + id)
         redirect(`${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`)
       }
       
       if(!location && id){
-        console.log('location not included only token id: ' + id)
         redirect(`/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`)
       }
     }
@@ -89,7 +82,6 @@ export default async function SubmitPage({searchParams}: {searchParams: any}) {
 
   //Not used for now
   if(searchParams.hasOwnProperty('error')){
-    console.log("Error Param included")
     error = searchParams.error
   }
 

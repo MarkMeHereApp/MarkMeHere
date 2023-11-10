@@ -4,8 +4,9 @@ import DataTable from './DataTable';
 import { columns } from './columns';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 import EnrollCourseMemberButton from '@/utils/devUtilsComponents/EnrollCourseMemberButton';
-import Import_CSV from './CSV_Import';
+import { CSV_Dialog } from './CSV_Dialog';
 import CreateChooseCourseAnimation from '@/components/mark-me-here/CreateChooseCourseAnimation';
+import DeleteCourseButton from '@/utils/devUtilsComponents/DeleteCourseButton';
 
 const ManageCourseMembers = () => {
   const { selectedCourseId } = useCourseContext();
@@ -18,7 +19,8 @@ const ManageCourseMembers = () => {
           {selectedCourseId && (
             <div className="flex items-center space-x-2">
               <EnrollCourseMemberButton />
-              <Import_CSV />
+              <CSV_Dialog />
+              <DeleteCourseButton />
             </div>
           )}
         </div>

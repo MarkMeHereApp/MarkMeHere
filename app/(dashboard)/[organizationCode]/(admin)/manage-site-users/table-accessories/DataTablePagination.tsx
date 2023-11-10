@@ -24,14 +24,14 @@ export function DataTablePagination<TData>({
   table
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between md:justify-end px-2">
+    <div className="flex items-center justify-evenly w-full md:justify-end px-2">
       <div className="flex-1 text-sm text-muted-foreground hidden invisible sm:block sm:visible">
         {table.getFilteredSelectedRowModel().rows.length} of{' '}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium hidden sm:flex">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {

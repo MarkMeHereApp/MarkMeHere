@@ -37,11 +37,11 @@ export default async function SchoolLayout({
   return (
     <>
       <div className="space-y-6 p-10 pb-16">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
 
           <Link href={`/${organizationCode}`}>
-            <ContinueButton name="Go Back To App" />
+            <ContinueButton name="Go to App" />
           </Link>
         </div>
         <Separator className="my-6" />

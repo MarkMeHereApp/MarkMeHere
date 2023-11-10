@@ -7,6 +7,7 @@ import { CalendarDateRangePicker } from './date-rangepicker';
 import { useSelectedLectureContext } from '../../components/context-selected-lectures';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import calculateCourseMemberStatistics from '../utils/calculateCourseMemberStatistics';
 
 export interface OverviewBarProps {
   selectedCourseName: string;
@@ -78,14 +79,18 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
       ]
     ];
     courseMembers?.forEach((member) => {
-      const numPresent = countAttendanceStatus('here', member, lectures);
-      const numAbsent = countAttendanceStatus('absent', member, lectures);
-      const numLate = countAttendanceStatus('late', member, lectures);
-      const numExcused = countAttendanceStatus('excused', member, lectures);
-      const numTotal = numPresent + numAbsent + numLate - numExcused;
-      const attendanceGrade = Number.isFinite(numPresent / numTotal)
-        ? 0
-        : numPresent / numTotal;
+      const courseMemberStatistics = calculateCourseMemberStatistics(
+        member,
+        lectures
+      );
+      const {
+        numPresent,
+        numAbsent,
+        numLate,
+        numExcused,
+        numTotal,
+        attendanceGrade
+      } = courseMemberStatistics;
       csvData.push([
         member.name,
         member.email,
@@ -118,10 +123,20 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
   return (
     <>
       <Card>
-        <CardContent className="flex p-4 gap-4">
-          <CalendarDateRangePicker />
-          <Button onClick={() => onClickExportJSON()}>Export to JSON</Button>
-          <Button onClick={() => onClickExportCSV()}>Export to CSV</Button>
+        <CardContent className="flex flex-col sm:flex-row p-4 gap-4">
+          <CalendarDateRangePicker className="w-full sm:w-auto" />
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => onClickExportJSON()}
+          >
+            Export to JSON
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => onClickExportCSV()}
+          >
+            Export to CSV
+          </Button>
         </CardContent>
       </Card>
     </>
