@@ -1,0 +1,50 @@
+name: Cypress Tests
+on: [push]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    # Runs tests in parallel with matrix strategy https://docs.cypress.io/guides/guides/parallelization
+    # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+    # Also see warning here https://github.com/cypress-io/github-action#parallel
+    strategy:
+      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
+      matrix:
+        containers: [1, 2] # Uses 2 parallel instances
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cypress run
+        # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
+        uses: cypress-io/github-action@v6
+        with:
+          # Starts web server for E2E tests - replace with your own server invocation
+          # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
+          install: npm install
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:3000' # Waits for above
+          # Records to Cypress Cloud
+          # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
+          record: true
+          parallel: true # Runs test in parallel using settings above
+        env:
+          # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
+          # in GitHub repo → Settings → Secrets → Actions
+          NEXTAUTH_SECRET: 3f4b89143110082260c1b89a7e9728981
+          FIRST_TIME_SETUP_ADMIN_PASSWORD: password
+
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
+          POSTGRES_PRISMA_URL: 'postgres://default:2JL8UNHutpZh@ep-divine-hall-75113084-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb?pgbouncer=true&connect_timeout=15'
+          POSTGRES_URL_NON_POOLING: 'postgres://default:2JL8UNHutpZh@ep-divine-hall-75113084.us-east-1.postgres.vercel-storage.com:5432/verceldb'
+
+          # These are temporary variables for testing purposes
+          CANVAS_DOMAIN: https://webcourses.ucf.edu/
+          CANVAS_API_TOKEN: 1158~c06gaXGNSTve8umxHXRWgVPiBQHF2ht4mg1tZwZ92TtUG5ZARG8A7zyXeteQ5c4c
+          NEXT_PUBLIC_CANVAS_ENABLED: true
+
+          DEMO_MODE: true
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Creating a token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

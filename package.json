@@ -9,7 +9,9 @@
     "postinstall": "prisma generate",
     "prod": "next build && next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "open-dev": "open http://localhost:3000 && next dev"
+    "open-dev": "open http://localhost:3000 && next dev",
+    "cypress open": "cypress open",
+    "cypress run": "cypress run"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -108,6 +110,7 @@
     "@typescript-eslint/parser": "^6.10.0",
     "bun-types": "^1.0.1",
     "cross-env": "^7.0.3",
+    "cypress": "^13.4.0",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

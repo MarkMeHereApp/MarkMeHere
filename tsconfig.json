@@ -30,7 +30,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/dashboard/overview/components/crudButtons"
+    "app/dashboard/overview/components/crudButtons",
+    "cypress/e2e/app.cy.js"
   ],
   "exclude": ["node_modules", "deprecated"]
 }
