@@ -156,19 +156,11 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
       : undefined;
-    console.log(lectureId);
-    console.log(selectedCourseMemberId);
-    console.log(
-      `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture before the fetch`
-    );
 
     if (enableGeolocation.current) {
       const location = await getGeolocationData();
 
       if (location) {
-        console.log(
-          `Latitude: ${lectureLatitude.current}, Longitude: ${lectureLongitude.current} from the professor lecture during the fetch`
-        );
 
         try {
           if (!selectedCourseMemberId) {
