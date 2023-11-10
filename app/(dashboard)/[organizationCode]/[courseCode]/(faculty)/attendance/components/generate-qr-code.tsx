@@ -30,7 +30,8 @@ import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCo
 import { CourseMember } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
-
+import { Slider } from '@/components/ui/slider';
+import GoogleMapComponentAttendance from './google-map-component';
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
 }
@@ -53,17 +54,16 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const [parameters, setParameters] = useState(firstParam);
 
-  const [enableGeolocation, setEnableGeolocation] = useState<boolean>(true);
+  // const [enableGeolocation, setEnableGeolocation] = useState<boolean>(false);
+  const [geolocationSettings, setGeolcationSettings] = useState<boolean>(false)
+  const enableGeolocation = useRef<boolean>(false)
 
-  const handleGeolocationChange = () => {
-    setEnableGeolocation(!enableGeolocation);
-    console.log(!enableGeolocation);
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const lectureLatitude = useRef<number>(0);
   const lectureLongitude = useRef<number>(0);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
-
+  //const [isLoadingMap, setIsLoadingMap] = useState<boolean>(false)
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
@@ -72,6 +72,19 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     CourseMember | undefined
   >();
   const [error, setError] = useState<Error | null>(null);
+
+  const locationData = {
+    professorLatitude: lectureLatitude.current,
+    professorLongitude: lectureLongitude.current,
+  };
+
+  const handleGeolocationChange = async () => {
+    enableGeolocation.current = !enableGeolocation.current
+    console.log(!enableGeolocation.current);
+    if (enableGeolocation.current) {
+      setIsDialogOpen(true);
+    }
+  };
 
   useEffect(() => {
     if (isCopied) {
@@ -105,6 +118,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   };
 
   const getGeolocationData = () => {
+    setIsLoadingSubmit(true)
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -122,6 +136,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             resolve(false);
           }
         );
+
       } else {
         console.log('Geolocation is not supported by this browser.');
         resolve(false);
@@ -204,8 +219,53 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     Cookies.set('qrSettings', newSetting);
   };
 
+  const [range, setRange] = useState(200);
+
+  const handleRangeSettings = (newRange:number) => {
+    setRange(newRange)
+  }
+
+  const handleDialogComponent = (dialogOpen:boolean) => {
+    setIsDialogOpen(dialogOpen)
+  }
+
+  const fetchGeolocation = async () =>{
+    const fetchedLocation = await getGeolocationData();
+    setIsLoadingSubmit(false)
+    console.log(fetchedLocation)
+  }
+
+  const printDataToSend = () => {
+    console.log('range: ' + range)
+    console.log('lecture lat: ' + lectureLatitude.current)
+    console.log('lecture lon: ' + lectureLongitude.current)
+  }
+  
+
+  const GeolocationSettingsDialog = () => {  
+    if(enableGeolocation && !isLoadingSubmit){
+
+      
+
+      return(
+        <AlertDialogContent>
+          <AlertDialogHeader className='flex justify-center items-center'>Select the size of your classroom and confirm your location</AlertDialogHeader>
+            <AlertDialogDescription>
+              <GoogleMapComponentAttendance postitonsData={locationData} onRangeChange={handleRangeSettings} isDialogOpen={handleDialogComponent}></GoogleMapComponentAttendance>
+            </AlertDialogDescription>
+        </AlertDialogContent>                
+      )
+    }
+
+    else{
+      return null
+    }
+  }
+  
+
   return (
     <div>
+      
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
@@ -216,6 +276,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             Generate QR Code
           </Button>
         </AlertDialogTrigger>
+        
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Display QR Code</AlertDialogTitle>
@@ -296,14 +357,26 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="flex items-center space-x-2">
-                          <Switch
-                            checked={enableGeolocation}
-                            onClick={handleGeolocationChange}
-                          ></Switch>
-                          <Label htmlFor="r3">Location Checker</Label>
-                        </div>
+                        
+                        
                       </TooltipTrigger>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={enableGeolocation.current}
+                          onClick={() => {
+                            handleGeolocationChange();
+                            fetchGeolocation()
+                          }}
+                        />
+                        <Label htmlFor="r3">Location Checker</Label>
+
+                        <AlertDialog
+                          open={isDialogOpen}>
+                          <GeolocationSettingsDialog/>
+                        </AlertDialog>
+                      </div>
+                      
+                      
                       <TooltipContent>
                         <p>
                           This option displays only the QR code in a simplified
@@ -328,6 +401,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                   {isLoadingSubmit ? <Loading /> : 'Continue To QR Code'}
                 </Button>
               </div>
+              
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
