@@ -246,14 +246,19 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRan
 
     else{
         return(
-            <div className='pt-5'>
-            <AlertDialog>
-                <AlertDialogHeader className='flex justify-center items-center'>
-                    <AlertDialogTitle>
-                            Select the size of your classroom and confirm your location
-                    </AlertDialogTitle>
-                </AlertDialogHeader>
-            </AlertDialog>
+            <div>
+                <AlertDialog>
+                    <AlertDialogHeader className='flex justify-center items-center pb-[10px]'>
+                        <AlertDialogTitle>
+                            Location Verification Settings
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Your profile does not have Google Maps imported!
+                            You can still pick the size of your classroom, but you cannot see where your location is.
+                            Be careful not to have a VPN on so the data is accurate!
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                </AlertDialog>
 
                 <AlertDialogDescription>
                     You are missing Google Maps key
