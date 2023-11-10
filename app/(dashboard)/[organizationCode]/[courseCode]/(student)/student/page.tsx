@@ -1,7 +1,7 @@
 import StudentPageBoard from './StudentPageBoard';
 import { AttendanceEntry } from '@prisma/client';
 import { getServerSession } from 'next-auth';
-import { zCourseRoles } from '@/types/sharedZodTypes';
+import { zAttendanceTokenType, zCourseRoles } from '@/types/sharedZodTypes';
 import MarkAttendanceError from '../markAttendance/components/mark-attendance-error';
 import { formatString } from '@/utils/globalFunctions';
 import { attendanceTokenExpirationTime } from '@/utils/globalVariables';
