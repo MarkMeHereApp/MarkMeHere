@@ -59,6 +59,7 @@ export const geolocationRouter = router({
           professorGeolocatinCoordinates.lectureLongitude;
         const studentLatitude = requestData.input.studentLatitude;
         const studentLongtitude = requestData.input.studentLongtitude;
+        const lectureRange = professorGeolocatinCoordinates.lectureRange
 
         const distanceBetween2Points = (
           profLat: number,
@@ -93,7 +94,7 @@ export const geolocationRouter = router({
           studentLongtitude
         );
 
-        return { success: true, distance: calculateDistance };
+        return { success: true, distance: calculateDistance,  lectureRange: lectureRange, profLat: professorLatitude, profLon: professorLongtitude, studentLat: studentLatitude, studentLon: studentLongtitude };
       } catch (error) {
         throw error;
       }
