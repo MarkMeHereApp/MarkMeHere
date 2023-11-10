@@ -80,9 +80,21 @@ export const zQrCode = z.object({
   professorLectureGeolocationId: z.union([z.string(), z.null()]),
   expiresAt: z.date(),
   lengthOfTime: z.union([z.number(), z.null()])
-})
+});
 
 export type zQrCodeType = z.infer<typeof zQrCode>;
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+// ATTENDANCE TOKEN TYPES
+
+export const zAttendanceToken = z.object({
+  token: z.string(),
+  lectureId: z.string(),
+  professorLectureGeolocationId: z.union([z.string(), z.null()])
+});
+
+export type zAttendanceTokenType = z.infer<typeof zAttendanceToken>;
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////

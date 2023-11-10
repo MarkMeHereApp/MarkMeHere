@@ -1,12 +1,10 @@
 import prisma from '@/prisma';
+import { kv as redis } from '@vercel/kv';
 import { zAttendanceStatus } from '@/types/sharedZodTypes';
 
 export async function findAttendanceToken(attendanceTokenId: string) {
-  return await prisma.attendanceToken.findFirst({
-    where: {
-      id: attendanceTokenId
-    }
-  });
+    const attendanceTokenKey = "attendanceToken:" + attendanceTokenId
+   return await redis.hgetall(attendanceTokenKey)
 }
 
 export async function findCourseId(lectureId: string) {
