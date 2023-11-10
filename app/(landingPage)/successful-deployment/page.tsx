@@ -88,7 +88,7 @@ export default async function SuccessfulDeployment({
             </div>
           </div>
           <Link href={deploymentUrl}>
-            <ContinueButton name="Go To Your App"></ContinueButton>
+            <ContinueButton name="Go to App"></ContinueButton>
           </Link>
         </CardHeader>
       </Card>
