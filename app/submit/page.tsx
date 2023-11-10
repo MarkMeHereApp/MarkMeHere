@@ -42,7 +42,7 @@ async function validateAndCreateToken(qrCode: string) {
     const attendanceToken = uuidv4();
     const attendanceTokenId = uuidv4();
     const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
-    
+
     //Create attendance token
     const attendanceTokenObj = {
       token: attendanceToken,
