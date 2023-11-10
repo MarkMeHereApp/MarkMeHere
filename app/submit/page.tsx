@@ -8,10 +8,10 @@ async function validateAndCreateToken(qrCode: string) {
   try {
     /* 
     Find our qr code in Redis here 
-    If we successfully find the matchign qr code then 
+    If we successfully find the matching qr code then 
     create an attendance token in redis
 
-    When we validate teh token we should also look up the course 
+    When we validate the token we should also look up the course 
     associated with it to grab the organization id
     */
     const qrResult = await prisma.qrcode.findUnique({
