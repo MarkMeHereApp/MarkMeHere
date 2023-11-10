@@ -218,6 +218,28 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     setParameters(newSetting);
     Cookies.set('qrSettings', newSetting);
   };
+
+  const [range, setRange] = useState(200);
+
+  const handleRangeSettings = (newRange:number) => {
+    setRange(newRange)
+  }
+
+  const handleDialogComponent = (dialogOpen:boolean) => {
+    setIsDialogOpen(dialogOpen)
+  }
+
+  const fetchGeolocation = async () =>{
+    const fetchedLocation = await getGeolocationData();
+    setIsLoadingSubmit(false)
+    console.log(fetchedLocation)
+  }
+
+  const printDataToSend = () => {
+    console.log('range: ' + range)
+    console.log('lecture lat: ' + lectureLatitude.current)
+    console.log('lecture lon: ' + lectureLongitude.current)
+  }
   
 
   const GeolocationSettingsDialog = () => {  
@@ -229,14 +251,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
         <AlertDialogContent>
           <AlertDialogHeader className='flex justify-center items-center'>Select the size of your classroom and confirm your location</AlertDialogHeader>
             <AlertDialogDescription>
-              <GoogleMapComponentAttendance postitonsData={locationData}></GoogleMapComponentAttendance>
-
+              <GoogleMapComponentAttendance postitonsData={locationData} onRangeChange={handleRangeSettings} isDialogOpen={handleDialogComponent}></GoogleMapComponentAttendance>
             </AlertDialogDescription>
-            
-            
-          <AlertDialogCancel className='pt-[10px]'onClick={() => setIsDialogOpen(false)}>
-            Save
-          </AlertDialogCancel>
         </AlertDialogContent>                
       )
     }
@@ -245,13 +261,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       return null
     }
   }
-
-  const fetchGeolocation = async () =>{
-    const fetchedLocation = await getGeolocationData();
-    setIsLoadingSubmit(false)
-    console.log(fetchedLocation)
-  }
-
+  
 
   return (
     <div>
@@ -391,7 +401,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
                   {isLoadingSubmit ? <Loading /> : 'Continue To QR Code'}
                 </Button>
               </div>
-              
               
             </AlertDialogDescription>
           </AlertDialogHeader>

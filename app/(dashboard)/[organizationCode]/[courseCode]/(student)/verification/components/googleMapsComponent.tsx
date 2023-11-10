@@ -41,8 +41,8 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
     console.log(GoogleMapsKey)
 
-    function metersToFeet(meters: number){
-        return meters * 3.28084
+    function feetToMeters(meters: number){
+        return meters / 3.28084
     }
 
     const mapStyles = {        
@@ -88,7 +88,7 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
                 <CircleF 
                 center={professorLocation}
-                radius={metersToFeet(50)} // radius in meters
+                radius={feetToMeters(50)} // radius in meters
                 options={{
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,

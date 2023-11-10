@@ -18,11 +18,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
   } from '@/components/ui/alert-dialog';
-import { Slider } from '@/components/ui/slider';
-import { TemperatureSelector } from './range-slider';
-import { SliderProps } from "@radix-ui/react-slider"
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
+import { Button } from '@/components/ui/button';
 
 const StudentSVG = renderToStaticMarkup(
   <IconContext.Provider value={{ 
@@ -46,10 +43,9 @@ interface GoogleMapsProps {
 }
 
 
-const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) => {
+const GoogleMapComponentAttendance: FC<GoogleMapsProps & {onRangeChange: (newRange:number) => void, isDialogOpen: (newBoolean: boolean) => void}> = ({ postitonsData, onRangeChange, isDialogOpen }) => {
 
     console.log(postitonsData)
-    const [sliderValue, setSliderValue] = useState<number>(150);
 
     const [range, setRange] = useState<number>(200)
 
@@ -61,8 +57,6 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
 
     function feetToMeter(feet: number){
-        console.log
-
         return feet / 3.28084
     }
 
@@ -88,6 +82,7 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
          lat: professorLatitude, lng: professorLongitude
     }
 
+   
     const MapComponent = () => {
 
         return(
@@ -145,7 +140,6 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
     if(GoogleMapsKey){
         return (
             <div>
-                <AlertDialogHeader></AlertDialogHeader>
                 <MapComponent></MapComponent>
                 <AlertDialogTitle>
                     
@@ -200,7 +194,14 @@ const GoogleMapComponentAttendance: FC<GoogleMapsProps> = ({ postitonsData }) =>
                         </div>
                     </div>
 
-                </RadioGroup>           
+                </RadioGroup>
+
+                <AlertDialogCancel className='pt-[10px]'onClick={() => {
+                    isDialogOpen(false)
+                    onRangeChange(range)                
+                }}>
+                Save
+                </AlertDialogCancel>
                 </div>
             </div>            
         );
