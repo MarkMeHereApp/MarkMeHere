@@ -179,7 +179,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
             lectureId: lectureId,
-            courseMemberId: selectedCourseMemberId
+            courseMemberId: selectedCourseMemberId,
+            lectureRange: range
           });
 
           professorGeolocationId.current = res.id;
@@ -238,12 +239,8 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const GeolocationSettingsDialog = () => {  
     if(enableGeolocation && !isLoadingSubmit){
-
-      
-
       return(
         <AlertDialogContent>
-          <AlertDialogHeader className='flex justify-center items-center'>Select the size of your classroom and confirm your location</AlertDialogHeader>
             <AlertDialogDescription>
               <GoogleMapComponentAttendance postitonsData={locationData} onRangeChange={handleRangeSettings} isDialogOpen={handleDialogComponent}></GoogleMapComponentAttendance>
             </AlertDialogDescription>
