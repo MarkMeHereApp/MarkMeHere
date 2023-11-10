@@ -6,11 +6,7 @@ import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader
 import { CourseMember } from '@prisma/client';
 import { capitalize } from 'lodash';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog"; 
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import StudentPageBoard from '../../(student)/student/StudentPageBoard';
 import EditCourseMember from '@/utils/devUtilsComponents/EditCourseMember';
 
@@ -83,23 +79,31 @@ export const columns: ColumnDef<CourseMember>[] = [
   {
     accessorKey: 'view Stats',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} className='pl-1' title="Statistics" />
+      <DataTableColumnHeader
+        column={column}
+        className="pl-1"
+        title="Statistics"
+      />
     ),
     cell: ({ row }) => {
-        const id = row.original.id;
-        const role = row.original.role;
-        return (role === 'student') && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant='outline' size='xs' className='pl-2 pr-2'>View Stats</Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[1300px] h-full">
-                <div className='grid gap-4 py-4'>
-                    <StudentPageBoard studentId={id} />
-                </div>
-              </DialogContent>
+      const id = row.original.id;
+      const role = row.original.role;
+      return (
+        role === 'student' && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="xs" className="pl-2 pr-2">
+                View Stats
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[1300px] h-full">
+              <div className="grid gap-4 py-4">
+                <StudentPageBoard studentId={id} />
+              </div>
+            </DialogContent>
           </Dialog>
-        ); 
+        )
+      );
     },
     enableSorting: false,
     enableHiding: false

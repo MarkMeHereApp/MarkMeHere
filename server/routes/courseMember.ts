@@ -48,12 +48,12 @@ export const zDeleteCourseMembersFromCourse = z.object({
 });
 
 export const zUpdateCourseMember = z.object({
-    id: z.string(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    role: z.string().optional()
+  id: z.string(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  role: z.string().optional()
 });
-  
+
 /*
 First we need to look up if email already exists in the user table.
 If it exists then proceeed normally
@@ -119,17 +119,17 @@ export const courseMemberRouter = router({
   updateCourseMember: publicProcedure
     .input(zUpdateCourseMember)
     .mutation(async (requestData) => {
-    const { id, email, name, role } = requestData.input;
-    const courseMember = await prisma.courseMember.update({
+      const { id, email, name, role } = requestData.input;
+      const courseMember = await prisma.courseMember.update({
         where: { id },
         data: {
-            name: name, 
-            email: email,
-            role: role 
+          name: name,
+          email: email,
+          role: role
         }
-    });
-    return { success: true, member: courseMember };
-  }),
+      });
+      return { success: true, member: courseMember };
+    }),
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {

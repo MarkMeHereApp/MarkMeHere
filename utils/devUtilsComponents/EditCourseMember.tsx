@@ -37,10 +37,10 @@ import { MdEdit } from 'react-icons/md';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
 
-const EditCourseMember = ({ courseMember } : { courseMember: CourseMember }) => {
+const EditCourseMember = ({ courseMember }: { courseMember: CourseMember }) => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const updateMember = trpc.courseMember.updateCourseMember.useMutation();    
+  const updateMember = trpc.courseMember.updateCourseMember.useMutation();
   const { setCourseMembersOfSelectedCourse } = useCourseContext();
   const [error, setError] = useState<Error | null>(null);
 
@@ -60,7 +60,7 @@ const EditCourseMember = ({ courseMember } : { courseMember: CourseMember }) => 
       .refine((value) => value?.trim() === value, {
         message: 'Value must not have leading or trailing spaces'
       }),
-      role: zCourseRoles.optional()
+    role: zCourseRoles.optional()
   });
 
   type CourseMemberFormProps = z.infer<typeof zCourseMember>;
@@ -92,14 +92,14 @@ const EditCourseMember = ({ courseMember } : { courseMember: CourseMember }) => 
         role: data.role
       });
 
-      setCourseMembersOfSelectedCourse((prevData) => (
+      setCourseMembersOfSelectedCourse((prevData) =>
         prevData
           ? prevData.map((user) =>
               user.id === response.member.id ? response.member : user
             )
           : [response.member]
-      ));
-   
+      );
+
       setLoading(false);
       setIsDialogOpen(false);
     } catch (error) {
