@@ -11,7 +11,7 @@ const isAdmin = trpc.middleware(async ({ next, ctx }) => {
   if (!role.success)
     throw generateTypedError(
       new TRPCError({
-        code: 'UNAUTHORIZED',
+        code: 'PARSE_ERROR',
         message: 'TRPC Middleware: User does not have a valid JWT'
       })
     );

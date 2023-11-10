@@ -3,8 +3,7 @@ import prisma from '@/prisma';
 import { z } from 'zod';
 import { generateTypedError } from '@/server/errorTypes';
 import { TRPCError } from '@trpc/server';
-import { encrypt, decrypt } from '@/utils/globalFunctions';
-import crypto from 'crypto';
+import { encrypt } from '@/utils/globalFunctions';
 
 export const zCreateOrUpdateProvider = z.object({
   displayName: z.string(),

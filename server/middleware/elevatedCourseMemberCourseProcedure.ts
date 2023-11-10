@@ -11,14 +11,13 @@ const courseInput = z.object({
 
 /* 
 This middleware is meant for routes that use a courseId
-1. Look up the courseMember using courseId. Verify they are either a teacher or ta
+1. Look up the courseMember using courseId. Verify they are a teacher
 2. If the courseMember is found the user has access.
 */
 const isElevatedCourseMemberCourse = trpc.middleware(
   async ({ next, ctx, rawInput }) => {
     const email = ctx.session?.email;
     const result = courseInput.safeParse(rawInput);
-
     const role = zSiteRoles.safeParse(ctx.session?.role);
 
     if (!role.success)
@@ -42,7 +41,7 @@ const isElevatedCourseMemberCourse = trpc.middleware(
     if (!result.success)
       throw generateTypedError(
         new TRPCError({
-          code: 'BAD_REQUEST',
+          code: 'PARSE_ERROR',
           message:
             'TRPC Middleware: isElevatedCourseMemberCourse requires a valid courseId'
         })

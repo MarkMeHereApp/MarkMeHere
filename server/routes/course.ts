@@ -1,7 +1,7 @@
 /* -------- Any site role can access these routes however only a user with 
 a course role of teacher can access them -------- */
 
-import { publicProcedure, router } from '../trpc';
+import { router } from '../trpc';
 import { CourseMember } from '@prisma/client';
 import prisma from '@/prisma';
 import { z } from 'zod';

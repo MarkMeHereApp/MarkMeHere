@@ -8,8 +8,8 @@ import { zCourseRoles, zSiteRoles } from '@/types/sharedZodTypes';
 /* 
 This middleware is meant for routes that use a lectureId
 1. Look up the lecture using lectureId.
-2. Look up the courseMember using courseId and user email. Verify they are either
-a teacher or TA.
+2. Look up the courseMember using courseId and user email. Verify they are
+a teacher.
 3. If the courseMember is found the user has access.
 */
 
@@ -45,7 +45,7 @@ const isElevatedCourseMemberLecture = trpc.middleware(
     if (!result.success)
       throw generateTypedError(
         new TRPCError({
-          code: 'BAD_REQUEST',
+          code: 'PARSE_ERROR',
           message:
             'TRPC Middleware: isElevatedCourseMemberLecture requires a valid lectureId'
         })

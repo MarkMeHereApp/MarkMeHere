@@ -80,12 +80,15 @@ const InputTable = () => {
   const validateAndCreateToken =
     trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
   const submitCode = async () => {
+    //router.refresh()
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
 
     try {
       const res = await validateAndCreateToken.mutateAsync({
-        code: inputValue
+        code: inputValue.toUpperCase()
       });
+
+      console.log(res)
 
       if (res.success && res.token) {
         if (res.location) {
@@ -110,6 +113,7 @@ const InputTable = () => {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
     }
   };
+
 
   //checking what error type have we recieved in the server through the URL.
   //after the error message being displayed, we replace the URL with /submit and stay on page.
@@ -151,7 +155,6 @@ const InputTable = () => {
           onChange={(event) => setInputValue(event.target.value)}
           disabled={isLoadingSubmit}
         />
-
         <Button
           onClick={() => submitCode()}
           className=" flex w-[100%]"

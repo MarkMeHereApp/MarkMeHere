@@ -13,7 +13,7 @@ import {
 } from '../utils/courseMemberHelpers';
 import { hashEmail } from '../utils/userHelpers';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
-
+import courseMemberProcedure from '../middleware/courseMemberProcedure';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -47,42 +47,6 @@ export const zDeleteCourseMembersFromCourse = z.object({
   courseId: z.string()
 });
 
-/*
-First we need to look up if email already exists in the user table.
-If it exists then proceeed normally
-If it does not exist we need to create a new user cooresponding with the couremember email
-Then students who mark attendance for the first time will sign into an account
-that was already created removing the need to create a new account everytime a
-new student marks themselves present
-*/
-
-/* 
-In the future lets focus on making this route compatible with hashed emails.
-We need to do more testing concerning where the callback url takes us on successfull 
-sign in
-We really need to test if when we mark our attendance and a new user is created
-we are taken to the correct url afterwards
-
-In order to support password hashing when we add course members the teacher will need to provide
-a plaintext email.
-We cannot store this email.
-So when a course member is added we will need to lookup the user using a bcrypt compare
-with the plaintyext email and hashed email stored. 
-If a matching hashed email is not found we will hash teh email and create the user.
-We need to do this because of how hashing works inherently
-*/
-
-/* 
-Create a course member, but check if emails are hashed.
-If emails are hashed, create user along with coursemember 
-if email does not already exist in user table.
-*/
-
-/* 
-No matter if emails are hashed or not we are making a user
-account if it does not exist 
-*/
-
 export const courseMemberRouter = router({
   createCourseMember: elevatedCourseMemberCourseProcedure
     .input(zCourseMember)
@@ -109,7 +73,6 @@ export const courseMemberRouter = router({
         throw generateTypedError(error as Error);
       }
     }),
-
   deleteCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zDeleteCourseMembersFromCourse)
     .mutation(async (requestData) => {
@@ -233,39 +196,49 @@ export const courseMemberRouter = router({
   Either update existing course member or create a new one. 
   Resolve all course member creation promises.
    */
-  createMultipleCourseMembers: publicProcedure
+  createMultipleCourseMembers: elevatedCourseMemberCourseProcedure
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
         const {
           input: { courseId, courseMembers },
-          ctx: { settings }
+          ctx: { settings, session }
         } = requestData;
         const { hashEmails } = settings;
         const updatedCourseMembers = [];
+        if (session && typeof session.email === 'string') {
+          // Filter out the course members with email matching session.user
+          const filteredCourseMembers = courseMembers.filter(
+            (memberData) => memberData.email !== session.email
+          );
+          // Create an array to store promises for member creation or update
+          const memberPromises = filteredCourseMembers.map(
+            async (memberData) => {
+              memberData.email = hashEmails
+                ? hashEmail(memberData.email)
+                : memberData.email;
 
-        // Create an array to store promises for member creation or update
-        const memberPromises = courseMembers.map(async (memberData) => {
-          memberData.email = hashEmails
-            ? hashEmail(memberData.email)
-            : memberData.email;
+              const existingMember = await findCourseMember(
+                memberData.email,
+                courseId
+              );
 
-          const existingMember = await findCourseMember(
-            memberData.email,
-            courseId
+              if (existingMember) {
+                return updateCourseMember(existingMember.id, memberData);
+              } else {
+                return createCourseMember({ ...memberData, courseId });
+              }
+            }
           );
 
-          if (existingMember) {
-            return updateCourseMember(existingMember.id, memberData);
-          } else {
-            return createCourseMember({ ...memberData, courseId });
-          }
-        });
+          const courseMemberResults = await Promise.all(memberPromises);
+          updatedCourseMembers.push(...courseMemberResults);
 
-        const courseMemberResults = await Promise.all(memberPromises);
-        updatedCourseMembers.push(...courseMemberResults);
-
-        return { success: true, allCourseMembersOfClass: updatedCourseMembers };
+          return {
+            success: true,
+            allCourseMembersOfClass: updatedCourseMembers
+          };
+        }
       } catch (error) {
         throw generateTypedError(error as Error);
       }

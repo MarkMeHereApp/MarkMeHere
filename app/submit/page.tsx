@@ -23,15 +23,9 @@ async function validateAndCreateToken(qrCode: string) {
       }
     });
 
-     //const qrResult = await redis.hgetall("qrCode:" + qrCode);
-
-    console.log(qrResult + 'error');
-
     if (!qrResult) {
       return { success: false };
     }
-
-    console.log(qrResult.ProfessorLectureGeolocationId);
 
     const { id } = await prisma.attendanceToken.create({
       data: {
@@ -68,8 +62,7 @@ export default async function SubmitPage({
   //   }
   // };
 
-  if (searchParams.hasOwnProperty('qr')) {
-    console.log('QR Param included');
+  if(searchParams.hasOwnProperty('qr')){
     qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
 
     const validateToken = await validateAndCreateToken(qrCode);
@@ -79,20 +72,12 @@ export default async function SubmitPage({
       const location = validateToken?.location;
       const id = validateToken?.token;
 
-      if (location && id) {
-        console.log(
-          'the token as location included: ' + location + 'token id: ' + id
-        );
-        redirect(
-          `${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`
-        );
+      if(location && id){
+        redirect(`${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`)
       }
-
-      if (!location && id) {
-        console.log('location not included only token id: ' + id);
-        redirect(
-          `/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`
-        );
+      
+      if(!location && id){
+        redirect(`/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`)
       }
     } else {
       redirect(`/submit?error=qr-error`); //add error to the url and then retrieve it
@@ -100,9 +85,8 @@ export default async function SubmitPage({
   }
 
   //Not used for now
-  if (searchParams.hasOwnProperty('error')) {
-    console.log('Error Param included');
-    error = searchParams.error;
+  if(searchParams.hasOwnProperty('error')){
+    error = searchParams.error
   }
 
   return (

@@ -15,7 +15,7 @@ async function getCourse(
         })
 
         if(!lectureId){
-            console.log('could not find the correct attendance token')
+            throw new Error ('This Attendance Token is Invalid, please scan or input the code again')
         }
 
         if(lectureId === null){
@@ -58,7 +58,6 @@ export default async function VerificationPage({searchParams}: {searchParams: an
     //verifying if the attendance token is assigned to any lecture -> course
     if(searchParams.hasOwnProperty('attendanceTokenId')){
         attendanceTokenId = searchParams.attendanceTokenId
-        console.log(attendanceTokenId)
 
         const res = await getCourse(attendanceTokenId)
 
@@ -66,10 +65,12 @@ export default async function VerificationPage({searchParams}: {searchParams: an
             orgCode = res.course.organizationCode
             courseCode = res.course.courseCode
 
-            console.log(res)
         }
-    }
-    
+
+        else{
+            throw new Error ('This Attendance Token is Invalid, please scan or input the code again')
+        }
+    }   
 
 
   return (
