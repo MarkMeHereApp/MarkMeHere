@@ -51,33 +51,24 @@ export default async function SubmitPage({
 }: {
   searchParams: any;
 }) {
-  let qrCode = '';
-  let error = '';
-
-  // const handleToken = async () => {
-  //   const res = await validateAndCreateToken(qrCode);
-
-  //   if (res) {
-  //     return res;
-  //   }
-  // };
-
-  if(searchParams.hasOwnProperty('qr')){
-    qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
-
+  if (searchParams.hasOwnProperty('qr')) {
+    const qrCode = searchParams.qr; // Extracting the QR from the URL and assigning it to qrCode
     const validateToken = await validateAndCreateToken(qrCode);
-  
 
     if (validateToken?.success) {
       const location = validateToken?.location;
       const id = validateToken?.token;
 
-      if(location && id){
-        redirect(`${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`)
+      if (location && id) {
+        redirect(
+          `${validateToken.course.organizationCode}/${validateToken.course.courseCode}/verification?attendanceTokenId=${id}`
+        );
       }
-      
-      if(!location && id){
-        redirect(`/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`)
+
+      if (!location && id) {
+        redirect(
+          `/${validateToken.course.organizationCode}/${validateToken.course.courseCode}/student?attendanceTokenId=${id}`
+        );
       }
     } else {
       redirect(`/submit?error=qr-error`); //add error to the url and then retrieve it
@@ -85,8 +76,8 @@ export default async function SubmitPage({
   }
 
   //Not used for now
-  if(searchParams.hasOwnProperty('error')){
-    error = searchParams.error
+  if (searchParams.hasOwnProperty('error')) {
+    const error = searchParams.error;
   }
 
   return (
