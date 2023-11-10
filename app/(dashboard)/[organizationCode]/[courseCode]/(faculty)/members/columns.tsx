@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"; 
 import StudentPageBoard from '../../(student)/student/StudentPageBoard';
+import EditCourseMember from '@/utils/devUtilsComponents/EditCourseMember';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -101,6 +102,12 @@ export const columns: ColumnDef<CourseMember>[] = [
         ); 
     },
     enableSorting: false,
-    enableHiding: true
+    enableHiding: false
+  },
+  {
+    id: 'edit',
+    cell: ({ row }) => <EditCourseMember courseMember={row.original} />,
+    enableSorting: false,
+    enableHiding: false
   }
 ];
