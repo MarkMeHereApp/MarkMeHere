@@ -99,54 +99,56 @@ export default async function StudentPage({
       courseMemberId
     );
 
-    const ProfessorGeolocationId = tokenRow.professorLectureGeolocationId;
-    const studentLatitude = tokenRow.attendanceStudentLatitude;
-    const studentLongitude = tokenRow.attendanceStudentLongtitude;
+    const {
+      professorLectureGeolocationId,
+      attendanceStudentLatitude,
+      attendanceStudentLongitude
+    } = tokenRow;
 
-    if (!ProfessorGeolocationId) {
+    if (!professorLectureGeolocationId) {
       console.log('No geolocation included');
     }
 
-    if (ProfessorGeolocationId) {
+    if (professorLectureGeolocationId) {
       console.log('Entered with Geolocation ID');
-      if (!studentLatitude || !studentLongitude) {
+      if (!attendanceStudentLatitude || !attendanceStudentLongitude) {
         console.log('Create Entry without Location');
 
         if (existingAttendanceEntry) {
           attendanceEntry = await updateAttendanceEntryWithoutStudentLocation(
             existingAttendanceEntry.id,
-            ProfessorGeolocationId
+            professorLectureGeolocationId
           );
         } else {
           attendanceEntry = await createAttendanceEntryWithoutStudentLocation(
             lectureId,
             courseMemberId,
-            ProfessorGeolocationId
+            professorLectureGeolocationId
           );
         }
       }
 
-      if (studentLatitude && studentLongitude) {
+      if (attendanceStudentLatitude && attendanceStudentLongitude) {
         if (existingAttendanceEntry) {
           attendanceEntry = await updateAttendanceEntryWithLocation(
             existingAttendanceEntry.id,
-            ProfessorGeolocationId,
-            studentLatitude,
-            studentLongitude
+            professorLectureGeolocationId,
+            attendanceStudentLatitude,
+            attendanceStudentLongitude
           );
         } else {
           attendanceEntry = await createAttendanceEntryWithLocation(
             lectureId,
             courseMemberId,
-            ProfessorGeolocationId,
-            studentLatitude,
-            studentLongitude
+            professorLectureGeolocationId,
+            attendanceStudentLatitude,
+            attendanceStudentLongitude
           );
         }
       }
     }
 
-    if (!ProfessorGeolocationId) {
+    if (!professorLectureGeolocationId) {
       if (existingAttendanceEntry) {
         attendanceEntry = await updateAttendanceEntry(
           existingAttendanceEntry.id

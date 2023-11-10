@@ -1,5 +1,10 @@
 import { publicProcedure, router } from '../trpc';
 import prisma from '@/prisma';
+import {
+  zAttendanceStatusType,
+  zAttendanceTokenType
+} from '@/types/sharedZodTypes';
+import { kv as redis } from '@vercel/kv';
 import { z } from 'zod';
 
 export const zGeolocationVerification = z.object({
@@ -15,11 +20,9 @@ export const attendanceTokenRouter = router({
       console.log(input);
 
       try {
-        const lectureResult = await prisma.attendanceToken.findUnique({
-          where: {
-            id: input.id
-          }
-        });
+        const attendanceTokenKey = 'attendanceToken:' + input.id;
+        const lectureResult: zAttendanceTokenType | null =
+          await redis.hgetall(attendanceTokenKey);
 
         console.log(
           'this is the lecture result fetch: ' +
@@ -49,8 +52,8 @@ export const attendanceTokenRouter = router({
         }
 
         console.log(geolocationLectureResult[0]);
-        
-        const lectureRange = geolocationLectureResult[0].lectureRange
+
+        const lectureRange = geolocationLectureResult[0].lectureRange;
         const lectureLatitude = geolocationLectureResult[0].lectureLatitude;
         const lectureLongitude = geolocationLectureResult[0].lectureLongitude;
 
@@ -98,16 +101,24 @@ export const attendanceTokenRouter = router({
           //console.log('distance difference in miles:' + calculateDistance);
         }
 
-        const attendanceTokenLocation = await prisma.attendanceToken.update({
-          where: {
-            id: input.id
-          },
-          data: {
-            attendanceStudentLatitude: input.studentLatitude,
-            attendanceStudentLongtitude: input.studentLongtitude,
-            professorLectureGeolocationId: geolocationId
-          }
-        });
+        const updatedAttendanceObj = {
+          ...lectureResult,
+          attendanceStudentLatitude: input.studentLatitude,
+          attendanceStudentLongtitude: input.studentLongtitude
+        };
+        //Update the attendance token
+        await redis.hset(attendanceTokenKey, updatedAttendanceObj);
+
+        // const attendanceTokenLocation = await prisma.attendanceToken.update({
+        //   where: {
+        //     id: input.id
+        //   },
+        //   data: {
+        //     attendanceStudentLatitude: input.studentLatitude,
+        //     attendanceStudentLongtitude: input.studentLongtitude,
+        //     professorLectureGeolocationId: geolocationId
+        //   }
+        // });
 
         return {
           success: true,

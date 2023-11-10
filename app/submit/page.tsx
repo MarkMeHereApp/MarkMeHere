@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { kv as redis } from '@vercel/kv';
 import { redirect } from 'next/navigation';
 import { qrcode } from '@prisma/client';
+import { zAttendanceTokenType } from '@/types/sharedZodTypes';
 
 async function validateAndCreateToken(qrCode: string) {
   try {
@@ -44,10 +45,13 @@ async function validateAndCreateToken(qrCode: string) {
     const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
 
     //Create attendance token
-    const attendanceTokenObj = {
+    const attendanceTokenObj: zAttendanceTokenType = {
       token: attendanceToken,
       lectureId: qrResult.lectureId,
       professorLectureGeolocationId: qrResult.professorLectureGeolocationId
+      attendanceStudentLatitude: ,
+      attendanceStudentLongitude: ,
+      createdAt: new Date,
     };
 
     await redis
