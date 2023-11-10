@@ -35,6 +35,7 @@ export function Toaster() {
     error_for_nondestructive_toasts: (
       <CrossCircledIcon className="mr-2  text-destructive" />
     ),
+    loading: <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />,
     error_for_destructive_toasts: (
       <CrossCircledIcon className="mr-2  text-destructive-foreground" />
     ),

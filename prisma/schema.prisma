@@ -101,7 +101,6 @@ model CourseMember {
   name                        String                        @db.VarChar(255) // Right now optional
   courseId                    String                        @db.VarChar(255)
   course                      Course                        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
   dateEnrolled                DateTime                      @default(now())
   role                        String                        @db.VarChar(255)
   attendanceEntries           AttendanceEntry[]
