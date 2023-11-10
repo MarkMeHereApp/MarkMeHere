@@ -68,8 +68,8 @@ model AttendanceEntry {
   courseMember                  CourseMember                 @relation(fields: [courseMemberId], references: [id], onDelete: Cascade)
   dateMarked                    DateTime                     @default(now())
   status                        String                       @db.VarChar(255)
-  ProfessorLectureGeolocationId String?
-  ProfessorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [ProfessorLectureGeolocationId], references: [id], onDelete: Cascade)
+  professorLectureGeolocationId String?
+  professorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [professorLectureGeolocationId], references: [id], onDelete: Cascade)
   studentLatitude               Float?
   studentLongtitude             Float?
 }
@@ -130,8 +130,8 @@ model AttendanceToken {
   token                         String
   lectureId                     String
   createdAt                     DateTime                     @default(now())
-  ProfessorLectureGeolocationId String?
-  ProfessorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [ProfessorLectureGeolocationId], references: [id], onDelete: Cascade)
+  professorLectureGeolocationId String?
+  professorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [professorLectureGeolocationId], references: [id], onDelete: Cascade)
   attendanceStudentLatitude     Float?
   attendanceStudentLongtitude   Float?
 

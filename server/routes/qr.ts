@@ -11,7 +11,7 @@ export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
   lectureId: z.string(),
   courseId: z.string(),
-  professorLectureGeolocationId: z.union([z.string(), z.null()]),
+  professorLectureGeolocationId: z.union([z.string(), z.null()])
 });
 
 export const qrRouter = router({
@@ -73,10 +73,15 @@ export const qrRouter = router({
             We no longer need to delete old codes as Redis will
             delete them 
             */
-            await multi
+            const create = await multi
               .hset(qrKey, qrCodeObj)
               .expire(qrKey, newExpiry.getSeconds() + gracePeriod)
               .exec();
+
+              console.log(create)
+
+            // const qr = await redis.hgetall(qrKey);
+            // console.log('QR from redis', qr);
 
             return { success: true, qrCode: qrCodeObj };
           } catch (error) {

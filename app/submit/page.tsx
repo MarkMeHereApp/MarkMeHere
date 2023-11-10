@@ -3,6 +3,7 @@ import prisma from '@/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { kv as redis } from '@vercel/kv';
 import { redirect } from 'next/navigation';
+import { qrcode } from '@prisma/client';
 
 async function validateAndCreateToken(qrCode: string) {
   try {
@@ -14,32 +15,55 @@ async function validateAndCreateToken(qrCode: string) {
     When we validate the token we should also look up the course 
     associated with it to grab the organization id
     */
-    const qrResult = await prisma.qrcode.findUnique({
+    // const qrResult = await prisma.qrcode.findUnique({
+    //   where: {
+    //     code: qrCode
+    //   },
+    //   include: {
+    //     course: true
+    //   }
+    // });
+
+    //Find qrCode
+    const qrKey = 'qrCode:' + qrCode;
+    const qrResult: qrcode | null = await redis.hgetall(qrKey);
+
+    if (!qrResult) return { success: false };
+
+    //Find course
+    const course = await prisma.course.findUnique({
       where: {
-        code: qrCode
+        id: qrResult.courseId
       },
-      include: {
-        course: true
-      }
     });
 
-    if (!qrResult) {
-      return { success: false };
-    }
+    if (!course) return { success: false };
 
-    const { id } = await prisma.attendanceToken.create({
-      data: {
-        token: uuidv4(),
-        lectureId: qrResult.lectureId,
-        ProfessorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
-      }
-    });
+    //Create attendance token
+    const attendanceTokenObj = {
+      token: uuidv4(),
+      lectureId: qrResult.lectureId,
+      professorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
+    };
+    const attendanceTokenKey = "attendanceToken:" + attendanceTokenObj.token
+
+    const attendanceToken = await redis.multi().hset(attendanceTokenKey, attendanceTokenObj).expire(attendanceTokenKey, 300).exec();
+
+    // const { id } = await prisma.attendanceToken.create({
+    //   data: {
+    //     token: uuidv4(),
+    //     lectureId: qrResult.lectureId,
+    //     ProfessorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
+    //   }
+    // });
 
     return {
       success: true,
       token: id,
       location: qrResult.ProfessorLectureGeolocationId,
       course: qrResult.course
+      organizationCode: ,
+      courseCode: ,
     };
   } catch (error) {
     throw error;
