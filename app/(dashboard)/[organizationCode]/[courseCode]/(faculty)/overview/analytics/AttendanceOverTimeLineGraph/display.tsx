@@ -45,7 +45,7 @@ const AttendanceOverTimeLineGraphDisplay: React.FC<
     }) / attendanceRate.length;
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Course Attendance</CardTitle>
         <CardDescription>
