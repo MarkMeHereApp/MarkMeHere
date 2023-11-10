@@ -60,11 +60,9 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({
     const hereEntries = attendanceEntries.filter((entry: AttendanceEntry) => {
       return entry.status === 'here';
     });
-    const excusedEntries = attendanceEntries.filter(
-      (entry: AttendanceEntry) => {
+    const excusedEntries = attendanceEntries.filter((entry: AttendanceEntry) => {
         return entry.status === 'excused';
-      }
-    );
+    });
     const lateEntries = attendanceEntries.filter((entry: AttendanceEntry) => {
       return entry.status === 'late';
     });
@@ -77,9 +75,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({
         label: 'Attended',
         name: 'Attended',
         value:
-          ((hereEntries.length + excusedEntries.length + lateEntries.length) /
-            totalAttendanceEntries) *
-          100,
+          ((hereEntries.length + lateEntries.length) / (totalAttendanceEntries - excusedEntries.length)) * 100,
         fill: colors[0]
       },
       {
@@ -99,9 +95,7 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({
       {
         label: 'Excused',
         name: 'Excused',
-        value: Math.round(
-          (excusedEntries.length / totalAttendanceEntries) * 100
-        )
+        value: Math.round((excusedEntries.length / totalAttendanceEntries) * 100)
       },
       {
         label: 'Late',

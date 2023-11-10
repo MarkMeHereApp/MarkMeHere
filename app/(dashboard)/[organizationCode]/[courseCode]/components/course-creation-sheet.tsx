@@ -23,7 +23,7 @@ export const CourseCreationSheet = () => {
   return (
     <Sheet open={showNewCourseSheet} onOpenChange={setShowNewCourseSheet}>
       <SheetTrigger asChild onClick={toggleSheet}>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full border-none rounded-none">
           {' '}
           <PlusCircledIcon className="mr-2 h-5 w-5" />
           Create Course

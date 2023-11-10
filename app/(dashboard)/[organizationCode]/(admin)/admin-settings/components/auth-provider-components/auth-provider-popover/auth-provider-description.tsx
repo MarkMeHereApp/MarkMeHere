@@ -11,15 +11,17 @@ export function AuthProviderDescription({ data }: { data: Provider }) {
       </a>{' '}
       to view the <b>{data?.defaultDisplayName}</b> documentation page. Click
       submit to upload the provider.
-      <div className="py-2">
-        <p className="py-1">Use the following as the homepage URL:</p>
-        <CopyableClipboard textToCopy={`${getPublicUrl()}`} />
-      </div>
-      <div className="py-2">
-        <p className="py-1">Use the following as the callback URL:</p>
-        <CopyableClipboard
-          textToCopy={`${getPublicUrl()}/api/auth/callback/${data?.key}`}
-        />
+      <div className='py-3'>
+        <div className="py-2">
+            <p className="py-1">Use the following as the homepage URL:</p>
+            <CopyableClipboard textToCopy={`${getPublicUrl()}`} />
+        </div>
+        <div className="py-2">
+            <p className="py-1">Use the following as the callback URL:</p>
+            <CopyableClipboard
+            textToCopy={`${getPublicUrl()}/api/auth/callback/${data?.key}`}
+            />
+        </div>
       </div>
     </DialogDescription>
   );

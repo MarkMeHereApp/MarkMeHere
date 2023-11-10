@@ -297,7 +297,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
     ${
       isDisabled
         ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
-        : 'text-primary-foreground text-primary'
+        : 'text-primary-foreground'
     }`}
       >
         <MdUploadFile className="h-5 w-4" />

@@ -164,8 +164,7 @@ export function ProviderSubmissionDialog({
         displayName: inputForm.displayName,
         clientId: inputForm.keys['clientId'],
         clientSecret: inputForm.keys['clientSecret'],
-        allowDangerousEmailAccountLinking:
-          inputForm.allowAccountLinking || false,
+        allowDangerousEmailAccountLinking: true,
         issuer: inputForm.keys['issuer'],
         tenantId: inputForm.keys['tenantId']
       });
@@ -217,7 +216,7 @@ export function ProviderSubmissionDialog({
               ) : (
                 <div className="px-4">
                   <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className='pb-1'>
                       Configure a {data?.defaultDisplayName} Provider
                     </DialogTitle>
 
@@ -231,92 +230,94 @@ export function ProviderSubmissionDialog({
                       <AuthProviderDescription data={data} />
                     </DialogDescription>
                   </DialogHeader>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(submitProvider)}
-                      className="space-y-8"
-                    >
-                      <FormField
-                        control={form.control}
-                        name="displayName"
-                        key="displayName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Display Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Enter Display Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Enter the display name for the provider.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      {keys.map((key, index) => (
+                  <div className='py-3'>
+                    <Form {...form}>
+                        <form
+                        onSubmit={form.handleSubmit(submitProvider)}
+                        className="space-y-2"
+                        >
                         <FormField
-                          control={form.control}
-                          name={`keys.${key}`}
-                          key={index}
-                          render={({ field }) => (
+                            control={form.control}
+                            name="displayName"
+                            key="displayName"
+                            render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{formatString(key)}</FormLabel>
-                              <FormControl>
+                                <FormLabel>Display Name</FormLabel>
+                                <FormControl>
                                 <Input
-                                  placeholder={`**************`}
-                                  {...field}
+                                    placeholder="Enter Display Name"
+                                    {...field}
                                 />
-                              </FormControl>
-                              <FormDescription>
-                                Enter your {data?.defaultDisplayName}{' '}
-                                {formatString(key)}.
-                              </FormDescription>
-                              <FormMessage />
+                                </FormControl>
+                                <FormDescription>
+                                Enter the display name for the provider.
+                                </FormDescription>
+                                <FormMessage />
                             </FormItem>
-                          )}
+                            )}
                         />
-                      ))}
-                      <FormField
-                        control={form.control}
-                        name="allowAccountLinking"
-                        key="allowAccountLinking"
-                        defaultValue={true}
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                            <FormControl>
-                              <Checkbox
-                                checked={true /*checked={Boolean(field.value)*/}
-                                disabled={true}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="flex justify-between items-center">
-                                Allow Account Linking (Temporarily Forcibly
-                                Enabled)
-                                <div className="ml-auto">
-                                  <AccountLinkingInfoHover />
+                        {keys.map((key, index) => (
+                            <FormField
+                            control={form.control}
+                            name={`keys.${key}`}
+                            key={index}
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>{formatString(key)}</FormLabel>
+                                <FormControl>
+                                    <Input
+                                    placeholder={`**************`}
+                                    {...field}
+                                    />
+                                </FormControl>
+                                <FormDescription>
+                                    Enter your {data?.defaultDisplayName}{' '}
+                                    {formatString(key)}.
+                                </FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        ))}
+                        {/* <FormField
+                            control={form.control}
+                            name="allowAccountLinking"
+                            key="allowAccountLinking"
+                            defaultValue={true}
+                            render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                                <FormControl>
+                                <Checkbox
+                                    checked={true /*checked={Boolean(field.value)*/}
+                                    {/* disabled={true}
+                                    onCheckedChange={field.onChange}
+                                />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                <FormLabel className="flex justify-between items-center">
+                                    Allow Account Linking (Temporarily Forcibly
+                                    Enabled)
+                                    <div className="ml-auto">
+                                    <AccountLinkingInfoHover />
+                                    </div>
+                                </FormLabel>
+                                <FormDescription>
+                                    Enable this option to allow users to link their
+                                    existing accounts with the same email to this
+                                    provider.
+                                </FormDescription>
                                 </div>
-                              </FormLabel>
-                              <FormDescription>
-                                Enable this option to allow users to link their
-                                existing accounts with the same email to this
-                                provider.
-                              </FormDescription>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <div className="flex justify-end">
-                        <Button type="submit" disabled={loading}>
-                          {loading ? 'Loading...' : 'Submit'}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
+                            </FormItem>
+                            )}
+                        /> */} 
+                        <div className="flex justify-center">
+                            <Button type="submit" disabled={loading}>
+                            {loading ? 'Loading...' : 'Submit'}
+                            </Button>
+                        </div>
+                        </form>
+                    </Form>
+                  </div>
                 </div>
               )}
             </ScrollArea>

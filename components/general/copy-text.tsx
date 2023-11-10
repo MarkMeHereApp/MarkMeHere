@@ -30,7 +30,6 @@ export function CopyableClipboard({ textToCopy }: { textToCopy: string }) {
   }, [isCopied]);
 
   return (
-    <div className=" pl-4 ">
       <Card className="p-3">
         <div className="flex justify-between ">
           <div>{textToCopy}</div>
@@ -52,6 +51,5 @@ export function CopyableClipboard({ textToCopy }: { textToCopy: string }) {
           </Button>
         </div>
       </Card>
-    </div>
   );
 }

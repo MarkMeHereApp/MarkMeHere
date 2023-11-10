@@ -72,23 +72,23 @@ const SupportList: React.FC<SupportListProps> = ({
       key="{student.id}"
       className="shadow rounded-lg p-4 flex items-center justify-between bg-card text-foreground border-border"
     >
-      <div>
-        <span className="font-semibold truncate text-secondary-foreground">
+      <div className="flex flex-col">
+        <div className="font-semibold truncate text-secondary-foreground overflow-hidden whitespace-nowrap text-overflow-ellipsis">
           {student.name}
-        </span>
-        <span className="block text-xs text-muted-foreground">
+        </div>
+        <div className="text-xs text-muted-foreground overflow-hidden whitespace-nowrap text-overflow-ellipsis">
           {student.email}
-        </span>
+        </div>
       </div>
-      <span className="text-sm font-medium text-secondary-foreground">
+      <div className="text-sm font-medium text-secondary-foreground">
         {(100 * student.attendanceGrade).toFixed(2) + '%'}
-      </span>
+      </div>
     </div>
   ));
 
   return (
     <Card className="h-full">
-      <CardHeader>
+      <CardHeader className="-mb-8">
         <CardTitle>Attendance Support List</CardTitle>
         <CardDescription>
           These students may be in need of support.
