@@ -234,12 +234,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     setIsLoadingSubmit(false)
     console.log(fetchedLocation)
   }
-
-  const printDataToSend = () => {
-    console.log('range: ' + range)
-    console.log('lecture lat: ' + lectureLatitude.current)
-    console.log('lecture lon: ' + lectureLongitude.current)
-  }
   
 
   const GeolocationSettingsDialog = () => {  
