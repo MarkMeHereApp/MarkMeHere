@@ -11,6 +11,7 @@ import {
 import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { useLecturesContext } from '../../../context-lecture';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -43,9 +44,9 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       const curName: string = row.getValue('name');
       if (curName.length > 13) {
         const truncatedName = `${curName.substring(0, 13)}...`;
-        return <div className="flex w-full">{truncatedName}</div>
+        return <div className="flex w-full">{truncatedName}</div>;
       }
-      return <div className="flex w-full">{curName}</div>
+      return <div className="flex w-full">{curName}</div>;
     },
     enableSorting: true,
     enableHiding: true,
@@ -54,7 +55,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
     accessorKey: 'mark Status',
     header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Mark Status" />
+      <DataTableColumnHeader column={column} title="Mark Status" />
     ),
     cell: ({ row }) => <DataTableRowActions row={row} />,
     enableSorting: false,
@@ -110,7 +111,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     },
     enableSorting: false,
     enableHiding: true
-  }, 
+  },
   {
     accessorKey: 'date marked',
     header: ({ column }) => (
@@ -127,6 +128,84 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       }
       const formattedDate = dateMarked.toLocaleDateString();
       return <div className="flex w-full">{formattedDate}</div>;
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
+    accessorKey: 'location',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Location" />
+    ),
+    cell: ({ row }) => {
+      const originalValue = row.original as ExtendedCourseMember;
+      const { lectures } = useLecturesContext();
+      const lecture = lectures?.find(
+        (lecture) => lecture.id === originalValue.AttendanceEntry?.lectureId
+      );
+
+      if (!lecture) {
+        return <></>;
+      }
+
+      const professorData = lecture.professorLectureGeolocation.find(
+        (professor) =>
+          professor.id ===
+          originalValue.AttendanceEntry?.ProfessorLectureGeolocationId
+      );
+
+      if (!professorData) {
+        return <></>;
+      }
+
+      if (
+        !originalValue.AttendanceEntry?.studentLatitude ||
+        !originalValue.AttendanceEntry?.studentLongtitude
+      ) {
+        return <div className="flex w-full">No Location</div>;
+      }
+
+      const distanceBetween2Points = (
+        profLat: number,
+        profLong: number,
+        studLat: number,
+        studLong: number
+      ) => {
+        if (profLat == studLat && profLong == studLong) {
+          return 0;
+        } else {
+          const radlat1 = (Math.PI * profLat) / 180;
+          const radlat2 = (Math.PI * studLat) / 180;
+          const theta = profLong - studLong;
+          const radtheta = (Math.PI * theta) / 180;
+          let dist =
+            Math.sin(radlat1) * Math.sin(radlat2) +
+            Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+          if (dist > 1) {
+            dist = 1;
+          }
+          dist = Math.acos(dist);
+          dist = (dist * 180) / Math.PI;
+          dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
+          return dist;
+        }
+      };
+
+      const calculateDistance = distanceBetween2Points(
+        professorData.lectureLatitude,
+        professorData.lectureLongitude,
+        originalValue.AttendanceEntry?.studentLatitude,
+        originalValue.AttendanceEntry?.studentLongtitude
+      );
+
+      if (calculateDistance) {
+        if (calculateDistance > professorData.lectureRange) {
+          return <div className="flex w-full">Out of Range</div>;
+        } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
+          return <div className="flex w-full">In Range</div>;
+        }
+      }
     },
     enableSorting: true,
     enableHiding: true,

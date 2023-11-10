@@ -206,7 +206,8 @@ export function DataTable<TData, TValue>({
                         'email',
                         'lmsId',
                         'date marked',
-                        'status'
+                        'status',
+                        'location'
                       ];
                       return (
                         <TableHead
@@ -241,7 +242,8 @@ export function DataTable<TData, TValue>({
                           'email',
                           'lmsId',
                           'date marked',
-                          'status'
+                          'status',
+                          'location'
                         ];
                         return (
                           <TableCell
