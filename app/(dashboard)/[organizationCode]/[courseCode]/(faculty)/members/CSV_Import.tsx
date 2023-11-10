@@ -282,27 +282,29 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
   return (
     <>
       {' '}
-      <Input
-        type="file"
-        accept=".csv"
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-        ref={fileInputRef}
-        //disabled={isDisabled}
-        id="csv"
-      />
-      <label
-        htmlFor="csv"
-        className={`bg-primary cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center 
-    ${
-      isDisabled
-        ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
-        : 'text-primary-foreground'
-    }`}
-      >
-        <MdUploadFile className="h-5 w-4" />
-        <span className="hidden sm:flex ml-2">Import CSV</span>
-      </label>
+      <div className="flex justify-center w-full">
+        <Input
+          type="file"
+          accept=".csv"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          //disabled={isDisabled}
+          id="csv"
+        />
+        <label
+          htmlFor="csv"
+          className={`bg-primary text-primary-foreground cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm flex justify-center items-center w-1/2 
+        ${
+          isDisabled
+            ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
+            : 'text-primary-foreground'
+        }`}
+        >
+          <MdUploadFile className="h-5 w-4" />
+          <span className="flex ml-2">Import CSV</span>
+        </label>
+      </div>
       <Dialog open={isValidating} onOpenChange={setIsValidating}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">
