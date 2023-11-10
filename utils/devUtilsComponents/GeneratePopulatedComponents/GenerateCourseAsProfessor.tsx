@@ -229,8 +229,9 @@ export default function GenerateCourseAsProfessor() {
         const newLectures = [
           ...lectures,
           {
+            ...newLecture.newLecture,
             attendanceEntries: newAttendanceEntries.updatedAttendanceEntries,
-            ...newLecture.newLecture
+            professorLectureGeolocation: []
           }
         ];
         setLectures(newLectures);

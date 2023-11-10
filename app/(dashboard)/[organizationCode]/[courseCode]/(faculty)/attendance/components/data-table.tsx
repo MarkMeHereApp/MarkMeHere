@@ -151,7 +151,11 @@ export function DataTable<TData, TValue>({
 
           const newLectures = [
             ...lectures,
-            { attendanceEntries: [], ...newLecture.newLecture }
+            {
+              attendanceEntries: [],
+              professorLectureGeolocation: [],
+              ...newLecture.newLecture
+            }
           ];
           setLectures(newLectures);
 
