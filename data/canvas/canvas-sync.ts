@@ -2,8 +2,8 @@
 import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
-import { createMultipleCourseMembers } from './courseMember/courseMember';
-import { bHasCoursePermission, getNextAuthSession } from './auth';
+import { createMultipleCourseMembers } from '../courseMember/create-multiple-course-members';
+import { bHasCoursePermission, getNextAuthSession } from '../auth';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import calculateCourseMemberStatistics from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/utils/calculateCourseMemberStatistics';
 import { CourseMember } from '@prisma/client';

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { useState } from 'react';
 import { toastError, toastSuccess } from '../globalFunctions';
-import { syncCanvasCourseMembers } from '@/data/canvas';
+import { syncCanvasCourseMembers } from '@/data/canvas/canvas-sync';
 
 export const SyncCanvasUsers = () => {
   const {

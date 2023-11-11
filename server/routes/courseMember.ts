@@ -17,7 +17,7 @@ import courseMemberProcedure from '../middleware/courseMemberProcedure';
 import {
   createMultipleCourseMembers,
   zCreateMultipleCourseMembers
-} from '@/data/courseMember/courseMember';
+} from '@/data/courseMember/create-multiple-course-members';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),

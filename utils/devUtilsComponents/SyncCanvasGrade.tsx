@@ -9,7 +9,7 @@ import { toastError, toastSuccess } from '../globalFunctions';
 import {
   syncCanvasAttendanceAssignment,
   syncCanvasCourseMembers
-} from '@/data/canvas';
+} from '@/data/canvas/canvas-sync';
 import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { CheckIcon } from '@radix-ui/react-icons';
 
