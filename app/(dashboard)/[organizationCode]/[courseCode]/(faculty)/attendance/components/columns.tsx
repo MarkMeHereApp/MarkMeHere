@@ -209,7 +209,10 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
         studentLongitude: originalValue.AttendanceEntry?.studentLongtitude,
       };
+      
 
+      //again, if you are readin this Jadyn, I am using the LocationAttendanceView from data-table-location-component, and I am trying to display.
+      //you do the same thing in smembers columns line 93-104. Please help, I dont wanna hurt my laptop.
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
           return(
