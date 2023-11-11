@@ -32,6 +32,7 @@ import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 import GoogleMapComponentAttendance from './google-map-component';
 import { markAllUnmarkedAbsent } from '@/data/attendance/make-all-unmarked-absent';
+import { PiQrCode } from 'react-icons/pi';
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
 }
