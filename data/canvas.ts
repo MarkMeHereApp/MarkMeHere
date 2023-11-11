@@ -1,11 +1,12 @@
+'use server';
 import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { createMultipleCourseMembers } from './courseMember/courseMember';
 import { bHasCoursePermission, getNextAuthSession } from './auth';
-import { getOrganization } from './organization';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import calculateCourseMemberStatistics from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/utils/calculateCourseMemberStatistics';
+import { CourseMember } from '@prisma/client';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
@@ -31,8 +32,8 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   if (!course || !course.lmsId || course.lmsType !== 'canvas') {
     return {
       success: false,
-      numberUpdated: 0,
-      numberCreated: 0
+      updatedUsers: [],
+      createdUsers: []
     };
   }
 
@@ -49,8 +50,8 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   if (!enrollmentResponse.ok) {
     return {
       success: false,
-      numberUpdated: 0,
-      numberCreated: 0
+      updatedUsers: [],
+      createdUsers: []
     };
   }
 
@@ -82,19 +83,60 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
     }
   });
 
-  //Get course members who don't have a matching lmsId
+  // If a course member has an lmsId but it's not in the list of lmsIds, remove it.
+  const incorrectLmsIdCourseMembers = alreadyEnrolledCourseMembers.filter(
+    (member) => member.lmsId && !lmsIds.includes(member.lmsId)
+  );
+
+  const updatedCourseMembers: Map<string, CourseMember> = new Map();
+
+  for (let member of incorrectLmsIdCourseMembers) {
+    const updatedMember = await prisma.courseMember.update({
+      where: {
+        id: member.id
+      },
+      data: {
+        lmsId: null
+      }
+    });
+    updatedCourseMembers.set(updatedMember.id, updatedMember);
+  }
+
+  //Get course members who have matching emails but the wrong lmsIdm, we need to update their lmsId
   const courseMembersWithoutLmsId = alreadyEnrolledCourseMembers.filter(
     (member) => !member.lmsId || !lmsIds.includes(member.lmsId)
   );
 
-  //Get course members who have matching emails but no lmsId
-  const courseMembersWhoHaveMatchingEmailsButNoLMSId =
+  const courseMembersWhoHaveMatchingEmailsButWrongLMSId =
     courseMembersWithoutLmsId.filter(
       (member) =>
         lmsEmails.includes(member.email) ||
         hashedLmsEmails.includes(member.email)
     );
 
+  //Update course members who have matching emails but no lmsId
+  for (let courseMemberToUpdate of courseMembersWhoHaveMatchingEmailsButWrongLMSId) {
+    const matchingLMSUser = lmsUsers.find(
+      (user) =>
+        user.hashedEmail === courseMemberToUpdate.email ||
+        user.email === courseMemberToUpdate.email
+    );
+
+    if (matchingLMSUser) {
+      const updatedMember = await prisma.courseMember.update({
+        where: {
+          id: courseMemberToUpdate.id
+        },
+        data: {
+          lmsId: matchingLMSUser.lmsId.toString()
+        }
+      });
+
+      updatedCourseMembers.set(updatedMember.id, updatedMember);
+    }
+  }
+
+  // Get the course members who are not already enrolled
   const courseMembersToCreate = lmsUsers.filter(
     (user) =>
       !alreadyEnrolledCourseMembers.find(
@@ -103,27 +145,7 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
       )
   );
 
-  //Update course members who have matching emails but no lmsId
-  for (let courseMemberToUpdate of courseMembersWhoHaveMatchingEmailsButNoLMSId) {
-    const matchingLMSUser = lmsUsers.find(
-      (user) =>
-        user.hashedEmail === courseMemberToUpdate.email ||
-        user.email === courseMemberToUpdate.email
-    );
-
-    if (matchingLMSUser) {
-      await prisma.courseMember.update({
-        where: {
-          id: courseMemberToUpdate.id
-        },
-        data: {
-          lmsId: matchingLMSUser.lmsId.toString()
-        }
-      });
-    }
-  }
-
-  createMultipleCourseMembers({
+  const { allCourseMembersOfClass } = await createMultipleCourseMembers({
     courseCode: inputCourseCode,
     courseMembers: courseMembersToCreate.map((user) => ({
       name: user.name,
@@ -135,8 +157,8 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
 
   return {
     success: true,
-    numberUpdated: courseMembersWhoHaveMatchingEmailsButNoLMSId.length,
-    numberCreated: courseMembersToCreate.length
+    updatedUsers: Array.from(updatedCourseMembers.values()),
+    createdUsers: allCourseMembersOfClass
   };
 };
 
@@ -270,8 +292,6 @@ export const syncCanvasAttendanceAssignment = async (
       .map((entry) => entry.id);
 
     if (memberAttendanceEntries.length === 0) {
-      console.log('none');
-
       continue;
     }
 
@@ -296,8 +316,6 @@ export const syncCanvasAttendanceAssignment = async (
         })
       }
     );
-
-    console.log('asd');
 
     attendanceEntriesToUpdate.push(...memberAttendanceEntries);
   }

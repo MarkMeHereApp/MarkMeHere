@@ -1,3 +1,5 @@
+'use client';
+
 import { AiOutlineUserAdd } from 'react-icons/ai';
 import { Button } from '../../components/ui/button';
 import {
@@ -150,7 +152,9 @@ const EnrollCourseMemberButton = () => {
             style={{ maxWidth: '100%' }}
           >
             <AiOutlineUserAdd className="h-4 w-4" />
-            <span className="whitespace-nowrap ml-2 hidden sm:flex">Enroll</span>
+            <span className="whitespace-nowrap ml-2 hidden sm:flex">
+              Enroll
+            </span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">

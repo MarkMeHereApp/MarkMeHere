@@ -15,6 +15,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import { Icons } from '@/components/ui/icons';
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -27,7 +28,7 @@ export function DataTableToolbar<TData>({
     table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
   const [error, setError] = useState<Error | null>(null);
-  const { selectedCourseId, setCourseMembersOfSelectedCourse } =
+  const { setCourseMembersOfSelectedCourse, selectedCourse } =
     useCourseContext();
 
   if (error) {
@@ -50,15 +51,15 @@ export function DataTableToolbar<TData>({
         return member.email !== userEmail;
       });
 
-      if (!selectedCourseId) {
-        setError(new Error('Selected Course Id is undefined.'));
+      if (!selectedCourse) {
+        setError(new Error('Selected Course is undefined.'));
         return;
       }
 
       const CourseMemberIds = filteredCourseMembers.map((member) => member.id);
 
       await deleteCourseMemberMutation.mutateAsync({
-        courseId: selectedCourseId,
+        courseId: selectedCourse.id,
         courseMemberIds: CourseMemberIds
       });
       table.resetRowSelection();
