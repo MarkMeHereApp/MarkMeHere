@@ -89,8 +89,6 @@ const InputTable = () => {
         code: inputValue.toUpperCase()
       });
 
-      console.log(res);
-
       if (res.success && res.token) {
         if (res.location) {
           router.push(
