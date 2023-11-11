@@ -5,7 +5,7 @@ import {
   zAttendanceTokenType,
   zQrCodeType
 } from '@/types/sharedZodTypes';
-import { redisAttendanceKey } from '@/utils/globalFunctions';
+import { redisAttendanceKey, redisQrCodeKey } from '@/utils/globalFunctions';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function findAttendanceToken(
@@ -146,13 +146,13 @@ export async function updateAttendanceEntryWithoutStudentLocation(
 
 export async function validateAndCreateToken(qrCode: string) {
   try {
-    //Find qrCode
-    const qrKey = 'qrCode:' + qrCode;
-    const qrResult: zQrCodeType | null = await redis.hgetall(qrKey);
+    const expirationTime = 600;
+    const qrResult: zQrCodeType | null = await redis.hgetall(
+      redisQrCodeKey(qrCode)
+    );
 
     if (!qrResult) return { success: false };
 
-    //Find course
     const course = await prisma.course.findUnique({
       where: {
         id: qrResult.courseId
@@ -165,7 +165,6 @@ export async function validateAndCreateToken(qrCode: string) {
     const attendanceTokenId = uuidv4();
     const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
 
-    //Create attendance token
     const attendanceTokenObj: zAttendanceTokenType = {
       token: attendanceToken,
       courseId: qrResult.courseId,

@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { kv as redis } from '@vercel/kv';
 import { zQrCodeType } from '@/types/sharedZodTypes';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
+import { redisQrCodeKey } from '@/utils/globalFunctions';
+import { relative } from 'node:path/win32';
 
 export const zCreateQRCode = z.object({
   secondsToExpireNewCode: z.number(),
@@ -34,14 +36,9 @@ export const qrRouter = router({
         }
 
         const { lectureId, courseId, professorLectureGeolocationId } = input;
-        const gracePeriod = 15;
         const newExpiry = new Date();
         newExpiry.setSeconds(
           newExpiry.getSeconds() + input.secondsToExpireNewCode
-        );
-
-        console.log(
-          'qrCode: ' + newCode + ' expiry: ' + newExpiry.getSeconds()
         );
 
         const qrCodeObj: zQrCodeType = {
@@ -52,14 +49,20 @@ export const qrRouter = router({
           expiresAt: newExpiry,
           lengthOfTime: null
         };
-        const qrKey = 'qrCode:' + newCode;
+
+        const gracePeriod = 5;
+        const currentTime = new Date();
+        const relativeExpiry = Math.ceil(
+          (qrCodeObj.expiresAt.getTime() - currentTime.getTime()) / 1000
+        );
+        const qrKey = redisQrCodeKey(newCode);
         const multi = redis.multi();
 
         if (professorLectureGeolocationId) {
           try {
             await multi
               .hset(qrKey, qrCodeObj)
-              .expire(qrKey, newExpiry.getSeconds() + gracePeriod)
+              .expire(qrKey, relativeExpiry + gracePeriod)
               .exec();
 
             return { success: true, qrCode: qrCodeObj };
@@ -68,20 +71,10 @@ export const qrRouter = router({
           }
         } else {
           try {
-            /*
-            Store qr code in Redis
-            We no longer need to delete old codes as Redis will
-            delete them 
-            */
-            const create = await multi
+            await multi
               .hset(qrKey, qrCodeObj)
-              .expire(qrKey, newExpiry.getSeconds() + gracePeriod)
+              .expire(qrKey, relativeExpiry + gracePeriod)
               .exec();
-
-              console.log(create)
-
-            // const qr = await redis.hgetall(qrKey);
-            // console.log('QR from redis', qr);
 
             return { success: true, qrCode: qrCodeObj };
           } catch (error) {

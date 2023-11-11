@@ -50,8 +50,8 @@ export const sessionlessRouter = router({
     .input(zActiveCode)
     .mutation(async ({ input }) => {
       try {
-        //Find qrCode
         const { code } = input;
+        const expirationTime = 600;
 
         const qrResult: zQrCodeType | null = await redis.hgetall(
           redisQrCodeKey(code)
@@ -59,7 +59,6 @@ export const sessionlessRouter = router({
 
         if (!qrResult) return { success: false };
 
-        //Find course
         const course = await prisma.course.findUnique({
           where: {
             id: qrResult.courseId
@@ -72,7 +71,6 @@ export const sessionlessRouter = router({
         const attendanceTokenId = uuidv4();
         const attendanceTokenKey = 'attendanceToken:' + attendanceTokenId;
 
-        //Create attendance token
         const attendanceTokenObj: zAttendanceTokenType = {
           token: attendanceToken,
           courseId: qrResult.courseId,
@@ -86,7 +84,7 @@ export const sessionlessRouter = router({
         await redis
           .multi()
           .hset(redisAttendanceKey(attendanceTokenId), attendanceTokenObj)
-          .expire(attendanceTokenKey, 300)
+          .expire(attendanceTokenKey, expirationTime)
           .exec();
 
         return {

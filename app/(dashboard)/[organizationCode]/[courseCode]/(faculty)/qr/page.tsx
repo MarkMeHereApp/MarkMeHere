@@ -171,6 +171,7 @@ const QR = () => {
         return;
       }
       if (newBufferCode.success) {
+        console.log(newBufferCode.qrCode.expiresAt.getSeconds())
         bufferCodeRef.current = {
           ...newBufferCode.qrCode,
           lengthOfTime:
@@ -187,6 +188,7 @@ const QR = () => {
   // However, the codes might need to be initialized more than once (see useEffect) to see why...
   const initCodes = async () => {
     try {
+      console.log("INIT")
       setActiveCode('LOADING');
       bIsFetchingInitCodes.current = true;
       // If the lecture isn't valid, we must be loading the lecture
@@ -215,6 +217,8 @@ const QR = () => {
       }
 
       if (newActiveCode.success && newBufferCode.success) {
+        console.log(newActiveCode.qrCode.expiresAt)
+        console.log(newBufferCode.qrCode.expiresAt)
         activeCodeRef.current = {
           ...newActiveCode.qrCode,
           lengthOfTime: newActiveCode.qrCode.expiresAt.getTime() - Date.now()

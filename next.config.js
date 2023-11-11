@@ -11,7 +11,8 @@ const nextConfig = {
   },
   images: {
     domains: ['avatars.githubusercontent.com', 'avatar.vercel.sh']
-  }
+  },
+  reactStrictMode: false
 };
 
 // Define the bundle-analyzer as a separate plugin
