@@ -11,8 +11,12 @@ import { v4 as uuidv4 } from 'uuid';
 export async function findAttendanceToken(
   attendanceTokenId: string
 ): Promise<zAttendanceTokenType | null> {
-  const attendanceTokenKey = redisAttendanceKey(attendanceTokenId)
+  const attendanceTokenKey = redisAttendanceKey(attendanceTokenId);
   return await redis.hgetall(attendanceTokenKey);
+}
+
+export async function deleteAttendanceToken(attendanceTokenId: string) {
+  return await redis.del(redisAttendanceKey(attendanceTokenId));
 }
 
 export async function findCourseId(lectureId: string) {
@@ -29,14 +33,6 @@ export async function findCourseMember(courseId: string, email: string) {
     where: {
       courseId: courseId,
       email: email
-    }
-  });
-}
-
-export async function deleteAttendanceToken(attendanceTokenId: string) {
-  return await prisma.attendanceToken.delete({
-    where: {
-      id: attendanceTokenId
     }
   });
 }
@@ -174,9 +170,9 @@ export async function validateAndCreateToken(qrCode: string) {
       token: attendanceToken,
       lectureId: qrResult.lectureId,
       professorLectureGeolocationId: qrResult.professorLectureGeolocationId,
-      attendanceStudentLatitude: null,  
+      attendanceStudentLatitude: null,
       attendanceStudentLongitude: null,
-      createdAt: new Date,
+      createdAt: new Date()
     };
 
     await redis
@@ -184,14 +180,6 @@ export async function validateAndCreateToken(qrCode: string) {
       .hset(redisAttendanceKey(attendanceTokenId), attendanceTokenObj)
       .expire(attendanceTokenKey, 300)
       .exec();
-
-    // const { id } = await prisma.attendanceToken.create({
-    //   data: {
-    //     token: uuidv4(),
-    //     lectureId: qrResult.lectureId,
-    //     ProfessorLectureGeolocationId: qrResult.ProfessorLectureGeolocationId
-    //   }
-    // });
 
     return {
       success: true,
@@ -207,4 +195,3 @@ export async function validateAndCreateToken(qrCode: string) {
 // function uuidv4() {
 //   throw new Error('Function not implemented.');
 // }
-

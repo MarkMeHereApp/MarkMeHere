@@ -1,10 +1,5 @@
 import InputPage from './components/inputPage';
-import prisma from '@/prisma';
-import { v4 as uuidv4 } from 'uuid';
-import { kv as redis } from '@vercel/kv';
 import { redirect } from 'next/navigation';
-import { qrcode } from '@prisma/client';
-import { zAttendanceTokenType } from '@/types/sharedZodTypes';
 import { validateAndCreateToken } from '../(dashboard)/[organizationCode]/[courseCode]/(student)/student/utils/studentHelpers';
 
 export default async function SubmitPage({

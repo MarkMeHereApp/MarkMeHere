@@ -48,22 +48,18 @@ export default async function StudentPage({
       return <MarkAttendanceError message="Invalid Attendance Token" />;
     }
 
-    const lectureId = tokenRow.lectureId;
-
-    const courseId = await findCourseId(tokenRow.lectureId);
-
-    if (!courseId) {
-      return <MarkAttendanceError message="Missing Course ID" />;
-    }
-
     if (
       tokenRow?.createdAt < new Date(Date.now() - attendanceTokenExpirationTime)
     ) {
       return <MarkAttendanceError message="Attendance Token Expired" />;
     }
 
-    if (!tokenRow) {
-      return <MarkAttendanceError message="Invalid Attendance Token" />;
+    const lectureId = tokenRow.lectureId;
+
+    const courseId = await findCourseId(tokenRow.lectureId);
+
+    if (!courseId) {
+      return <MarkAttendanceError message="Missing Course ID" />;
     }
 
     const courseMember = await findCourseMember(courseId, email);
@@ -85,11 +81,6 @@ export default async function StudentPage({
       );
     }
 
-    if (!courseMember) {
-      return (
-        <MarkAttendanceError message="Course Enrollment could not be found for this course." />
-      );
-    }
     const courseMemberId: string = courseMember.id;
 
     let attendanceEntry: AttendanceEntry | null = null;
