@@ -12,6 +12,10 @@ import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useLecturesContext } from '../../../context-lecture';
+import { Dialog, DialogTrigger, DialogContent } from '@radix-ui/react-dialog';
+import { Button } from '@/components/ui/button';
+import { DialogHeader } from '@/components/ui/dialog';
+import LocationAttendanceView from './data-table-location-component';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -201,7 +205,20 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
 
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
-          return <div className="flex w-full">Out of Range</div>;
+          return(
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  Out of Range
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[1300px] h-full">
+                <div className="grid gap-4 py-4">
+                  {/* <LocationAttendanceView></LocationAttendanceView> */}
+                </div>
+              </DialogContent>
+          </Dialog>
+          ) 
         } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
           return <div className="flex w-full">In Range</div>;
         }
