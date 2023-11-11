@@ -12,7 +12,6 @@ import {
   deleteAttendanceToken,
   findAttendanceEntry,
   findAttendanceToken,
-  findCourseId,
   findCourseMember,
   updateAttendanceEntry,
   updateAttendanceEntryWithLocation,
@@ -54,9 +53,13 @@ export default async function StudentPage({
       return <MarkAttendanceError message="Attendance Token Expired" />;
     }
 
-    const lectureId = tokenRow.lectureId;
-
-    const courseId = await findCourseId(tokenRow.lectureId);
+    const {
+      professorLectureGeolocationId,
+      attendanceStudentLatitude,
+      attendanceStudentLongitude,
+      courseId,
+      lectureId
+    } = tokenRow;
 
     if (!courseId) {
       return <MarkAttendanceError message="Missing Course ID" />;
@@ -89,12 +92,6 @@ export default async function StudentPage({
       lectureId,
       courseMemberId
     );
-
-    const {
-      professorLectureGeolocationId,
-      attendanceStudentLatitude,
-      attendanceStudentLongitude
-    } = tokenRow;
 
     if (!professorLectureGeolocationId) {
       console.log('No geolocation included');
