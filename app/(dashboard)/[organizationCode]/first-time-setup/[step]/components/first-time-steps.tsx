@@ -269,7 +269,6 @@ export const FirstTimeSteps: StepFunction[] = [
           <BackwardButton currentStep={props.currentStep} />
           <div className="ml-auto">
             <Suspense fallback={<SkeletonButtonText className="w-20" />}>
-              {/* @ts-expect-error -- This is needed to run npm run build ????*/}
               <ProviderNextStepButton />
             </Suspense>
           </div>
