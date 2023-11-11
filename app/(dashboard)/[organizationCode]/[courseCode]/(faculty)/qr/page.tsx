@@ -18,17 +18,21 @@ import QRCodeComponent from './DynamicQRCodeComponent';
 import { qrCodeExpirationTime } from '@/utils/globalVariables';
 import { Lecture, AttendanceEntry } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
+import { ContinueButton } from '@/components/general/continue-button';
+import { getAllAttendanceEntries } from '@/data/attendance/get-all-attendance-entries';
 
 const QR = () => {
   const [progress, setProgress] = React.useState(0);
   const [activeCode, setActiveCode] = React.useState('LOADING');
+  const [buttonLoading, setButtonLoading] = React.useState(false); // This is the loading state for the "Finish" button
   const createQRMutator = trpc.qr.CreateNewQRCode.useMutation();
   const expirationTime = qrCodeExpirationTime / 1000; // This is how long the QR code will last in seconds
   const timerUpdateRate = 500; // This is how long it takes for the slider to refresh its state ms, the higher the better the performance, but uglier the animation.
   const router = useRouter(); // Initialize useRouter
   const searchParams = useSearchParams(); // Initialize useSearchParams
   const { userCourses, currentCourseUrl } = useCourseContext();
-  const { lectures, selectedAttendanceDate } = useLecturesContext();
+  const { lectures, selectedAttendanceDate, setLectures } =
+    useLecturesContext();
 
   //Find the lecture currently active in the QR code (selected in the calendar)
   const getCurrentLecture = () => {
@@ -315,6 +319,37 @@ const QR = () => {
   // - ???
   // - Profit
 
+  const finishAttendance = async () => {
+    try {
+      setButtonLoading(true);
+
+      if (!currentLecture) {
+        setError(new Error('No lecture selected'));
+        return;
+      }
+
+      const updatedLecture = await getAllAttendanceEntries({
+        lectureId: currentLecture.id
+      });
+
+      setLectures((oldLectures) => {
+        if (!oldLectures) {
+          return oldLectures;
+        }
+        return oldLectures.map((lecture) => {
+          if (lecture.id === currentLecture.id) {
+            return updatedLecture;
+          }
+          return lecture;
+        });
+      });
+
+      router.push(`${currentCourseUrl}/attendance`);
+    } catch (error) {
+      setError(error as Error);
+    }
+  };
+
   const DefaultQRCodeDisplay = () => {
     const ProgressBarDisplay = () => {
       return <Progress value={progress} className="w-[35%]" />;
@@ -341,11 +376,20 @@ const QR = () => {
 
     return (
       <>
-        <CardHeader>
-          <CardTitle className="whitespace-nowrap overflow-ellipsis overflow-hidden max-w-lg text-3xl font-bold tracking-widest text-center ">
-            {currentCourseName || '\u200B'}
-          </CardTitle>
-        </CardHeader>
+        <div className=" w-full md:w-[738px]">
+          <div className="w-full flex justify-end ">
+            <div className="whitespace-nowrap overflow-ellipsis overflow-hidden max-w-lg text-3xl font-bold tracking-widest text-center ">
+              {currentCourseName || '\u200B'}
+            </div>
+            <div className="ml-auto">
+              {buttonLoading ? (
+                <Button disabled={true}>Finishing...</Button>
+              ) : (
+                <ContinueButton onClick={finishAttendance} name="Finish" />
+              )}
+            </div>
+          </div>
+        </div>
         {activeCode === 'LOADING' ? (
           <div className="flex flex-col h-[100%] justify-center content-center">
             <ReloadIcon
@@ -377,9 +421,6 @@ const QR = () => {
 
         <Card className="h-full w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
           <DefaultQRCodeDisplay />
-          <Button onClick={() => router.push(`${currentCourseUrl}/attendance`)}>
-            <div>Finish</div>
-          </Button>
         </Card>
       </div>
     );

@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
+import Loading from './loading';
 
 export const ContinueButton = ({
   name = 'Continue',
@@ -7,7 +8,9 @@ export const ContinueButton = ({
   variant,
   disabled,
   size,
-  onClick
+  onClick,
+  loading,
+  loadingText
 }: {
   name?: string;
   disabled?: boolean;
@@ -20,8 +23,18 @@ export const ContinueButton = ({
     | 'ghost'
     | 'link';
   size?: 'default' | 'xs' | 'sm' | 'lg' | 'icon' | null | undefined;
+  loading?: boolean;
+  loadingText?: string;
   onClick?: () => void;
 }) => {
+  if (loading) {
+    return (
+      <Button disabled={true}>
+        <Loading name={loadingText} />
+      </Button>
+    );
+  }
+
   return (
     <Button
       disabled={disabled}
@@ -32,7 +45,7 @@ export const ContinueButton = ({
       onClick={onClick}
     >
       <div className="flex items-center">
-        <span className='hidden sm:flex mr-2'>{name}</span>
+        <span className="hidden sm:flex mr-2">{name}</span>
         <ArrowRight className="w-4 h-4 transition-transform duration-500 ease-in-out transform" />
       </div>
     </Button>
