@@ -1,5 +1,6 @@
 import { CourseMember } from '@prisma/client';
 import { lecturesType } from '../../../../context-lecture';
+import { zAttendanceStatusType } from '@/types/sharedZodTypes';
 
 interface CourseMemberStatistics {
   numPresent: number;
@@ -11,7 +12,7 @@ interface CourseMemberStatistics {
 }
 
 const countAttendanceStatus = (
-  status: string,
+  status: zAttendanceStatusType,
   member: CourseMember,
   givenLectures: lecturesType
 ) => {
@@ -40,7 +41,7 @@ export default function calculateCourseMemberStatistics(
       numLate: 0,
       numExcused: 0,
       numTotal: 0,
-      attendanceGrade: 0
+      attendanceGrade: 1
     };
   }
 
@@ -48,11 +49,12 @@ export default function calculateCourseMemberStatistics(
   const numAbsent = countAttendanceStatus('absent', member, lectures);
   const numLate = countAttendanceStatus('late', member, lectures);
   const numExcused = countAttendanceStatus('excused', member, lectures);
-  const numTotal = lectures.length - numExcused;
-  const attendanceGrade = numTotal > 0 ? numPresent / numTotal : 0;
+  const numTotal = numPresent + numAbsent + numLate;
+  const attendanceGrade = numTotal > 0 ? (numPresent + numLate) / numTotal : 1;
   return {
     numPresent,
     numAbsent,
+
     numLate,
     numExcused,
     numTotal,

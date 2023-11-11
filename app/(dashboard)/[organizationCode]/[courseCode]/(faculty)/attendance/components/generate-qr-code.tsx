@@ -31,8 +31,7 @@ import { CourseMember } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
 import GoogleMapComponentAttendance from './google-map-component';
-import { PiQrCode } from 'react-icons/pi';
-
+import { markAllUnmarkedAbsent } from '@/data/attendance/make-all-unmarked-absent';
 interface StartScanningButtonProps {
   lectureId: string; // or number, depending on what type lectureId is supposed to be
 }
@@ -146,6 +145,10 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const createProfessorLectureGeolocation =
     trpc.geolocation.CreateProfessorLectureGeolocation.useMutation();
+
+  const createNewAttendanceEntryMutation =
+    trpc.attendance.createManyAttendanceRecords.useMutation();
+
   const handleGenerateQRCode = async () => {
     setIsLoadingSubmit(true);
     const selectedCourseMember = getCourseMember();
@@ -153,11 +156,13 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       ? selectedCourseMember.id
       : undefined;
 
-    if (enableGeolocation.current) {
-      const location = await getGeolocationData();
+    try {
+      await markAllUnmarkedAbsent({ lectureId: lectureId });
 
-      if (location) {
-        try {
+      if (enableGeolocation.current) {
+        const location = await getGeolocationData();
+
+        if (location) {
           if (!selectedCourseMemberId) {
             return;
           }
@@ -171,9 +176,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
           });
 
           professorGeolocationId.current = res.id;
-        } catch (error) {
-          // setError(error as Error);
-        } finally {
           setIsLoadingSubmit(false);
           router.push(
             navigation +
@@ -181,13 +183,16 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
               '&location=' +
               professorGeolocationId.current
           );
+        } else {
+          setError(new Error('Error occurred while getting geolocation'));
         }
-      } else {
       }
-    }
 
-    if (!enableGeolocation.current) {
-      router.push(navigation + parameters);
+      if (!enableGeolocation.current) {
+        router.push(navigation + parameters);
+      }
+    } catch (error) {
+      setError(error as Error);
     }
   };
 

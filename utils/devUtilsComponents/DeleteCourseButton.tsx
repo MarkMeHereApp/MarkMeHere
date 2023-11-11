@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
 import { toastSuccess } from '@/utils/globalFunctions';
@@ -21,12 +23,12 @@ const DeleteCourseButton = () => {
   if (error) {
     throw error;
   }
-  
+
   const handleConfirmDelete = async () => {
     const course = selectedCourse?.name;
     try {
       await deleteCourseMutation.mutateAsync({
-        courseId: selectedCourseId 
+        courseId: selectedCourseId
       });
       router.refresh();
       router.replace('/');
@@ -38,27 +40,31 @@ const DeleteCourseButton = () => {
 
   const AlertDescription = () => (
     <div>
-      {`This action is`} <strong className='text-destructive'>{` irreversible `}</strong>{` and will delete ${selectedCourse.name} from your list of courses.`}
+      {`This action is`}{' '}
+      <strong className="text-destructive">{` irreversible `}</strong>
+      {` and will delete ${selectedCourse.name} from your list of courses.`}
     </div>
   );
 
   return role === zSiteRoles.enum.admin && selectedCourseId ? (
     <>
-        <AreYouSureDialog
-            title={`Are you sure you want to delete ${selectedCourse.name}?`}
-            AlertDescriptionComponent={AlertDescription}
-            proceedText="DELETE"
-            buttonText="Delete"
-            bDestructive={true}
-            onConfirm={handleConfirmDelete}
-        >
-            <Button variant="destructive">
-              <TrashIcon className="h-4 w-4" />
-              <span className='ml-2 hidden sm:flex'>Delete Course</span>
-            </Button>
-        </AreYouSureDialog>
+      <AreYouSureDialog
+        title={`Are you sure you want to delete ${selectedCourse.name}?`}
+        AlertDescriptionComponent={AlertDescription}
+        proceedText="DELETE"
+        buttonText="Delete"
+        bDestructive={true}
+        onConfirm={handleConfirmDelete}
+      >
+        <Button variant="destructive">
+          <TrashIcon className="h-4 w-4" />
+          <span className="ml-2 hidden sm:flex">Delete Course</span>
+        </Button>
+      </AreYouSureDialog>
     </>
-  ) : <></>;
+  ) : (
+    <></>
+  );
 };
 
 export default DeleteCourseButton;

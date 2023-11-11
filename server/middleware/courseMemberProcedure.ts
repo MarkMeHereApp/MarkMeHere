@@ -3,8 +3,9 @@ import { generateTypedError } from '../errorTypes';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { findCourseMember } from '../utils/courseMemberHelpers';
+import { zSiteRoles } from '@/types/sharedZodTypes';
 
-/* -------- Checks if current user is enrolled in the course -------- */ 
+/* -------- Checks if current user is enrolled in the course -------- */
 
 const courseInput = z.object({
   courseId: z.string()
@@ -13,6 +14,18 @@ const courseInput = z.object({
 const isCourseMember = trpc.middleware(async ({ next, ctx, rawInput }) => {
   const result = courseInput.safeParse(rawInput);
   const email = ctx.session?.email;
+
+  const role = zSiteRoles.safeParse(ctx.session?.role);
+
+  if (!role.success)
+    throw generateTypedError(
+      new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'TRPC Middleware: User does not have a valid JWT'
+      })
+    );
+
+  if (role.data === zSiteRoles.enum.admin) return next();
 
   if (!result.success)
     throw generateTypedError(

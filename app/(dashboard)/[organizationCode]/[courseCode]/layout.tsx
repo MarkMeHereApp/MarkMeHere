@@ -61,7 +61,7 @@ export default async function CourseLayout({
       });
 
       if (!course) {
-        throw new Error('No Course Found!');
+        redirect('/');
       }
 
       selectedCourse = course;

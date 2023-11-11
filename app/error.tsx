@@ -12,6 +12,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const ErrorComponent = ({
   error,
@@ -23,17 +24,12 @@ const ErrorComponent = ({
   reset: () => void;
   className?: string;
 }) => {
-  const DynamicStars = dynamic(() => import('@/components/background/stars'), {
-    ssr: false
-  });
+  const router = useRouter();
 
   // Return null or some JSX
   return (
     <div className="relative min-h-screen">
-      <div className="absolute top-0 right-0 h-full w-full">
-        {DynamicStars && <DynamicStars />}
-      </div>
-      <Card className=" sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
+      <Card className=" w-full h-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 flex flex-col items-center justify-between space-y-4">
         <CardHeader>
           <CardTitle className="pb-6 text-destructive">
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -53,10 +49,18 @@ const ErrorComponent = ({
             </Alert>
           </CardDescription>
         </CardHeader>
-        <CardFooter>
+        <CardFooter className="space-x-4">
           <Button onClick={reset}>
             <ReloadIcon className="mr-2 h-5 w-5" />
             Try Again
+          </Button>
+
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+          >
+            Go To Home Page
           </Button>
         </CardFooter>
       </Card>
