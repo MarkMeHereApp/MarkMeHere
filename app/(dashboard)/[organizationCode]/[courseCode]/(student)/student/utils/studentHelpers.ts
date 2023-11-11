@@ -168,6 +168,7 @@ export async function validateAndCreateToken(qrCode: string) {
     //Create attendance token
     const attendanceTokenObj: zAttendanceTokenType = {
       token: attendanceToken,
+      courseId: qrResult.courseId,
       lectureId: qrResult.lectureId,
       professorLectureGeolocationId: qrResult.professorLectureGeolocationId,
       attendanceStudentLatitude: null,

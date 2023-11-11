@@ -90,6 +90,7 @@ export type zQrCodeType = z.infer<typeof zQrCode>;
 
 export const zAttendanceToken = z.object({
   token: z.string(),
+  courseId: z.string(),
   lectureId: z.string(),
   professorLectureGeolocationId: z.union([z.string(), z.null()]),
   attendanceStudentLatitude: z.union([z.number(), z.null()]),

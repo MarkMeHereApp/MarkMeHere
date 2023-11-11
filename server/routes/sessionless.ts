@@ -75,6 +75,7 @@ export const sessionlessRouter = router({
         //Create attendance token
         const attendanceTokenObj: zAttendanceTokenType = {
           token: attendanceToken,
+          courseId: qrResult.courseId,
           lectureId: qrResult.lectureId,
           professorLectureGeolocationId: qrResult.professorLectureGeolocationId,
           attendanceStudentLatitude: null,
