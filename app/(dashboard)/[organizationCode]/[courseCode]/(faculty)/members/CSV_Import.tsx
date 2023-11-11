@@ -294,7 +294,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
         />
         <label
           htmlFor="csv"
-          className={`bg-primary text-primary-foreground cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm flex justify-center items-center w-1/2 
+          className={`bg-primary text-primary-foreground cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm flex justify-center items-center w-full
         ${
           isDisabled
             ? 'text-gray-500 bg-gray-200 cursor-not-allowed'

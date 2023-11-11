@@ -112,7 +112,7 @@ export default function MainBar() {
   ];
   return (
     <div className={divClassName}>
-      <div className="flex items-center justify-between py-2">
+      <div className="flex items-center justify-between py-3">
         <div className="flex flex-row sm:items-center ml-6 sm:space-x-2 mr-4">
           <div className="hidden lg:flex justify-center items-center">
             <Link href={`${currentCourseUrl}/overview`}>
