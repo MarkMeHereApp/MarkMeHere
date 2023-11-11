@@ -7,7 +7,6 @@ import LecturesContext from './context-lecture';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { Course, CourseMember } from '@prisma/client';
-import { CanvasSync } from './canvas-sync';
 
 export default async function CourseLayout({
   children,
@@ -81,7 +80,6 @@ export default async function CourseLayout({
       >
         <LecturesContext>
           <MainBar />
-          <CanvasSync courseCode={params.courseCode} />
           {children}
         </LecturesContext>
       </CoursesContext>

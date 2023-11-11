@@ -9,9 +9,10 @@ import {
   zLMSCourseSchemeType,
   zCreateCourseErrorStatus
 } from '@/types/sharedZodTypes';
-const prisma = new PrismaClient();
+import prisma from '@/prisma';
 import { TRPCError } from '@trpc/server';
 import adminProcedure from '../middleware/adminProcedure';
+import { hashEmail } from '../utils/userHelpers';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;

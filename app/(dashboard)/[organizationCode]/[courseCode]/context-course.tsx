@@ -34,7 +34,8 @@ const defaultCourse: Course = {
   lmsId: null,
   dateCreated: new Date(),
   StartDate: null,
-  EndDate: null
+  EndDate: null,
+  lmsAttendanceAssignmentId: null
 };
 
 const CourseContext = createContext<CourseContextType>({

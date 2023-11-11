@@ -136,7 +136,7 @@ export default function GenerateCourseAsProfessor() {
       // Populated with students
       const generateCourseMembers = async (listStudents: any) => {
         const newMembers = await createManyCourseMembers.mutateAsync({
-          courseId: newCourse.id,
+          courseCode: newCourse.courseCode,
           courseMembers: listStudents
         });
         return newMembers;

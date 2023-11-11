@@ -39,8 +39,8 @@ export const createMultipleCourseMembers = async (
       role: 'teacher'
     });
 
-    if (!hasPermission) {
-      throw new Error('You do not have permission to create course members');
+    if (!hasPermission || !session) {
+      throw new Error('You do not have permission to sync course members');
     }
 
     const course = await prisma.course.findFirst({

@@ -2,11 +2,26 @@ import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { createMultipleCourseMembers } from './courseMember/courseMember';
+import { bHasCoursePermission, getNextAuthSession } from './auth';
+import { getOrganization } from './organization';
+import { getPublicUrl } from '@/utils/globalFunctions';
+import calculateCourseMemberStatistics from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/utils/calculateCourseMemberStatistics';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
 
 export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
+  const session = await getNextAuthSession();
+
+  const hasPermission = await bHasCoursePermission({
+    courseCode: inputCourseCode,
+    role: 'teacher'
+  });
+
+  if (!hasPermission || !session) {
+    throw new Error('You do not have permission to sync course members');
+  }
+
   const course = await prisma.course.findFirst({
     where: {
       courseCode: inputCourseCode
@@ -22,7 +37,7 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   }
 
   const enrollmentResponse = await fetch(
-    `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/enrollments?per_page=10000&include[]=email`,
+    `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/enrollments?per_page=10000&include[]=email&type[]=StudentEnrollment`,
     {
       method: 'GET',
       headers: {
@@ -125,4 +140,174 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   };
 };
 
-export const syncCanvasCourseAttendance = async (inputCourseCode: string) => {};
+export const syncCanvasAttendanceAssignment = async (
+  inputCourseCode: string
+) => {
+  const session = await getNextAuthSession();
+
+  const hasPermission = await bHasCoursePermission({
+    courseCode: inputCourseCode,
+    role: 'teacher'
+  });
+
+  if (!hasPermission || !session) {
+    throw new Error('You do not have permission to sync course members');
+  }
+
+  const course = await prisma.course.findFirst({
+    where: {
+      courseCode: inputCourseCode
+    }
+  });
+
+  if (!course) {
+    throw new Error('No course found!');
+  }
+
+  let existingAttendanceAssignment = course.lmsAttendanceAssignmentId;
+  let assignmentGradeTotal = 100;
+
+  if (existingAttendanceAssignment) {
+    const assignmentResponse = await fetch(
+      `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/assignments/${existingAttendanceAssignment}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${CANVAS_API_TOKEN}`
+        }
+      }
+    );
+
+    if (!assignmentResponse.ok) {
+      existingAttendanceAssignment = null;
+    }
+
+    const assignmentJson = await assignmentResponse.json();
+
+    if (typeof assignmentJson.points_possible === 'number') {
+      assignmentGradeTotal = assignmentJson.points_possible;
+    }
+  }
+
+  if (!existingAttendanceAssignment) {
+    //Create attendance assignment
+    const assignmentResponse = await fetch(
+      `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/assignments`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${CANVAS_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          assignment: {
+            name: 'Mark Me Here! Attendance Grade',
+            description: `Mark Me Here attendance grade. Go to ${getPublicUrl()} to view your attendance`,
+            points_possible: assignmentGradeTotal,
+            published: true
+          }
+        })
+      }
+    );
+
+    if (!assignmentResponse.ok) {
+      throw new Error('Error creating attendance assignment');
+    }
+
+    const assignmentJson = await assignmentResponse.json();
+
+    existingAttendanceAssignment = assignmentJson.id.toString();
+
+    await prisma.course.update({
+      where: {
+        id: course.id
+      },
+      data: {
+        lmsAttendanceAssignmentId: existingAttendanceAssignment
+      }
+    });
+  }
+
+  // Now that we
+
+  if (!existingAttendanceAssignment) {
+    throw new Error('Error creating attendance assignment');
+  }
+
+  const courseMembers = await prisma.courseMember.findMany({
+    where: {
+      courseId: course.id
+    }
+  });
+
+  const lmsCourseMembers = courseMembers.filter(
+    (member) => member.lmsId !== null
+  );
+
+  const lmsLectureData = await prisma.lecture.findMany({
+    where: {
+      courseId: course.id
+    },
+    include: {
+      attendanceEntries: {
+        where: {
+          courseMemberId: { in: lmsCourseMembers.map((member) => member.id) }
+        }
+      },
+      professorLectureGeolocation: true
+    }
+  });
+
+  const attendanceEntriesToUpdate: string[] = [];
+
+  for (const lmsCourseMember of lmsCourseMembers) {
+    const memberAttendanceEntries = lmsLectureData
+      .flatMap((lecture) => lecture.attendanceEntries)
+      .filter(
+        (entry) =>
+          entry.courseMemberId === lmsCourseMember.id && !entry.lmsSynced
+      )
+      .map((entry) => entry.id);
+
+    if (memberAttendanceEntries.length === 0) {
+      console.log('none');
+
+      continue;
+    }
+
+    const { attendanceGrade } = calculateCourseMemberStatistics(
+      lmsCourseMember,
+      lmsLectureData
+    );
+
+    // Update the attendance grade of existingAttendanceAssignment
+    const submissionResponse = await fetch(
+      `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/assignments/${existingAttendanceAssignment}/submissions/${lmsCourseMember.lmsId}`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${CANVAS_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          submission: {
+            posted_grade: attendanceGrade * assignmentGradeTotal
+          }
+        })
+      }
+    );
+
+    console.log('asd');
+
+    attendanceEntriesToUpdate.push(...memberAttendanceEntries);
+  }
+
+  await prisma.attendanceEntry.updateMany({
+    where: {
+      id: { in: attendanceEntriesToUpdate }
+    },
+    data: {
+      lmsSynced: true
+    }
+  });
+};
