@@ -73,17 +73,25 @@ export const SyncCanvasUsers = () => {
   };
 
   return (
-    <Button variant={'outline'} disabled={loading} onClick={onSyncCanvasUsers}>
-      {loading ? (
-        <Loading name="Syncing" />
-      ) : (
-        <>
-          <Icons.canvas className="h-6 w-6 text-destructive " />
-          <span className="whitespace-nowrap ml-2 hidden sm:flex">
-            Sync Users
-          </span>
-        </>
-      )}
-    </Button>
+    <div>
+      <div>
+        <Button
+          variant={'outline'}
+          disabled={loading}
+          onClick={onSyncCanvasUsers}
+        >
+          {loading ? (
+            <Loading name="Syncing" />
+          ) : (
+            <>
+              <Icons.canvas className="h-6 w-6 text-destructive " />
+              <span className="whitespace-nowrap ml-2 hidden md:flex">
+                Sync Users
+              </span>
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
   );
 };

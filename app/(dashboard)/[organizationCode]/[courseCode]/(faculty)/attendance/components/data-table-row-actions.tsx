@@ -126,7 +126,7 @@ export function DataTableRowActions<TData>({
   }
 
   return (
-    <div className="flex space-x-6">
+    <div className="flex space-x-6 justify-end sm:justify-start pr-4 sm:pr-0">
       {zAttendanceStatus.options.map((value) => {
         const Icon = zAttendanceStatusIconsNotFun[value];
         return (
