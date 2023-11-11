@@ -8,20 +8,7 @@ import { IconContext } from "react-icons";
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useEffect, useState } from 'react';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
-import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
-  } from '@/components/ui/alert-dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Button } from '@/components/ui/button';
-import { DialogFooter } from '@/components/ui/dialog';
-import { Dialog, DialogTrigger, DialogContent } from '@radix-ui/react-dialog';
+
 
 const StudentSVG = renderToStaticMarkup(
   <IconContext.Provider value={{ 
@@ -36,26 +23,25 @@ const StudentSVG = renderToStaticMarkup(
 );
 
 type PositionData = {
+    studentLatitude: number;
+    studentLongitude: number;
     professorLatitude: number;
     professorLongitude: number;
-    studentLatitude: number;
-    studentLongtitude: number;
 };
 
 interface GoogleMapsProps {
     postitonsData?: PositionData;
 }
 
+const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
-const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:number) => void, isDialogOpen: (newBoolean: boolean) => void}> = ({ postitonsData, onRangeChange, isDialogOpen }) => {
-
-    const [range, setRange] = useState<number>(200)
+    const studentSvgDataUrl = `data:image/svg+xml,${encodeURIComponent(StudentSVG)}`;
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
 
-    function feetToMeter(feet: number){
-        return feet / 3.28084
+    function feetToMeters(meters: number){
+        return meters / 3.28084
     }
 
     const mapStyles = {        
@@ -74,31 +60,22 @@ const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:num
         return null;
     }    
 
-    const {professorLatitude, professorLongitude } = postitonsData;
+    const { studentLatitude, studentLongitude, professorLatitude, professorLongitude } = postitonsData;
 
     const professorLocation = {
          lat: professorLatitude, lng: professorLongitude
     }
-
-    const [defaultValueRadio, setDefaultValueRadio] = useState('medium')
-
-    const setDefaultValue = (defaultValue: string) => {
-        setDefaultValueRadio(defaultValue)
+        
+    const studentLocation = {
+        lat: studentLatitude, lng: studentLongitude
     }
 
-    const calculateZoomLevel = (rangeInFeet:number) => {
-        const rangeInKm = rangeInFeet * 0.0003048; // convert feet to kilometers
-        return Math.round(13 - Math.log(rangeInKm) / Math.LN2);
-    }
-
-   
     const MapComponent = () => {
-        const zoomLevel = calculateZoomLevel(range);
 
         return(
             <GoogleMap
                 mapContainerStyle={mapStyles}
-                zoom={zoomLevel}
+                zoom={16}
                 center={professorLocation}
                 options={{
                     styles: mapTheme.styles,
@@ -110,7 +87,7 @@ const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:num
 
                 <CircleF 
                 center={professorLocation}
-                radius={feetToMeter(range)} // radius in meters
+                radius={feetToMeters(50)} // radius in meters
                 options={{
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,
@@ -118,7 +95,26 @@ const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:num
                     fillColor: '#FF0000',
                     fillOpacity: 0.35,
                 }}
-                />   
+                />
+                <MarkerF 
+                    position={professorLocation} 
+                />
+                <MarkerF 
+                    position={studentLocation} 
+                    icon={{
+                        url: studentSvgDataUrl,
+                        scaledSize: new window.google.maps.Size(25, 25),
+                    }}
+                />
+                <PolylineF
+                    path={[studentLocation, professorLocation]}
+                    options={{
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.5,
+                        strokeWeight: 2,                        
+                    }}
+                />
+                
             </GoogleMap>
         )
     }
@@ -136,47 +132,23 @@ const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:num
             return <div>Loading Google Maps</div>;
         }
     }
-
-    //from here I need to just render the map component        
+    
+    
+    //jadyn if you are reading this, here is where I need to display the component that overlays the page with map itself. 
     if(GoogleMapsKey){
         return (
-            <div>    
-                <Dialog>
-                    <DialogTrigger asChild>
-                    <Button variant="outline" size="xs" className="pl-2 pr-2">
-                        View Stats
-                    </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[1300px] h-full">
-                    <div className="grid gap-4 py-4">
-                    </div>
-                    </DialogContent>
-                </Dialog>
-
-                <MapComponent></MapComponent>
-            </div>            
+            <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 w-full">
+                <div className="flex flex-col space-y-4 md:w-3/4">
+                    <MapComponent></MapComponent>
+                </div>
+            </div>
         );
     }
 
     else{
         return(
-            <div>
-                <AlertDialog>
-                    <AlertDialogHeader className='flex justify-center items-center pb-[10px]'>
-                        <AlertDialogTitle>
-                            Location Verification Settings
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Your profile does not have Google Maps imported!
-                            You can still pick the size of your classroom, but you cannot see where your location is.
-                            Be careful not to have a VPN on so the data is accurate!
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                </AlertDialog>
-
-                <AlertDialogDescription>
-                    You are missing Google Maps key
-                </AlertDialogDescription>
+            <div className='pt-5'>
+                <div className='text-center'>Your location has been found!</div>
             </div>
         )
             
@@ -186,3 +158,4 @@ const LocationAttendanceView: FC<GoogleMapsProps & {onRangeChange: (newRange:num
 }
 
 export default LocationAttendanceView;
+

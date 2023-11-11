@@ -203,6 +203,13 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         originalValue.AttendanceEntry?.studentLongtitude
       );
 
+      const locationData = {
+        professorLatitude: professorData.lectureLatitude,
+        professorLongitude: professorData.lectureLongitude,
+        studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
+        studentLongitude: originalValue.AttendanceEntry?.studentLongtitude,
+      };
+
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
           return(
@@ -212,9 +219,9 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                   Out of Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[1300px] h-full">
+              <DialogContent className="max-w-[1300px] h-full ">
                 <div className="grid gap-4 py-4">
-                  {/* <LocationAttendanceView></LocationAttendanceView> */}
+                  <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
                 </div>
               </DialogContent>
           </Dialog>
