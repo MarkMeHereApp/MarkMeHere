@@ -44,13 +44,7 @@ const ErrorComponent = ({
                 {error.name}
               </AlertTitle>
               <AlertDescription className="overflow-auto py-8 ">
-                {`
-              The error message is indicating that the setDynamicQRCode function is expecting a React.ComponentType but you are trying to assign a React.ComponentType<> to it.
-
-The setDynamicQRCode function is expecting a component with a single prop url, but you are trying to assign a component that requires two props url and currentCourseUrl.
-
-To fix this, you need to adjust the type of the state variable DynamicQRCode to match the component you are trying to assign to it. Here's how you can do it:
-`}
+                {error.message}
               </AlertDescription>
             </Alert>
           </CardDescription>

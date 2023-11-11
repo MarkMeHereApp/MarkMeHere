@@ -190,6 +190,7 @@ export const syncCanvasAttendanceAssignment = async (
   let assignmentGradeTotal = 100;
 
   if (existingAttendanceAssignment) {
+    // Make sure the assignment exists
     const assignmentResponse = await fetch(
       `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/assignments/${existingAttendanceAssignment}`,
       {
@@ -211,6 +212,7 @@ export const syncCanvasAttendanceAssignment = async (
     }
   }
 
+  let createdNewAssignment = false;
   if (!existingAttendanceAssignment) {
     //Create attendance assignment
     const assignmentResponse = await fetch(
@@ -235,6 +237,8 @@ export const syncCanvasAttendanceAssignment = async (
     if (!assignmentResponse.ok) {
       throw new Error('Error creating attendance assignment');
     }
+
+    createdNewAssignment = true;
 
     const assignmentJson = await assignmentResponse.json();
 
@@ -291,10 +295,6 @@ export const syncCanvasAttendanceAssignment = async (
       )
       .map((entry) => entry.id);
 
-    if (memberAttendanceEntries.length === 0) {
-      continue;
-    }
-
     const { attendanceGrade } = calculateCourseMemberStatistics(
       lmsCourseMember,
       lmsLectureData
@@ -319,13 +319,21 @@ export const syncCanvasAttendanceAssignment = async (
 
     attendanceEntriesToUpdate.push(...memberAttendanceEntries);
   }
-
-  await prisma.attendanceEntry.updateMany({
-    where: {
-      id: { in: attendanceEntriesToUpdate }
-    },
-    data: {
-      lmsSynced: true
-    }
-  });
+  return {
+    success: true,
+    createdNewAssignment: createdNewAssignment
+  };
 };
+
+// We should probably keep track of which attendance entries have been synced to canvas
+//
+// That's for future me to deal with.
+///
+// await prisma.attendanceEntry.updateMany({
+//   where: {
+//     id: { in: attendanceEntriesToUpdate }
+//   },
+//   data: {
+//     lmsSynced: true
+//   }
+// });
