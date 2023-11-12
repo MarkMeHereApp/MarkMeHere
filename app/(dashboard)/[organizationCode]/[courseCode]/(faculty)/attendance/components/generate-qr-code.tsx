@@ -177,31 +177,28 @@ export function StartScanningButton() {
 
       if (enableGeolocation.current) {
         
-          if (!selectedCourseMemberId) {
-            return;
-          }
-
-          const res = await createProfessorLectureGeolocation.mutateAsync({
-            lectureLatitude: lectureLatitude.current,
-            lectureLongitude: lectureLongitude.current,
-            lectureId: currentLecture.id,
-            courseMemberId: selectedCourseMemberId,
-            lectureRange: range
-          });
-
-          professorGeolocationId.current = res.id;
-          setIsLoadingSubmit(false);
-          router.push(
-            navigation +
-              parameters +
-              '&location=' +
-              professorGeolocationId.current
-          );
-        } else {
-          setError(new Error('Error occurred while getting geolocation'));
+        if (!selectedCourseMemberId) {
+          return;
         }
-      
 
+        const res = await createProfessorLectureGeolocation.mutateAsync({
+          lectureLatitude: lectureLatitude.current,
+          lectureLongitude: lectureLongitude.current,
+          lectureId: currentLecture.id,
+          courseMemberId: selectedCourseMemberId,
+          lectureRange: range
+        });
+
+        professorGeolocationId.current = res.id;
+        setIsLoadingSubmit(false);
+        router.push(
+          navigation +
+            parameters +
+            '&location=' +
+            professorGeolocationId.current
+        );
+      } 
+  
       if (!enableGeolocation.current) {
         router.push(navigation + parameters);
       }
@@ -350,7 +347,6 @@ export function StartScanningButton() {
                           checked={enableGeolocation.current}
                           onClick={() => {
                             handleGeolocationChange();
-                            fetchGeolocation();
                           }}
                         />
                         <Label htmlFor="r3">Location Checker</Label>
