@@ -31,6 +31,7 @@ import { zSiteRoles } from '@/types/sharedZodTypes';
 import { PiUserCircleGear } from 'react-icons/pi';
 import Loading from '@/components/general/loading';
 import { formatString } from '@/utils/globalFunctions';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export function MobileNav({ NavItems }: { NavItems: React.ReactNode[] }) {
   const pathname = usePathname();
@@ -68,7 +69,7 @@ export function MobileNav({ NavItems }: { NavItems: React.ReactNode[] }) {
             </Avatar>
           </SheetTitle>
           <SheetDescription className="text-left  overflow-hidden text-overflow[ellipsis] whitespace-nowrap">
-            {userEmail}
+            {getEmailText(userEmail)}
 
             <div className="pt-2">{formatString(role || '')}</div>
           </SheetDescription>

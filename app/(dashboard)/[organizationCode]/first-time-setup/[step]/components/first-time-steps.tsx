@@ -24,6 +24,7 @@ import UsersContextProvider from '../../../(admin)/context-users';
 import UserTable from '../../../(admin)/manage-site-users/UserTable';
 import { columns } from '../../../(admin)/manage-site-users/columns';
 import ConfigureAdminNextButton from './admin-step-next-button';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 const EnsureAdminInDatabase = async (organizationCode: string) => {
   // @TODO this needs to be a user in the organization
@@ -261,7 +262,7 @@ export const FirstTimeSteps: StepFunction[] = [
           {user && (
             <>
               You Are Currently Logged in as <b>{user.name}</b> with the email{' '}
-              <b>{user.email}</b>
+              <b>{getEmailText(user.email)}</b>
             </>
           )}
         </ScrollArea>

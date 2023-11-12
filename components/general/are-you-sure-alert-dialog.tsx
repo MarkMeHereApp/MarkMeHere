@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import Loading from '@/components/general/loading';
 interface AreYouSureDialogProps {
@@ -21,6 +21,7 @@ interface AreYouSureDialogProps {
   proceedText?: string;
   buttonText?: string;
   bDestructive?: boolean;
+  skip?: boolean;
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
 }
@@ -31,6 +32,7 @@ export function AreYouSureDialog({
   proceedText,
   buttonText,
   bDestructive,
+  skip,
   onConfirm,
   children
 }: AreYouSureDialogProps) {

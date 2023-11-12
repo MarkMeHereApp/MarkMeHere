@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import StudentPageBoard from '../../(student)/student/StudentPageBoard';
 import EditCourseMember from '@/utils/devUtilsComponents/EditCourseMember';
 import { CheckIcon } from '@radix-ui/react-icons';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -65,7 +66,7 @@ export const columns: ColumnDef<CourseMember>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
+      <div className="flex w-full">{getEmailText(row.getValue('email'))}</div>
     ),
     enableSorting: true,
     enableHiding: true,
