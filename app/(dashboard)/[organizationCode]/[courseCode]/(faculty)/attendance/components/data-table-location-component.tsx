@@ -80,9 +80,6 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
                 }}
                 />
                 <MarkerF 
-                    position={professorLocation} 
-                />
-                <MarkerF 
                     position={studentLocation} 
                 />
                 <PolylineF
