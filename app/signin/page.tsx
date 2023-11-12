@@ -1,10 +1,16 @@
 import SignInForm from '@/app/signin/components/signInForm';
 import prisma from '@/prisma';
 import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 export default async function SigninPage() {
   try {
+
+    revalidatePath('/', "layout");
+    revalidatePath('/', "page");
+
+
     const providers = await prisma.authProviderCredentials.findMany({
       select: {
         displayName: true,
