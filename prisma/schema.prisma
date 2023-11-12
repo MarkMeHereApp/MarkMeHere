@@ -17,6 +17,8 @@ model User {
   image            String?        @db.VarChar(255)
   dateCreated      DateTime?      @default(now())
   selectedCourseId String?        @db.VarChar(255)
+  canvasUrl        String?        @db.VarChar(255)
+  canvasToken      String?        @db.VarChar(255)
   courseMembers    CourseMember[]
   accounts         Account[]
 }
@@ -72,22 +74,24 @@ model AttendanceEntry {
   professorLectureGeolocation   ProfessorLectureGeolocation? @relation(fields: [professorLectureGeolocationId], references: [id], onDelete: Cascade)
   studentLatitude               Float?
   studentLongtitude             Float?
+  lmsSynced                    Boolean                      @default(false)
 }
 
 model Course {
-  id               String         @id @default(cuid())
-  courseCode       String         @db.VarChar(255)
-  organizationCode String         @db.VarChar(255)
-  organization     Organization   @relation(fields: [organizationCode], references: [uniqueCode], onDelete: Cascade)
-  name             String         @db.VarChar(255)
-  lmsType          String         @db.VarChar(255)
-  lmsId            String?        @db.VarChar(255)
-  dateCreated      DateTime       @default(now())
-  StartDate        DateTime?
-  EndDate          DateTime?
-  lectures         Lecture[]
-  qrCodes          qrcode[]
-  enrollments      CourseMember[]
+  id                  String         @id @default(cuid())
+  courseCode          String         @db.VarChar(255)
+  organizationCode    String         @db.VarChar(255)
+  organization        Organization   @relation(fields: [organizationCode], references: [uniqueCode], onDelete: Cascade)
+  name                String         @db.VarChar(255)
+  lmsType             String         @db.VarChar(255)
+  lmsId               String?        @db.VarChar(255)
+  dateCreated         DateTime       @default(now())
+  lmsAttendanceAssignmentId String?  @db.VarChar(255)
+  StartDate           DateTime?
+  EndDate             DateTime?
+  lectures            Lecture[]
+  qrCodes             qrcode[]
+  enrollments         CourseMember[]
 
   @@unique([organizationCode, courseCode])
   @@unique([lmsType, lmsId])
@@ -101,7 +105,6 @@ model CourseMember {
   name                        String                        @db.VarChar(255) // Right now optional
   courseId                    String                        @db.VarChar(255)
   course                      Course                        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  //user              User              @relation(fields: [email], references: [email]) // For now we don't need to focus on this 
   dateEnrolled                DateTime                      @default(now())
   role                        String                        @db.VarChar(255)
   attendanceEntries           AttendanceEntry[]
@@ -173,6 +176,7 @@ model Organization {
   id                        String   @id @default(cuid())
   firstTimeSetupComplete    Boolean  @default(false)
   name                      String   @db.VarChar(255)
+  canvasDevKeyAuthorizedEmail String? @db.VarChar(255)
   uniqueCode                String   @unique @db.VarChar(255)
   lightTheme                String   @default("light_neutral") @db.VarChar(255)
   darkTheme                 String   @default("dark_red") @db.VarChar(255)

@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import StudentPageBoard from '../../(student)/student/StudentPageBoard';
 import EditCourseMember from '@/utils/devUtilsComponents/EditCourseMember';
+import { CheckIcon } from '@radix-ui/react-icons';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -18,7 +20,7 @@ export const columns: ColumnDef<CourseMember>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] sm:block hidden"
       />
     ),
     cell: ({ row }) => (
@@ -26,7 +28,7 @@ export const columns: ColumnDef<CourseMember>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] sm:block hidden"
       />
     ),
     enableSorting: false,
@@ -39,11 +41,20 @@ export const columns: ColumnDef<CourseMember>[] = [
     ),
     cell: ({ row }) => {
       const curName: string = row.getValue('name');
-      if (curName.length > 13) {
-        const truncatedName = `${curName.substring(0, 13)}...`;
-        return <div className="flex w-full">{truncatedName}</div>;
-      }
-      return <div className="flex w-full">{curName}</div>;
+      const truncatedName = `${curName.substring(0, 15)}...`;
+
+      return (
+        <>
+          <div className="flex w-[80px] overflow-hidden overflow-ellipsis sm:hidden">
+            {curName}
+          </div>
+          {curName.length > 25 ? (
+            <div className="flex w-full">{truncatedName}</div>
+          ) : (
+            <div className="flex w-full">{curName}</div>
+          )}
+        </>
+      );
     },
     enableSorting: true,
     enableHiding: true,
@@ -55,7 +66,7 @@ export const columns: ColumnDef<CourseMember>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
+      <div className="flex w-full">{getEmailText(row.getValue('email'))}</div>
     ),
     enableSorting: true,
     enableHiding: true,
@@ -71,6 +82,30 @@ export const columns: ColumnDef<CourseMember>[] = [
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
+    accessorKey: 'lmsId',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Canvas Sync" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex w-full">
+        {row.getValue('lmsId') ? (
+          <>
+            <CheckIcon className="w-4 h-4" />
+            <span>Synced</span>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue('lmsId'));
     },
     enableSorting: true,
     enableHiding: true,

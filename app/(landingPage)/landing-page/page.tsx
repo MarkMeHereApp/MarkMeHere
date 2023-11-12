@@ -1,8 +1,6 @@
 import LandingPage from '../components/landing-page';
 export default async function HomePage() {
   if (process.env.NEXT_PUBLIC_DEMO_MODE) {
-    // eslint-disable-next-line
-    // @ts-ignore
     return <LandingPage />;
   }
 

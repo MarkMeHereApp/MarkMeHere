@@ -3,22 +3,25 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Lecture, AttendanceEntry } from '@prisma/client';
+import {
+  Lecture,
+  AttendanceEntry,
+  ProfessorLectureGeolocation
+} from '@prisma/client';
 import { createContext } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { useCourseContext } from './context-course';
 
 export type lecturesType =
-  | ({ attendanceEntries: AttendanceEntry[] } & Lecture)[]
+  | ({
+      attendanceEntries: AttendanceEntry[];
+      professorLectureGeolocation: ProfessorLectureGeolocation[];
+    } & Lecture)[]
   | null;
 
 interface LecturesContextType {
   lectures: lecturesType;
-  setLectures: React.Dispatch<
-    React.SetStateAction<
-      ({ attendanceEntries: AttendanceEntry[] } & Lecture)[] | null
-    >
-  >;
+  setLectures: React.Dispatch<React.SetStateAction<lecturesType>>;
   selectedAttendanceDate: Date;
   setSelectedAttendanceDate: React.Dispatch<React.SetStateAction<Date>>;
   pageSize: number;

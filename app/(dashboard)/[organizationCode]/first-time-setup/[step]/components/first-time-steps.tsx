@@ -24,6 +24,8 @@ import UsersContextProvider from '../../../(admin)/context-users';
 import UserTable from '../../../(admin)/manage-site-users/UserTable';
 import { columns } from '../../../(admin)/manage-site-users/columns';
 import ConfigureAdminNextButton from './admin-step-next-button';
+import { getEmailText } from '@/server/utils/userHelpers';
+import { EditCanvasAuthorizedUser } from '../../../(admin)/admin-settings/components/canvas/edit-canvas-authorized-user';
 
 const EnsureAdminInDatabase = async (organizationCode: string) => {
   // @TODO this needs to be a user in the organization
@@ -161,29 +163,45 @@ export const FirstTimeSteps: StepFunction[] = [
       </>
     );
   },
-  (props: StepFunctionProps) => (
-    <>
-      <ScrollArea className="w-full rounded-md  sm:h-full md:h-[500px] ">
-        <div className="space-y-6 pb-6">
-          <h3 className="text-lg font-medium">
-            Enter Email For Canvas Use. This can always be changed later in the
-            admin settings.
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            To comply with the Canvas terms of service, only one user can
-            manually enter a Canvas Developer token. Add the email of who you
-            want your one user to be.
-          </p>
+  async (props: StepFunctionProps) => {
+    const organization = await prisma.organization.findFirst({
+      where: { uniqueCode: props.organizationCode }
+    });
+
+    if (!organization) {
+      throw new Error('No organization found!');
+    }
+    return (
+      <>
+        <ScrollArea className="w-full rounded-md  sm:h-full md:h-[500px] ">
+          <div className="space-y-6 pb-6">
+            <div>
+              <h3 className="text-lg font-medium">
+                Configure Canvas Developer Key Authorization. This can always be
+                changed later in the admin settings.
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                To comply with Canvas API requirements, you can only have one
+                user that is allowed to use the Canvas Developer Key. Add the
+                email of the user you want to authorize below.
+              </p>
+            </div>
+            <Separator />
+            <EditCanvasAuthorizedUser
+              configuredEmail={organization.canvasDevKeyAuthorizedEmail}
+              organizationCode={organization.uniqueCode}
+            />
+          </div>
+        </ScrollArea>
+        <div className="flex justify-end py-4">
+          <BackwardButton currentStep={props.currentStep} />
+          <div className="ml-auto">
+            <ForwardButton currentStep={props.currentStep} />
+          </div>
         </div>
-      </ScrollArea>
-      <div className="flex justify-end py-4">
-        <BackwardButton currentStep={props.currentStep} />
-        <div className="ml-auto">
-          <ForwardButton currentStep={props.currentStep} />
-        </div>
-      </div>
-    </>
-  ),
+      </>
+    );
+  },
   (props: StepFunctionProps) => (
     <>
       <UsersContextProvider>
@@ -261,7 +279,7 @@ export const FirstTimeSteps: StepFunction[] = [
           {user && (
             <>
               You Are Currently Logged in as <b>{user.name}</b> with the email{' '}
-              <b>{user.email}</b>
+              <b>{getEmailText(user.email)}</b>
             </>
           )}
         </ScrollArea>
@@ -269,7 +287,6 @@ export const FirstTimeSteps: StepFunction[] = [
           <BackwardButton currentStep={props.currentStep} />
           <div className="ml-auto">
             <Suspense fallback={<SkeletonButtonText className="w-20" />}>
-              {/* @ts-expect-error -- This is needed to run npm run build ????*/}
               <ProviderNextStepButton />
             </Suspense>
           </div>

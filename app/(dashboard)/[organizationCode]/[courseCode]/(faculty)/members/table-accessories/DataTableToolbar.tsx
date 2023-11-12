@@ -15,6 +15,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import { Icons } from '@/components/ui/icons';
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -27,7 +28,7 @@ export function DataTableToolbar<TData>({
     table.getIsAllRowsSelected() || table.getIsSomeRowsSelected();
   const globalFilter = table.getState().globalFilter;
   const [error, setError] = useState<Error | null>(null);
-  const { selectedCourseId, setCourseMembersOfSelectedCourse } =
+  const { setCourseMembersOfSelectedCourse, selectedCourse } =
     useCourseContext();
 
   if (error) {
@@ -50,21 +51,21 @@ export function DataTableToolbar<TData>({
         return member.email !== userEmail;
       });
 
-      if (!selectedCourseId) {
-        setError(new Error('Selected Course Id is undefined.'));
+      if (!selectedCourse) {
+        setError(new Error('Selected Course is undefined.'));
         return;
       }
 
       const CourseMemberIds = filteredCourseMembers.map((member) => member.id);
 
       await deleteCourseMemberMutation.mutateAsync({
-        courseId: selectedCourseId,
+        courseId: selectedCourse.id,
         courseMemberIds: CourseMemberIds
       });
       table.resetRowSelection();
 
       setCourseMembersOfSelectedCourse((prev) => {
-        if (!prev) return null;
+        if (!prev) return [];
         return prev.filter((courseMember) => {
           return !filteredCourseMembers.some((filteredMember) => {
             return filteredMember.id === courseMember.id;
@@ -140,7 +141,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Search for a course member..."
+          placeholder="Search"
           value={'globalFilter' in table.getState() ? globalFilter : ''}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const searchString = event.target.value;
@@ -181,8 +182,8 @@ export function DataTableToolbar<TData>({
                 disabled={!areOtherUsersSelected()}
                 className="h-8 px-2 lg:px-3"
               >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Delete Course Member(s)
+                <TrashIcon className=" h-4 w-4" />
+                <span className=" ml-2 hidden sm:inline">Delete Member(s)</span>
               </Button>
             </AreYouSureDialog>
           </>

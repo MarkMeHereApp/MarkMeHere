@@ -134,8 +134,8 @@ const EnrollUser = () => {
             className="flex items-center"
             style={{ maxWidth: '100%' }}
           >
-            <AiOutlineUserAdd className="h-4 w-4 mr-2" />
-            <span className="whitespace-nowrap">Create Site User</span>
+            <AiOutlineUserAdd className="h-4 w-4" />
+            <span className="hidden sm:flex ml-2">Create Site User</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">

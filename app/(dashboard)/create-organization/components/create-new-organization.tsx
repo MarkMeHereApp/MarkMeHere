@@ -30,9 +30,18 @@ import { useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { redirect } from 'next/navigation';
 import Loading from '@/components/general/loading';
+import { Checkbox } from '@/components/ui/checkbox';
+import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function InitiallyCreateOrganization() {
   const [displayingForm, setDisplayingForm] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const createOrganization = trpc.sessionless.createOrganization.useMutation();
@@ -53,7 +62,8 @@ export default function InitiallyCreateOrganization() {
       })
       .refine((value) => /^[a-zA-Z-]+$/.test(value), {
         message: 'Only letters and "-" are allowed.'
-      })
+      }),
+    hashEmails: z.boolean().default(false)
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,7 +76,8 @@ export default function InitiallyCreateOrganization() {
       setLoading(true);
       const organization = await createOrganization.mutateAsync({
         uniqueCode: data.uniqueCode,
-        name: data.organizationname
+        name: data.organizationname,
+        hashEmails: data.hashEmails
       });
 
       if (organization) {
@@ -77,6 +88,28 @@ export default function InitiallyCreateOrganization() {
     } catch (e) {
       setError(e as Error);
     }
+  };
+
+  const HashAlert = () => (
+    <div>
+      <strong>{`This will permanently scramble your email data.`}</strong> You
+      will never be able to recover or view original email data if you enable
+      this feature. We do not recommend enabling this feature unless you are
+      absolutely sure you want to.
+    </div>
+  );
+
+  const HashInfo = () => {
+    return (
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <InfoCircledIcon />
+        </HoverCardTrigger>
+        <HoverCardContent className="w-[400px]" side="top">
+          <HashAlert />
+        </HoverCardContent>
+      </HoverCard>
+    );
   };
 
   return (
@@ -140,6 +173,57 @@ export default function InitiallyCreateOrganization() {
                             Example: <b>UCF</b>
                           </FormDescription>
                           <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="hashEmails"
+                      defaultValue={false}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                          <FormControl>
+                            <>
+                              {field.value ? (
+                                <>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onClick={() => {
+                                      field.onChange(false);
+                                    }}
+                                  />
+                                </>
+                              ) : (
+                                <AreYouSureDialog
+                                  title={`Are you sure you want to enable email hashing?`}
+                                  AlertDescriptionComponent={() => (
+                                    <div>
+                                      <strong>{`This will permanently scramble all your email data.`}</strong>
+                                      You will never be able to recover or view
+                                      original email data if you enable this
+                                      feature. We do not recommend enabling this
+                                      feature unless you are absolutely sure you
+                                      want to.
+                                    </div>
+                                  )}
+                                  onConfirm={async () => {
+                                    field.onChange(true);
+                                  }}
+                                  proceedText={`I Understand`}
+                                  bDestructive={false}
+                                  skip={true}
+                                >
+                                  <Checkbox checked={field.value} />
+                                </AreYouSureDialog>
+                              )}
+                            </>
+                          </FormControl>
+                          <div className="leading-none">
+                            <div className="flex items-center space-x-2">
+                              <FormLabel>Hash Emails?{field.value}</FormLabel>
+                              <HashInfo />
+                            </div>
+                          </div>
                         </FormItem>
                       )}
                     />

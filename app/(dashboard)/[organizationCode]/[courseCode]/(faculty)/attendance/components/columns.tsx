@@ -11,6 +11,24 @@ import {
 import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { useLecturesContext } from '../../../context-lecture';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { DialogHeader } from '@/components/ui/dialog';
+import LocationAttendanceView from './data-table-location-component';
+import { useRef } from 'react';
+import { getEmailText } from '@/server/utils/userHelpers';
+
+enum Validity{
+  inRange = 1,
+  outRange = 0,
+}
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -20,7 +38,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] sm:block hidden"
       />
     ),
     cell: ({ row }) => (
@@ -28,7 +46,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-[2px]  sm:block hidden"
       />
     ),
     enableSorting: false,
@@ -41,11 +59,20 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     ),
     cell: ({ row }) => {
       const curName: string = row.getValue('name');
-      if (curName.length > 13) {
-        const truncatedName = `${curName.substring(0, 13)}...`;
-        return <div className="flex w-full">{truncatedName}</div>
-      }
-      return <div className="flex w-full">{curName}</div>
+      const truncatedName = `${curName.substring(0, 15)}...`;
+
+      return (
+        <>
+          <div className="flex w-[80px] overflow-hidden overflow-ellipsis sm:hidden">
+            {curName}
+          </div>
+          {curName.length > 25 ? (
+            <div className="flex w-full">{truncatedName}</div>
+          ) : (
+            <div className="flex w-full">{curName}</div>
+          )}
+        </>
+      );
     },
     enableSorting: true,
     enableHiding: true,
@@ -54,7 +81,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
     accessorKey: 'mark Status',
     header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Mark Status" />
+      <DataTableColumnHeader column={column} title="Mark Status" />
     ),
     cell: ({ row }) => <DataTableRowActions row={row} />,
     enableSorting: false,
@@ -110,7 +137,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     },
     enableSorting: false,
     enableHiding: true
-  }, 
+  },
   {
     accessorKey: 'date marked',
     header: ({ column }) => (
@@ -133,12 +160,144 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     enableGlobalFilter: true
   },
   {
+    accessorKey: 'location',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Location" />
+    ),
+    cell: ({ row }) => {
+      const originalValue = row.original as ExtendedCourseMember;
+      const { lectures } = useLecturesContext();
+      const validity = useRef<Validity | undefined>()
+      const lecture = lectures?.find(
+        (lecture) => lecture.id === originalValue.AttendanceEntry?.lectureId
+      );
+
+      if (!lecture) {
+        return <></>;
+      }
+
+      const professorData = lecture.professorLectureGeolocation.find(
+        (professor) =>
+          professor.id ===
+          originalValue.AttendanceEntry?.ProfessorLectureGeolocationId
+      );
+
+      if (!professorData) {
+        return <></>;
+      }
+
+      if (
+        !originalValue.AttendanceEntry?.studentLatitude ||
+        !originalValue.AttendanceEntry?.studentLongtitude
+      ) {
+        return (
+          <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  No Location
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[550px] h-[170px] ">
+                <div className="grid gap-4 py-4 ">
+                  <DialogHeader className="flex justify-center items-center pb-[0px]">
+                    <DialogTitle className='pb-[10px]'>The student did not share their location!</DialogTitle>
+                    <DialogDescription>
+                      This student did not share their location. Two reasons could cause this:<br/>
+                      1) The student has decided to proceed without verification.<br/>
+                      2) The student did not allow the browser to access their location.
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+              </DialogContent>
+            </Dialog>
+        );
+      }
+
+      const distanceBetween2Points = (
+        profLat: number,
+        profLong: number,
+        studLat: number,
+        studLong: number
+      ) => {
+        if (profLat == studLat && profLong == studLong) {
+          return 0;
+        } else {
+          const radlat1 = (Math.PI * profLat) / 180;
+          const radlat2 = (Math.PI * studLat) / 180;
+          const theta = profLong - studLong;
+          const radtheta = (Math.PI * theta) / 180;
+          let dist =
+            Math.sin(radlat1) * Math.sin(radlat2) +
+            Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+          if (dist > 1) {
+            dist = 1;
+          }
+          dist = Math.acos(dist);
+          dist = (dist * 180) / Math.PI;
+          dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
+          return dist;
+        }
+      };
+
+      const calculateDistance = distanceBetween2Points(
+        professorData.lectureLatitude,
+        professorData.lectureLongitude,
+        originalValue.AttendanceEntry?.studentLatitude,
+        originalValue.AttendanceEntry?.studentLongtitude
+      );
+
+      const locationData = {
+        professorLatitude: professorData.lectureLatitude,
+        professorLongitude: professorData.lectureLongitude,
+        studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
+        studentLongitude: originalValue.AttendanceEntry?.studentLongtitude
+      };
+      
+      if (calculateDistance) {
+        if (calculateDistance > professorData.lectureRange) {
+          validity.current = Validity.outRange
+          return(
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  Out of Range
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
+              </DialogContent>
+          </Dialog>
+
+          ) 
+        } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
+          validity.current = Validity.inRange
+          console.log(validity.current)
+          return (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  In Range
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
+              </DialogContent>
+          </Dialog>
+            );
+        }
+      }
+    },
+    enableSorting: true,
+    enableHiding: true,
+    enableGlobalFilter: true
+  },
+  {
     accessorKey: 'email',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
+      <div className="flex w-full">{getEmailText(row.getValue('email'))}</div>
     ),
     enableSorting: true,
     enableHiding: true,

@@ -27,7 +27,10 @@ export default function MainBar() {
   const divClassName =
     !isQRCodePage && !isVerificationPage
       ? 'border-b flex-col'
-      : 'border-b flex-col hover:opacity-100 opacity-0 transition-opacity duration-200 absolute w-full z-10 bg-background';
+      : 'border-b flex-col pointer-events-none opacity-0 transition-opacity absolute w-full z-10 bg-background';
+
+  // This was that cool hover thing, but it was not practical for the qr page since finish should be the only option.
+  //'border-b flex-col hover:opacity-100 opacity-0 transition-opacity duration-200 absolute w-full z-10 bg-background';
 
   function isActive(href: string) {
     // Since the Admin Dashboard has a bunch of pages inside of it, we have to be a big janky with it, and highlight the admin dashboard for all of its pages.
@@ -70,6 +73,7 @@ export default function MainBar() {
   );
 
   const CanAccessStudent = () => {
+    if (session?.data?.user?.role === zSiteRoles.enum.admin) return true;
     return selectedCourseEnrollment?.role === zCourseRoles.enum.student;
   };
 
@@ -112,7 +116,7 @@ export default function MainBar() {
   ];
   return (
     <div className={divClassName}>
-      <div className="flex items-center justify-between py-2">
+      <div className="flex items-center justify-between py-3">
         <div className="flex flex-row sm:items-center ml-6 sm:space-x-2 mr-4">
           <div className="hidden lg:flex justify-center items-center">
             <Link href={`${currentCourseUrl}/overview`}>

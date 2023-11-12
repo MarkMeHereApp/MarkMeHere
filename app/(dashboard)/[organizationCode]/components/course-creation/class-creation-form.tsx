@@ -33,6 +33,11 @@ import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import Loading from '@/components/general/loading';
 import { useRouter } from 'next/navigation';
+import { syncCanvasCourseMembers } from '@/data/canvas/canvas-sync';
+import { ConfigureCanvasUserDialog } from '../../(user)/components/canvas/canvas-submission-dialog';
+import { hasCanvasConfigured } from '@/data/user/canvas';
+import { Icons } from '@/components/ui/icons';
+import { SkeletonButtonText } from '@/components/skeleton/skeleton-button';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -66,14 +71,24 @@ const CreateCourseFormSchema = z.object({
   autoEnroll: z.boolean().default(true)
 });
 
+enum CanvasConfigStatus {
+  Loading = 'Loading',
+  Configured = 'Configured',
+  NotConfigured = 'NotConfigured'
+}
+
 export default function CreateCourseForm({
   onSuccess
 }: {
   onSuccess: () => void;
 }) {
+  const [canvasConfigStatus, setCanvasConfigStatus] =
+    useState<CanvasConfigStatus>(CanvasConfigStatus.Loading);
+
   const [loading, setLoading] = useState(false);
   const [getLMSSelectedCourse, setLMSSelectedCourse] =
     useState<zLMSCourseSchemeType | null>(null);
+
   const session = useSession();
   const createCourseMutation = trpc.course.createCourse.useMutation();
   const { setUserCourses, setUserCourseMembers, currentCourseUrl } =
@@ -151,11 +166,22 @@ export default function CreateCourseForm({
       const newEnrollment = handleCreateCourseResult.resEnrollment;
       const newCourse = handleCreateCourseResult.resCourse;
 
+      let canvasString = '';
+      if (handleCreateCourseResult.resCourse.lmsId) {
+        const { createdUsers } = await syncCanvasCourseMembers(
+          newCourse.courseCode
+        );
+
+        if (createdUsers.length > 0) {
+          canvasString = `Created ${createdUsers.length} new users in Canvas.`;
+        }
+      }
+
       setUserCourses((userCourses) => [...(userCourses || []), newCourse]);
       if (newEnrollment === null) {
         toast({
           title: `${newCourse.name} Added Successfully!`,
-          description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
+          description: `${newCourse.name} has been created but you have not been enrolled to the course. ${canvasString}`,
           icon: 'success'
         });
       } else {
@@ -165,7 +191,7 @@ export default function CreateCourseForm({
         ]);
         toast({
           title: `${newCourse.name} Added Successfully!`,
-          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
+          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}. ${canvasString}`,
           icon: 'success'
         });
       }
@@ -208,14 +234,57 @@ export default function CreateCourseForm({
     }
   }, [getLMSSelectedCourse]);
 
+  // This should be handled in a server component but I am too tired to care.
+  useEffect(() => {
+    const checkCanvasConfigured = async () => {
+      if (
+        organization.canvasDevKeyAuthorizedEmail === session.data?.user.email
+      ) {
+        const isCanvasConfigured = await hasCanvasConfigured();
+        if (isCanvasConfigured) {
+          setCanvasConfigStatus(CanvasConfigStatus.Configured);
+        } else {
+          setCanvasConfigStatus(CanvasConfigStatus.NotConfigured);
+        }
+      }
+    };
+
+    checkCanvasConfigured();
+  }, [organization.canvasDevKeyAuthorizedEmail, session.data?.user.email]);
+
+  const CanvasComponent = () => {
+    if (canvasConfigStatus === CanvasConfigStatus.Configured) {
+      return <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />;
+    }
+
+    if (canvasConfigStatus === CanvasConfigStatus.NotConfigured) {
+      return (
+        <ConfigureCanvasUserDialog
+          organizationCode={organization.uniqueCode}
+          onSubmit={() => {
+            setCanvasConfigStatus(CanvasConfigStatus.Configured);
+            router.refresh;
+          }}
+        >
+          <Button variant={'outline'}>
+            <Icons.canvas className="h-6 w-6 text-destructive " />
+            <span className={` whitespace-nowrap ml-2 md:flex `}>
+              Configure Canvas To Import
+            </span>
+          </Button>
+        </ConfigureCanvasUserDialog>
+      );
+    }
+
+    return <></>;
+  };
+
   return session.status === 'loading' ? (
     <Loading />
   ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {process.env.NEXT_PUBLIC_CANVAS_ENABLED && (
-          <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />
-        )}
+        <CanvasComponent />
         <FormField
           control={form.control}
           name="courseCode"

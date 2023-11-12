@@ -5,8 +5,6 @@ import { useState } from 'react';
 
 import { Course, CourseMember } from '@prisma/client';
 import { createContext } from 'react';
-import { trpc } from '@/app/_trpc/client';
-import { useParams } from 'next/navigation';
 import { useOrganizationContext } from '../context-organization';
 
 interface CourseContextType {
@@ -18,9 +16,9 @@ interface CourseContextType {
   selectedCourse: Course;
   selectedCourseEnrollment: CourseMember | undefined;
   currentCourseUrl: string;
-  courseMembersOfSelectedCourse: CourseMember[] | null;
+  courseMembersOfSelectedCourse: CourseMember[];
   setCourseMembersOfSelectedCourse: React.Dispatch<
-    React.SetStateAction<CourseMember[] | null>
+    React.SetStateAction<CourseMember[]>
   >;
 }
 
@@ -34,7 +32,8 @@ const defaultCourse: Course = {
   lmsId: null,
   dateCreated: new Date(),
   StartDate: null,
-  EndDate: null
+  EndDate: null,
+  lmsAttendanceAssignmentId: null
 };
 
 const CourseContext = createContext<CourseContextType>({
@@ -55,12 +54,14 @@ export default function CoursesContext({
   userCourseMembers: initialUserCourseMembers,
   selectedCourse: initialSelectedCourse,
   selectedCourseEnrollment: initialSelectedCourseEnrollment,
+  courseMembersOfSelectedCourse: initialCourseMembersOfSelectedCourse,
   children
 }: {
   userCourses: Course[];
   userCourseMembers: CourseMember[];
   selectedCourse: Course;
   selectedCourseEnrollment: CourseMember | undefined;
+  courseMembersOfSelectedCourse: CourseMember[];
   children?: React.ReactNode;
 }) {
   const { organization } = useOrganizationContext();
@@ -87,23 +88,7 @@ export default function CoursesContext({
   const [selectedCourseId] = useState<string>(selectedCourse.id);
 
   const [courseMembersOfSelectedCourse, setCourseMembersOfSelectedCourse] =
-    useState<CourseMember[] | null>(null);
-
-  const courseMembers = trpc.courseMember.getCourseMembersOfCourse.useQuery(
-    {
-      courseId: selectedCourse.id
-    },
-    {
-      onSuccess: (data) => {
-        if (!data || !data.courseMembers) return;
-        setCourseMembersOfSelectedCourse(data.courseMembers);
-      }
-    }
-  );
-
-  if (courseMembers.error) {
-    throw courseMembers.error;
-  }
+    useState<CourseMember[]>(initialCourseMembersOfSelectedCourse);
 
   return (
     <CourseContext.Provider

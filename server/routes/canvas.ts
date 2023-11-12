@@ -9,11 +9,12 @@ import {
   zLMSCourseSchemeType,
   zCreateCourseErrorStatus
 } from '@/types/sharedZodTypes';
-const prisma = new PrismaClient();
+import prisma from '@/prisma';
 import { TRPCError } from '@trpc/server';
-
-const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
-const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
+import adminProcedure from '../middleware/adminProcedure';
+import { hashEmail } from '../utils/userHelpers';
+import { bHasCoursePermission, getNextAuthSession } from '../../data/auth';
+import { decrypt } from '@/utils/globalFunctions';
 
 const zCanvasCourseSchema = z.object({
   id: z.number(),
@@ -28,19 +29,66 @@ const zCanvasCourseSchema = z.object({
 });
 
 export const canvasRouter = router({
-  getCanvasCourses: publicProcedure
-    .input(z.object({ userEmail: z.string().optional() }))
+  getCanvasCourses: adminProcedure
+    .input(
+      z.object({
+        userEmail: z.string().optional(),
+        organizationCode: z.string()
+      })
+    )
     .query(async (requestData) => {
-      if (!CANVAS_API_TOKEN || !CANVAS_DOMAIN) {
-        throw generateTypedError(
-          new TRPCError({
-            code: 'BAD_REQUEST',
-            message:
-              'Canvas API token and domain not provided. Please contact your administrator.'
-          })
-        );
-      }
       try {
+        const session = await getNextAuthSession();
+
+        const organization = await prisma.organization.findFirst({
+          where: {
+            uniqueCode: requestData.input.organizationCode
+          },
+          select: {
+            canvasDevKeyAuthorizedEmail: true
+          }
+        });
+
+        if (!organization) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'PRECONDITION_FAILED',
+              message: `No Organization found`
+            })
+          );
+        }
+
+        if (organization.canvasDevKeyAuthorizedEmail !== session.user.email) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: `You do not have permission to access Canvas`
+            })
+          );
+        }
+
+        const user = await prisma.user.findFirst({
+          where: {
+            email: session.user.email
+          },
+          select: {
+            canvasUrl: true,
+            canvasToken: true
+          }
+        });
+
+        if (!user || !user.canvasUrl || !user.canvasToken) {
+          throw generateTypedError(
+            new TRPCError({
+              code: 'PRECONDITION_FAILED',
+              message: `No user`
+            })
+          );
+        }
+
+        const CANVAS_DOMAIN = user.canvasUrl;
+        const CANVAS_API_TOKEN = decrypt(user.canvasToken);
+
         // First, get all the Canvas courses from the API Key
         const response = await fetch(
           `${CANVAS_DOMAIN}api/v1/courses?per_page=1000&enrollment_state=active&include=total_students`, //

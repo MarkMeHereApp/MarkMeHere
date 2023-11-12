@@ -151,7 +151,11 @@ export function DataTable<TData, TValue>({
 
           const newLectures = [
             ...lectures,
-            { attendanceEntries: [], ...newLecture.newLecture }
+            {
+              attendanceEntries: [],
+              professorLectureGeolocation: [],
+              ...newLecture.newLecture
+            }
           ];
           setLectures(newLectures);
 
@@ -180,7 +184,7 @@ export function DataTable<TData, TValue>({
     );
   };
 
-  return selectedCourseId ? (
+  return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
       {lectures === null ? (
@@ -202,7 +206,8 @@ export function DataTable<TData, TValue>({
                         'email',
                         'lmsId',
                         'date marked',
-                        'status'
+                        'status',
+                        'location'
                       ];
                       return (
                         <TableHead
@@ -231,13 +236,15 @@ export function DataTable<TData, TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
+                      className="h-24 sm:h-12"
                     >
                       {row.getVisibleCells().map((cell) => {
                         const shouldHideColumn = [
                           'email',
                           'lmsId',
                           'date marked',
-                          'status'
+                          'status',
+                          'location'
                         ];
                         return (
                           <TableCell
@@ -284,10 +291,6 @@ export function DataTable<TData, TValue>({
           </Card>
         </div>
       )}
-    </div>
-  ) : (
-    <div className="pt-8 flex justify-center items-center">
-      <h3>Create/Choose a course!</h3>
     </div>
   );
 }

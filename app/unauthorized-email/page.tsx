@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export default function UnauthorizedEmail({
   searchParams
@@ -29,8 +30,10 @@ export default function UnauthorizedEmail({
           </CardTitle>
           <CardDescription className="text-lg">
             <br />
-            Login failed. The email <b>{searchParams.email}</b> isn't linked to
-            a course or registered user.
+            Login failed. The email <b>
+              {getEmailText(searchParams.email)}
+            </b>{' '}
+            isn't linked to a course or registered user.
             <br />
             <br />
             If this email is correct, contact an administrator or try a
@@ -40,7 +43,7 @@ export default function UnauthorizedEmail({
 
         <CardFooter className="flex justify-end">
           <Link href={callbackUrl?.value || '/signin'}>
-            <Button>Go Back To Sign In</Button>
+            <Button>Back To Sign In</Button>
           </Link>
         </CardFooter>
       </Card>

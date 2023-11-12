@@ -7,7 +7,6 @@ import { toast } from 'components/ui/use-toast';
 import { trpc } from '@/app/_trpc/client';
 import { firaSansLogo } from '@/utils/fonts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Icons } from '@/components/ui/icons';
 import Loading from '@/components/general/loading';
 
 enum ErrorType {
@@ -32,9 +31,6 @@ const InputTable = () => {
   if (error) {
     throw error;
   }
-
-  const studentLatitude = useRef<number>(0);
-  const studentLongitude = useRef<number>(0);
 
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
@@ -79,7 +75,9 @@ const InputTable = () => {
   //if fails, we display the error message specific to the invalid input
   const validateAndCreateToken =
     trpc.sessionless.ValidateAndCreateAttendanceToken.useMutation();
-  const submitCode = async () => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     //router.refresh()
     setIsLoadingSubmit(true); // Set loading to true at the start of the function
 
@@ -87,8 +85,6 @@ const InputTable = () => {
       const res = await validateAndCreateToken.mutateAsync({
         code: inputValue.toUpperCase()
       });
-
-      console.log(res);
 
       if (res.success && res.token) {
         if (res.location) {
@@ -118,8 +114,6 @@ const InputTable = () => {
   //after the error message being displayed, we replace the URL with /submit and stay on page.
   //if we check more things than just qr-error, it will be added as another if statement.
   useEffect(() => {
-    console.log('useEffect triggered', errorType);
-
     if (errorType && !hasDisplayedQRError.current) {
       if (errorType === 'qr-error') {
         displayError(ErrorType.InvalidQR);
@@ -146,7 +140,10 @@ const InputTable = () => {
         )}
       </Alert>
 
-      <div className="gap-4 flex flex-col items-center pt-0 p-6 w-[100%]">
+      <form
+        onSubmit={handleSubmit}
+        className="gap-4 flex flex-col items-center pt-0 p-6 w-[100%]"
+      >
         <Input
           className="w-[100%] h-[30%] text-center text-4xl"
           type="text"
@@ -155,13 +152,13 @@ const InputTable = () => {
           disabled={isLoadingSubmit}
         />
         <Button
-          onClick={() => submitCode()}
+          type="submit"
           className=" flex w-[100%]"
           disabled={isLoadingSubmit}
         >
           {isLoadingSubmit ? <Loading /> : 'Submit'}
         </Button>
-      </div>
+      </form>
     </Card>
   );
 };

@@ -9,23 +9,23 @@ const DeleteAllStudentsButton = () => {
     useCourseContext();
   const deleteAllStudentsMutation =
     trpc.courseMember.deleteAllStudents.useMutation();
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
+  // const getCourseMembersOfCourseQuery =
+  //   trpc.courseMember.getCourseMembersOfCourse.useQuery(
+  //     {
+  //       courseId: selectedCourseId || ''
+  //     },
+  //     {
+  //       onSuccess: (data) => {
+  //         if (!data) return;
+  //         setCourseMembersOfSelectedCourse(data.courseMembers);
+  //       }
+  //     }
+  //   );
 
   const handleClick = async () => {
     if (selectedCourseId) {
       await deleteAllStudentsMutation.mutateAsync();
-      await getCourseMembersOfCourseQuery.refetch();
+      // await getCourseMembersOfCourseQuery.refetch();
     } else {
       throw new Error('No selected course');
     }

@@ -14,6 +14,10 @@ import {
 import { hashEmail } from '../utils/userHelpers';
 import elevatedCourseMemberCourseProcedure from '../middleware/elevatedCourseMemberCourseProcedure';
 import courseMemberProcedure from '../middleware/courseMemberProcedure';
+import {
+  createMultipleCourseMembers,
+  zCreateMultipleCourseMembers
+} from '@/data/courseMember/create-multiple-course-members';
 export const zCourseMember = z.object({
   lmsId: z.string().optional(),
   email: z.string(),
@@ -29,17 +33,6 @@ export const zGetCourseMembersOfCourse = z.object({
 
 export const zGetCourseMemberRole = z.object({
   courseId: z.string()
-});
-export const zCreateMultipleCourseMembers = z.object({
-  courseId: z.string(),
-  courseMembers: z.array(
-    z.object({
-      optionalId: z.string().optional(),
-      name: z.string(),
-      email: z.string(),
-      role: zCourseRoles
-    })
-  )
 });
 
 export const zDeleteCourseMembersFromCourse = z.object({
@@ -171,81 +164,6 @@ export const courseMemberRouter = router({
       }
     }
   ),
-  getCourseMembersOfCourse: publicProcedure
-    .input(zGetCourseMembersOfCourse)
-    .query(async (requestData) => {
-      try {
-        if (requestData.input.courseId === '') {
-          throw generateTypedError(
-            new TRPCError({
-              code: 'BAD_REQUEST',
-              message: 'Missing CourseId in getCourseMembersOfCourse'
-            })
-          );
-        }
-
-        const emailctx = requestData.ctx?.session?.email;
-
-        if (!emailctx)
-          throw generateTypedError(
-            new TRPCError({
-              code: 'UNAUTHORIZED',
-              message: 'user does not have a session'
-            })
-          );
-
-        const roleParseResult = zSiteRoles.safeParse(
-          requestData.ctx.session?.role
-        );
-        const isAdmin =
-          roleParseResult.success &&
-          roleParseResult.data === zSiteRoles.enum.admin;
-
-        const courseMembership = await prisma.courseMember.findFirst({
-          where: {
-            courseId: requestData.input.courseId,
-            email: emailctx
-          }
-        });
-
-        if (!isAdmin) {
-          if (!courseMembership) {
-            throw generateTypedError(
-              new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message:
-                  'No course membership found for this user in this course'
-              })
-            );
-          }
-
-          if (courseMembership.role !== zCourseRoles.enum.teacher) {
-            return {
-              success: true,
-              courseMembers: [courseMembership],
-              courseMembership: courseMembership
-            };
-          }
-        }
-
-        const courseMembers = await prisma.courseMember.findMany({
-          where: {
-            courseId: requestData.input.courseId
-          },
-          orderBy: {
-            name: 'asc'
-          }
-        });
-
-        return {
-          success: true,
-          courseMembers: courseMembers,
-          courseMembership: courseMembership
-        };
-      } catch (error) {
-        throw generateTypedError(error as Error);
-      }
-    }),
 
   /* 
   Loop through all courseMembers and create an array of course 
@@ -257,45 +175,7 @@ export const courseMemberRouter = router({
     .input(zCreateMultipleCourseMembers)
     .mutation(async (requestData) => {
       try {
-        const {
-          input: { courseId, courseMembers },
-          ctx: { settings, session }
-        } = requestData;
-        const { hashEmails } = settings;
-        const updatedCourseMembers = [];
-        if (session && typeof session.email === 'string') {
-          // Filter out the course members with email matching session.user
-          const filteredCourseMembers = courseMembers.filter(
-            (memberData) => memberData.email !== session.email
-          );
-          // Create an array to store promises for member creation or update
-          const memberPromises = filteredCourseMembers.map(
-            async (memberData) => {
-              memberData.email = hashEmails
-                ? hashEmail(memberData.email)
-                : memberData.email;
-
-              const existingMember = await findCourseMember(
-                memberData.email,
-                courseId
-              );
-
-              if (existingMember) {
-                return updateCourseMember(existingMember.id, memberData);
-              } else {
-                return createCourseMember({ ...memberData, courseId });
-              }
-            }
-          );
-
-          const courseMemberResults = await Promise.all(memberPromises);
-          updatedCourseMembers.push(...courseMemberResults);
-
-          return {
-            success: true,
-            allCourseMembersOfClass: updatedCourseMembers
-          };
-        }
+        return createMultipleCourseMembers(requestData.input);
       } catch (error) {
         throw generateTypedError(error as Error);
       }

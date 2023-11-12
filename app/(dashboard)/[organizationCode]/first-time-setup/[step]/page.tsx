@@ -30,7 +30,6 @@ export default async function Step({
     }
     return (
       <>
-        {/* @ts-expect-error -- This is needed to run npm run build ????*/}
         <StepFunction
           organizationCode={params.organizationCode}
           currentStep={Number(params.step)}
@@ -41,7 +40,6 @@ export default async function Step({
 
   return (
     <Suspense fallback={<StepSkeleton />}>
-      {/* @ts-expect-error -- This is needed to run npm run build ????*/}
       <GetStepFunction />
     </Suspense>
   );

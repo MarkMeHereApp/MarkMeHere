@@ -23,7 +23,8 @@ const defaultOrganization: Organization = {
   darkTheme: '',
   hashEmails: false,
   googleMapsApiKey: null,
-  allowUsersToUseGoogleMaps: false
+  allowUsersToUseGoogleMaps: false,
+  canvasDevKeyAuthorizedEmail: null
 };
 
 const OrganizationContext = createContext<OrganizationContextType>({

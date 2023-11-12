@@ -8,6 +8,7 @@ import {
 import { CourseMember } from '@prisma/client';
 import { lecturesType } from '../../../../context-lecture';
 import calculateCourseMemberStatistics from '../utils/calculateCourseMemberStatistics';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export interface SupportListProps {
   selectedCourseName: string;
@@ -77,7 +78,7 @@ const SupportList: React.FC<SupportListProps> = ({
           {student.name}
         </div>
         <div className="text-xs text-muted-foreground overflow-hidden whitespace-nowrap text-overflow-ellipsis">
-          {student.email}
+          {getEmailText(student.email)}
         </div>
       </div>
       <div className="text-sm font-medium text-secondary-foreground">

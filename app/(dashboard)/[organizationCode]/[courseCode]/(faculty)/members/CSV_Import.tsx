@@ -74,7 +74,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
       setValidationProgress(25);
       const firstObjectKeys = Object.keys(values[0]);
 
-      const expectedHeaders = ['name', 'id', 'email'];
+      const expectedHeaders = ['email'];
 
       const headersMatch = expectedHeaders.every((expectedHeader) =>
         firstObjectKeys.some(
@@ -85,7 +85,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
 
       if (!headersMatch) {
         throw new Error(
-          `CSV file is invalid. Make sure CSV includes headers: 'Name', 'ID', 'Email'.`
+          `CSV file is invalid. Make sure CSV includes headers: 'name', 'id', 'email'.`
         );
       }
 
@@ -222,7 +222,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
     }));
     try {
       const newMembers = await createManyCourseMembers.mutateAsync({
-        courseId: data.selectedCourseId,
+        courseCode: data.selectedCourse.courseCode,
         courseMembers: transformedTableValues
       });
 
@@ -282,27 +282,29 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
   return (
     <>
       {' '}
-      <Input
-        type="file"
-        accept=".csv"
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-        ref={fileInputRef}
-        //disabled={isDisabled}
-        id="csv"
-      />
-      <label
-        htmlFor="csv"
-        className={`bg-primary cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm font-medium inline-flex items-center 
-    ${
-      isDisabled
-        ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
-        : 'text-primary-foreground'
-    }`}
-      >
-        <MdUploadFile className="h-5 w-4" />
-        <span className="hidden sm:flex ml-2">Import CSV</span>
-      </label>
+      <div className="flex justify-center w-full">
+        <Input
+          type="file"
+          accept=".csv"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          //disabled={isDisabled}
+          id="csv"
+        />
+        <label
+          htmlFor="csv"
+          className={`bg-primary text-primary-foreground cursor-pointer text-center hover:bg-primary/90 h-9 px-4 py-2 rounded-md text-sm flex justify-center items-center w-full
+        ${
+          isDisabled
+            ? 'text-gray-500 bg-gray-200 cursor-not-allowed'
+            : 'text-primary-foreground'
+        }`}
+        >
+          <MdUploadFile className="h-5 w-4" />
+          <span className="flex ml-2">Import CSV</span>
+        </label>
+      </div>
       <Dialog open={isValidating} onOpenChange={setIsValidating}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="text-center">

@@ -17,24 +17,16 @@ export const attendanceTokenRouter = router({
   ValidateGeolocation: publicProcedure
     .input(zGeolocationVerification)
     .mutation(async ({ input }) => {
-      console.log(input);
-
       try {
         const attendanceTokenKey = 'attendanceToken:' + input.id;
         const lectureResult: zAttendanceTokenType | null =
           await redis.hgetall(attendanceTokenKey);
-
-        console.log(
-          'this is the lecture result fetch: ' +
-            lectureResult?.professorLectureGeolocationId
-        );
 
         if (lectureResult === null) {
           return { success: false };
         }
 
         const geolocationId = lectureResult.professorLectureGeolocationId;
-        console.log(geolocationId);
 
         if (!geolocationId) {
           throw new Error('Geolocation ID not found!');
@@ -51,18 +43,9 @@ export const attendanceTokenRouter = router({
           throw new Error('Geolocation not found!');
         }
 
-        console.log(geolocationLectureResult[0]);
-
         const lectureRange = geolocationLectureResult[0].lectureRange;
         const lectureLatitude = geolocationLectureResult[0].lectureLatitude;
         const lectureLongitude = geolocationLectureResult[0].lectureLongitude;
-
-        console.log(
-          'lecture latitude: ' +
-            lectureLatitude +
-            'lecture longtitude: ' +
-            lectureLongitude
-        );
 
         const distanceBetween2Points = (
           profLat: number,
@@ -97,10 +80,6 @@ export const attendanceTokenRouter = router({
           input.studentLongtitude
         );
 
-        if (geolocationLectureResult && input) {
-          //console.log('distance difference in miles:' + calculateDistance);
-        }
-
         const updatedAttendanceObj = {
           ...lectureResult,
           attendanceStudentLatitude: input.studentLatitude,
@@ -108,17 +87,6 @@ export const attendanceTokenRouter = router({
         };
         //Update the attendance token
         await redis.hset(attendanceTokenKey, updatedAttendanceObj);
-
-        // const attendanceTokenLocation = await prisma.attendanceToken.update({
-        //   where: {
-        //     id: input.id
-        //   },
-        //   data: {
-        //     attendanceStudentLatitude: input.studentLatitude,
-        //     attendanceStudentLongtitude: input.studentLongtitude,
-        //     professorLectureGeolocationId: geolocationId
-        //   }
-        // });
 
         return {
           success: true,

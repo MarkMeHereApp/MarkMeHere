@@ -7,6 +7,7 @@ import LecturesContext from './context-lecture';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { Course, CourseMember } from '@prisma/client';
+import { getCourseWithEnrollments } from '@/data/courseMember/get-all-course-members-of-course';
 
 export default async function CourseLayout({
   children,
@@ -36,6 +37,7 @@ export default async function CourseLayout({
     }
   });
 
+  //Get Available Courses, if the user is an admin, get all courses, otherwise get the courses the user is enrolled in.
   let courses: Course[] = [];
   if (session.user.role === zSiteRoles.enum.admin) {
     courses = await prisma.course.findMany({
@@ -49,6 +51,7 @@ export default async function CourseLayout({
     (membership) => membership.course.courseCode === params.courseCode
   );
 
+  // If the user is an admin, they can access any course, so we need to check if the course exists.
   let selectedCourse = courseEnrollment?.course;
 
   if (!selectedCourse) {
@@ -61,13 +64,22 @@ export default async function CourseLayout({
       });
 
       if (!course) {
-        throw new Error('No Course Found!');
+        redirect('/');
       }
 
       selectedCourse = course;
     } else {
       throw new Error('No Course Enrollment Found!');
     }
+  }
+
+  // Get Course + Enrollments of the selected course.
+  const courseOfSelectedCourse = await getCourseWithEnrollments({
+    courseCode: params.courseCode
+  });
+
+  if (!courseOfSelectedCourse.course) {
+    throw new Error('No course found');
   }
 
   return (
@@ -77,6 +89,9 @@ export default async function CourseLayout({
         userCourses={courses}
         selectedCourseEnrollment={courseEnrollment}
         selectedCourse={selectedCourse}
+        courseMembersOfSelectedCourse={
+          courseOfSelectedCourse.course?.enrollments || []
+        }
       >
         <LecturesContext>
           <MainBar />

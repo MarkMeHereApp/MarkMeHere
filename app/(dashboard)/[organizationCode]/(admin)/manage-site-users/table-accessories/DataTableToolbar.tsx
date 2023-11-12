@@ -117,13 +117,15 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
         <DataTableViewOptions table={table} />
-        {table.getColumn('role') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('role')}
-            title="Roles"
-            options={roles}
-          />
-        )}
+        <div className="hidden sm:flex">
+          {table.getColumn('role') && (
+            <DataTableFacetedFilter
+              column={table.getColumn('role')}
+              title="Roles"
+              options={roles}
+            />
+          )}
+        </div>
         {isFiltered && (
           <Button
             variant="ghost"
@@ -145,8 +147,10 @@ export function DataTableToolbar<TData>({
               onConfirm={handleConfirmDelete}
             >
               <Button variant="destructive" className="h-8 px-2 lg:px-3">
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Delete User(s)
+                <div className="p-2">
+                  <TrashIcon className="h-4 w-4" />
+                  <span className="hidden sm:flex ml-2">Delete User(s)</span>
+                </div>
               </Button>
             </AreYouSureDialog>
           </>

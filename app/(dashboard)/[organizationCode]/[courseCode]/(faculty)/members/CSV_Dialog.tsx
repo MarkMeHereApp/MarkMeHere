@@ -1,8 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -11,7 +12,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import CSV_Import from './CSV_Import';
-import { Checkbox } from '@/components/ui/checkbox';
 import { MdUploadFile } from 'react-icons/md';
 
 export function CSV_Dialog() {
@@ -34,16 +34,16 @@ export function CSV_Dialog() {
           <span className="hidden sm:flex ml-2">Import CSV</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] py-10">
         <DialogHeader>
           <DialogTitle>
-            Please make sure your CSV file includes all the followings
+            Please make sure your CSV file includes all of the following.
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-9">
           <DialogDescription>
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <svg
                   width="20"
                   height="20"
@@ -67,7 +67,7 @@ export function CSV_Dialog() {
                 </label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <svg
                   width="20"
                   height="20"
@@ -86,10 +86,10 @@ export function CSV_Dialog() {
                   htmlFor="terms2"
                   className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 align-middle"
                 >
-                  CSV headers contain Name, Id, and Email
+                  Each Member must have a <b>valid</b> "email"
                 </label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <svg
                   width="20"
                   height="20"
@@ -108,7 +108,7 @@ export function CSV_Dialog() {
                   htmlFor="terms3"
                   className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 align-middle"
                 >
-                  All Members are associated with an email address
+                  You may add "Name" and an "ID", but these aren't required.
                 </label>
               </div>
             </div>

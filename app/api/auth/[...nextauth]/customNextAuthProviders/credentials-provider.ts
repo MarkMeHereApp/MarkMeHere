@@ -38,7 +38,9 @@ export default CredentialsProvider({
           role: zSiteRoles.Enum.admin,
           optionalId: 'TempOptionalId',
           dateCreated: new Date(), // Provide the current date
-          selectedCourseId: null // Set to null or provide a valid courseId
+          selectedCourseId: null, // Set to null or provide a valid courseId
+          canvasToken: null,
+          canvasUrl: null
         };
         return user;
       }
@@ -64,7 +66,9 @@ export default CredentialsProvider({
           role: zSiteRoles.Enum.admin,
           optionalId: demoAccount.name,
           dateCreated: new Date(), // Provide the current date
-          selectedCourseId: null // Set to null or provide a valid courseId
+          selectedCourseId: null, // Set to null or provide a valid courseId,
+          canvasToken: null,
+          canvasUrl: null
         };
         return user;
       }

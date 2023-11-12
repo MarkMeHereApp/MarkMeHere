@@ -11,7 +11,8 @@ import { redisAttendanceKey, redisQrCodeKey } from '@/utils/globalFunctions';
 
 const zCreateOrganization = z.object({
   name: z.string(),
-  uniqueCode: z.string()
+  uniqueCode: z.string(),
+  hashEmails: z.boolean().optional()
 });
 
 export const zActiveCode = z.object({
@@ -39,7 +40,7 @@ export const sessionlessRouter = router({
           data: {
             name: requestData.input.name,
             uniqueCode: requestData.input.uniqueCode.toLowerCase(),
-            hashEmails: false
+            hashEmails: requestData.input.hashEmails || false
           }
         });
       } catch (error) {

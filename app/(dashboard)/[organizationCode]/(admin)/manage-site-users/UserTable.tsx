@@ -73,7 +73,7 @@ export default function UserTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const shouldHideColumn = ['optionalId'];
+                  const shouldHideColumn = ['name', 'optionalId', 'modify'];
                   return (
                     <TableHead
                       key={header.id}
@@ -103,7 +103,7 @@ export default function UserTable<TData, TValue>({
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    const shouldHideColumn = ['optionalId'];
+                    const shouldHideColumn = ['name', 'optionalId', 'modify'];
                     return (
                       <TableCell
                         key={cell.id}

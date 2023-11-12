@@ -3,13 +3,16 @@
   "license": "MIT",
   "scripts": {
     "dev": "prisma generate && next dev",
-    "build": "prisma generate && prisma db push --force-reset --accept-data-loss && tsx prisma/seed.ts && next build ",
+    "build": "prisma generate && next build ",
     "start": "next start",
     "lint": "next lint && eslint app --fix && prettier app --write",
     "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build",
     "prod": "next build && next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "open-dev": "open http://localhost:3000 && next dev"
+    "open-dev": "open http://localhost:3000 && next dev",
+    "cypress open": "cypress open",
+    "cypress run": "cypress run"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -51,7 +54,7 @@
     "@trpc/server": "^10.38.1",
     "@types/js-cookie": "^3.0.3",
     "@types/node": "18.14.2",
-    "@types/react": "^18.2.36",
+    "@types/react": "^18.2.37",
     "@types/react-dom": "18.0.11",
     "@types/uuid": "^9.0.2",
     "@vercel/kv": "^0.2.4",
@@ -60,11 +63,11 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
-    "eslint-config-next": "^13.4.19",
+    "eslint-config-next": "^14.0.2",
     "file-saver": "^2.0.5",
     "js-cookie": "^3.0.1",
     "lucide-react": "^0.268.0",
-    "next": "^13.4.18",
+    "next": "^14.0.2",
     "next-auth": "^4.23.1",
     "next-themes": "^0.2.1",
     "npm": "^9.8.1",
@@ -109,6 +112,7 @@
     "@typescript-eslint/parser": "^6.10.0",
     "bun-types": "^1.0.1",
     "cross-env": "^7.0.3",
+    "cypress": "^13.4.0",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -117,7 +121,7 @@
     "papaparse": "^5.4.1",
     "prettier": "^3.0.2",
     "prisma": "^5.5.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.2.2"
   },
   "name": "ucfattendweb",
   "module": "next.config.js",
