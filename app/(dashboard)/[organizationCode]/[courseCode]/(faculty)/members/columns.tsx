@@ -19,7 +19,7 @@ export const columns: ColumnDef<CourseMember>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="translate-y-[2px] sm:hidden"
+        className="translate-y-[2px] sm:block hidden"
       />
     ),
     cell: ({ row }) => (
@@ -27,7 +27,7 @@ export const columns: ColumnDef<CourseMember>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] sm:block hidden"
       />
     ),
     enableSorting: false,

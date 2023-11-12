@@ -65,7 +65,7 @@ export function DataTableToolbar<TData>({
       table.resetRowSelection();
 
       setCourseMembersOfSelectedCourse((prev) => {
-        if (!prev) return null;
+        if (!prev) return [];
         return prev.filter((courseMember) => {
           return !filteredCourseMembers.some((filteredMember) => {
             return filteredMember.id === courseMember.id;
@@ -182,8 +182,8 @@ export function DataTableToolbar<TData>({
                 disabled={!areOtherUsersSelected()}
                 className="h-8 px-2 lg:px-3"
               >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                Delete Course Member(s)
+                <TrashIcon className=" h-4 w-4" />
+                <span className=" ml-2 hidden sm:inline">Delete Member(s)</span>
               </Button>
             </AreYouSureDialog>
           </>
