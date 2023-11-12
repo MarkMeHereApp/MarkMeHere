@@ -1,11 +1,8 @@
 import React, { FC } from 'react';
 import { GoogleMap, Marker, MarkerF, useLoadScript, CircleF, Polyline, PolygonF, PolylineF } from '@react-google-maps/api';
-import googleMapsDark from './googleMapsStyles/googleMapsDarkMode.json';
-import googleMapsLight from './googleMapsStyles/googleMapsLightMode.json'
+import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsDarkMode.json'
+import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json'
 import { useTheme } from 'next-themes';
-import {MdMyLocation} from 'react-icons/md'
-import { IconContext } from "react-icons";
-import { renderToStaticMarkup } from 'react-dom/server';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 
 
@@ -20,7 +17,8 @@ interface GoogleMapsProps {
     postitonsData?: PositionData;
 }
 
-const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
+const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
+
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
@@ -82,9 +80,6 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
                 }}
                 />
                 <MarkerF 
-                    position={professorLocation} 
-                />
-                <MarkerF 
                     position={studentLocation} 
                 />
                 <PolylineF
@@ -113,17 +108,23 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
             return <div>Loading Google Maps</div>;
         }
     }
-            
+    
+    
+    //jadyn if you are reading this, here is where I need to display the component that overlays the page with map itself. 
     if(GoogleMapsKey){
         return (
-            <MapComponent></MapComponent>
+            <div className="flex flex-col w-full">
+                <div className="flex flex-col">
+                    <MapComponent></MapComponent>
+                </div>
+            </div>
         );
     }
 
     else{
         return(
             <div className='pt-5'>
-                <div className='text-center'>Your location has been found!</div>
+                <div className='text-center'>Google Maps Api Key is not configured</div>
             </div>
         )
             
@@ -132,4 +133,5 @@ const GoogleMapsComponent: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
 }
 
-export default GoogleMapsComponent;
+export default LocationAttendanceView;
+

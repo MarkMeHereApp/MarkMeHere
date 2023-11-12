@@ -12,6 +12,11 @@ import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useLecturesContext } from '../../../context-lecture';
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { DialogHeader } from '@/components/ui/dialog';
+import LocationAttendanceView from './data-table-location-component';
+import StudentPageBoard from '../../../(student)/student/StudentPageBoard';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -172,7 +177,27 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         !originalValue.AttendanceEntry?.studentLatitude ||
         !originalValue.AttendanceEntry?.studentLongtitude
       ) {
-        return <div className="flex w-full">No Location</div>;
+        return (
+          <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  No Location
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[550px] h-[170px] ">
+                <div className="grid gap-4 py-4 ">
+                  <DialogHeader className="flex justify-center items-center pb-[5px]">
+                    <DialogTitle>The student did not share their location!</DialogTitle>
+                    <DialogDescription>
+                      This student did not share their location. Two reasons could cause this:<br/>
+                      1) The student has decided to proceed without verification.<br/>
+                      2) The student did not allow the browser to access their location.
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+              </DialogContent>
+            </Dialog>
+        );
       }
 
       const distanceBetween2Points = (
@@ -208,11 +233,59 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         originalValue.AttendanceEntry?.studentLongtitude
       );
 
+      const locationData = {
+        professorLatitude: professorData.lectureLatitude,
+        professorLongitude: professorData.lectureLongitude,
+        studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
+        studentLongitude: originalValue.AttendanceEntry?.studentLongtitude,
+      };
+      
+
+      //again, if you are readin this Jadyn, I am using the LocationAttendanceView from data-table-location-component, and I am trying to display.
+      //you do the same thing in smembers columns line 93-104. Please help, I dont wanna hurt my laptop.
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
-          return <div className="flex w-full">Out of Range</div>;
+          return(
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  Out of Range
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[600px] h-[430px] ">
+                <div className="grid gap-4 py-4 ">
+                  <DialogHeader className="flex justify-center items-center pb-[5px]">
+                    <DialogTitle>The student was out of range!</DialogTitle>
+                    <DialogDescription>
+                      See the location of the lecture (circle) and the location of the student (marker).
+                    </DialogDescription>
+                  </DialogHeader>
+                  <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
+                </div>
+              </DialogContent>
+          </Dialog>
+          ) 
         } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
-          return <div className="flex w-full">In Range</div>;
+          return (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  In Range
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[600px] h-[430px] ">
+                <div className="grid gap-4 py-4 ">
+                  <DialogHeader className="flex justify-center items-center pb-[5px]">
+                    <DialogTitle>The student was in range!</DialogTitle>
+                    <DialogDescription>
+                      See the location of the lecture (circle) and the location of the student (marker).
+                    </DialogDescription>
+                  </DialogHeader>
+                  <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
+                </div>
+              </DialogContent>
+            </Dialog>
+            );
         }
       }
     },
