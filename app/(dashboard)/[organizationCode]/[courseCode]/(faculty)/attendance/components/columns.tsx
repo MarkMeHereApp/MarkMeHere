@@ -16,6 +16,13 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
 import LocationAttendanceView from './data-table-location-component';
+import { useRef } from 'react';
+
+enum Validity{
+  inRange = 1,
+  outRange = 0,
+  noLocation = -1
+}
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -154,6 +161,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     cell: ({ row }) => {
       const originalValue = row.original as ExtendedCourseMember;
       const { lectures } = useLecturesContext();
+      const validity = useRef<Validity | undefined>()
       const lecture = lectures?.find(
         (lecture) => lecture.id === originalValue.AttendanceEntry?.lectureId
       );
@@ -176,6 +184,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         !originalValue.AttendanceEntry?.studentLatitude ||
         !originalValue.AttendanceEntry?.studentLongtitude
       ) {
+        validity.current = Validity.noLocation
         return (
           <Dialog>
               <DialogTrigger asChild>
@@ -244,6 +253,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       //you do the same thing in smembers columns line 93-104. Please help, I dont wanna hurt my laptop.
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
+          validity.current = Validity.outRange
           return(
             <Dialog>
               <DialogTrigger asChild>
@@ -259,12 +269,14 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                       See the location of the lecture (circle) and the location of the student (marker).
                     </DialogDescription>
                   </DialogHeader>
-                  <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
+                  <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
                 </div>
               </DialogContent>
           </Dialog>
           ) 
         } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
+          validity.current = Validity.inRange
+          console.log(validity.current)
           return (
             <Dialog>
               <DialogTrigger asChild>
@@ -280,7 +292,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                       See the location of the lecture (circle) and the location of the student (marker).
                     </DialogDescription>
                   </DialogHeader>
-                  <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
+                  <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
                 </div>
               </DialogContent>
             </Dialog>

@@ -4,6 +4,7 @@ import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(
 import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json'
 import { useTheme } from 'next-themes';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 
 type PositionData = {
@@ -17,8 +18,14 @@ interface GoogleMapsProps {
     postitonsData?: PositionData;
 }
 
-const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
+interface GoogleMapsProps {
+    postitonsData?: PositionData;
+    validity?: number;
+}
 
+const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }) => {
+
+    console.log(validity)
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
