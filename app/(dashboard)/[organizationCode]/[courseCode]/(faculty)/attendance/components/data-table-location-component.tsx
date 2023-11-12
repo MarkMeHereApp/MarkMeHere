@@ -70,7 +70,7 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
 
                 <CircleF 
                 center={professorLocation}
-                radius={feetToMeters(50)} // radius in meters
+                radius={feetToMeters(50)}
                 options={{
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,
@@ -109,8 +109,6 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
         }
     }
     
-    
-    //jadyn if you are reading this, here is where I need to display the component that overlays the page with map itself. 
     if(GoogleMapsKey){
         return (
             <div className="flex flex-col w-full">
@@ -126,11 +124,8 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
             <div className='pt-5'>
                 <div className='text-center'>Google Maps Api Key is not configured</div>
             </div>
-        )
-            
+        )       
     }
-
-
 }
 
 export default LocationAttendanceView;

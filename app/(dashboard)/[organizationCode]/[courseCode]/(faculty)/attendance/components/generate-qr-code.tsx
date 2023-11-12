@@ -30,7 +30,7 @@ import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCo
 import { CourseMember } from '@prisma/client';
 import { getPublicUrl } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
-import GoogleMapComponentAttendance from './google-map-component';
+import GoogleMapComponentAttendance from './range-picker-component';
 import { markAllUnmarkedAbsent } from '@/data/attendance/make-all-unmarked-absent';
 import { PiQrCode } from 'react-icons/pi';
 interface StartScanningButtonProps {
@@ -55,8 +55,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
 
   const [parameters, setParameters] = useState(firstParam);
 
-  // const [enableGeolocation, setEnableGeolocation] = useState<boolean>(false);
-  const [geolocationSettings, setGeolcationSettings] = useState<boolean>(false);
   const enableGeolocation = useRef<boolean>(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -64,7 +62,6 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
   const lectureLatitude = useRef<number>(0);
   const lectureLongitude = useRef<number>(0);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
-  //const [isLoadingMap, setIsLoadingMap] = useState<boolean>(false)
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
