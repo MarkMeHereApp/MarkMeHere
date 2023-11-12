@@ -226,17 +226,13 @@ const GoogleMapComponentAttendance: FC<
           <AlertDialogHeader className="flex justify-center items-center pb-[10px]">
             <AlertDialogTitle>Location Verification Settings</AlertDialogTitle>
             <AlertDialogDescription>
-              Your profile does not have Google Maps imported! You can still
+              Your profile does not have Google Maps API key imported! You can still
               pick the size of your classroom, but you cannot see where your
               location is. Be careful not to have a VPN on so the data is
               accurate!
             </AlertDialogDescription>
           </AlertDialogHeader>
         </AlertDialog>
-
-        <AlertDialogDescription>
-          Google Maps Api Key is not configured
-        </AlertDialogDescription>
         <RangePicker></RangePicker>
       </div>
     );
