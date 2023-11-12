@@ -1,17 +1,13 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-components/auth-provider-selection';
 import { EditGoogleMapsKey } from './components/google-maps/edit-google-maps-key';
-import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { SelectTheme } from './components/theme-selector/theme-selector';
-import Link from 'next/link';
 import { getOrganization } from '@/data/organization/organization';
 import { EditCanvasAuthorizedUser } from './components/canvas/edit-canvas-authorized-user';
 
-export default async function SettingsAccountPage({
-  children,
+export default async function Page({
   params
 }: {
-  children: React.ReactNode;
   params: { organizationCode: string };
 }) {
   const organization = await getOrganization(params.organizationCode);
