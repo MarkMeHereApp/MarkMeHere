@@ -139,8 +139,7 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
                                 <MapComponent></MapComponent>
                             </div>
                         </div>
-                    </DialogContent>
-                
+                    </DialogContent>      
                 </div> 
             );
         }
