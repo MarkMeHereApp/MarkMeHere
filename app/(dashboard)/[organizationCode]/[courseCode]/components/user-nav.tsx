@@ -20,6 +20,7 @@ import { PiUserCircleGear } from 'react-icons/pi';
 import { useState } from 'react';
 import Loading from '@/components/general/loading';
 import { formatString } from '@/utils/globalFunctions';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 /*
  * @TODO - This should be a server component
@@ -51,7 +52,7 @@ export default function UserNav() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{name}</p>
             <p className="text-xs leading-none text-muted-foreground pt-1">
-              {userEmail}
+              {getEmailText(userEmail)}
               <div className="pt-2">{formatString(role || '')}</div>
             </p>
           </div>

@@ -6,6 +6,7 @@ import { DataTableColumnHeader } from './table-accessories/DataTableColumnHeader
 import { CourseMember } from '@prisma/client';
 import { capitalize } from 'lodash';
 import EditUsers from '@/utils/devUtilsComponents/EditUsers';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 export const columns: ColumnDef<CourseMember>[] = [
   {
@@ -52,7 +53,7 @@ export const columns: ColumnDef<CourseMember>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
+      <div className="flex w-full">{getEmailText(row.getValue('email'))}</div>
     ),
     enableSorting: true,
     enableHiding: true,

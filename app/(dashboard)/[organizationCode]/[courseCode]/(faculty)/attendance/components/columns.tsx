@@ -12,11 +12,18 @@ import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useLecturesContext } from '../../../context-lecture';
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
 import LocationAttendanceView from './data-table-location-component';
 import { useRef } from 'react';
+import { getEmailText } from '@/server/utils/userHelpers';
 
 enum Validity{
   inRange = 1,
@@ -243,7 +250,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         professorLatitude: professorData.lectureLatitude,
         professorLongitude: professorData.lectureLongitude,
         studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
-        studentLongitude: originalValue.AttendanceEntry?.studentLongtitude,
+        studentLongitude: originalValue.AttendanceEntry?.studentLongtitude
       };
       
       if (calculateDistance) {
@@ -290,7 +297,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="flex w-full">{row.getValue('email')}</div>
+      <div className="flex w-full">{getEmailText(row.getValue('email'))}</div>
     ),
     enableSorting: true,
     enableHiding: true,

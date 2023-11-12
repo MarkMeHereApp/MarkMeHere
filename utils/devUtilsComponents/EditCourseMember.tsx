@@ -36,6 +36,7 @@ import { formatString, toastError } from '../globalFunctions';
 import { MdEdit } from 'react-icons/md';
 import { CourseMember } from '@prisma/client';
 import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
+import { isEmailHashed } from '@/server/utils/userHelpers';
 
 const EditCourseMember = ({ courseMember }: { courseMember: CourseMember }) => {
   const [loading, setLoading] = useState(false);
@@ -157,7 +158,11 @@ const EditCourseMember = ({ courseMember }: { courseMember: CourseMember }) => {
                       <FormControl>
                         <Input
                           type="email"
-                          defaultValue={courseMember.email}
+                          defaultValue={
+                            isEmailHashed(courseMember.email)
+                              ? 'example@example.com'
+                              : courseMember.email
+                          }
                           {...field}
                         />
                       </FormControl>

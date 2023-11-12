@@ -38,6 +38,7 @@ import { useUsersContext } from '@/app/(dashboard)/[organizationCode]/(admin)/co
 import { MdEdit } from 'react-icons/md';
 import { User } from 'next-auth';
 import { useSession } from 'next-auth/react';
+import { isEmailHashed } from '@/server/utils/userHelpers';
 
 const EditUsers = ({ user }: { user: User }) => {
   const [loading, setLoading] = useState(false);
@@ -171,7 +172,11 @@ const EditUsers = ({ user }: { user: User }) => {
                       <FormControl>
                         <Input
                           type="email"
-                          defaultValue={user.email}
+                          defaultValue={
+                            isEmailHashed(user.email)
+                              ? 'example@example.com'
+                              : user.email
+                          }
                           {...field}
                         />
                       </FormControl>
