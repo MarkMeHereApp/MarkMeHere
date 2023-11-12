@@ -130,6 +130,7 @@ export function DataTable<TData, TValue>({
             member.courseId === selectedCourseId && member.role === 'student'
         );
       setExtendedCourseMembers(newExtendedCourseMembers);
+      shouldShowLocation();
     }
   }, [lectures, selectedAttendanceDate]);
 
@@ -182,6 +183,19 @@ export function DataTable<TData, TValue>({
         )}
       </Button>
     );
+  };
+
+  const shouldShowLocation = () => {
+    const curLecture = getCurrentLecture();
+    if (curLecture) {
+      const showGeolocationColumn = curLecture.attendanceEntries.some(
+        (entry) => entry.ProfessorLectureGeolocationId !== null
+      );
+      table.setColumnVisibility({
+        ...columnVisibility,
+        location: showGeolocationColumn
+      });
+    }
   };
 
   return (
