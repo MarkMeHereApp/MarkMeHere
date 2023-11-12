@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import type { NextAuthOptions } from 'next-auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { revalidatePath } from 'next/cache';
 
 export default async function Step({
   params
@@ -12,6 +13,10 @@ export default async function Step({
   params: { organizationCode: string; step: string };
 }) {
   const GetStepFunction = async () => {
+    revalidatePath('/', 'layout')
+    revalidatePath('/', 'page')
+
+
     const authOptions = await getAuthOptions();
 
     const session = await getServerSession(authOptions);
