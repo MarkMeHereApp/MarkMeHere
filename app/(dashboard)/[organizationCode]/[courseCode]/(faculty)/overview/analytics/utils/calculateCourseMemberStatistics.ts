@@ -58,6 +58,6 @@ export default function calculateCourseMemberStatistics(
     numLate,
     numExcused,
     numTotal,
-    attendanceGrade
+    attendanceGrade,
   };
 }

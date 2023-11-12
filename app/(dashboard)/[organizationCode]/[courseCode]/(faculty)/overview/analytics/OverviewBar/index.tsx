@@ -92,13 +92,16 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
         numTotal,
         attendanceGrade
       } = courseMemberStatistics;
+
+      const encapsulateField = (field: string) => `"${field}"`;
+
       csvData.push([
-        member.name,
-        member.email,
-        member.lmsId ?? '',
-        member.optionalId ?? '',
-        member.dateEnrolled.toLocaleDateString(),
-        member.role,
+        encapsulateField(member.name),
+        encapsulateField(member.email),
+        encapsulateField(member.lmsId ?? ''),
+        encapsulateField(member.optionalId ?? ''),
+        encapsulateField(member.dateEnrolled.toLocaleDateString()),
+        encapsulateField(member.role),
         numPresent.toString(),
         numExcused.toString(),
         numLate.toString(),
@@ -108,6 +111,7 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
         sortedLectures.length.toString()
       ]);
     });
+
     const csv = csvData.map((row) => row.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     saveAs(
