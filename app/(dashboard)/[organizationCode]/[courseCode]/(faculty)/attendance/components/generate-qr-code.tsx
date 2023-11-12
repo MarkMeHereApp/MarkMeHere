@@ -87,12 +87,11 @@ export function StartScanningButton() {
 
   const currentLecture = getCurrentLecture();
 
-
-
   const handleGeolocationChange = async () => {
     enableGeolocation.current = !enableGeolocation.current;
     if (enableGeolocation.current) {
       setIsDialogOpen(true);
+      await fetchGeolocation()
     }
   };
 
@@ -168,8 +167,7 @@ export function StartScanningButton() {
       : undefined;
 
     try {
-
-      if (!currentLecture ) {
+      if (!currentLecture) {
 
        setError(new Error("Could not finnd Lecutre"))
        return;
@@ -178,9 +176,7 @@ export function StartScanningButton() {
       await markAllUnmarkedAbsent({ lectureId: currentLecture.id });
 
       if (enableGeolocation.current) {
-        const location = await getGeolocationData();
-
-        if (location) {
+        
           if (!selectedCourseMemberId) {
             return;
           }
@@ -204,7 +200,7 @@ export function StartScanningButton() {
         } else {
           setError(new Error('Error occurred while getting geolocation'));
         }
-      }
+      
 
       if (!enableGeolocation.current) {
         router.push(navigation + parameters);
@@ -230,7 +226,7 @@ export function StartScanningButton() {
   };
 
   const fetchGeolocation = async () => {
-    const fetchedLocation = await getGeolocationData();
+    await getGeolocationData();
     setIsLoadingSubmit(false);
   };
   if (!currentLecture){
