@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod'; // Assuming you're using zod for schema validation
-import { getOrganization } from '../organization';
+import { getOrganization } from '../organization/organization';
 import { bHasCoursePermission, getNextAuthSession } from '../auth';
 import { zCourseRoles } from '@/types/sharedZodTypes';
 import {
@@ -32,7 +32,6 @@ export const createMultipleCourseMembers = async (
     const { courseCode, courseMembers } = requestData;
 
     const session = await getNextAuthSession();
-    const organization = await getOrganization();
 
     const hasPermission = await bHasCoursePermission({
       courseCode: courseCode,
@@ -52,6 +51,8 @@ export const createMultipleCourseMembers = async (
     if (!course) {
       throw new Error('No course found!');
     }
+
+    const organization = await getOrganization(course.organizationCode);
 
     const { hashEmails } = organization;
     const updatedCourseMembers = [];

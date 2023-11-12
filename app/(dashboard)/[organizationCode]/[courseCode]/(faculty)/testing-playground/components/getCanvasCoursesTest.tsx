@@ -1,10 +1,14 @@
 'use client';
 
+import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from '@/components/ui/use-toast';
 
 const GetCanvasCourses = () => {
-  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
+  const { organization } = useOrganizationContext();
+  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
+    organizationCode: organization.uniqueCode
+  });
 
   // Later in your code
   if (getCanvasCoursesQuery.error) {

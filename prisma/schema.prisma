@@ -17,6 +17,8 @@ model User {
   image            String?        @db.VarChar(255)
   dateCreated      DateTime?      @default(now())
   selectedCourseId String?        @db.VarChar(255)
+  canvasUrl        String?        @db.VarChar(255)
+  canvasToken      String?        @db.VarChar(255)
   courseMembers    CourseMember[]
   accounts         Account[]
 }
@@ -174,6 +176,7 @@ model Organization {
   id                        String   @id @default(cuid())
   firstTimeSetupComplete    Boolean  @default(false)
   name                      String   @db.VarChar(255)
+  canvasDevKeyAuthorizedEmail String? @db.VarChar(255)
   uniqueCode                String   @unique @db.VarChar(255)
   lightTheme                String   @default("light_neutral") @db.VarChar(255)
   darkTheme                 String   @default("dark_red") @db.VarChar(255)

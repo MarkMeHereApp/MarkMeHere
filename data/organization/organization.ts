@@ -1,17 +1,20 @@
+'use server';
 import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { decrypt } from '@/utils/globalFunctions';
-import { getNextAuthSession } from './auth';
+import { getNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
 
-export const getOrganization = async () => {
+export const getOrganization = async (inputOrganizationCode: string) => {
   const session = await getNextAuthSession();
 
-  const organization = await prisma.organization.findFirst();
+  const organization = await prisma.organization.findFirst({
+    where: { uniqueCode: inputOrganizationCode }
+  });
 
   if (!organization) {
     throw new Error('No organization found!');

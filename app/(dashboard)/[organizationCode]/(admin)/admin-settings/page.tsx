@@ -1,25 +1,28 @@
 import { Separator } from '@/components/ui/separator';
 import AuthProviderSelector from './components/auth-provider-components/auth-provider-selection';
 import { EditGoogleMapsKey } from './components/google-maps/edit-google-maps-key';
-import { getGlobalSiteSettings_Server } from '@/utils/globalFunctions';
 import { SelectTheme } from './components/theme-selector/theme-selector';
-export default async function SettingsAccountPage() {
-  const globalSiteSettings = await getGlobalSiteSettings_Server({
-    allowUsersToUseGoogleMaps: true,
-    googleMapsApiKey: true,
-    darkTheme: true,
-    lightTheme: true
-  });
-  const allowUsersGMaps = globalSiteSettings.allowUsersToUseGoogleMaps;
+import { getOrganization } from '@/data/organization/organization';
+import { EditCanvasAuthorizedUser } from './components/canvas/edit-canvas-authorized-user';
 
-  const hasGoogleMapsKey = !!globalSiteSettings?.googleMapsApiKey;
+export default async function Page({
+  params
+}: {
+  params: { organizationCode: string };
+}) {
+  const organization = await getOrganization(params.organizationCode);
+  const {
+    allowUsersToUseGoogleMaps,
+    canvasDevKeyAuthorizedEmail,
+    darkTheme,
+    lightTheme
+  } = organization;
 
-  const darkTheme = globalSiteSettings.darkTheme;
-  const lightTheme = globalSiteSettings.lightTheme;
+  const hasGoogleMapsKey = !!organization.googleMapsApiKey;
 
   return (
     <>
-      <div className="space-y-6 pb-6">
+      <div className="space-y-6 pb-24">
         <div>
           <h3 className="text-lg font-medium">Provider Setup</h3>
           <p className="text-sm text-muted-foreground">
@@ -30,7 +33,24 @@ export default async function SettingsAccountPage() {
         <Separator />
         <AuthProviderSelector />
       </div>
-      <div className="space-y-6 pb-6">
+      <div className="space-y-6 pb-24">
+        <div>
+          <h3 className="text-lg font-medium">
+            Configure Canvas Developer Key Authorization
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            To comply with Canvas API requirements, you can only have one user
+            that is allowed to use the Canvas Developer Key. Add the email of
+            the user you want to authorize below.
+          </p>
+        </div>
+        <Separator />
+        <EditCanvasAuthorizedUser
+          configuredEmail={canvasDevKeyAuthorizedEmail}
+          organizationCode={params.organizationCode}
+        />
+      </div>
+      <div className="space-y-6 pb-24">
         <div>
           <h3 className="text-lg font-medium">Configure Google Maps API</h3>
           <p className="text-sm text-muted-foreground">
@@ -40,7 +60,7 @@ export default async function SettingsAccountPage() {
         <Separator />
         <EditGoogleMapsKey
           bHasConfigured={hasGoogleMapsKey}
-          allowUsersGMaps={allowUsersGMaps}
+          allowUsersGMaps={allowUsersToUseGoogleMaps}
         />
       </div>
 

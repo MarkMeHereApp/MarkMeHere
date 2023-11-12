@@ -5,7 +5,7 @@ import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod'; // Assuming you're using zod for schema validation
-import { getOrganization } from '../organization';
+import { getOrganization } from '../organization/organization';
 import { bHasCoursePermission, getNextAuthSession } from '../auth';
 import { zCourseRoles } from '@/types/sharedZodTypes';
 import {
@@ -21,7 +21,6 @@ export const markAllUnmarkedAbsent = async ({
 }) => {
   try {
     const session = await getNextAuthSession();
-    const organization = await getOrganization();
 
     const lecture = await prisma.lecture.findFirst({
       where: {
