@@ -194,8 +194,8 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
               </DialogTrigger>
               <DialogContent className="max-w-[550px] h-[170px] ">
                 <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[5px]">
-                    <DialogTitle>The student did not share their location!</DialogTitle>
+                  <DialogHeader className="flex justify-center items-center pb-[0px]">
+                    <DialogTitle className='pb-[10px]'>The student did not share their location!</DialogTitle>
                     <DialogDescription>
                       This student did not share their location. Two reasons could cause this:<br/>
                       1) The student has decided to proceed without verification.<br/>
