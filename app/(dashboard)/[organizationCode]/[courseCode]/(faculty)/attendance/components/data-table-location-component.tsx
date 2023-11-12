@@ -167,21 +167,17 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
 
     else{
         return(
-            <div>
-                <DialogContent className="max-w-[600px] h-[430px] ">
-                    <div className="grid gap-4 py-4 ">
-                        <DialogHeader className="flex justify-center items-center pb-[5px]">
-                            <DialogTitle>Google Maps Api Key is not configured</DialogTitle>
-                                <DialogDescription>
-                                    See the location of the lecture (circle) and the location of the student (marker).
-                                </DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <div className="flex flex-col w-full">
-                        <div className="flex flex-col">
-                        </div>
-                    </div>
-                </DialogContent>
+            <div className='max-w-[550x] h-[170px] '>
+                <div className="grid gap-4 py-4 ">
+                    <DialogHeader className="flex justify-center items-center">
+                        <DialogTitle className='pb-[10px]'>Google Maps Api Key is not configured</DialogTitle>
+                        <DialogDescription>
+                            We have verified the student's location. However, you still need to set up your Google Maps API.
+                            As a result, you cannot view the lectures and students' locations.
+                            Don't worry; if you add the Api Key later, you can still verify the past records!
+                        </DialogDescription>
+                    </DialogHeader>
+                </div>
             </div>
         )       
     }
