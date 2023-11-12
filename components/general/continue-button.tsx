@@ -45,7 +45,11 @@ export const ContinueButton = ({
       onClick={onClick}
     >
       <div className="flex items-center">
-        <span className="hidden sm:flex mr-2">{name}</span>
+        {name === 'Create Your Organization' ? (
+          <span className="flex mr-2">{name}</span>
+        ) : (
+          <span className="hidden sm:flex mr-2">{name}</span>
+        )}
         <ArrowRight className="w-4 h-4 transition-transform duration-500 ease-in-out transform" />
       </div>
     </Button>
