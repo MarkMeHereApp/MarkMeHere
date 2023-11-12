@@ -14,15 +14,15 @@ export default async function SettingsAccountPage({
   children: React.ReactNode;
   params: { organizationCode: string };
 }) {
-  const globalSiteSettings = await getOrganization(params.organizationCode);
+  const organization = await getOrganization(params.organizationCode);
   const {
     allowUsersToUseGoogleMaps,
     canvasDevKeyAuthorizedEmail,
     darkTheme,
     lightTheme
-  } = globalSiteSettings;
+  } = organization;
 
-  const hasGoogleMapsKey = !!globalSiteSettings.googleMapsApiKey;
+  const hasGoogleMapsKey = !!organization.googleMapsApiKey;
 
   return (
     <>

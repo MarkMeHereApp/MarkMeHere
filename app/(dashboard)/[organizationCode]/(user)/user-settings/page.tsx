@@ -1,17 +1,23 @@
 import { Separator } from '@/components/ui/separator';
 import ProfileForm from '../components/profile-form';
+import { CanvasSetup } from '../components/canvas/canvas-setup';
+import { getOrganization } from '@/data/organization/organization';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
+import { getServerSession } from 'next-auth';
+import { CanvasComponent } from '../components/canvas/canvas-component';
+import { Suspense } from 'react';
+import { StepSkeleton } from '../../first-time-setup/[step]/components/first-time-steps';
 
-export default function SettingsProfilePage() {
+export default async function UserSettings({
+  children,
+  params
+}: {
+  children: React.ReactNode;
+  params: { organizationCode: string };
+}) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Profile</h3>
-        <p className="text-sm text-muted-foreground">
-          This is how others will see you on the site.
-        </p>
-      </div>
-      <Separator />
-      <ProfileForm />
-    </div>
+    <Suspense>
+      <CanvasComponent params={params} />
+    </Suspense>
   );
 }

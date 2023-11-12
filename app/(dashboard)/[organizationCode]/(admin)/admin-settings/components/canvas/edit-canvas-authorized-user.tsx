@@ -11,7 +11,7 @@ import { useState } from 'react';
 import {
   addCanvasAuthorizedUserToOrganization,
   deleteCanvasAuthorizedUserFromOrganization
-} from '@/data/organization/organization';
+} from '@/data/organization/canvas';
 import { getEmailText } from '@/server/utils/userHelpers';
 
 export const EditCanvasAuthorizedUser = ({

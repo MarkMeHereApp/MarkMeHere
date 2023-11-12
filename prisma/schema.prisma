@@ -17,6 +17,8 @@ model User {
   image            String?        @db.VarChar(255)
   dateCreated      DateTime?      @default(now())
   selectedCourseId String?        @db.VarChar(255)
+  canvasUrl        String?        @db.VarChar(255)
+  canvasToken      String?        @db.VarChar(255)
   courseMembers    CourseMember[]
   accounts         Account[]
 }
