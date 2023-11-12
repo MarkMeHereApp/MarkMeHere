@@ -131,10 +131,8 @@ export const columns: ColumnDef<CourseMember>[] = [
                 View Stats
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[1300px] h-full">
-              <div className="grid gap-4 py-4">
-                <StudentPageBoard studentId={id} />
-              </div>
+            <DialogContent className="max-w-[1300px] h-full flex items-center justify-center">
+              <StudentPageBoard studentId={id} />
             </DialogContent>
           </Dialog>
         )
