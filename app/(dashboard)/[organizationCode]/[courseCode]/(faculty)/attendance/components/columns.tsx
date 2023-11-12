@@ -12,10 +12,11 @@ import { formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useLecturesContext } from '../../../context-lecture';
-import { Dialog, DialogTrigger, DialogContent } from '@radix-ui/react-dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
 import LocationAttendanceView from './data-table-location-component';
+import StudentPageBoard from '../../../(student)/student/StudentPageBoard';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -231,7 +232,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                   Out of Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[1300px] h-full ">
+              <DialogContent className="max-w-[500px] h-[500px] ">
                 <div className="grid gap-4 py-4">
                   <LocationAttendanceView postitonsData={locationData}></LocationAttendanceView>
                 </div>
