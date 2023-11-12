@@ -4,12 +4,9 @@ import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { createMultipleCourseMembers } from '../courseMember/create-multiple-course-members';
 import { bHasCoursePermission, getNextAuthSession } from '../auth';
-import { getPublicUrl } from '@/utils/globalFunctions';
+import { decrypt, getPublicUrl } from '@/utils/globalFunctions';
 import calculateCourseMemberStatistics from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/utils/calculateCourseMemberStatistics';
 import { CourseMember } from '@prisma/client';
-
-const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
-const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
 
 export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   const session = await getNextAuthSession();
@@ -36,6 +33,52 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
       createdUsers: []
     };
   }
+
+  const organization = await prisma.organization.findFirst({
+    where: {
+      uniqueCode: course.organizationCode
+    },
+    select: {
+      canvasDevKeyAuthorizedEmail: true
+    }
+  });
+
+  if (!organization) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  if (organization.canvasDevKeyAuthorizedEmail !== session.user.email) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session.user.email
+    },
+    select: {
+      canvasUrl: true,
+      canvasToken: true
+    }
+  });
+
+  if (!user || !user.canvasUrl || !user.canvasToken) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  const CANVAS_DOMAIN = user.canvasUrl;
+  const CANVAS_API_TOKEN = decrypt(user.canvasToken);
 
   const enrollmentResponse = await fetch(
     `${CANVAS_DOMAIN}api/v1/courses/${course.lmsId}/enrollments?per_page=10000&include[]=email&type[]=StudentEnrollment`,
@@ -186,6 +229,52 @@ export const syncCanvasAttendanceAssignment = async (
     throw new Error('No course found!');
   }
 
+  const organization = await prisma.organization.findFirst({
+    where: {
+      uniqueCode: course.organizationCode
+    },
+    select: {
+      canvasDevKeyAuthorizedEmail: true
+    }
+  });
+
+  if (!organization) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  if (organization.canvasDevKeyAuthorizedEmail !== session.user.email) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session.user.email
+    },
+    select: {
+      canvasUrl: true,
+      canvasToken: true
+    }
+  });
+
+  if (!user || !user.canvasUrl || !user.canvasToken) {
+    return {
+      success: false,
+      updatedUsers: [],
+      createdUsers: []
+    };
+  }
+
+  const CANVAS_DOMAIN = user.canvasUrl;
+  const CANVAS_API_TOKEN = decrypt(user.canvasToken);
+
   let existingAttendanceAssignment = course.lmsAttendanceAssignmentId;
   let assignmentGradeTotal = 100;
 
@@ -324,16 +413,3 @@ export const syncCanvasAttendanceAssignment = async (
     createdNewAssignment: createdNewAssignment
   };
 };
-
-// We should probably keep track of which attendance entries have been synced to canvas
-//
-// That's for future me to deal with.
-///
-// await prisma.attendanceEntry.updateMany({
-//   where: {
-//     id: { in: attendanceEntriesToUpdate }
-//   },
-//   data: {
-//     lmsSynced: true
-//   }
-// });

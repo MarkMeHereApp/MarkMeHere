@@ -25,6 +25,7 @@ import { zLMSCourseSchemeType } from '@/types/sharedZodTypes';
 import { formatString, toastError } from '@/utils/globalFunctions';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useOrganizationContext } from '../../context-organization';
 
 export function LMSCourseSelector({
   setSelectedLMSCourse
@@ -35,7 +36,11 @@ export function LMSCourseSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
-  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
+  const { organization } = useOrganizationContext();
+
+  const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
+    organizationCode: organization.uniqueCode
+  });
 
   if (getCanvasCoursesQuery.error) {
     toastError(getCanvasCoursesQuery.error.message);
