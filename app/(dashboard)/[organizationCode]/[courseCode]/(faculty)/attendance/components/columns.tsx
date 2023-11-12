@@ -179,7 +179,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       const professorData = lecture.professorLectureGeolocation.find(
         (professor) =>
           professor.id ===
-          originalValue.AttendanceEntry?.ProfessorLectureGeolocationId
+          originalValue.AttendanceEntry?.professorLectureGeolocationId
       );
 
       if (!professorData) {
