@@ -261,18 +261,11 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                   Out of Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[600px] h-[430px] ">
-                <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[5px]">
-                    <DialogTitle>The student was out of range!</DialogTitle>
-                    <DialogDescription>
-                      See the location of the lecture (circle) and the location of the student (marker).
-                    </DialogDescription>
-                  </DialogHeader>
-                  <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
-                </div>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
               </DialogContent>
           </Dialog>
+
           ) 
         } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
           validity.current = Validity.inRange

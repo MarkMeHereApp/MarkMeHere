@@ -4,7 +4,7 @@ import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(
 import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json'
 import { useTheme } from 'next-themes';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {DialogHeader, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 
 type PositionData = {
@@ -117,13 +117,39 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
     }
     
     if(GoogleMapsKey){
-        return (
-            <div className="flex flex-col w-full">
-                <div className="flex flex-col">
-                    <MapComponent></MapComponent>
+
+        if(validity == -1){
+        
+        }
+
+        if(validity == 0){
+            return (
+                <div>
+                    <DialogContent className="max-w-[600px] h-[430px] ">
+                        <div className="grid gap-4 py-4 ">
+                        <DialogHeader className="flex justify-center items-center pb-[5px]">
+                            <DialogTitle>The student was out of range!</DialogTitle>
+                                <DialogDescription>
+                                    See the location of the lecture (circle) and the location of the student (marker).
+                                </DialogDescription>
+                        </DialogHeader>
+                        </div>
+                        <div className="flex flex-col w-full">
+                            <div className="flex flex-col">
+                                <MapComponent></MapComponent>
+                            </div>
+                        </div>
+                    </DialogContent>
+                
                 </div>
-            </div>
-        );
+                
+            );
+        }
+
+        if(validity == 1){
+        
+        }
+        
     }
 
     else{
