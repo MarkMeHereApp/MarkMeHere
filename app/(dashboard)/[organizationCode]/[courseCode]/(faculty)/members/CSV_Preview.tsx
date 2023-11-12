@@ -19,7 +19,8 @@ export function CSV_Preview(props: {
   const { data, existingMembers } = props;
 
   return (
-    <ScrollArea className="h-[600px] w-full">
+    <div className='h-[60vh]'>
+    <ScrollArea className="h-[60vh] w-full">
       <Table>
         <TableHeader>
           <TableRow>
@@ -61,5 +62,6 @@ export function CSV_Preview(props: {
         </TableBody>
       </Table>
     </ScrollArea>
+    </div>
   );
 }

@@ -331,7 +331,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
         </DialogContent>
       </Dialog>
       <Dialog open={isFileUploaded} onOpenChange={setIsFileUploaded}>
-        <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow">
+        <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow h-[90vh]">
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
@@ -375,7 +375,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
               </DialogDescription>
             )}
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 h-[50hv]">
             <CSV_Preview data={tableValues} existingMembers={existedMembers} />
           </div>
           <DialogFooter>
