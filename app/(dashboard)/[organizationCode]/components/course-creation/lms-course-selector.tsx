@@ -23,6 +23,8 @@ import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './lms-hover-content';
 import { zLMSCourseSchemeType } from '@/types/sharedZodTypes';
 import { formatString, toastError } from '@/utils/globalFunctions';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function LMSCourseSelector({
   setSelectedLMSCourse
@@ -52,7 +54,7 @@ export function LMSCourseSelector({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <div className="w-full">
+      <div className="">
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -97,44 +99,49 @@ export function LMSCourseSelector({
                         (course) => course.createCourseErrorStatus === status
                       )
                       .map((course) => (
-                        <HoverCard>
-                          <HoverCardTrigger>
-                            <CommandItem
-                              key={course.lmsId}
-                              onSelect={() => {
-                                setValue(
-                                  course.lmsId === value ? '' : course.lmsId
-                                );
-                                setSelectedLMSCourse(
-                                  course.lmsId === value ? null : course
-                                ); // Save the selected course
-                                setOpen(false);
-                              }}
-                              disabled={!course.ableToCreateCourse}
+                        <CommandItem
+                          key={course.lmsId}
+                          onSelect={() => {
+                            setValue(
+                              course.lmsId === value ? '' : course.lmsId
+                            );
+                            setSelectedLMSCourse(
+                              course.lmsId === value ? null : course
+                            ); // Save the selected course
+                            setOpen(false);
+                          }}
+                          disabled={!course.ableToCreateCourse}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              value === course.lmsId
+                                ? 'opacity-100'
+                                : 'opacity-0'
+                            )}
+                          />{' '}
+                          <div className="flex justify-between">
+                            <div
+                              className={
+                                course.ableToCreateCourse ? '' : 'opacity-50'
+                              }
                             >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  value === course.lmsId
-                                    ? 'opacity-100'
-                                    : 'opacity-0'
-                                )}
-                              />
-                              <span
-                                className={
-                                  course.ableToCreateCourse ? '' : 'opacity-50'
-                                }
-                              >
-                                {course.name
-                                  ? course.name
-                                  : 'ID: ' +
-                                    course.lmsId +
-                                    ' - Course name unnavilable'}
-                              </span>
-                            </CommandItem>
-                          </HoverCardTrigger>
-                          <CourseHoverCardContent course={course} />
-                        </HoverCard>
+                              {course.name
+                                ? course.name
+                                : 'ID: ' +
+                                  course.lmsId +
+                                  ' - Course name unnavilable'}
+                            </div>
+                            <div>
+                              <HoverCard>
+                                <HoverCardTrigger>
+                                  <InfoCircledIcon className=" h-4 w-4 shrink-0 ml-2" />
+                                </HoverCardTrigger>
+                                <CourseHoverCardContent course={course} />
+                              </HoverCard>
+                            </div>
+                          </div>
+                        </CommandItem>
                       ))}
                   </CommandGroup>
                 ))
