@@ -40,9 +40,9 @@ jobs:
           POSTGRES_URL_NON_POOLING: 'postgres://default:2JL8UNHutpZh@ep-divine-hall-75113084.us-east-1.postgres.vercel-storage.com:5432/verceldb'
 
           # These are temporary variables for testing purposes
-          CANVAS_DOMAIN: https://webcourses.ucf.edu/
-          CANVAS_API_TOKEN: 1158~c06gaXGNSTve8umxHXRWgVPiBQHF2ht4mg1tZwZ92TtUG5ZARG8A7zyXeteQ5c4c
-          NEXT_PUBLIC_CANVAS_ENABLED: true
+          # CANVAS_DOMAIN: https://webcourses.ucf.edu/
+          # CANVAS_API_TOKEN: 1158~dvGxn3CSPj65nh5l31PhCeavTzYGMUbnjy3Y4cC5IBK74R1DOOpfvvP61hqXo3Q6
+          # NEXT_PUBLIC_CANVAS_ENABLED: true
 
           DEMO_MODE: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

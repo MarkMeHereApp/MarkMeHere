@@ -91,11 +91,7 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   );
 
   if (!enrollmentResponse.ok) {
-    return {
-      success: false,
-      updatedUsers: [],
-      createdUsers: []
-    };
+throw new Error("Couldn't find enrollments")
   }
 
   const enrollmentJson = await enrollmentResponse.json();

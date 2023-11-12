@@ -38,6 +38,7 @@ import { ConfigureCanvasUserDialog } from '../../(user)/components/canvas/canvas
 import { hasCanvasConfigured } from '@/data/user/canvas';
 import { Icons } from '@/components/ui/icons';
 import { SkeletonButtonText } from '@/components/skeleton/skeleton-button';
+import Link from 'next/link';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -259,20 +260,14 @@ export default function CreateCourseForm({
 
     if (canvasConfigStatus === CanvasConfigStatus.NotConfigured) {
       return (
-        <ConfigureCanvasUserDialog
-          organizationCode={organization.uniqueCode}
-          onSubmit={() => {
-            setCanvasConfigStatus(CanvasConfigStatus.Configured);
-            router.refresh;
-          }}
-        >
+        <Link href={`${organizationUrl}/user-settings`}>
           <Button variant={'outline'}>
             <Icons.canvas className="h-6 w-6 text-destructive " />
             <span className={` whitespace-nowrap ml-2 md:flex `}>
               Configure Canvas To Import
             </span>
           </Button>
-        </ConfigureCanvasUserDialog>
+        </Link>
       );
     }
 

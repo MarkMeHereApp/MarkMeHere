@@ -107,6 +107,10 @@ export default function SignInForm({
     }
   }
 
+  useEffect(() =>{
+    router.refresh()
+  }, [])
+
   useEffect(() => {
     if (error) {
       toast({
