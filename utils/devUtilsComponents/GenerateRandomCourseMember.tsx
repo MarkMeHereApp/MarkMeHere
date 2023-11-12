@@ -28,25 +28,25 @@ const GenerateRandomCourseMember = () => {
     useCourseContext();
   const createCourseMemberMutation =
     trpc.courseMember.createCourseMember.useMutation();
-  const getCourseMembersOfCourseQuery =
-    trpc.courseMember.getCourseMembersOfCourse.useQuery(
-      {
-        courseId: selectedCourseId || ''
-      },
-      {
-        onSuccess: (data) => {
-          if (!data) return;
-          setCourseMembersOfSelectedCourse(data.courseMembers);
-        }
-      }
-    );
+  // const getCourseMembersOfCourseQuery =
+  //   trpc.courseMember.getCourseMembersOfCourse.useQuery(
+  //     {
+  //       courseId: selectedCourseId || ''
+  //     },
+  //     {
+  //       onSuccess: (data) => {
+  //         if (!data) return;
+  //         setCourseMembersOfSelectedCourse(data.courseMembers);
+  //       }
+  //     }
+  //   );
   const handleClick = async () => {
     if (selectedCourseId) {
       const newMemberData = createRandomCourseMember(selectedCourseId);
       await createCourseMemberMutation.mutateAsync({
         ...newMemberData
       });
-      await getCourseMembersOfCourseQuery.refetch();
+      // await getCourseMembersOfCourseQuery.refetch();
     } else {
       throw new Error('No selected course');
     }
