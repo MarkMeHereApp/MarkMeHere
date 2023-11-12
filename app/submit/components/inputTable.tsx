@@ -32,9 +32,6 @@ const InputTable = () => {
     throw error;
   }
 
-  const studentLatitude = useRef<number>(0);
-  const studentLongitude = useRef<number>(0);
-
   const displayError = (errorType: ErrorType) => {
     switch (errorType) {
       case ErrorType.InvalidInput:

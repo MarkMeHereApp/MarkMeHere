@@ -1,19 +1,12 @@
 import React, { FC } from 'react';
 import {
   GoogleMap,
-  Marker,
-  MarkerF,
   useLoadScript,
   CircleF,
-  Polyline,
-  PolygonF,
-  PolylineF
 } from '@react-google-maps/api';
 import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsDarkMode.json';
 import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json';
 import { useTheme } from 'next-themes';
-import { MdMyLocation } from 'react-icons/md';
-import { IconContext } from 'react-icons';
 import { useState } from 'react';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 import {
@@ -242,7 +235,7 @@ const GoogleMapComponentAttendance: FC<
         </AlertDialog>
 
         <AlertDialogDescription>
-          You are missing Google Maps key
+          Google Maps Api Key is not configured
         </AlertDialogDescription>
         <RangePicker></RangePicker>
       </div>

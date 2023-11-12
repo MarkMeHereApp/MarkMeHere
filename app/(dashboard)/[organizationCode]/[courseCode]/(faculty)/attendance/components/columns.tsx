@@ -16,7 +16,6 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
 import LocationAttendanceView from './data-table-location-component';
-import StudentPageBoard from '../../../(student)/student/StudentPageBoard';
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
