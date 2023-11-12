@@ -3,7 +3,7 @@
 import 'server-only';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
-import { getOrganization } from '../organization';
+import { getOrganization } from '../organization/organization';
 import { bHasCoursePermission, getNextAuthSession } from '../auth';
 
 export const getAllAttendanceEntries = async ({
@@ -13,7 +13,6 @@ export const getAllAttendanceEntries = async ({
 }) => {
   try {
     const session = await getNextAuthSession();
-    const organization = await getOrganization();
 
     const lecture = await prisma.lecture.findFirst({
       where: {

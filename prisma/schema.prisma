@@ -174,6 +174,7 @@ model Organization {
   id                        String   @id @default(cuid())
   firstTimeSetupComplete    Boolean  @default(false)
   name                      String   @db.VarChar(255)
+  canvasDevKeyAuthorizedEmail String? @db.VarChar(255)
   uniqueCode                String   @unique @db.VarChar(255)
   lightTheme                String   @default("light_neutral") @db.VarChar(255)
   darkTheme                 String   @default("dark_red") @db.VarChar(255)

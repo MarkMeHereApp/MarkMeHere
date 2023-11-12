@@ -2,7 +2,7 @@ import 'server-only';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod'; // Assuming you're using zod for schema validation
-import { getOrganization } from '../organization';
+import { getOrganization } from '../organization/organization';
 import { bHasCoursePermission, getNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
@@ -15,7 +15,6 @@ export const getCourseWithEnrollments = async (
 ) => {
   try {
     const session = await getNextAuthSession();
-    const organization = await getOrganization();
 
     const hasPermission = await bHasCoursePermission({
       courseCode: requestData.courseCode,
@@ -26,8 +25,7 @@ export const getCourseWithEnrollments = async (
 
     const course = await prisma.course.findFirst({
       where: {
-        courseCode: requestData.courseCode,
-        organizationCode: organization.uniqueCode
+        courseCode: requestData.courseCode
       },
       include: {
         enrollments: {

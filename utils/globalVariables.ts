@@ -35,5 +35,6 @@ export const defaultSiteSettings: Organization = {
   lightTheme: 'light_zinc',
   googleMapsApiKey: '',
   hashEmails: false,
-  allowUsersToUseGoogleMaps: true
+  allowUsersToUseGoogleMaps: true,
+  canvasDevKeyAuthorizedEmail: null
 };

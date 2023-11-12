@@ -13,7 +13,13 @@ import {
 import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
 import { CheckIcon } from '@radix-ui/react-icons';
 
-export const SyncCanvasGrade = () => {
+export const SyncCanvasGrade = ({
+  className,
+  bShowTextOnSmall
+}: {
+  className?: string;
+  bShowTextOnSmall?: boolean;
+}) => {
   const {
     selectedCourse,
     courseMembersOfSelectedCourse,
@@ -74,25 +80,26 @@ export const SyncCanvasGrade = () => {
   };
 
   return (
-    <div>
-      <div>
-        <Button
-          variant={'outline'}
-          disabled={loading}
-          onClick={onSyncCanvasGrade}
-        >
-          {loading ? (
-            <Loading name="Syncing" />
-          ) : (
-            <>
-              <Icons.canvas className="h-6 w-6 text-destructive " />
-              <span className="whitespace-nowrap ml-2 hidden md:flex">
-                Sync Grades
-              </span>
-            </>
-          )}
-        </Button>
-      </div>
-    </div>
+    <Button
+      variant={'outline'}
+      disabled={loading}
+      onClick={onSyncCanvasGrade}
+      className={className}
+    >
+      {loading ? (
+        <Loading name="Syncing" />
+      ) : (
+        <>
+          <Icons.canvas className="h-6 w-6 text-destructive " />
+          <span
+            className={` ${
+              bShowTextOnSmall ? '' : 'hidden'
+            } whitespace-nowrap ml-2 md:flex `}
+          >
+            Sync Grades
+          </span>
+        </>
+      )}
+    </Button>
   );
 };
