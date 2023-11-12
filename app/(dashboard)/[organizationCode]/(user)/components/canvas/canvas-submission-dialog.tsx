@@ -37,7 +37,7 @@ const formSchema = z.object({
     .refine((value) => value.endsWith('/'), {
       message: "URL must end with a '/'"
     }),
-  canvasDevKey: z.string().min(2)
+  canvasDevKey: z.string().min(2).trim()
 });
 
 export function ConfigureCanvasUserDialog({

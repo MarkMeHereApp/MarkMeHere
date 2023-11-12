@@ -30,6 +30,7 @@ export const FinishFirstTimeSetup = ({
         uniqueCode: organizationCode
       });
 
+      window.location.reload();
       router.refresh();
       router.replace(`/${organizationCode}`);
     } catch (error) {

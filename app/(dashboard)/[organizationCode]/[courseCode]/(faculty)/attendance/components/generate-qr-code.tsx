@@ -85,9 +85,9 @@ export function StartScanningButton() {
     }
   };
 
-  if (!getCurrentLecture()){
-    return <></>
-  }
+  const currentLecture = getCurrentLecture();
+
+
 
   const handleGeolocationChange = async () => {
     enableGeolocation.current = !enableGeolocation.current;
@@ -169,7 +169,6 @@ export function StartScanningButton() {
 
     try {
 
-      const currentLecture = getCurrentLecture()
       if (!currentLecture ) {
 
        setError(new Error("Could not finnd Lecutre"))
@@ -234,6 +233,9 @@ export function StartScanningButton() {
     const fetchedLocation = await getGeolocationData();
     setIsLoadingSubmit(false);
   };
+  if (!currentLecture){
+    return <></>
+  }
 
   const GeolocationSettingsDialog = () => {
     if (enableGeolocation && !isLoadingSubmit) {

@@ -6,8 +6,6 @@ import { decrypt } from '@/utils/globalFunctions';
 import { getNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
-const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
-const CANVAS_DOMAIN = process.env.CANVAS_DOMAIN;
 
 export const getOrganization = async (inputOrganizationCode: string) => {
   const session = await getNextAuthSession();

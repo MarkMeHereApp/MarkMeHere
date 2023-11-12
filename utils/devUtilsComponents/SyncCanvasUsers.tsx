@@ -127,16 +127,6 @@ export const SyncCanvasGrade = ({
     return <></>;
   }
 
-  if (false) {
-    return (
-      <Button variant={'outline'} disabled={true}>
-        <CheckIcon className="h-6 w-6 " />
-        <span className="whitespace-nowrap ml-2 hidden md:flex">
-          Synced With Canvas
-        </span>
-      </Button>
-    );
-  }
 
   const onSyncCanvasGrade = async () => {
     try {
