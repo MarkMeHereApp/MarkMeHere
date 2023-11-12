@@ -7,7 +7,7 @@ import { toastSuccess } from '@/utils/globalFunctions';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-import { ConfigureCanvasUserDialog } from './canvas-submission-form';
+import { ConfigureCanvasUserDialog } from './canvas-submission-dialog';
 import { Icons } from '@/components/ui/icons';
 import { updateUserWithCanvasData } from '@/data/user/canvas';
 

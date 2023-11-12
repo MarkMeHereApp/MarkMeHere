@@ -3,6 +3,7 @@ import { CanvasSetup } from './canvas-setup';
 import { getOrganization } from '@/data/organization/organization';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getServerSession } from 'next-auth';
+import { hasCanvasConfigured } from '@/data/user/canvas';
 
 export const CanvasComponent = async ({
   params
@@ -14,6 +15,8 @@ export const CanvasComponent = async ({
 
   const authOptions = await getAuthOptions();
   const session = await getServerSession(authOptions);
+
+  const bCanvasConfigured = await hasCanvasConfigured();
 
   if (session?.user.email !== canvasDevKeyAuthorizedEmail) {
     return (
@@ -39,7 +42,7 @@ export const CanvasComponent = async ({
       </div>
       <Separator />
       <CanvasSetup
-        canvasConfigured={false}
+        canvasConfigured={bCanvasConfigured}
         organizationCode={params.organizationCode}
       />
     </div>

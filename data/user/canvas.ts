@@ -40,3 +40,17 @@ export const updateUserWithCanvasData = async ({
 
   return;
 };
+
+export const hasCanvasConfigured = async () => {
+  const session = await getNextAuthSession();
+
+  const user = await prisma.user.findFirst({
+    where: { email: session.user.email }
+  });
+
+  if (!user) {
+    throw new Error('No user found!');
+  }
+
+  return user.canvasUrl && user.canvasToken ? true : false;
+};
