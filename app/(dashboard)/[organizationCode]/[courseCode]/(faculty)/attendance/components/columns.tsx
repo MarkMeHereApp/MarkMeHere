@@ -25,9 +25,9 @@ import LocationAttendanceView from './data-table-location-component';
 import { useRef } from 'react';
 import { getEmailText } from '@/server/utils/userHelpers';
 
-enum Validity{
+enum Validity {
   inRange = 1,
-  outRange = 0,
+  outRange = 0
 }
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
@@ -167,7 +167,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     cell: ({ row }) => {
       const originalValue = row.original as ExtendedCourseMember;
       const { lectures } = useLecturesContext();
-      const validity = useRef<Validity | undefined>()
+      const validity = useRef<Validity | undefined>();
       const lecture = lectures?.find(
         (lecture) => lecture.id === originalValue.AttendanceEntry?.lectureId
       );
@@ -192,24 +192,30 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       ) {
         return (
           <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="xs" className="pl-2 pr-2">
-                  No Location
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[550px] h-[170px] ">
-                <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[0px]">
-                    <DialogTitle className='pb-[10px]'>The student did not share their location!</DialogTitle>
-                    <DialogDescription>
-                      This student did not share their location. Two reasons could cause this:<br/>
-                      1) The student has decided to proceed without verification.<br/>
-                      2) The student did not allow the browser to access their location.
-                    </DialogDescription>
-                  </DialogHeader>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="xs" className="pl-2 pr-2">
+                No Location
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[550px] h-[170px] ">
+              <div className="grid gap-4 py-4 ">
+                <DialogHeader className="flex justify-center items-center pb-[0px]">
+                  <DialogTitle className="pb-[10px]">
+                    The student did not share their location!
+                  </DialogTitle>
+                  <DialogDescription>
+                    The student has not shared their location. Two reasons could
+                    account for this:
+                    <br />
+                    1) The student has chosen to proceed without verification.
+                    <br />
+                    2) The student has not granted the browser access to their
+                    location.
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+            </DialogContent>
+          </Dialog>
         );
       }
 
@@ -252,11 +258,11 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
         studentLongitude: originalValue.AttendanceEntry?.studentLongtitude
       };
-      
+
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
-          validity.current = Validity.outRange
-          return(
+          validity.current = Validity.outRange;
+          return (
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="xs" className="pl-2 pr-2">
@@ -264,14 +270,19 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
+                <LocationAttendanceView
+                  postitonsData={locationData}
+                  validity={validity.current}
+                ></LocationAttendanceView>
               </DialogContent>
-          </Dialog>
-
-          ) 
-        } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
-          validity.current = Validity.inRange
-          console.log(validity.current)
+            </Dialog>
+          );
+        } else if (
+          calculateDistance < professorData.lectureRange &&
+          calculateDistance > 0
+        ) {
+          validity.current = Validity.inRange;
+          console.log(validity.current);
           return (
             <Dialog>
               <DialogTrigger asChild>
@@ -280,10 +291,13 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
+                <LocationAttendanceView
+                  postitonsData={locationData}
+                  validity={validity.current}
+                ></LocationAttendanceView>
               </DialogContent>
-          </Dialog>
-            );
+            </Dialog>
+          );
         }
       }
     },
