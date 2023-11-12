@@ -21,7 +21,6 @@ import { useRef } from 'react';
 enum Validity{
   inRange = 1,
   outRange = 0,
-  noLocation = -1
 }
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
@@ -184,7 +183,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         !originalValue.AttendanceEntry?.studentLatitude ||
         !originalValue.AttendanceEntry?.studentLongtitude
       ) {
-        validity.current = Validity.noLocation
         return (
           <Dialog>
               <DialogTrigger asChild>

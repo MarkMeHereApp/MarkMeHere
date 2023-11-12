@@ -118,11 +118,7 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
     
     if(GoogleMapsKey){
 
-        if(validity == -1){
-            
-        }
-
-        else if(validity == 0){
+        if(validity == 0){
             return (
                 <div>
                     <DialogContent className="max-w-[600px] h-[430px] ">
@@ -171,8 +167,21 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
 
     else{
         return(
-            <div className='pt-5'>
-                <div className='text-center'>Google Maps Api Key is not configured</div>
+            <div>
+                <DialogContent className="max-w-[600px] h-[430px] ">
+                    <div className="grid gap-4 py-4 ">
+                        <DialogHeader className="flex justify-center items-center pb-[5px]">
+                            <DialogTitle>Google Maps Api Key is not configured</DialogTitle>
+                                <DialogDescription>
+                                    See the location of the lecture (circle) and the location of the student (marker).
+                                </DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="flex flex-col w-full">
+                        <div className="flex flex-col">
+                        </div>
+                    </div>
+                </DialogContent>
             </div>
         )       
     }
