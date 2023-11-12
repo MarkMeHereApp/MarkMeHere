@@ -22,7 +22,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
 import LocationAttendanceView from './data-table-location-component';
+import { useRef } from 'react';
 import { getEmailText } from '@/server/utils/userHelpers';
+
+enum Validity{
+  inRange = 1,
+  outRange = 0,
+}
 
 export const columns: ColumnDef<ExtendedCourseMember>[] = [
   {
@@ -161,6 +167,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
     cell: ({ row }) => {
       const originalValue = row.original as ExtendedCourseMember;
       const { lectures } = useLecturesContext();
+      const validity = useRef<Validity | undefined>()
       const lecture = lectures?.find(
         (lecture) => lecture.id === originalValue.AttendanceEntry?.lectureId
       );
@@ -185,30 +192,24 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       ) {
         return (
           <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="xs" className="pl-2 pr-2">
-                No Location
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[550px] h-[170px] ">
-              <div className="grid gap-4 py-4 ">
-                <DialogHeader className="flex justify-center items-center pb-[5px]">
-                  <DialogTitle>
-                    The student did not share their location!
-                  </DialogTitle>
-                  <DialogDescription>
-                    This student did not share their location. Two reasons could
-                    cause this:
-                    <br />
-                    1) The student has decided to proceed without verification.
-                    <br />
-                    2) The student did not allow the browser to access their
-                    location.
-                  </DialogDescription>
-                </DialogHeader>
-              </div>
-            </DialogContent>
-          </Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="pl-2 pr-2">
+                  No Location
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[550px] h-[170px] ">
+                <div className="grid gap-4 py-4 ">
+                  <DialogHeader className="flex justify-center items-center pb-[0px]">
+                    <DialogTitle className='pb-[10px]'>The student did not share their location!</DialogTitle>
+                    <DialogDescription>
+                      This student did not share their location. Two reasons could cause this:<br/>
+                      1) The student has decided to proceed without verification.<br/>
+                      2) The student did not allow the browser to access their location.
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+              </DialogContent>
+            </Dialog>
         );
       }
 
@@ -251,38 +252,26 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
         studentLongitude: originalValue.AttendanceEntry?.studentLongtitude
       };
-
-      //again, if you are readin this Jadyn, I am using the LocationAttendanceView from data-table-location-component, and I am trying to display.
-      //you do the same thing in smembers columns line 93-104. Please help, I dont wanna hurt my laptop.
+      
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
-          return (
+          validity.current = Validity.outRange
+          return(
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="xs" className="pl-2 pr-2">
                   Out of Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[600px] h-[430px] ">
-                <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[5px]">
-                    <DialogTitle>The student was out of range!</DialogTitle>
-                    <DialogDescription>
-                      See the location of the lecture (circle) and the location
-                      of the student (marker).
-                    </DialogDescription>
-                  </DialogHeader>
-                  <LocationAttendanceView
-                    postitonsData={locationData}
-                  ></LocationAttendanceView>
-                </div>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
               </DialogContent>
-            </Dialog>
-          );
-        } else if (
-          calculateDistance < professorData.lectureRange &&
-          calculateDistance > 0
-        ) {
+          </Dialog>
+
+          ) 
+        } else if (calculateDistance <  professorData.lectureRange && calculateDistance > 0) {
+          validity.current = Validity.inRange
+          console.log(validity.current)
           return (
             <Dialog>
               <DialogTrigger asChild>
@@ -290,22 +279,11 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                   In Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[600px] h-[430px] ">
-                <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[5px]">
-                    <DialogTitle>The student was in range!</DialogTitle>
-                    <DialogDescription>
-                      See the location of the lecture (circle) and the location
-                      of the student (marker).
-                    </DialogDescription>
-                  </DialogHeader>
-                  <LocationAttendanceView
-                    postitonsData={locationData}
-                  ></LocationAttendanceView>
-                </div>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
               </DialogContent>
-            </Dialog>
-          );
+          </Dialog>
+            );
         }
       }
     },

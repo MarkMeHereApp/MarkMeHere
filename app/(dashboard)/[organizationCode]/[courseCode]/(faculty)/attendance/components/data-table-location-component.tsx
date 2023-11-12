@@ -4,6 +4,7 @@ import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(
 import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json'
 import { useTheme } from 'next-themes';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
+import {DialogHeader, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 
 type PositionData = {
@@ -17,8 +18,14 @@ interface GoogleMapsProps {
     postitonsData?: PositionData;
 }
 
-const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
+interface GoogleMapsProps {
+    postitonsData?: PositionData;
+    validity?: number;
+}
 
+const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }) => {
+
+    console.log(validity)
 
     const OrganizationContext = useOrganizationContext()
     const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey
@@ -110,19 +117,67 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
     }
     
     if(GoogleMapsKey){
-        return (
-            <div className="flex flex-col w-full">
-                <div className="flex flex-col">
-                    <MapComponent></MapComponent>
+
+        if(validity == 0){
+            return (
+                <div>
+                    <DialogContent className="max-w-[600px] h-[430px] ">
+                        <div className="grid gap-4 py-4 ">
+                        <DialogHeader className="flex justify-center items-center pb-[5px]">
+                            <DialogTitle>The student was out of range!</DialogTitle>
+                                <DialogDescription>
+                                    See the location of the lecture (circle) and the location of the student (marker).
+                                </DialogDescription>
+                        </DialogHeader>
+                        </div>
+                        <div className="flex flex-col w-full">
+                            <div className="flex flex-col">
+                                <MapComponent></MapComponent>
+                            </div>
+                        </div>
+                    </DialogContent>      
+                </div> 
+            );
+        }
+
+        else if(validity == 1){
+            return (
+                <div>
+                    <DialogContent className="max-w-[600px] h-[430px] ">
+                        <div className="grid gap-4 py-4 ">
+                            <DialogHeader className="flex justify-center items-center pb-[5px]">
+                                <DialogTitle>The student was in range!</DialogTitle>
+                                    <DialogDescription>
+                                        See the location of the lecture (circle) and the location of the student (marker).
+                                    </DialogDescription>
+                            </DialogHeader>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <div className="flex flex-col">
+                                    <MapComponent></MapComponent>
+                            </div>
+                        </div>
+                    </DialogContent>
                 </div>
-            </div>
-        );
+            )
+            
+        }
+        
     }
 
     else{
         return(
-            <div className='pt-5'>
-                <div className='text-center'>Google Maps Api Key is not configured</div>
+            <div className='max-w-[550x] h-[150px] '>
+                <div className="grid gap-4 py-4 ">
+                    <DialogHeader className="flex justify-center items-center">
+                        <DialogTitle className='pb-[10px]'>Google Maps API Key is not configured</DialogTitle>
+                        <DialogDescription>
+                            We have verified the student's location. However, you still need to set up your Google Maps API.
+                            As a result, you cannot view the lectures and students' locations at this moment.
+                            Don't worry; if you add the API key later, you can still verify the past records!
+                        </DialogDescription>
+                    </DialogHeader>
+                </div>
             </div>
         )       
     }
