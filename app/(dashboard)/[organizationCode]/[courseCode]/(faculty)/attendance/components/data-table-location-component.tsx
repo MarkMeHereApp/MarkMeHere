@@ -119,10 +119,10 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
     if(GoogleMapsKey){
 
         if(validity == -1){
-        
+            
         }
 
-        if(validity == 0){
+        else if(validity == 0){
             return (
                 <div>
                     <DialogContent className="max-w-[600px] h-[430px] ">
@@ -141,13 +141,31 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
                         </div>
                     </DialogContent>
                 
-                </div>
-                
+                </div> 
             );
         }
 
-        if(validity == 1){
-        
+        else if(validity == 1){
+            return (
+                <div>
+                    <DialogContent className="max-w-[600px] h-[430px] ">
+                        <div className="grid gap-4 py-4 ">
+                            <DialogHeader className="flex justify-center items-center pb-[5px]">
+                                <DialogTitle>The student was in range!</DialogTitle>
+                                    <DialogDescription>
+                                        See the location of the lecture (circle) and the location of the student (marker).
+                                    </DialogDescription>
+                            </DialogHeader>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <div className="flex flex-col">
+                                    <MapComponent></MapComponent>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </div>
+            )
+            
         }
         
     }

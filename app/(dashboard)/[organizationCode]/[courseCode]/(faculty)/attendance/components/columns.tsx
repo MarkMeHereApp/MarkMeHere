@@ -248,9 +248,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
         studentLongitude: originalValue.AttendanceEntry?.studentLongtitude,
       };
       
-
-      //again, if you are readin this Jadyn, I am using the LocationAttendanceView from data-table-location-component, and I am trying to display.
-      //you do the same thing in smembers columns line 93-104. Please help, I dont wanna hurt my laptop.
       if (calculateDistance) {
         if (calculateDistance > professorData.lectureRange) {
           validity.current = Validity.outRange
@@ -277,18 +274,10 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                   In Range
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[600px] h-[430px] ">
-                <div className="grid gap-4 py-4 ">
-                  <DialogHeader className="flex justify-center items-center pb-[5px]">
-                    <DialogTitle>The student was in range!</DialogTitle>
-                    <DialogDescription>
-                      See the location of the lecture (circle) and the location of the student (marker).
-                    </DialogDescription>
-                  </DialogHeader>
-                  <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
-                </div>
+              <DialogContent>
+                <LocationAttendanceView postitonsData={locationData} validity={validity.current}></LocationAttendanceView>
               </DialogContent>
-            </Dialog>
+          </Dialog>
             );
         }
       }
