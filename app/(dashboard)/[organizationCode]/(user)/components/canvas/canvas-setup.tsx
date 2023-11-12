@@ -6,6 +6,7 @@ import { AreYouSureDialog } from '@/components/general/are-you-sure-alert-dialog
 import { toastSuccess } from '@/utils/globalFunctions';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 import { ConfigureCanvasUserDialog } from './canvas-submission-dialog';
 import { Icons } from '@/components/ui/icons';
@@ -20,6 +21,7 @@ export const CanvasSetup = ({
 }) => {
   const [configured, setConfigured] = useState(canvasConfigured);
   const [error, setError] = useState<Error | null>(null);
+  const router = useRouter();
   if (error) {
     throw error;
   }
@@ -31,6 +33,7 @@ export const CanvasSetup = ({
         inputUrl: undefined,
         inputDevKey: undefined
       });
+      window.location.reload();
       toastSuccess('Successfully removed Canvas authorized user.');
       setConfigured(false);
       return;

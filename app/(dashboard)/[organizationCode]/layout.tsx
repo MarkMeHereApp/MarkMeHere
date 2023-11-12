@@ -1,11 +1,11 @@
 import { ThemeProvider } from './theme-provider';
 import prisma from '@/prisma';
-import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import OrganizationContextProvider from './context-organization';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { decrypt } from '@/utils/globalFunctions';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
+import { getServerSession } from 'next-auth';
 
 export default async function SchoolLayout({
   children,

@@ -31,7 +31,9 @@ const DeleteCourseButton = () => {
         courseId: selectedCourseId
       });
       router.refresh();
-      router.replace('/');
+      window.location.reload();
+
+      //router.replace('/');
       toastSuccess(`Successfully Deleted ${course}`);
     } catch (error) {
       setError(error as Error);

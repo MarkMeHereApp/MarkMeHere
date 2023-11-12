@@ -28,6 +28,7 @@ import { useState } from 'react';
 import { updateUserWithCanvasData } from '@/data/user/canvas';
 import { toastError, toastSuccess } from '@/utils/globalFunctions';
 import Loading from '@/components/general/loading';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   canvasUrl: z
@@ -50,6 +51,8 @@ export function ConfigureCanvasUserDialog({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const router = useRouter();
+
   if (error) {
     setLoading(false);
     throw error;
@@ -68,7 +71,8 @@ export function ConfigureCanvasUserDialog({
         inputDevKey: values.canvasDevKey
       });
       setLoading(false);
-
+      router.refresh();
+      window.location.reload();
       toastSuccess('Successfully configured Canvas!');
       onSubmit();
     } catch (error) {

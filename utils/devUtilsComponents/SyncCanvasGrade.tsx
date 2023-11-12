@@ -1,105 +1,48 @@
-'use client';
+import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
+import prisma from '@/prisma';
+import { getServerSession } from 'next-auth';
+import { SyncCanvasGrade, SyncCanvasUsers } from './SyncCanvasUsers';
 
-import { useCourseContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-course';
-import Loading from '@/components/general/loading';
-import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/ui/icons';
-import { useState } from 'react';
-import { toastError, toastSuccess } from '../globalFunctions';
-import {
-  syncCanvasAttendanceAssignment,
-  syncCanvasCourseMembers
-} from '@/data/canvas/canvas-sync';
-import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[courseCode]/context-lecture';
-import { CheckIcon } from '@radix-ui/react-icons';
 
-export const SyncCanvasGrade = ({
-  className,
-  bShowTextOnSmall
-}: {
-  className?: string;
-  bShowTextOnSmall?: boolean;
-}) => {
-  const {
-    selectedCourse,
-    courseMembersOfSelectedCourse,
-    setCourseMembersOfSelectedCourse
-  } = useCourseContext();
+export const SyncCanvasMembersButton = async () => {
+  const authOptions = await getAuthOptions();
+  const session = await getServerSession(authOptions);
 
-  const [loading, setLoading] = useState(false);
+  if(!session?.user.email) {
+    throw new Error("No Email")
+  }
+  
+  const user = await prisma.user.findFirst({
+    where: {email: session.user.email}
+  })
 
-  if (!selectedCourse.lmsId || !courseMembersOfSelectedCourse) {
-    return <></>;
+  if (!user?.canvasUrl || !user?.canvasToken){
+    return <></>
   }
 
-  const userWithLmsId = courseMembersOfSelectedCourse.find(
-    (member) => member.lmsId
-  );
+  return <SyncCanvasUsers/>
 
-  if (!userWithLmsId) {
-    return <></>;
+
+
+};
+
+export const SyncCanvasAttendanceButton = async () => {
+  const authOptions = await getAuthOptions();
+  const session = await getServerSession(authOptions);
+
+  if(!session?.user.email) {
+    throw new Error("No Email")
+  }
+  
+  const user = await prisma.user.findFirst({
+    where: {email: session.user.email}
+  })
+
+  if (!user?.canvasUrl || !user?.canvasToken){
+    return <></>
   }
 
-  if (false) {
-    return (
-      <Button variant={'outline'} disabled={true}>
-        <CheckIcon className="h-6 w-6 " />
-        <span className="whitespace-nowrap ml-2 hidden md:flex">
-          Synced With Canvas
-        </span>
-      </Button>
-    );
-  }
+  return <SyncCanvasGrade/>
 
-  const onSyncCanvasGrade = async () => {
-    try {
-      if (!courseMembersOfSelectedCourse) {
-        return;
-      }
-      setLoading(true);
 
-      if (!selectedCourse) {
-        throw new Error('Selected ID is undefined.');
-      }
-
-      const response = await syncCanvasAttendanceAssignment(
-        selectedCourse.courseCode
-      );
-
-      if (response?.createdNewAssignment) {
-        toastSuccess('Created new attendance assignment in Canvas and synced.');
-      } else {
-        toastSuccess("Updated everyone's attendance grades.");
-      }
-
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      toastError('Could not sync with Canvas');
-    }
-  };
-
-  return (
-    <Button
-      variant={'outline'}
-      disabled={loading}
-      onClick={onSyncCanvasGrade}
-      className={className}
-    >
-      {loading ? (
-        <Loading name="Syncing" />
-      ) : (
-        <>
-          <Icons.canvas className="h-6 w-6 text-destructive " />
-          <span
-            className={` ${
-              bShowTextOnSmall ? '' : 'hidden'
-            } whitespace-nowrap ml-2 md:flex `}
-          >
-            Sync Grades
-          </span>
-        </>
-      )}
-    </Button>
-  );
 };

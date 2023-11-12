@@ -8,7 +8,6 @@ import { useSelectedLectureContext } from '../../components/context-selected-lec
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import calculateCourseMemberStatistics from '../utils/calculateCourseMemberStatistics';
-import { SyncCanvasGrade } from '@/utils/devUtilsComponents/SyncCanvasGrade';
 
 export interface OverviewBarProps {
   selectedCourseName: string;
@@ -142,10 +141,6 @@ const OverviewBar: React.FC<OverviewBarProps> = ({
           >
             Export to CSV
           </Button>
-          <SyncCanvasGrade
-            className="w-full sm:w-auto"
-            bShowTextOnSmall={true}
-          />
         </CardContent>
       </Card>
     </>

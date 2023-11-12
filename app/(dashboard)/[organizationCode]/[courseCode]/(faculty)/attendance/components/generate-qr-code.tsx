@@ -33,14 +33,14 @@ import Loading from '@/components/general/loading';
 import GoogleMapComponentAttendance from './range-picker-component';
 import { markAllUnmarkedAbsent } from '@/data/attendance/make-all-unmarked-absent';
 import { PiQrCode } from 'react-icons/pi';
-interface StartScanningButtonProps {
-  lectureId: string; // or number, depending on what type lectureId is supposed to be
-}
+import { useLecturesContext } from '../../../context-lecture';
 
-export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
+
+export function StartScanningButton() {
   const router = useRouter();
   const { courseMembersOfSelectedCourse, currentCourseUrl } =
     useCourseContext();
+  const {lectures,selectedAttendanceDate} = useLecturesContext();
   const address = `${getPublicUrl()}`;
   const navigation = `${currentCourseUrl}/qr`;
 
@@ -75,6 +75,19 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
     professorLatitude: lectureLatitude.current,
     professorLongitude: lectureLongitude.current
   };
+    const getCurrentLecture = () => {
+    if (lectures && selectedAttendanceDate) {
+      return lectures.find((lecture) => {
+        return (
+          lecture.lectureDate.getTime() === selectedAttendanceDate.getTime()
+        );
+      });
+    }
+  };
+
+  if (!getCurrentLecture()){
+    return <></>
+  }
 
   const handleGeolocationChange = async () => {
     enableGeolocation.current = !enableGeolocation.current;
@@ -155,7 +168,15 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
       : undefined;
 
     try {
-      await markAllUnmarkedAbsent({ lectureId: lectureId });
+
+      const currentLecture = getCurrentLecture()
+      if (!currentLecture ) {
+
+       setError(new Error("Could not finnd Lecutre"))
+       return;
+      }
+
+      await markAllUnmarkedAbsent({ lectureId: currentLecture.id });
 
       if (enableGeolocation.current) {
         const location = await getGeolocationData();
@@ -168,7 +189,7 @@ export function StartScanningButton({ lectureId }: StartScanningButtonProps) {
           const res = await createProfessorLectureGeolocation.mutateAsync({
             lectureLatitude: lectureLatitude.current,
             lectureLongitude: lectureLongitude.current,
-            lectureId: lectureId,
+            lectureId: currentLecture.id,
             courseMemberId: selectedCourseMemberId,
             lectureRange: range
           });
