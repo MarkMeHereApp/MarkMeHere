@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useRouter from next/router
 import { toast } from 'components/ui/use-toast';
+import { SyncCanvasGrade } from '@/utils/devUtilsComponents/SyncCanvasGrade';
 
 export default function ManageAttendance() {
   const { selectedCourseId } = useCourseContext();
@@ -46,20 +47,19 @@ export default function ManageAttendance() {
 
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="flex items-center justify-between space-y-2 space-x-6">
+      <div className="block h-full flex-1 flex-col space-y-8  md:flex py-8 px-2 sm:px-8">
+        <div className="flex flex-wrap items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Attendance</h2>
-          {getCurrentLecture() && getCurrentLectureProp && (
-            <StartScanningButton lectureId={getCurrentLectureProp.id} />
-          )}
+
+          <div className="flex items-center space-x-2">
+            <SyncCanvasGrade />
+            {getCurrentLecture() && getCurrentLectureProp && (
+              <StartScanningButton lectureId={getCurrentLectureProp.id} />
+            )}
+          </div>
         </div>
-        {selectedCourseId ? (
-          <>
-            <DataTable columns={columns} />
-          </>
-        ) : (
-          <CreateChooseCourseAnimation />
-        )}
+
+        <DataTable columns={columns} />
       </div>
     </div>
   );

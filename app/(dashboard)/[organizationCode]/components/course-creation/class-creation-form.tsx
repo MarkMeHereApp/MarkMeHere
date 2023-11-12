@@ -33,6 +33,7 @@ import { formatString, toastError } from '@/utils/globalFunctions';
 import { TRPCClientError } from '@trpc/client';
 import Loading from '@/components/general/loading';
 import { useRouter } from 'next/navigation';
+import { syncCanvasCourseMembers } from '@/data/canvas/canvas-sync';
 
 const CreateCourseFormSchema = z.object({
   courseCode: z
@@ -151,11 +152,22 @@ export default function CreateCourseForm({
       const newEnrollment = handleCreateCourseResult.resEnrollment;
       const newCourse = handleCreateCourseResult.resCourse;
 
+      let canvasString = '';
+      if (handleCreateCourseResult.resCourse.lmsId) {
+        const { createdUsers } = await syncCanvasCourseMembers(
+          newCourse.courseCode
+        );
+
+        if (createdUsers.length > 0) {
+          canvasString = `Created ${createdUsers.length} new users in Canvas.`;
+        }
+      }
+
       setUserCourses((userCourses) => [...(userCourses || []), newCourse]);
       if (newEnrollment === null) {
         toast({
           title: `${newCourse.name} Added Successfully!`,
-          description: `${newCourse.name} has been created but you have not been enrolled to the course.`,
+          description: `${newCourse.name} has been created but you have not been enrolled to the course. ${canvasString}`,
           icon: 'success'
         });
       } else {
@@ -165,7 +177,7 @@ export default function CreateCourseForm({
         ]);
         toast({
           title: `${newCourse.name} Added Successfully!`,
-          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}!`,
+          description: `${newEnrollment.name} have been enrolled to the course ${newCourse.name} as a ${newEnrollment.role}. ${canvasString}`,
           icon: 'success'
         });
       }

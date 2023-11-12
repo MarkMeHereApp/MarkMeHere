@@ -22,7 +22,7 @@ import { Icons } from '@/components/ui/icons';
 import { trpc } from '@/app/_trpc/client';
 import CourseHoverCardContent from './lms-hover-content';
 import { zLMSCourseSchemeType } from '@/types/sharedZodTypes';
-import { formatString } from '@/utils/globalFunctions';
+import { formatString, toastError } from '@/utils/globalFunctions';
 
 export function LMSCourseSelector({
   setSelectedLMSCourse
@@ -36,7 +36,8 @@ export function LMSCourseSelector({
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({});
 
   if (getCanvasCoursesQuery.error) {
-    throw getCanvasCoursesQuery.error;
+    toastError(getCanvasCoursesQuery.error.message);
+    setSelectedLMSCourse(null);
   }
 
   const uniqueErrorStatus = getCanvasCoursesQuery.data?.courseList

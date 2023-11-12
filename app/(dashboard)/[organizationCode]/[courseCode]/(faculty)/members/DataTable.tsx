@@ -103,6 +103,7 @@ export default function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className="h-24 sm:h-12"
                 >
                   {row.getVisibleCells().map((cell) => {
                     const shouldHideColumn = ['email', 'lmsId', 'view Stats'];

@@ -222,7 +222,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
     }));
     try {
       const newMembers = await createManyCourseMembers.mutateAsync({
-        courseId: data.selectedCourseId,
+        courseCode: data.selectedCourse.courseCode,
         courseMembers: transformedTableValues
       });
 

@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { Course } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { zSiteRoles } from '@/types/sharedZodTypes';
+import { Icons } from '@/components/ui/icons';
 
 export default function CourseSelection() {
   const session = useSession();
@@ -38,6 +39,13 @@ export default function CourseSelection() {
     userCourseMembers,
     selectedCourse
   } = useCourseContext();
+
+  const CanvasIcon = ({ enabled }: { enabled: boolean }) => {
+    if (enabled) {
+      return <Icons.canvas className="ml-auto h-4 w-4 text-destructive" />;
+    }
+    return <></>;
+  };
 
   const { organizationUrl } = useOrganizationContext();
 
@@ -95,7 +103,8 @@ export default function CourseSelection() {
               >
                 {selectedCourse.name}
               </span>
-              <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+              <CanvasIcon enabled={!!selectedCourse.lmsId} />
+              <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
 
@@ -138,6 +147,7 @@ export default function CourseSelection() {
                                 >
                                   {course.name}
                                 </span>
+                                <CanvasIcon enabled={!!course.lmsId} />
                                 <CheckIcon
                                   className={cn(
                                     'ml-auto h-4 w-4',
