@@ -124,7 +124,7 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData }) => {
     else{
         return(
             <div className='pt-5'>
-                <div className='text-center'>Your location has been found!</div>
+                <div className='text-center'>Google Maps Api Key is not configured</div>
             </div>
         )
             

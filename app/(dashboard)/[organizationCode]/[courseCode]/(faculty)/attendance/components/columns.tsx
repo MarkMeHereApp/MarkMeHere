@@ -191,7 +191,7 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                     <DialogDescription>
                       This student did not share their location. Two reasons could cause this:<br/>
                       1) The student has decided to proceed without verification.<br/>
-                      2) The student did not allow the browser to access their location
+                      2) The student did not allow the browser to access their location.
                     </DialogDescription>
                   </DialogHeader>
                 </div>
