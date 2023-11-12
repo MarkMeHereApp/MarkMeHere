@@ -331,7 +331,7 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
         </DialogContent>
       </Dialog>
       <Dialog open={isFileUploaded} onOpenChange={setIsFileUploaded}>
-        <DialogContent className="sm:max-w-[1000px] flex flex-col flex-grow">
+        <DialogContent className="sm:max-w-[1000px] flex flex-col h-3/4">
           <DialogHeader>
             <DialogTitle>Import CSV</DialogTitle>
             <DialogDescription>
@@ -375,22 +375,22 @@ export const CSV_Import: React.FC<CSVImportProps> = ({ onClose }) => {
               </DialogDescription>
             )}
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="flex flex-col overflow-auto">
+            <div className="h-3/4 mb-4">
             <CSV_Preview data={tableValues} existingMembers={existedMembers} />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="secondary" onClick={closeDialog}>
-              Cancel
-            </Button>
+            </div>
+              <Button type="button" variant="secondary" onClick={closeDialog}>
+                Cancel
+              </Button>
 
-            <Button type="submit" onClick={handleImport} disabled={isImporting}>
-              {isImporting && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {!isImporting && <BsUpload className="h-5 w-4 mr-2" />}
-              Import
-            </Button>
-          </DialogFooter>
+              <Button type="submit" onClick={handleImport} disabled={isImporting}>
+                {isImporting && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {!isImporting && <BsUpload className="h-5 w-4 mr-2" />}
+                Import
+              </Button>
+            </div>
         </DialogContent>
       </Dialog>
       <Dialog
