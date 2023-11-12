@@ -6,6 +6,7 @@ import Loading from '@/components/general/loading';
 import { useProviderContext } from '@/app/context-auth-provider';
 import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export const FinishFirstTimeSetup = ({
   organizationCode
@@ -31,6 +32,7 @@ export const FinishFirstTimeSetup = ({
       });
 
       window.location.reload();
+      revalidatePath('/', 'layout')
       router.refresh();
       router.replace(`/${organizationCode}`);
     } catch (error) {

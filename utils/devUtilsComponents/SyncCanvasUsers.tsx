@@ -152,7 +152,8 @@ export const SyncCanvasGrade = ({
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      toastError('Could not sync with Canvas');
+      const bigError = error as Error
+      toastError(bigError.message);
     }
   };
 
