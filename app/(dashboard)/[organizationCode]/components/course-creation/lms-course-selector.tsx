@@ -28,14 +28,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useOrganizationContext } from '../../context-organization';
 
 export function LMSCourseSelector({
+  selectedLMSCourse,
   setSelectedLMSCourse
 }: {
+  selectedLMSCourse: zLMSCourseSchemeType | null;
   setSelectedLMSCourse: React.Dispatch<
     React.SetStateAction<zLMSCourseSchemeType | null>
   >;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('');
   const { organization } = useOrganizationContext();
 
   const getCanvasCoursesQuery = trpc.canvas.getCanvasCourses.useQuery({
@@ -67,13 +68,13 @@ export function LMSCourseSelector({
             aria-expanded={open}
             className="w-full"
           >
-            {value && value !== ''
+            {selectedLMSCourse
               ? getCanvasCoursesQuery?.data?.courseList.find(
-                  (course) => course.lmsId === value
-                )?.name || `ID: ${value} - Course name not available`
+                  (course) => course.lmsId === selectedLMSCourse.lmsId
+                )?.name ||
+                `ID: ${selectedLMSCourse.lmsId} - Course name not available`
               : 'Import From Canvas (optional)'}
             <Icons.canvas className="text-xs text-destructive ml-auto" />
-
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -107,11 +108,10 @@ export function LMSCourseSelector({
                         <CommandItem
                           key={course.lmsId}
                           onSelect={() => {
-                            setValue(
-                              course.lmsId === value ? '' : course.lmsId
-                            );
                             setSelectedLMSCourse(
-                              course.lmsId === value ? null : course
+                              course.lmsId === selectedLMSCourse?.lmsId
+                                ? null
+                                : course
                             ); // Save the selected course
                             setOpen(false);
                           }}
@@ -120,7 +120,7 @@ export function LMSCourseSelector({
                           <Check
                             className={cn(
                               'mr-2 h-4 w-4',
-                              value === course.lmsId
+                              selectedLMSCourse?.lmsId === course.lmsId
                                 ? 'opacity-100'
                                 : 'opacity-0'
                             )}

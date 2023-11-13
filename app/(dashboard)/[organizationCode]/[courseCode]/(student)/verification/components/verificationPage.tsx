@@ -15,7 +15,7 @@ const VerifiactionLoaderPage: React.FC<{
       <div className="absolute top-0 right-0 h-full w-full">
         <Stars />
       </div>
-      <Card className=" min-w-[500px]  mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
+      <Card className=" w-full sm:w-[500px]  mx-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col items-center ">
         <VerifiactionLoader code={code} />
       </Card>
     </>

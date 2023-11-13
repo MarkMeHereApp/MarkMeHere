@@ -51,7 +51,7 @@ export const StepSkeleton = () => {
               <Skeleton className="h-6 w-[250px]" />
             </h3>
             <p className="text-sm text-muted-foreground">
-              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-[750px]" />
             </p>
           </div>
           <Separator />

@@ -181,7 +181,7 @@ model Organization {
   lightTheme                String   @default("light_blue") @db.VarChar(255)
   darkTheme                 String   @default("dark_yellow") @db.VarChar(255)
   googleMapsApiKey          String?  @db.VarChar(255)
-  allowUsersToUseGoogleMaps Boolean  @default(false)
+  allowUsersToUseGoogleMaps Boolean  @default(true)
   hashEmails                Boolean
   Courses                   Course[]
 }

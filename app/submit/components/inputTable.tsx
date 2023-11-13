@@ -145,7 +145,7 @@ const InputTable = () => {
         className="gap-4 flex flex-col items-center pt-0 p-6 w-[100%]"
       >
         <Input
-          className="w-[100%] h-[30%] text-center text-4xl"
+          className="w-[100%] h-[30%] font-bold font-mono text-center text-4xl"
           type="text"
           value={inputValue.toUpperCase()}
           onChange={(event) => setInputValue(event.target.value)}

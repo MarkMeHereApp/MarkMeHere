@@ -255,7 +255,12 @@ export default function CreateCourseForm({
 
   const CanvasComponent = () => {
     if (canvasConfigStatus === CanvasConfigStatus.Configured) {
-      return <LMSCourseSelector setSelectedLMSCourse={setLMSSelectedCourse} />;
+      return (
+        <LMSCourseSelector
+          selectedLMSCourse={getLMSSelectedCourse}
+          setSelectedLMSCourse={setLMSSelectedCourse}
+        />
+      );
     }
 
     if (canvasConfigStatus === CanvasConfigStatus.NotConfigured) {

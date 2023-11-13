@@ -73,7 +73,6 @@ export default function MainBar() {
   );
 
   const CanAccessStudent = () => {
-    if (session?.data?.user?.role === zSiteRoles.enum.admin) return true;
     return selectedCourseEnrollment?.role === zCourseRoles.enum.student;
   };
 
