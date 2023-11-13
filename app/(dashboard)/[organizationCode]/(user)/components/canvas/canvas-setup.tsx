@@ -33,8 +33,6 @@ export const CanvasSetup = ({
         inputUrl: undefined,
         inputDevKey: undefined
       });
-      router.refresh();
-      window.location.reload();
       toastSuccess('Successfully removed Canvas authorized user.');
       setConfigured(false);
       return;

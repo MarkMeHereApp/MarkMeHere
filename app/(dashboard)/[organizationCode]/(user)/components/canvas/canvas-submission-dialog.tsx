@@ -71,8 +71,6 @@ export function ConfigureCanvasUserDialog({
         inputDevKey: values.canvasDevKey
       });
       setLoading(false);
-      router.refresh();
-      window.location.reload();
       toastSuccess('Successfully configured Canvas!');
       onSubmit();
     } catch (error) {

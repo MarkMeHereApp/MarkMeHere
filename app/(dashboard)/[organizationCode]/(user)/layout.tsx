@@ -29,9 +29,9 @@ export default async function SettingLayout({
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
 
-          <Link href={`/${organizationCode}`}>
+          <a href={`/${organizationCode}`}>
             <ContinueButton name="Go to App" />
-          </Link>
+          </a>
         </div>
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
