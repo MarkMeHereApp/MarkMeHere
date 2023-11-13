@@ -30,9 +30,8 @@ export const FinishFirstTimeSetup = ({
         uniqueCode: organizationCode
       });
 
-      window.location.reload();
       router.refresh();
-      router.replace(`/${organizationCode}`);
+      router.replace(`/${organizationCode}/create-first-course`);
     } catch (error) {
       setError(error as Error);
     }

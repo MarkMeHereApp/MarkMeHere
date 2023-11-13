@@ -1,7 +1,7 @@
 import prisma from '@/prisma';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
-import FirstCourseCreation from './components/course-creation/first-course-creation';
+import FirstCourseCreation from './create-first-course/components/first-course-creation';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import NoCoursesAndUser from './components/no-courses-and-user';
 import { zSiteRoles } from '@/types/sharedZodTypes';
@@ -49,7 +49,7 @@ export default async function Page({
     const foundCourse = await prisma.course.findFirst();
 
     if (!foundCourse) {
-      return <FirstCourseCreation />;
+      redirect(`/${params.organizationCode}/create-first-course`);
     }
 
     redirect(`/${params.organizationCode}/${foundCourse.courseCode}/overview`);

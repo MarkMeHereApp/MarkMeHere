@@ -4,7 +4,6 @@ import { firaSansLogo } from '@/utils/fonts';
 import CreateCourseForm from '@/app/(dashboard)/[organizationCode]/components/course-creation/class-creation-form';
 import UserNav from '../../[courseCode]/components/user-nav';
 export const FirstCourseCreation = () => {
-  'use client';
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       <div className="pb-6 flex flex-row">
