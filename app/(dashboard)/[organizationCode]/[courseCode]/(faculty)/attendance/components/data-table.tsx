@@ -216,22 +216,25 @@ export function DataTable<TData, TValue>({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
-                      const shouldHideColumn = [
+                      const shouldHideColumnMd = [
                         'email',
                         'lmsId',
-                        'date marked',
-                        'status',
-                        'location'
+                        'date marked'
                       ];
+                      const shouldHideColumnSm = ['status', 'location'];
+
+                      let cName = 'table-cell lg:table-cell';
+
+                      if (shouldHideColumnMd.includes(header.id)) {
+                        cName = ' hidden lg:table-cell';
+                      }
+
+                      if (shouldHideColumnSm.includes(header.id)) {
+                        cName = ' hidden md:table-cell';
+                      }
+
                       return (
-                        <TableHead
-                          key={header.id}
-                          className={
-                            shouldHideColumn.includes(header.id)
-                              ? 'hidden md:table-cell lg:table-cell'
-                              : 'table-cell md:table-cell lg:table-cell'
-                          }
-                        >
+                        <TableHead key={header.id} className={cName}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -253,22 +256,24 @@ export function DataTable<TData, TValue>({
                       className="h-24 sm:h-12"
                     >
                       {row.getVisibleCells().map((cell) => {
-                        const shouldHideColumn = [
+                        const shouldHideColumnMd = [
                           'email',
                           'lmsId',
-                          'date marked',
-                          'status',
-                          'location'
+                          'date marked'
                         ];
+                        const shouldHideColumnSm = ['status', 'location'];
+
+                        let cName = 'table-cell lg:table-cell';
+
+                        if (shouldHideColumnMd.includes(cell.column.id)) {
+                          cName = ' hidden lg:table-cell';
+                        }
+
+                        if (shouldHideColumnSm.includes(cell.column.id)) {
+                          cName = ' hidden md:table-cell';
+                        }
                         return (
-                          <TableCell
-                            key={cell.id}
-                            className={
-                              shouldHideColumn.includes(cell.column.id)
-                                ? 'hidden md:table-cell lg:table-cell'
-                                : 'table-cell md:table-cell lg:table-cell'
-                            }
-                          >
+                          <TableCell key={cell.id} className={cName}>
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

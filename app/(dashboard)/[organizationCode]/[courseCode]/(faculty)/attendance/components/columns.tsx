@@ -8,7 +8,7 @@ import {
   ExtendedCourseMember,
   zAttendanceStatusIcons
 } from '@/types/sharedZodTypes';
-import { formatString } from '@/utils/globalFunctions';
+import { distanceBetween2Points, formatString } from '@/utils/globalFunctions';
 import { DataTableRowActions } from './data-table-row-actions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useLecturesContext } from '../../../context-lecture';
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DialogHeader } from '@/components/ui/dialog';
-import LocationAttendanceView from './data-table-location-component';
+import GoogleMapsComponent from '../../../(student)/verification/components/googleMapsComponent';
 import { useRef } from 'react';
 import { getEmailText } from '@/server/utils/userHelpers';
 
@@ -204,13 +204,8 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
                     The student did not share their location!
                   </DialogTitle>
                   <DialogDescription>
-                    The student has not shared their location. Two reasons could
-                    account for this:
-                    <br />
-                    1) The student has chosen to proceed without verification.
-                    <br />
-                    2) The student has not granted the browser access to their
-                    location.
+                    This most likely means the user didn't grant the browser
+                    permission to share their location. Or there was an error.
                   </DialogDescription>
                 </DialogHeader>
               </div>
@@ -218,32 +213,6 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
           </Dialog>
         );
       }
-
-      const distanceBetween2Points = (
-        profLat: number,
-        profLong: number,
-        studLat: number,
-        studLong: number
-      ) => {
-        if (profLat == studLat && profLong == studLong) {
-          return 0;
-        } else {
-          const radlat1 = (Math.PI * profLat) / 180;
-          const radlat2 = (Math.PI * studLat) / 180;
-          const theta = profLong - studLong;
-          const radtheta = (Math.PI * theta) / 180;
-          let dist =
-            Math.sin(radlat1) * Math.sin(radlat2) +
-            Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-          if (dist > 1) {
-            dist = 1;
-          }
-          dist = Math.acos(dist);
-          dist = (dist * 180) / Math.PI;
-          dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
-          return dist;
-        }
-      };
 
       const calculateDistance = distanceBetween2Points(
         professorData.lectureLatitude,
@@ -255,53 +224,42 @@ export const columns: ColumnDef<ExtendedCourseMember>[] = [
       const locationData = {
         professorLatitude: professorData.lectureLatitude,
         professorLongitude: professorData.lectureLongitude,
+        professorRadius: professorData.lectureRange,
         studentLatitude: originalValue.AttendanceEntry?.studentLatitude,
         studentLongitude: originalValue.AttendanceEntry?.studentLongtitude
       };
 
-      if (calculateDistance) {
-        if (calculateDistance > professorData.lectureRange) {
-          validity.current = Validity.outRange;
-          return (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="xs" className="pl-2 pr-2">
-                  Out of Range
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <LocationAttendanceView
-                  postitonsData={locationData}
-                  validity={validity.current}
-                ></LocationAttendanceView>
-              </DialogContent>
-            </Dialog>
-          );
-        } else if (
-          calculateDistance < professorData.lectureRange &&
-          calculateDistance > 0
-        ) {
-          validity.current = Validity.inRange;
-          console.log(validity.current);
-          return (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="xs" className="pl-2 pr-2">
-                  In Range
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <LocationAttendanceView
-                  postitonsData={locationData}
-                  validity={validity.current}
-                ></LocationAttendanceView>
-              </DialogContent>
-            </Dialog>
-          );
-        }
+      if (calculateDistance > professorData.lectureRange) {
+        validity.current = Validity.outRange;
+        return (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="destructive" size="xs" className="pl-2 pr-2">
+                Out of Range
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <GoogleMapsComponent {...locationData} />
+            </DialogContent>
+          </Dialog>
+        );
+      } else {
+        validity.current = Validity.inRange;
+        return (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="xs" className="pl-2 pr-2">
+                In Range
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <GoogleMapsComponent {...locationData} />
+            </DialogContent>
+          </Dialog>
+        );
       }
     },
-    enableSorting: true,
+    enableSorting: false,
     enableHiding: true,
     enableGlobalFilter: true
   },

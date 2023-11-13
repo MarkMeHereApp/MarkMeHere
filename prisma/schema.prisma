@@ -178,8 +178,8 @@ model Organization {
   name                      String   @db.VarChar(255)
   canvasDevKeyAuthorizedEmail String? @db.VarChar(255)
   uniqueCode                String   @unique @db.VarChar(255)
-  lightTheme                String   @default("light_neutral") @db.VarChar(255)
-  darkTheme                 String   @default("dark_red") @db.VarChar(255)
+  lightTheme                String   @default("light_blue") @db.VarChar(255)
+  darkTheme                 String   @default("dark_yellow") @db.VarChar(255)
   googleMapsApiKey          String?  @db.VarChar(255)
   allowUsersToUseGoogleMaps Boolean  @default(false)
   hashEmails                Boolean
