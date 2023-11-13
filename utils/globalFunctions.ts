@@ -5,6 +5,32 @@ import prisma from '@/prisma';
 import { Prisma, Organization, User } from '@prisma/client';
 import { defaultSiteSettings } from '@/utils/globalVariables';
 
+export const distanceBetween2Points = (
+  profLat: number,
+  profLong: number,
+  studLat: number,
+  studLong: number
+) => {
+  if (profLat == studLat && profLong == studLong) {
+    return 0;
+  } else {
+    const radlat1 = (Math.PI * profLat) / 180;
+    const radlat2 = (Math.PI * studLat) / 180;
+    const theta = profLong - studLong;
+    const radtheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 6076.11549; //nothing: nautical miles,  miles: * 1.1515, km: * 1.852, meters: * 1852, feet: * 6,076.11549
+    return dist;
+  }
+};
+
 export function getPublicUrl(): string {
   if (process.env.NEXT_PUBLIC_BASE_URL) {
     return process.env.NEXT_PUBLIC_BASE_URL.toString();
@@ -14,11 +40,9 @@ export function getPublicUrl(): string {
     return window.location.origin;
   }
 
-
   if (process.env.NEXT_PUBLIC_VERCEL_URL) {
     return 'https://' + process.env.NEXT_PUBLIC_VERCEL_URL.toString();
   }
-
 
   return 'URL_ERROR';
 }
