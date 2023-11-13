@@ -49,7 +49,7 @@ If you want to run the app locally follow these steps.
 
 <!-- ## Contributing
 
-We welcome contributions to improve Mark Me Here!. If you'd like to contribute, please follow our [contribution guidelines](CONTRIBUTING.md). -->
+We welcome contributions to improve Mark Me Here!. If you'd like to contribute, please follow our [contribution guidelines](CONTRIBUTING.md).  -->
 
 ## License
 
