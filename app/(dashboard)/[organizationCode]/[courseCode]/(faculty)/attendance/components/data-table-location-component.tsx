@@ -121,9 +121,9 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
         if(validity == 0){
             return (
                 <div>
-                    <DialogContent className="max-w-[600px] h-[430px] ">
+                    <DialogContent className="max-w-[600px] h-[450px] ">
                         <div className="grid gap-4 py-4 ">
-                        <DialogHeader className="flex justify-center items-center pb-[5px]">
+                        <DialogHeader className="flex justify-center items-center">
                             <DialogTitle>The student was out of range!</DialogTitle>
                                 <DialogDescription>
                                     See the location of the lecture (circle) and the location of the student (marker).
@@ -143,9 +143,9 @@ const LocationAttendanceView: FC<GoogleMapsProps> = ({ postitonsData, validity }
         else if(validity == 1){
             return (
                 <div>
-                    <DialogContent className="max-w-[600px] h-[430px] ">
+                    <DialogContent className="max-w-[600px] h-[450px] ">
                         <div className="grid gap-4 py-4 ">
-                            <DialogHeader className="flex justify-center items-center pb-[5px]">
+                            <DialogHeader className="flex justify-center items-center">
                                 <DialogTitle>The student was in range!</DialogTitle>
                                     <DialogDescription>
                                         See the location of the lecture (circle) and the location of the student (marker).
