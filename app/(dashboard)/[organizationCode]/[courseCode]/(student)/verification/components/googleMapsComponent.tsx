@@ -61,7 +61,7 @@ const GoogleMapsComponent = ({
     return (
       <GoogleMap
         mapContainerStyle={mapStyles}
-        zoom={14}
+        zoom={16}
         center={professorLocation}
         options={{
           styles: mapTheme.styles,

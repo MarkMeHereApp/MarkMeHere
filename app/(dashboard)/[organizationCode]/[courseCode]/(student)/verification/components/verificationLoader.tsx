@@ -13,6 +13,7 @@ import {
   getProfessorGeolocationInfo
 } from '@/data/attendance/attendance-token';
 import GoogleMapsComponent from './googleMapsComponent';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 // //Checking Geolocation
 // const CheckGeolocation = async () => {
@@ -112,27 +113,6 @@ const VerifiactionLoader = ({ code }: { code: string }) => {
     router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`);
   };
 
-  const SubmitWithoutVerificationComp = () => {
-    return (
-      <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
-        <AreYouSureDialog
-          title="Are you sure you want to continue without verification?"
-          bDestructive={true}
-          onConfirm={submitWithoutVerification}
-        >
-          <Button
-            className="flex w-full"
-            onClick={() => {}}
-            variant={'destructive'}
-            disabled={buttonLoading}
-          >
-            {buttonLoading ? <Loading /> : 'Continue Without Verification'}
-          </Button>
-        </AreYouSureDialog>
-      </div>
-    );
-  };
-
   const getLocation = async () => {
     try {
       setButtonLoading(true);
@@ -177,16 +157,14 @@ const VerifiactionLoader = ({ code }: { code: string }) => {
   };
 
   const submitAttendance = async () => {
-    console.log('asd');
     if (!latitude || !longitude) {
-      console.log('asdasdasdasd');
-
+      router.push(`${currentCourseUrl}/student?attendanceTokenId=${code}`);
       return;
     }
 
     setButtonLoading(true);
     try {
-      const token = await addGeolocationToAttendanceToken({
+      await addGeolocationToAttendanceToken({
         attendanceTokenId: code,
         latitude: latitude,
         longitude: longitude
@@ -202,14 +180,65 @@ const VerifiactionLoader = ({ code }: { code: string }) => {
     getLocation();
   }, []);
 
+  const SubmitWithoutVerificationComp = () => {
+    let buttonText = 'Submit Without Verification';
+    let title = 'Are you sure you want to continue without verification?';
+    let DescriptionComponent = () => {
+      return (
+        <div>
+          <p>
+            Your teacher will know that you have submitted your attendance
+            without verification.
+          </p>
+        </div>
+      );
+    };
+    if (latitude && longitude) {
+      buttonText = 'Submit Out-Of-Range Attendance';
+      title = 'Are you sure you want to submit your attendance?';
+      DescriptionComponent = () => {
+        return (
+          <div>
+            <p>
+              Your teacher will know that you are out of range, but they will be
+              able to know the location you submitted.
+            </p>
+          </div>
+        );
+      };
+    }
+
+    return (
+      <div className="gap-4 flex flex-col items-center w-[100%]">
+        <AreYouSureDialog
+          title={title}
+          bDestructive={true}
+          onConfirm={submitAttendance}
+          AlertDescriptionComponent={DescriptionComponent}
+        >
+          <Button
+            className="flex w-full"
+            onClick={() => {}}
+            variant={'destructive'}
+          >
+            {buttonLoading ? <Loading /> : buttonText}
+          </Button>
+        </AreYouSureDialog>
+      </div>
+    );
+  };
+
   if (buttonLoading) {
     return (
       <>
         <CardTitle className="text-2xl font-bold  text-center">
-          <span>Location Verification</span>
+          <span>Loading</span>
         </CardTitle>
-        <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
-          <Loading name="Loading" />
+        <div className="gap-4 flex flex-col items-center pt-5 w-[100%] h-[400px] justify-center">
+          <ReloadIcon
+            className="animate-spin "
+            style={{ height: '100px', width: '100px' }}
+          />
         </div>
       </>
     );
@@ -219,22 +248,73 @@ const VerifiactionLoader = ({ code }: { code: string }) => {
     return (
       <>
         <CardTitle className="text-2xl font-bold  text-center">
-          <span>Location Verification</span>
+          <span>Getting Your Location</span>
         </CardTitle>
-        <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
-          <Loading name="Grabbing Location Access" />
+        <div className="gap-4 flex flex-col items-center pt-5 w-[100%] h-[400px] justify-center">
+          <ReloadIcon
+            className="animate-spin "
+            style={{ height: '100px', width: '100px' }}
+          />
         </div>
       </>
     );
   }
 
-  if ((!latitude || !longitude) && !gettingLocation) {
+  if (
+    professorLectureGeolocation &&
+    longitude !== null &&
+    latitude !== null &&
+    distance !== null &&
+    distance <= professorLectureGeolocation.lectureRange
+  ) {
     return (
       <>
         <CardTitle className="text-2xl font-bold  text-center">
-          <span>Could Not Get Your Location!</span>
+          <span>You Are In Range!</span>
         </CardTitle>
         <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
+          <GoogleMapsComponent
+            studentLatitude={latitude}
+            studentLongitude={longitude}
+            professorLatitude={professorLectureGeolocation.lectureLatitude}
+            professorLongitude={professorLectureGeolocation.lectureLongitude}
+            professorRadius={professorLectureGeolocation.lectureRange}
+          />
+
+          <Button
+            className="flex w-full"
+            onClick={() => {
+              submitAttendance();
+            }}
+          >
+            Submit Attendance
+          </Button>
+        </div>
+      </>
+    );
+  }
+
+  if (
+    professorLectureGeolocation &&
+    longitude !== null &&
+    latitude !== null &&
+    distance !== null &&
+    distance > professorLectureGeolocation.lectureRange
+  ) {
+    return (
+      <>
+        <CardTitle className="text-2xl font-bold  text-center">
+          <span>You are out of range!</span>
+        </CardTitle>
+        <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
+          Please make sure you have disabled any VPNs or location spoofing.
+          <GoogleMapsComponent
+            studentLatitude={latitude}
+            studentLongitude={longitude}
+            professorLatitude={professorLectureGeolocation.lectureLatitude}
+            professorLongitude={professorLectureGeolocation.lectureLongitude}
+            professorRadius={professorLectureGeolocation.lectureRange}
+          />
           <Button
             className="flex w-full"
             onClick={() => {
@@ -244,42 +324,30 @@ const VerifiactionLoader = ({ code }: { code: string }) => {
           >
             Try Again?
           </Button>
+          <SubmitWithoutVerificationComp />
         </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <CardTitle className="text-2xl font-bold  text-center">
+        <span>Could Not Get Your Location!</span>
+      </CardTitle>
+      <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
+        <Button
+          className="flex w-full"
+          onClick={() => {
+            window.location.reload();
+            setButtonLoading(true);
+          }}
+        >
+          Try Again?
+        </Button>
         <SubmitWithoutVerificationComp />
-      </>
-    );
-  }
-
-  if (professorLectureGeolocation && longitude && latitude) {
-    return (
-      <>
-        <>
-          <CardTitle className="text-2xl font-bold  text-center">
-            <span>Location Verification</span>
-          </CardTitle>
-          <div className="gap-4 flex flex-col items-center pt-5 w-[100%]">
-            <GoogleMapsComponent
-              studentLatitude={latitude}
-              studentLongitude={longitude}
-              professorLatitude={professorLectureGeolocation.lectureLatitude}
-              professorLongitude={professorLectureGeolocation.lectureLongitude}
-              professorRadius={professorLectureGeolocation.lectureRange}
-            />
-            <Button
-              className="flex w-full"
-              onClick={() => {
-                submitAttendance();
-              }}
-              disabled={buttonLoading}
-            >
-              {distance}
-            </Button>
-          </div>
-        </>
-      </>
-    );
-  }
-
-  return <></>;
+      </div>
+    </>
+  );
 };
 export default VerifiactionLoader;

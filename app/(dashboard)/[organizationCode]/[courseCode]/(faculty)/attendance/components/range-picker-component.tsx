@@ -1,9 +1,5 @@
 import React, { FC } from 'react';
-import {
-  GoogleMap,
-  useLoadScript,
-  CircleF,
-} from '@react-google-maps/api';
+import { GoogleMap, useLoadScript, CircleF } from '@react-google-maps/api';
 import googleMapsLight from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsDarkMode.json';
 import googleMapsDark from '@/app/(dashboard)/[organizationCode]/[courseCode]/(student)/verification/components/googleMapsStyles/googleMapsLightMode.json';
 import { useTheme } from 'next-themes';
@@ -34,7 +30,7 @@ const GoogleMapComponentAttendance: FC<
     isDialogOpen: (newBoolean: boolean) => void;
   }
 > = ({ postitonsData, onRangeChange, isDialogOpen }) => {
-  const [range, setRange] = useState<number>(200);
+  const [range, setRange] = useState<number>(300);
 
   const OrganizationContext = useOrganizationContext();
   const GoogleMapsKey = OrganizationContext.organization.googleMapsApiKey;
@@ -90,49 +86,49 @@ const GoogleMapComponentAttendance: FC<
                 <div className="flex items-center">
                   <RadioGroupItem
                     onClick={() => {
-                      setRange(50);
+                      setRange(100);
                       setDefaultValue('small');
                     }}
                     value="small"
                   />
                   <AlertDialogDescription className="pl-[10px]">
-                    Small - 50ft
+                    Small - 100ft
                   </AlertDialogDescription>
                 </div>
                 <div className="flex items-center">
                   <RadioGroupItem
                     onClick={() => {
-                      setRange(150);
+                      setRange(300);
                       setDefaultValue('medium');
                     }}
                     value="medium"
                   />
                   <AlertDialogDescription className="pl-[10px]">
-                    Medium - 150ft
+                    Medium - 300ft
                   </AlertDialogDescription>
                 </div>
                 <div className="flex items-center">
                   <RadioGroupItem
                     onClick={() => {
-                      setRange(250);
+                      setRange(1000);
                       setDefaultValue('large');
                     }}
                     value="large"
                   />
                   <AlertDialogDescription className="pl-[10px]">
-                    Large - 250ft
+                    Large - 1000ft
                   </AlertDialogDescription>
                 </div>
                 <div className="flex items-center">
                   <RadioGroupItem
                     onClick={() => {
-                      setRange(2500);
+                      setRange(3500);
                       setDefaultValue('campus');
                     }}
                     value="campus"
                   />
                   <AlertDialogDescription className="pl-[10px]">
-                    Campus - 2500ft
+                    Campus - 3500ft
                   </AlertDialogDescription>
                 </div>
               </div>
@@ -226,9 +222,9 @@ const GoogleMapComponentAttendance: FC<
           <AlertDialogHeader className="flex justify-center items-center pb-[10px]">
             <AlertDialogTitle>Location Verification Settings</AlertDialogTitle>
             <AlertDialogDescription>
-              Your profile does not have Google Maps API key imported! You can still
-              pick the size of your classroom, but you cannot see where your
-              location is. Be careful not to have a VPN on so the data is
+              Your profile does not have Google Maps API key imported! You can
+              still pick the size of your classroom, but you cannot see where
+              your location is. Be careful not to have a VPN on so the data is
               accurate!
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -17,12 +17,14 @@ import { useLecturesContext } from '@/app/(dashboard)/[organizationCode]/[course
 
 interface StudentPageBoardProp {
   studentId?: string;
+  newAttendanceEntry?: AttendanceEntry;
   dateMarked?: Date;
 }
 
 const StudentPageBoard: React.FC<StudentPageBoardProp> = ({
   studentId,
-  dateMarked
+  dateMarked,
+  newAttendanceEntry
 }) => {
   const session = useSession();
   const userName = session?.data?.user?.name || '';
@@ -30,11 +32,36 @@ const StudentPageBoard: React.FC<StudentPageBoardProp> = ({
   const [showSuccess, setShowSuccess] = React.useState(true);
   const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const { courseMembersOfSelectedCourse } = useCourseContext();
-  const { lectures } = useLecturesContext();
+  const { lectures, setLectures } = useLecturesContext();
 
   // for future use
   //   const searchParams = useSearchParams();
   //   const attendanceEntry = searchParams ? searchParams.get('attendanceEntry') : null; //storing the searchParams with 'error' included, that is then being used the in the UseEffect below
+
+  useEffect(() => {
+    if (newAttendanceEntry) {
+      setLectures((prevState) => {
+        if (!prevState) {
+          return []; // or some other default value
+        }
+
+        const newLectures = prevState.map((lecture) => {
+          if (lecture.id === newAttendanceEntry.lectureId) {
+            // Remove existing attendance entry for the current courseMember if it exists
+            lecture.attendanceEntries = lecture.attendanceEntries.filter(
+              (entry) =>
+                entry.courseMemberId !== newAttendanceEntry.courseMemberId
+            );
+            // Add the new attendance entry
+            lecture.attendanceEntries.push(newAttendanceEntry);
+          }
+          return lecture;
+        });
+
+        return newLectures;
+      });
+    }
+  }, []);
 
   const getCourseMember = () => {
     if (courseMembersOfSelectedCourse) {
