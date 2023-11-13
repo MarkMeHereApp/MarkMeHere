@@ -34,6 +34,7 @@ import GoogleMapComponentAttendance from './range-picker-component';
 import { markAllUnmarkedAbsent } from '@/data/attendance/make-all-unmarked-absent';
 import { PiQrCode } from 'react-icons/pi';
 import { useLecturesContext } from '../../../context-lecture';
+import { en } from '@faker-js/faker';
 
 
 export function StartScanningButton() {
@@ -55,7 +56,7 @@ export function StartScanningButton() {
 
   const [parameters, setParameters] = useState(firstParam);
 
-  const enableGeolocation = useRef<boolean>(false);
+  //const enableGeolocation = useRef<boolean>(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -65,11 +66,13 @@ export function StartScanningButton() {
   const session = useSession();
   const userName = session?.data?.user?.name || '';
   const userEmail = session.data?.user?.email;
-
+  
   const [selectCourseMember, setSelectCourseMember] = useState<
     CourseMember | undefined
   >();
   const [error, setError] = useState<Error | null>(null);
+  const [enableGeolocation, setEnableGeolocation] = useState(false);
+  const [loactionLoading, setLocationLoading] = useState(false)
 
   const locationData = {
     professorLatitude: lectureLatitude.current,
@@ -88,10 +91,15 @@ export function StartScanningButton() {
   const currentLecture = getCurrentLecture();
 
   const handleGeolocationChange = async () => {
-    enableGeolocation.current = !enableGeolocation.current;
-    if (enableGeolocation.current) {
+    setEnableGeolocation(!enableGeolocation);
+    setLocationLoading(true)
+    if (!enableGeolocation) {
       setIsDialogOpen(true);
-      await fetchGeolocation()
+      await fetchGeolocation();
+      setLocationLoading(false)
+    }
+    else if(enableGeolocation){
+      setLocationLoading(false)
     }
   };
 
@@ -175,7 +183,7 @@ export function StartScanningButton() {
 
       await markAllUnmarkedAbsent({ lectureId: currentLecture.id });
 
-      if (enableGeolocation.current) {
+      if (!enableGeolocation) {
         
         if (!selectedCourseMemberId) {
           return;
@@ -199,7 +207,7 @@ export function StartScanningButton() {
         );
       } 
   
-      if (!enableGeolocation.current) {
+      if (enableGeolocation) {
         router.push(navigation + parameters);
       }
     } catch (error) {
@@ -344,10 +352,9 @@ export function StartScanningButton() {
                       <TooltipTrigger asChild></TooltipTrigger>
                       <div className="flex items-center space-x-2">
                         <Switch
-                          checked={enableGeolocation.current}
-                          onClick={() => {
-                            handleGeolocationChange();
-                          }}
+                          checked={enableGeolocation}
+                          onClick={() => {handleGeolocationChange();}}
+                          disabled={loactionLoading}
                         />
                         <Label htmlFor="r3">Location Checker</Label>
 
