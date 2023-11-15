@@ -3,7 +3,7 @@ import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { decrypt } from '@/utils/globalFunctions';
-import { getNextAuthSession } from '../auth';
+import { ensureAndGetNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { getOrganization } from './organization';
 
@@ -14,7 +14,7 @@ export const addCanvasAuthorizedUserToOrganization = async ({
   inputOrganizationCode: string;
   inputEmail: string;
 }) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   if (session.user.role !== zSiteRoles.enum.admin) {
     throw new Error(
@@ -39,7 +39,7 @@ export const addCanvasAuthorizedUserToOrganization = async ({
 export const deleteCanvasAuthorizedUserFromOrganization = async (
   inputOrganizationCode: string
 ) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   if (session.user.role !== zSiteRoles.enum.admin) {
     throw new Error(

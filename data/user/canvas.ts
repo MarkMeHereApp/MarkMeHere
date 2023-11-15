@@ -1,7 +1,7 @@
 'use server';
 import 'server-only';
 import prisma from '@/prisma';
-import { getNextAuthSession } from '../auth';
+import { ensureAndGetNextAuthSession } from '../auth';
 import { getOrganization } from '../organization/organization';
 import { encrypt } from '@/utils/globalFunctions';
 
@@ -14,7 +14,7 @@ export const updateUserWithCanvasData = async ({
   inputUrl?: string;
   inputDevKey?: string;
 }) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   const { canvasDevKeyAuthorizedEmail } = await getOrganization(
     inputOrganizationCode
@@ -42,7 +42,7 @@ export const updateUserWithCanvasData = async ({
 };
 
 export const hasCanvasConfigured = async () => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   const user = await prisma.user.findFirst({
     where: { email: session.user.email }

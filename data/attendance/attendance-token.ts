@@ -4,7 +4,7 @@ import 'server-only';
 import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { getOrganization } from '../organization/organization';
-import { bHasCoursePermission, getNextAuthSession } from '../auth';
+import { bHasCoursePermission, ensureAndGetNextAuthSession } from '../auth';
 import { distanceBetween2Points } from '@/utils/globalFunctions';
 
 export const getProfessorGeolocationInfo = async ({
@@ -17,7 +17,7 @@ export const getProfessorGeolocationInfo = async ({
   studentLongitude: number;
 }) => {
   try {
-    const session = await getNextAuthSession();
+    const session = await ensureAndGetNextAuthSession();
 
     const attendanceToken = await prisma.attendanceToken.findFirst({
       where: {
@@ -40,34 +40,6 @@ export const getProfessorGeolocationInfo = async ({
     );
 
     return { attendanceToken: attendanceToken, distance: calculateDistance };
-  } catch (error) {
-    throw generateTypedError(error as Error);
-  }
-};
-
-export const addGeolocationToAttendanceToken = async ({
-  attendanceTokenId,
-  latitude,
-  longitude
-}: {
-  attendanceTokenId: string;
-  latitude: number;
-  longitude: number;
-}) => {
-  try {
-    const session = await getNextAuthSession();
-
-    const attendanceToken = await prisma.attendanceToken.update({
-      where: {
-        id: attendanceTokenId
-      },
-      data: {
-        attendanceStudentLatitude: latitude,
-        attendanceStudentLongtitude: longitude
-      }
-    });
-
-    return attendanceToken;
   } catch (error) {
     throw generateTypedError(error as Error);
   }

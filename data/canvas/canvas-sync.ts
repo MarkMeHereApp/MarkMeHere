@@ -3,13 +3,13 @@ import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { createMultipleCourseMembers } from '../courseMember/create-multiple-course-members';
-import { bHasCoursePermission, getNextAuthSession } from '../auth';
+import { bHasCoursePermission, ensureAndGetNextAuthSession } from '../auth';
 import { decrypt, getPublicUrl } from '@/utils/globalFunctions';
 import calculateCourseMemberStatistics from '@/app/(dashboard)/[organizationCode]/[courseCode]/(faculty)/overview/analytics/utils/calculateCourseMemberStatistics';
 import { CourseMember } from '@prisma/client';
 
 export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   const hasPermission = await bHasCoursePermission({
     courseCode: inputCourseCode,
@@ -91,7 +91,7 @@ export const syncCanvasCourseMembers = async (inputCourseCode: string) => {
   );
 
   if (!enrollmentResponse.ok) {
-throw new Error("Couldn't find enrollments")
+    throw new Error("Couldn't find enrollments");
   }
 
   const enrollmentJson = await enrollmentResponse.json();
@@ -204,7 +204,7 @@ throw new Error("Couldn't find enrollments")
 export const syncCanvasAttendanceAssignment = async (
   inputCourseCode: string
 ) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   const hasPermission = await bHasCoursePermission({
     courseCode: inputCourseCode,
