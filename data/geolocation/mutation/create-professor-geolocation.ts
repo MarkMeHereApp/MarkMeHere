@@ -2,12 +2,10 @@
 
 import 'server-only';
 import prisma from '@/prisma';
-import { generateTypedError } from '@/server/errorTypes';
-import { ensureAndGetNextAuthSession } from '../../auth';
 
 import z from 'zod';
 
-export const zCreateProfessorLectureGeolocation = z.object({
+const zCreateProfessorLectureGeolocation = z.object({
   lectureLatitude: z.number(),
   lectureLongitude: z.number(),
   lectureId: z.string(),
