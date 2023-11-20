@@ -7,7 +7,7 @@ import LecturesContext from './context-lecture';
 import { getAuthOptions } from '@/app/api/auth/[...nextauth]/options';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 import { Course, CourseMember } from '@prisma/client';
-import { getCourseWithEnrollments } from '@/data/courseMember/get-all-course-members-of-course';
+import { getCourseWithEnrollments } from '@/data/courseMember/get-course-with-enrollments';
 
 export default async function CourseLayout({
   children,

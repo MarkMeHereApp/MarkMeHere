@@ -3,12 +3,11 @@ import 'server-only';
 import prisma from '@/prisma';
 import { hashEmail } from '@/server/utils/userHelpers';
 import { decrypt } from '@/utils/globalFunctions';
-import { getNextAuthSession } from '../auth';
+import { ensureAndGetNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
-
 export const getOrganization = async (inputOrganizationCode: string) => {
-  const session = await getNextAuthSession();
+  const session = await ensureAndGetNextAuthSession();
 
   const organization = await prisma.organization.findFirst({
     where: { uniqueCode: inputOrganizationCode }

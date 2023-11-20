@@ -13,7 +13,10 @@ import prisma from '@/prisma';
 import { TRPCError } from '@trpc/server';
 import adminProcedure from '../middleware/adminProcedure';
 import { hashEmail } from '../utils/userHelpers';
-import { bHasCoursePermission, getNextAuthSession } from '../../data/auth';
+import {
+  bHasCoursePermission,
+  ensureAndGetNextAuthSession
+} from '../../data/auth';
 import { decrypt } from '@/utils/globalFunctions';
 
 const zCanvasCourseSchema = z.object({
@@ -38,7 +41,7 @@ export const canvasRouter = router({
     )
     .query(async (requestData) => {
       try {
-        const session = await getNextAuthSession();
+        const session = await ensureAndGetNextAuthSession();
 
         const organization = await prisma.organization.findFirst({
           where: {

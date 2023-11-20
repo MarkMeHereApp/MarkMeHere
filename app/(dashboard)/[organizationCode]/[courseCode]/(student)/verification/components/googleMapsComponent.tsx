@@ -14,8 +14,8 @@ import { useTheme } from 'next-themes';
 import { useOrganizationContext } from '@/app/(dashboard)/[organizationCode]/context-organization';
 
 interface GoogleMapsProps {
-  studentLatitude: number;
-  studentLongitude: number;
+  studentLatitude?: number;
+  studentLongitude?: number;
   professorLatitude: number;
   professorLongitude: number;
   professorRadius: number;
@@ -52,16 +52,41 @@ const GoogleMapsComponent = ({
     lng: professorLongitude
   };
 
-  const studentLocation = {
-    lat: studentLatitude,
-    lng: studentLongitude
+  const StudentMarker = () => {
+    if (!studentLatitude || !studentLongitude) {
+      return <></>;
+    }
+
+    const studentLocation = {
+      lat: studentLatitude,
+      lng: studentLongitude
+    };
+
+    return (
+      <>
+        <MarkerF position={studentLocation} />
+        <PolylineF
+          path={[studentLocation, professorLocation]}
+          options={{
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.5,
+            strokeWeight: 2
+          }}
+        />
+      </>
+    );
+  };
+
+  const calculateZoomLevel = () => {
+    const rangeInKm = professorRadius * 0.0003048; // convert feet to kilometers
+    return Math.round(13 - Math.log(rangeInKm) / Math.LN2);
   };
 
   const MapComponent = () => {
     return (
       <GoogleMap
         mapContainerStyle={mapStyles}
-        zoom={16}
+        zoom={calculateZoomLevel()}
         center={professorLocation}
         options={{
           styles: mapTheme.styles,
@@ -82,15 +107,7 @@ const GoogleMapsComponent = ({
             fillOpacity: 0.35
           }}
         />
-        <MarkerF position={studentLocation} />
-        <PolylineF
-          path={[studentLocation, professorLocation]}
-          options={{
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.5,
-            strokeWeight: 2
-          }}
-        />
+        <StudentMarker />
       </GoogleMap>
     );
   };

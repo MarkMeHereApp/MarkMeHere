@@ -385,7 +385,7 @@ const QR = () => {
               {buttonLoading ? (
                 <Button disabled={true}>Finishing...</Button>
               ) : (
-                <ContinueButton onClick={finishAttendance} name="Finish" />
+                <Button onClick={finishAttendance}>Finish</Button>
               )}
             </div>
           </div>

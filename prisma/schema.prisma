@@ -185,3 +185,4 @@ model Organization {
   hashEmails                Boolean
   Courses                   Course[]
 }
+ 

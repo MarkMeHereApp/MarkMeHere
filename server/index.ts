@@ -9,7 +9,6 @@ import { lectureRouter } from './routes/lecture';
 import { attendanceRouter } from './routes/attendance';
 import { utilsRouter } from './routes/utils';
 import { providerRouter } from './routes/provider';
-import { geolocationRouter } from './routes/geolocation';
 import { organizationRouter } from './routes/organization';
 import { userRouter } from './routes/user';
 import { attendanceTokenRouter } from './routes/attendanceToken';
@@ -25,7 +24,6 @@ export const appRouter = router({
   canvas: canvasRouter,
   utils: utilsRouter,
   provider: providerRouter,
-  geolocation: geolocationRouter,
   user: userRouter,
   attendanceToken: attendanceTokenRouter,
   organization: organizationRouter,
