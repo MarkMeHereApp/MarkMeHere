@@ -51,9 +51,9 @@ export default async function LandingPage() {
         id="get-started"
         className="container space-y-6  py-8 md:py-12 lg:py-24"
       >
-        <div className="mx-auto grid justify-center gap-16 sm:grid-cols-2 max-w-[64rem] md:grid-cols-2">
+        <div className="mx-auto grid justify-center gap-16 max-w-[64rem] lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
-            <div className="flex h-[500px] flex-col justify-between rounded-md p-6">
+            <div className="flex h-[600px] flex-col justify-between rounded-md p-6">
               <div className="space-y-2">
                 <div className="flex items-center">
                   <PiChalkboardTeacher className="h-16 w-16 mr-6" />
@@ -91,17 +91,7 @@ export default async function LandingPage() {
                       <li className="flex items-center">
                         <ClockIcon className="mr-2" />
                         <span>Calendar, Tasks, and Messaging</span>
-                        <span>
-                          {/* 
-                          <Link href="/demo" className="ml-2">
-                            <ContinueButton
-                              size="xs"
-                              variant="outline"
-                              name="Learn More"
-                            />
-                          </Link>
-                          */}
-                        </span>
+                        <span></span>
                       </li>
                     </ul>
                   </div>
@@ -113,7 +103,7 @@ export default async function LandingPage() {
             </div>
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
-            <div className="flex h-[450px] flex-col justify-between rounded-md p-6">
+            <div className="flex h-[600px] flex-col justify-between rounded-md p-6">
               <div className="space-y-2">
                 <div className="flex items-center">
                   <FaSchool className="h-16 w-16 mr-6" />
@@ -154,7 +144,7 @@ export default async function LandingPage() {
                   </ul>
                 </div>
               </div>
-              <div className="space-x-4 ml-2 my-6">
+              <div className="space-x-4">
                 <ContactUsDialog>
                   <Button variant={'outline'}>Contact Us</Button>
                 </ContactUsDialog>
