@@ -47,6 +47,7 @@ export type Geolocation = {
 };
 
 import GetProfessorGeolocationData from './get-professor-geolocation-data';
+import { toastError } from '@/utils/globalFunctions';
 export function StartScanningButton() {
   const router = useRouter();
   const { courseMembersOfSelectedCourse, currentCourseUrl } =
@@ -99,11 +100,18 @@ export function StartScanningButton() {
   }
 
   const handleGenerateQRCode = async () => {
-    setIsLoadingSubmit(true);
     const selectedCourseMember = getCourseMember();
     const selectedCourseMemberId = selectedCourseMember
       ? selectedCourseMember.id
       : undefined;
+
+    if (!selectedCourseMemberId) {
+      toastError(
+        'Could not find course member, make sure you are enrolled in the selected course!'
+      );
+      return;
+    }
+    setIsLoadingSubmit(true);
 
     try {
       if (!currentLecture) {
@@ -114,10 +122,6 @@ export function StartScanningButton() {
       await markAllUnmarkedAbsent({ lectureId: currentLecture.id });
 
       if (professorGeolocation) {
-        if (!selectedCourseMemberId) {
-          setError(new Error("Couldn't find course member id"));
-          return;
-        }
         const res = await createProfessorGeolocation({
           lectureLatitude: professorGeolocation.latitude,
           lectureLongitude: professorGeolocation.longitude,
