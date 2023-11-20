@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod'; // Assuming you're using zod for schema validation
 import { getOrganization } from '../organization/organization';
-import { bHasCoursePermission, getNextAuthSession } from '../auth';
+import { bHasCoursePermission, ensureAndGetNextAuthSession } from '../auth';
 import { zSiteRoles } from '@/types/sharedZodTypes';
 
 export const zGetCourseMembersOfCourse = z.object({
@@ -14,7 +14,7 @@ export const getCourseWithEnrollments = async (
   requestData: z.infer<typeof zGetCourseMembersOfCourse>
 ) => {
   try {
-    const session = await getNextAuthSession();
+    const session = await ensureAndGetNextAuthSession();
 
     const hasPermission = await bHasCoursePermission({
       courseCode: requestData.courseCode,
