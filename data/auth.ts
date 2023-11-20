@@ -6,7 +6,7 @@ import 'server-only';
 import { zCourseRolesType } from '@/types/sharedZodTypes';
 
 // Returns the session if it is the specified role, otherwise throws an error
-export const getNextAuthSession = async () => {
+export const ensureAndGetNextAuthSession = async () => {
   const authOptions = await getAuthOptions();
 
   const session = await getServerSession(authOptions);

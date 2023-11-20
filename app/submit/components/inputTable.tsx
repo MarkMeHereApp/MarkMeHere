@@ -102,11 +102,11 @@ const InputTable = () => {
 
       if (!res.success) {
         displayError(ErrorType.InvalidInput);
+        setIsLoadingSubmit(false); // Set loading to false at the end of the function
       }
     } catch (error) {
-      setError(error as Error);
-    } finally {
       setIsLoadingSubmit(false); // Set loading to false at the end of the function
+      setError(error as Error);
     }
   };
 

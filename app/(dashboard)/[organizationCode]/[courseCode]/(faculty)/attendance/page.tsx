@@ -1,11 +1,9 @@
-
 import { columns } from './components/columns';
 import { DataTable } from './components/data-table';
 import { StartScanningButton } from './components/generate-qr-code';
 import { SyncCanvasAttendanceButton } from '@/utils/devUtilsComponents/SyncCanvasGrade';
 
 export default function ManageAttendance() {
-
   return (
     <div className="flex flex-col md:flex-row">
       <div className="block h-full flex-1 flex-col space-y-8  md:flex py-8 px-2 sm:px-8">
@@ -14,8 +12,8 @@ export default function ManageAttendance() {
 
           <div className="flex items-center space-x-2">
             <SyncCanvasAttendanceButton />
- 
-              <StartScanningButton  />
+
+            <StartScanningButton />
           </div>
         </div>
 

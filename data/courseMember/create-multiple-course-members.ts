@@ -4,7 +4,7 @@ import { hashEmail } from '@/server/utils/userHelpers';
 import { generateTypedError } from '@/server/errorTypes';
 import { z } from 'zod'; // Assuming you're using zod for schema validation
 import { getOrganization } from '../organization/organization';
-import { bHasCoursePermission, getNextAuthSession } from '../auth';
+import { bHasCoursePermission, ensureAndGetNextAuthSession } from '../auth';
 import { zCourseRoles } from '@/types/sharedZodTypes';
 import {
   createCourseMember,
@@ -31,7 +31,7 @@ export const createMultipleCourseMembers = async (
   try {
     const { courseCode, courseMembers } = requestData;
 
-    const session = await getNextAuthSession();
+    const session = await ensureAndGetNextAuthSession();
 
     const hasPermission = await bHasCoursePermission({
       courseCode: courseCode,
