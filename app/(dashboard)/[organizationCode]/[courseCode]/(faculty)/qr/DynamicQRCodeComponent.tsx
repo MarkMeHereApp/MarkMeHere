@@ -21,6 +21,7 @@ export default function QRCodeComponent({ url }: { url: string }) {
   );
 }
 
+// nice try josef
 // import QRCode from 'qrcode.react';
 
 // export default function QRCodeComponent({ url }: { url: string }) {
